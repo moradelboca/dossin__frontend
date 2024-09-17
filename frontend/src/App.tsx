@@ -1,12 +1,37 @@
-import { ContainerHome } from "./components/ContainerHome";
-//import { ContainerCargas } from "./components/ContainerCargas";
+import { ContainerCargas } from "./components/ContainerCargas";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { Nav } from "./components/nav/Nav";
+import CardGridInconvenientes from "./components/CardGridInconvenientes";
+import { styled } from "@mui/material/styles";
+import { CssBaseline } from "@mui/material";
+import Box from "@mui/material/Box";
+
+const Body = styled("body")({
+    display: "flex",
+});
 
 function App() {
-  return (
-    <div className="App">
-      <ContainerHome />
-    </div>
-  );
+    return (
+        <CssBaseline>
+            <BrowserRouter>
+                <Body>
+                    <Nav />
+                    <Box sx={{ marginTop: "85px" }}>
+                        <Routes>
+                            <Route
+                                path="/"
+                                element={<CardGridInconvenientes />}
+                            />
+                            <Route
+                                path="/cargas"
+                                element={<ContainerCargas />}
+                            />
+                        </Routes>
+                    </Box>
+                </Body>
+            </BrowserRouter>
+        </CssBaseline>
+    );
 }
 
 export default App;
