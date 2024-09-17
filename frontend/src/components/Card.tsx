@@ -4,7 +4,7 @@ import CardMedia from "@mui/material/CardMedia";
 import Typography from "@mui/material/Typography";
 import { CardActions } from "@mui/material";
 import { ReactNode } from "react";
-import Button, { ButtonBody } from "./Button";
+import { CustomButtom } from "./CustomButtom";
 import { styled } from "@mui/material/styles";
 import CardActionArea from "@mui/material/CardActionArea";
 import Grid from "@mui/material/Grid";
@@ -94,12 +94,8 @@ const CustomCard = ({
           Horarios de Descarga: {subtitle5}
         </TypographySubtitle>
         <CardActions>
-          <Button>
-            <ButtonBody title="Ver más" />
-          </Button>
-          <Button>
-            <ButtonBody title="Modificar" />
-          </Button>
+          <CustomButtom title="Ver mas"></CustomButtom>
+          <CustomButtom title="Modificar"></CustomButtom>
         </CardActions>
       </CardContentContent>
     </StyledCard>

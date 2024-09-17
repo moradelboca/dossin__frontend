@@ -3,7 +3,7 @@ import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
 import { CardActions } from "@mui/material";
-import Button, { ButtonBody } from "./Button";
+import { CustomButtom } from "./CustomButtom";
 import { styled } from "@mui/material/styles";
 import CardActionArea from "@mui/material/CardActionArea";
 import Box from "@mui/material/Box";
@@ -129,9 +129,7 @@ const CustomCard = ({
           <Box
             sx={{ display: "flex", justifyContent: "center", width: "100%" }}
           >
-            <Button>
-              <ButtonBody title="Ver más" />
-            </Button>
+            <CustomButtom title="Ver mas"></CustomButtom>
           </Box>
         </CardActions>
       </CardContentContent>
