@@ -1,7 +1,7 @@
 import { ContainerCargas } from "./components/ContainerCargas";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Nav } from "./components/nav/Nav";
-import CardGridInconvenientes from "./components/CardGridInconvenientes";
+import ContainerInconvenientes from "./components/ContainerInconvenientes";
 import { styled } from "@mui/material/styles";
 import { CssBaseline } from "@mui/material";
 import Box from "@mui/material/Box";
@@ -20,7 +20,7 @@ function App() {
                         <Routes>
                             <Route
                                 path="/"
-                                element={<CardGridInconvenientes />}
+                                element={<ContainerInconvenientes />}
                             />
                             <Route
                                 path="/cargas"
