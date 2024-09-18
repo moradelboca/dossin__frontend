@@ -1,17 +1,12 @@
-import BasicButtons, { IconButtonWithLabel } from "./IconButton";
+import BasicButtons, { BotonIcon } from "./IconButton";
 import { AccessAlarmOutlined } from "@mui/icons-material";
-import { CenterAutoplay } from "./CarouselUbis";
+import { CarouselUbis } from "./CarouselUbis";
 
 export function ContainerCargas() {
-    return (
-        <>
-            <BasicButtons>
-                <IconButtonWithLabel
-                    title="Ver más"
-                    icon={<AccessAlarmOutlined />}
-                />
-            </BasicButtons>
-            <CenterAutoplay />
-        </>
-    );
+  return (
+    <>
+      <BotonIcon title="Ver más" icon={<AccessAlarmOutlined />} />
+      <CarouselUbis />
+    </>
+  );
 }

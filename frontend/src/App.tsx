@@ -7,31 +7,25 @@ import { CssBaseline } from "@mui/material";
 import Box from "@mui/material/Box";
 
 const Body = styled("body")({
-    display: "flex",
+  display: "flex",
 });
 
 function App() {
-    return (
-        <CssBaseline>
-            <BrowserRouter>
-                <Body>
-                    <Nav />
-                    <Box sx={{ marginTop: "85px" }}>
-                        <Routes>
-                            <Route
-                                path="/"
-                                element={<ContainerInconvenientes />}
-                            />
-                            <Route
-                                path="/cargas"
-                                element={<ContainerCargas />}
-                            />
-                        </Routes>
-                    </Box>
-                </Body>
-            </BrowserRouter>
-        </CssBaseline>
-    );
+  return (
+    <CssBaseline>
+      <BrowserRouter>
+        <Body>
+          <Nav />
+          <Box sx={{ marginTop: "85px" }}>
+            <Routes>
+              <Route path="/" element={<ContainerInconvenientes />} />
+              <Route path="/cargas" element={<ContainerCargas />} />
+            </Routes>
+          </Box>
+        </Body>
+      </BrowserRouter>
+    </CssBaseline>
+  );
 }
 
 export default App;

@@ -38,7 +38,7 @@ interface IconButtonWithLabelProps {
   open?: boolean;
 }
 
-export function IconButtonWithLabel(props: IconButtonWithLabelProps) {
+export function BotonIcon(props: IconButtonWithLabelProps) {
   const { title, icon, onClick, open } = props;
 
   return (

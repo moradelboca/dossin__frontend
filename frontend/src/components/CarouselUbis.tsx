@@ -35,7 +35,7 @@ function getCommonProps(showSlides: number) {
   };
 }
 
-export function CenterAutoplay() {
+export function CarouselUbis() {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const isMediumScreen = useMediaQuery(theme.breakpoints.down("md"));
