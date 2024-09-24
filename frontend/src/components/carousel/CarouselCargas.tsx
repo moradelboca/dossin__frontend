@@ -2,7 +2,7 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Carousel, { carouselClasses } from "./Carousel";
 import { useContext, useEffect, useState } from "react";
-import { CardUbicacion } from "../CardUbicacion";
+import { CardUbicacion } from "../tarjetas/CardUbicacion";
 import { ContextoGeneral } from "../Contexto";
 
 function getCommonProps() {

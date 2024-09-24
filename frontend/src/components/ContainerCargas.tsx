@@ -1,4 +1,4 @@
-import { BotonIcon } from "./IconButton";
+import { BotonIcon } from "./botones/IconButton";
 import { AccessAlarmOutlined } from "@mui/icons-material";
 import Box from "@mui/material/Box";
 import { CarouselCargas } from "./carousel/CarouselCargas";
