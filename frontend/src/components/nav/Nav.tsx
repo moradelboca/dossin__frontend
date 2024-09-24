@@ -1,4 +1,3 @@
-import { Box } from "@mui/material";
 import Navbar from "./Navbar";
 import Navside from "./Navside";
 import { useState } from "react";
@@ -15,7 +14,7 @@ export function Nav() {
     };
 
     return (
-        <Box sx={{ display: "flex" }}>
+        <nav>
             <Navbar
                 navAbierto={navAbierto}
                 anchoAbierto={anchoAbierto}
@@ -29,6 +28,6 @@ export function Nav() {
                 anchoCerrado={anchoCerrado}
                 transicion={transicion}
             />
-        </Box>
+        </nav>
     );
 }

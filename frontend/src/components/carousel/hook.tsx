@@ -33,7 +33,7 @@ function useCarousel(rows: React.ReactNode[], props: CarouselSettings) {
     disableTransition = false,
     centerMode: rawCenterMode,
     infinity,
-    defaultValue = 0,
+    defaultValue = 0
   } = props;
   const centerMode = showSlides === 1 ? true : rawCenterMode;
 
