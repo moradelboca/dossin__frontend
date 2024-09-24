@@ -1,5 +1,5 @@
 import { Box, Typography } from "@mui/material";
-import { CustomButtom } from "./CustomButtom";
+import { CustomButtom } from "./botones/CustomButtom";
 import { styled } from "@mui/material/styles";
 import { useState } from "react";
 import { CardActions } from "@mui/material";

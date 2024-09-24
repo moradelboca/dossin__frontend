@@ -1,5 +1,5 @@
 import { Box, Typography } from "@mui/material";
-import { CustomButtom } from "./CustomButtom";
+import { CustomButtom } from "../botones/CustomButtom";
 import { styled } from "@mui/material/styles";
 import Grid from "@mui/material/Grid2";
 import Divider from "@mui/material/Divider";

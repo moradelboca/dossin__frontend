@@ -1,5 +1,5 @@
 import Grid from "@mui/material/Grid2";
-import { TarjetaChoferesCarga } from "./CardGradientVerde";
+import { TarjetaChoferesCarga } from "./tarjetas/CardGradientVerde";
 
 type Props = {};
 

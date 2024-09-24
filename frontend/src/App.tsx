@@ -2,6 +2,7 @@ import { ContainerCargas } from "./components/ContainerCargas";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Nav } from "./components/nav/Nav";
 import ContainerInconvenientes from "./components/ContainerInconvenientes";
+import { ContainerCupos } from "./components/ContainerCupos";
 import { CssBaseline } from "@mui/material";
 import Box from "@mui/material/Box";
 import { ContextoGeneral, ValoresContexto } from "./components/Contexto";
@@ -24,6 +25,10 @@ function App() {
                                     element={<ContainerCargas />}
                                 />
                                 <Route path="/cargas/:idCarga" element={<ContainerCargas />} />
+                                <Route
+                                    path="cargas/:idCarga/cupos"
+                                    element={<ContainerCupos />}
+                                />
                             </Routes>
                         </Box>
                     </CssBaseline>

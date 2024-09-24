@@ -1,5 +1,5 @@
 import { Grid2 as Grid } from "@mui/material";
-import { CustomBotonCamion } from "./CustomBotonCamion";
+import { CustomBotonCamion } from "./botones/CustomBotonCamion";
 
 type Props = {};
 

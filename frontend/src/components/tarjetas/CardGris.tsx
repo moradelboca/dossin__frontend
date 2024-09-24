@@ -3,7 +3,7 @@ import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
 import { CardActions } from "@mui/material";
-import { CustomButtom } from "./CustomButtom";
+import { CustomButtom } from "../botones/CustomButtom";
 import { styled } from "@mui/material/styles";
 import CardActionArea from "@mui/material/CardActionArea";
 import Box from "@mui/material/Box";
