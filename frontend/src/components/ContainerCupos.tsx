@@ -2,61 +2,86 @@ import { Box, Grid2 as Grid } from "@mui/material";
 import { BotonIcon } from "./botones/IconButton";
 import { AccessAlarmOutlined } from "@mui/icons-material";
 import { TarjetaCupos } from "./tarjetas/TarjetaCupos";
+import { TarjetaChoferesCarga } from "./tarjetas/CardGradientVerde";
+import { useEffect, useContext, useState } from "react";
+import { ContextoGeneral } from "./Contexto";
+import { useParams } from "react-router-dom";
 
 export function ContainerCupos() {
-  return (
-    <>
-      <Box display="flex" justifyContent="center" width="100%">
-        <Grid
-          container
-          direction="column"
-          alignItems="center"
-          justifyContent="center"
-          spacing={10}
-          sx={{
-            maxWidth: "100vw", // Máximo ancho relativo al tamaño de la pantalla (90% del ancho de la ventana)
-            minWidth: "100vw", // Mínimo ancho relativo al tamaño de la pantalla (60% del ancho de la ventana)
-            width: "100%",
-          }}
+    const { idCarga } = useParams();
+    const { backendURL } = useContext(ContextoGeneral);
+    const [cupos, setCupos] = useState<any[]>([]);
+
+    useEffect(() => {
+        fetch(
+            `${backendURL}/cargas/${idCarga}/cupos?incluirErrores=true?incluirAnteriores=true`
+        )
+            .then((response) => response.json())
+            .then((cupos) => {
+                setCupos(cupos);
+                console.log(cupos);
+            })
+            .catch(() =>
+                console.error("Error al obtener las cargas disponibles")
+            );
+    }, []);
+
+    return (
+        <Box
+            display="flex"
+            justifyContent="center"
+            width="100%"
+            flexDirection={"column"}
+            gap={"50px"}
+            alignItems={"center"}
         >
-          <Grid>
             <BotonIcon
-              title="Quiero crear un nuevo"
-              icon={<AccessAlarmOutlined />}
+                title="Quiero crear un nuevo"
+                icon={<AccessAlarmOutlined />}
             />
-          </Grid>
-          <Grid
-            container
-            direction="row"
-            alignItems="flex-start"
-            spacing={10}
-            justifyContent="flex-start"
-          >
-            <TarjetaCupos
-              fecha="11 de agosto"
-              cuposDisponibles={5}
-              cuposConfirmados={4}
-            />
-            <Grid container spacing={2}>
-              <TarjetaCupos
-                fecha="11 de agosto"
-                cuposDisponibles={5}
-                cuposConfirmados={4}
-              />
-              <TarjetaCupos
-                fecha="11 de agosto"
-                cuposDisponibles={5}
-                cuposConfirmados={4}
-              />
-              <TarjetaCupos
-                fecha="11 de agosto"
-                cuposDisponibles={5}
-                cuposConfirmados={4}
-              />
-            </Grid>
-          </Grid>
-        </Grid>
-      </Box>
-    </>
-  );
+
+            {cupos.map((cupo) => (
+                <Grid
+                    container
+                    direction="row"
+                    width={"100%"}
+                    spacing={5}
+                    flexWrap={"nowrap"}
+                    marginLeft={"50px"}
+                    alignItems={"center"}
+                >
+                    <TarjetaCupos
+                        fecha={cupo.fecha}
+                        cuposDisponibles={cupo.cupos}
+                        cuposConfirmados={cupo.turnos.length}
+                    />
+
+                    <Grid
+                        container
+                        spacing={5}
+                        flexWrap={"nowrap"}
+                        sx={{ overflowX: "scroll" }}
+                        width={"80%"}
+                        minHeight={"380px"}
+                        alignItems={"center"}
+                        padding={"35px"}
+                    >
+                        {cupo.turnos.map((turno: any) => (
+                            <TarjetaChoferesCarga
+                                titleNombre={turno.nombre}
+                                titleApellido={turno.estado}
+                                textCuil={turno.cuilChofer}
+                                textCelular={turno.errores}
+                                textCuitEmpresa=""
+                                textPatenteCamion={turno.patenteCamion}
+                                textPatenteSemi1=""
+                                textPatenteSemi2=""
+                                imagen=""
+                            />
+                        ))}
+                    </Grid>
+                </Grid>
+            ))}
+        </Box>
+    );
 }

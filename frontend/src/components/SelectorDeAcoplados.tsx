@@ -3,7 +3,7 @@ import { CustomBotonCamion } from "./botones/CustomBotonCamion";
 
 type Props = {};
 
-export default function GridBotonesCamion({}: Props) {
+export default function SelectorDeAcoplados({}: Props) {
   const botonesApretados: string[] = [];
   const titulos = [
     "Batea",
@@ -29,10 +29,10 @@ export default function GridBotonesCamion({}: Props) {
     <Grid
       container
       sx={{
-        maxWidth: 800, // Ancho máximo del Grid
-        margin: "0 auto", // Centra el Grid en el contenedor
-        justifyContent: "center", // Centra el contenido horizontalmente
-        gap: "15px", // Espacio entre los elementos (15px en lugar de 20px)
+        maxWidth: 800,
+        margin: "0 auto",
+        justifyContent: "center",
+        gap: "15px",
       }}
     >
       {titulos.map((titulo, indice) => (

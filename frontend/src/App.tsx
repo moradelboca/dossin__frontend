@@ -6,6 +6,7 @@ import { ContainerCupos } from "./components/ContainerCupos";
 import { CssBaseline } from "@mui/material";
 import Box from "@mui/material/Box";
 import { ContextoGeneral, ValoresContexto } from "./components/Contexto";
+import CrearCargaStepper from "./components/CrearCargaStepper";
 
 function App() {
     return (
@@ -24,11 +25,15 @@ function App() {
                                     path="/cargas"
                                     element={<ContainerCargas />}
                                 />
-                                <Route path="/cargas/:idCarga" element={<ContainerCargas />} />
+                                <Route
+                                    path="/cargas/:idCarga"
+                                    element={<ContainerCargas />}
+                                />
                                 <Route
                                     path="cargas/:idCarga/cupos"
                                     element={<ContainerCupos />}
                                 />
+                                <Route path="cargas/crearCarga" element={<CrearCargaStepper />} />
                             </Routes>
                         </Box>
                     </CssBaseline>

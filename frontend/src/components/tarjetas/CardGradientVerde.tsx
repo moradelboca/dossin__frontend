@@ -6,9 +6,8 @@ import CardActionArea from "@mui/material/CardActionArea";
 import Divider from "@mui/material/Divider";
 import { styled } from "@mui/material/styles";
 import Color from "color"; // v3.2.1
-import { CustomButtom } from "./botones/CustomButtom";
+import { CustomButtom } from "../botones/CustomButtom";
 import { useState } from "react";
-import { CustomBotonCamion } from "./botones/CustomBotonCamion";
 
 const defaultColor = "#d9d9d9"; // Gris claro
 
