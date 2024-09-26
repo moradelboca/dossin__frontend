@@ -6,6 +6,7 @@ import { ContainerCupos } from "./components/ContainerCupos";
 import { CssBaseline } from "@mui/material";
 import Box from "@mui/material/Box";
 import { ContextoGeneral, ValoresContexto } from "./components/Contexto";
+import Automcompletar from "./components/Autocompletar";
 import CrearCargaStepper from "./components/CrearCargaStepper";
 
 function App() {
@@ -15,7 +16,13 @@ function App() {
                 <Box sx={{ display: "flex", height: "100vh", width: "100vw" }}>
                     <CssBaseline>
                         <Nav />
-                        <Box sx={{ marginTop: "85px", overflowX: "hidden" }}>
+                        <Box
+                            sx={{
+                                marginTop: "85px",
+                                overflowX: "hidden",
+                                width: "100%",
+                            }}
+                        >
                             <Routes>
                                 <Route
                                     path="/"

@@ -14,7 +14,7 @@ export function ContainerCupos() {
 
     useEffect(() => {
         fetch(
-            `${backendURL}/cargas/${idCarga}/cupos?incluirErrores=true?incluirAnteriores=true`
+            `${backendURL}/cargas/${idCarga}/cupos?incluirAnteriores=true&incluirErrores=true`
         )
             .then((response) => response.json())
             .then((cupos) => {
@@ -69,13 +69,13 @@ export function ContainerCupos() {
                         {cupo.turnos.map((turno: any) => (
                             <TarjetaChoferesCarga
                                 titleNombre={turno.nombre}
-                                titleApellido={turno.estado}
+                                titleApellido=""
                                 textCuil={turno.cuilChofer}
-                                textCelular={turno.errores}
-                                textCuitEmpresa=""
+                                textCelular={turno.celular}
+                                textCuitEmpresa={turno.cuitEmpresa}
                                 textPatenteCamion={turno.patenteCamion}
-                                textPatenteSemi1=""
-                                textPatenteSemi2=""
+                                textPatenteSemi1={turno.patenteAcoplado}
+                                textPatenteSemi2={turno.patenteAcopladoExtra}
                                 imagen=""
                             />
                         ))}
