@@ -6,7 +6,6 @@ import { ContainerCupos } from "./components/ContainerCupos";
 import { CssBaseline } from "@mui/material";
 import Box from "@mui/material/Box";
 import { ContextoGeneral, ValoresContexto } from "./components/Contexto";
-import Automcompletar from "./components/Autocompletar";
 import CrearCargaStepper from "./components/CrearCargaStepper";
 
 function App() {
