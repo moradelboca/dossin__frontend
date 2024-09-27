@@ -1,5 +1,6 @@
 import Autocompletar from "./Autocompletar";
 import { Box } from "@mui/material";
+import TextField from "@mui/material/TextField";
 
 export default function SelectorTarifa() {
     return (
@@ -13,12 +14,18 @@ export default function SelectorTarifa() {
             >
                 <Box display="column" gap={2}>
                     <>Tarifa</>
-                    <Autocompletar title="ingresar" />
+                    <Box>
+                        <TextField
+                            id="outlined-basic"
+                            label="Ingresar"
+                            variant="outlined"
+                        />
+                    </Box>
                 </Box>
                 <>X</>
                 <Box display="column" gap={2}>
                     <>Unidad</>
-                    <Autocompletar title="Selecciona" />
+                    <Autocompletar info={["asads"]} title="Selecciona" />
                 </Box>
             </Box>
         </>

@@ -13,17 +13,17 @@ export default function SelectorMasInfo() {
             >
                 <Box display="column" gap={2}>
                     <>Kilometros</>
-                    <Autocompletar title="ingresar" />
+                    <Autocompletar info={["asads"]} title="ingresar" />
                 </Box>
                 <>X</>
                 <Box display="column" gap={2}>
                     <>Carga</>
-                    <Autocompletar title="Selecciona" />
+                    <Autocompletar info={["asads"]} title="Selecciona" />
                 </Box>
             </Box>
             <Box display="column" gap={2}>
                 <>Mas Informacion?</>
-                <Autocompletar title="ingresar" />
+                <Autocompletar info={["asads"]} title="ingresar" />
             </Box>
         </>
     );
