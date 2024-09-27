@@ -1,13 +1,16 @@
-import Box from '@mui/material/Box';
-import Stepper from '@mui/material/Stepper';
-import Step from '@mui/material/Step';
-import StepLabel from '@mui/material/StepLabel';
-import StepContent from '@mui/material/StepContent';
-import Button from '@mui/material/Button';
-import Paper from '@mui/material/Paper';
-import Typography from '@mui/material/Typography';
-import SelectorDeAcoplados from './SelectorDeAcoplados';
-import { useState, useEffect } from 'react';
+import Box from "@mui/material/Box";
+import Stepper from "@mui/material/Stepper";
+import Step from "@mui/material/Step";
+import StepLabel from "@mui/material/StepLabel";
+import StepContent from "@mui/material/StepContent";
+import Button from "@mui/material/Button";
+import Paper from "@mui/material/Paper";
+import Typography from "@mui/material/Typography";
+import SelectorDeAcoplados from "./SelectorDeAcoplados";
+import SelectorDeUbicacion from "./SelectorDeUbicacion";
+import { useState, useEffect } from "react";
+import SelectorTarifa from "./SelectorTarifa";
+import SelectorMasInfo from "./SelectorMasInfo";
 
 export default function CrearCargaStepper() {
     const [pasoActivo, setPasoActivo] = useState(0);
@@ -16,6 +19,18 @@ export default function CrearCargaStepper() {
         {
             titulo: "Seleccionar acoplados permitidos",
             componente: <SelectorDeAcoplados />,
+        },
+        {
+            titulo: "Seleccionar ubicacion y horarios",
+            componente: <SelectorDeUbicacion />,
+        },
+        {
+            titulo: "Seleccionar tarifa",
+            componente: <SelectorTarifa />,
+        },
+        {
+            titulo: "Mas informacion",
+            componente: <SelectorMasInfo />,
         },
     ];
 
@@ -56,4 +71,5 @@ export default function CrearCargaStepper() {
                 </Step>
             ))}
         </Stepper>
-    )}
+    );
+}

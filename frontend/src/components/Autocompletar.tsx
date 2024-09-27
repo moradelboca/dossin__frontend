@@ -1,15 +1,18 @@
-import * as React from "react";
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
-import { AlarmAddSharp } from "@mui/icons-material";
 
-export default function ComboBox() {
+interface AutocompletarProps {
+    title: string;
+}
+
+export default function Autocompletar(props: AutocompletarProps) {
+    const { title } = props;
     return (
         <Autocomplete
             disablePortal
-            options={["asdasdsda"]}
+            options={["asdasd", "asdasd"]}
             sx={{ width: 300 }}
-            renderInput={(params) => <TextField {...params} label="Movie" />}
+            renderInput={(params) => <TextField {...params} label={title} />}
         />
     );
 }

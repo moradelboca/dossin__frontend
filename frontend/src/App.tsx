@@ -39,7 +39,10 @@ function App() {
                                     path="cargas/:idCarga/cupos"
                                     element={<ContainerCupos />}
                                 />
-                                <Route path="cargas/crearCarga" element={<CrearCargaStepper />} />
+                                <Route
+                                    path="cargas/crearCarga"
+                                    element={<CrearCargaStepper />}
+                                />
                             </Routes>
                         </Box>
                     </CssBaseline>
