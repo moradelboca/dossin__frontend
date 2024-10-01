@@ -1,17 +1,22 @@
 import Autocompletar from "./Autocompletar";
 import { Box } from "@mui/material";
-import Reloj2 from "./Relo2";
+import Reloj from "./Reloj";
 import { useState, useEffect, useContext } from "react";
 import { ContextoGeneral } from "./Contexto";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
 
-export default function SelectorDeUbicacion() {
+interface props {
+    ubicacionCarga: (id: number) => void;
+    ubicacionDescarga: (id: number) => void;
+    ubicacionBalanza: (id: number) => void;
+}
+
+export default function SelectorDeUbicacion(selectorProps: props) {
+    const { ubicacionCarga, ubicacionDescarga, ubicacionBalanza } =
+        selectorProps;
     const { backendURL } = useContext(ContextoGeneral);
     const [ubicaciones, setUbicaciones] = useState<any[]>([]);
-    let ubicacionCargaStrings: string[];
-    let ubicacionDescargaStrings: string[];
-    let ubicacionBalanzaStrings: string[];
     const [requiereBalanza, setRequiereBalanza] = useState<boolean>(false); // Estado para el checkbox
 
     useEffect(() => {
@@ -22,44 +27,36 @@ export default function SelectorDeUbicacion() {
                 console.error("Error al obtener las Ubicaciones disponibles")
             );
     }, []);
-    ubicacionCargaStrings = ubicaciones
-        .filter((ubicacion) => ubicacion.tipoUbicacion == "Carga")
-        .map((ubicacion) => {
-            return `${ubicacion.nombre}, ${ubicacion.provincia}, ${ubicacion.pais}`;
-        });
-    ubicacionDescargaStrings = ubicaciones
-        .filter((ubicacion) => ubicacion.tipoUbicacion == "Descarga")
-        .map((ubicacion) => {
-            return `${ubicacion.nombre}, ${ubicacion.provincia}, ${ubicacion.pais}`;
-        });
-    ubicacionBalanzaStrings = ubicaciones
-        .filter((ubicacion) => ubicacion.tipoUbicacion == "Balanza")
-        .map((ubicacion) => {
-            return `${ubicacion.nombre}, ${ubicacion.provincia}, ${ubicacion.pais}`;
-        });
 
     return (
         <>
-            <Box display="column" flexDirection="row" gap={2}>
+            <Box display="column" flexDirection="row" gap={2} width={"800px"}>
                 <Box display="flex" flexDirection="row" gap={2}>
                     <Box
                         display="column"
                         flexDirection="row"
                         gap={2}
                         alignItems={"center"}
+                        sx={{
+                            border: "1px solid rgba(22, 54, 96, 0.6)",
+                            borderRadius: "8px",
+                            padding: "16px",
+                        }}
                     >
                         <Autocompletar
-                            info={ubicacionCargaStrings}
-                            title="Desde"
+                            datos={ubicaciones}
+                            title="Ubicación de Carga"
+                            filtro="Carga"
+                            ubicacion={ubicacionCarga}
                         />
                         <Box display="flex" flexDirection="row" gap={2}>
                             <Box display="column" gap={2}>
                                 <>Inicio</>
-                                <Reloj2 />
+                                <Reloj />
                             </Box>
                             <Box display="column">
                                 <>Fin</>
-                                <Reloj2 />
+                                <Reloj />
                             </Box>
                         </Box>
                     </Box>
@@ -68,19 +65,26 @@ export default function SelectorDeUbicacion() {
                         flexDirection="row"
                         gap={2}
                         alignItems={"center"}
+                        sx={{
+                            border: "1px solid rgba(22, 54, 96, 0.6)",
+                            borderRadius: "8px",
+                            padding: "16px",
+                        }}
                     >
                         <Autocompletar
-                            info={ubicacionDescargaStrings}
-                            title="A"
+                            datos={ubicaciones}
+                            title="Ubicación de Descarga"
+                            filtro="Descarga"
+                            ubicacion={ubicacionDescarga}
                         />
                         <Box display="flex" flexDirection="row" gap={2}>
                             <Box display="column">
                                 <>Inicio</>
-                                <Reloj2 />
+                                <Reloj />
                             </Box>
                             <Box display="column">
                                 <>Fin</>
-                                <Reloj2 />
+                                <Reloj />
                             </Box>
                         </Box>
                     </Box>
@@ -92,6 +96,12 @@ export default function SelectorDeUbicacion() {
                             onChange={(e) =>
                                 setRequiereBalanza(e.target.checked)
                             }
+                            sx={{
+                                color: "#163660", // Color por defecto
+                                "&.Mui-checked": {
+                                    color: "#163660", // Color cuando está seleccionado
+                                },
+                            }}
                         />
                     }
                     label="Requiere balanza?"
@@ -102,20 +112,28 @@ export default function SelectorDeUbicacion() {
                         display="column"
                         flexDirection="row"
                         gap={2}
+                        width={"335px"}
                         alignItems={"center"}
+                        sx={{
+                            border: "1px solid rgba(22, 54, 96, 0.6)",
+                            borderRadius: "8px",
+                            padding: "16px",
+                        }}
                     >
                         <Autocompletar
-                            info={ubicacionBalanzaStrings}
-                            title="Ubicación balanza"
+                            datos={ubicaciones}
+                            title="Ubicación de Balanza"
+                            filtro="Balanza"
+                            ubicacion={ubicacionBalanza}
                         />
                         <Box display="flex" flexDirection="row" gap={2}>
                             <Box display="column">
                                 <>Inicio</>
-                                <Reloj2 />
+                                <Reloj />
                             </Box>
                             <Box display="column">
                                 <>Fin</>
-                                <Reloj2 />
+                                <Reloj />
                             </Box>
                         </Box>
                     </Box>
