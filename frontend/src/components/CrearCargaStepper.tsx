@@ -9,52 +9,89 @@ import SelectorDeUbicacion from "./SelectorDeUbicacion";
 import { useEffect, useState } from "react";
 import SelectorTarifa from "./SelectorTarifa";
 import SelectorMasInfo from "./SelectorMasInfo";
+import SelectorProveedor from "./SelectorProveedor";
+import { Typography } from "@mui/material";
 
 export default function CrearCargaStepper() {
-    const tiposAcopladosSeleccionados: string[] = [];
-    let ubicacionCarga = (id: number) => {
-        console.log("ID de ubicación seleccionada Carga:", id);
-        // Aquí puedes hacer cualquier otra cosa con el valor del ID de la ubicación, como guardarlo en una variable o realizar una acción.
-    };
-    let ubicacionDescarga = (id: number) => {
-        console.log("ID de ubicación seleccionada Descarga:", id);
-        // Aquí puedes hacer cualquier otra cosa con el valor del ID de la ubicación, como guardarlo en una variable o realizar una acción.
-    };
-    let ubicacionBalanza = (id: number) => {
-        console.log("ID de ubicación seleccionada Balanza:", id);
-        // Aquí puedes hacer cualquier otra cosa con el valor del ID de la ubicación, como guardarlo en una variable o realizar una acción.
-    };
+    const [datosNuevaCarga, setDatosNuevaCarga] = useState<any>({});
+    const [datosSinCompletar, setDatosSinCompletar] = useState(false);
     const [pasoActivo, setPasoActivo] = useState(0);
     const pasos = [
         {
-            titulo: "Seleccionar acoplados permitidos",
-            componente: (
-                <SelectorDeAcoplados
-                    tiposAcopladosSeleccionados={tiposAcopladosSeleccionados}
-                />
-            ),
+            titulo: "Seleccionar Proveedor",
+            componente: <SelectorProveedor datosNuevaCarga={datosNuevaCarga} />,
         },
         {
             titulo: "Seleccionar ubicacion y horarios",
             componente: (
-                <SelectorDeUbicacion
-                    ubicacionCarga={ubicacionCarga}
-                    ubicacionDescarga={ubicacionDescarga}
-                    ubicacionBalanza={ubicacionBalanza}
-                />
+                <SelectorDeUbicacion datosNuevaCarga={datosNuevaCarga} />
+            ),
+        },
+        {
+            titulo: "Seleccionar acoplados permitidos",
+            componente: (
+                <SelectorDeAcoplados datosNuevaCarga={datosNuevaCarga} />
             ),
         },
         {
             titulo: "Seleccionar tarifa",
-            componente: <SelectorTarifa />,
+            componente: <SelectorTarifa datosNuevaCarga={datosNuevaCarga} />,
         },
         {
             titulo: "Mas informacion",
-            componente: <SelectorMasInfo />,
+            componente: <SelectorMasInfo datosNuevaCarga={datosNuevaCarga} />,
         },
     ];
 
     const handleProximoPaso = () => {
+        switch (pasoActivo) {
+            case 0:
+                if (
+                    !datosNuevaCarga["idProveedor"] ||
+                    !datosNuevaCarga["cantidadKm"] ||
+                    !datosNuevaCarga["idCargamento"]
+                ) {
+                    setDatosSinCompletar(true);
+                    return;
+                }
+                break;
+            case 1:
+                if (
+                    !datosNuevaCarga["idUbicacionCarga"] ||
+                    !datosNuevaCarga["idUbicacionDescarga"] ||
+                    !datosNuevaCarga["horaInicioCarga"] ||
+                    !datosNuevaCarga["horaFinCarga"] ||
+                    !datosNuevaCarga["horaInicioDescarga"] ||
+                    !datosNuevaCarga["horaFinDescarga"]
+                ) {
+                    setDatosSinCompletar(true);
+                    return;
+                } else {
+                    if (
+                        (datosNuevaCarga["idUbicacionBalanza"] ||
+                            datosNuevaCarga["horaInicioBalanza"] ||
+                            datosNuevaCarga["horaFinBalanza"]) &&
+                        (!datosNuevaCarga["idUbicacionBalanza"] ||
+                            !datosNuevaCarga["horaInicioBalanza"] ||
+                            !datosNuevaCarga["horaFinBalanza"])
+                    ) {
+                        setDatosSinCompletar(true);
+                        return;
+                    }
+                }
+                setDatosSinCompletar(true);
+                break;
+            case 3:
+                if (
+                    !datosNuevaCarga["idTipoTarifa"] ||
+                    !datosNuevaCarga["tarifa"]
+                ) {
+                    setDatosSinCompletar(true);
+                    return;
+                }
+                break;
+        }
+        setDatosSinCompletar(false);
         setPasoActivo((prevActiveStep) => prevActiveStep + 1);
     };
 
@@ -74,7 +111,7 @@ export default function CrearCargaStepper() {
                 {pasos.map((paso, indice) => (
                     <Step key={paso.titulo}>
                         <StepLabel
-                            StepIconComponent={({ active, completed }) => (
+                            StepIconComponent={({ completed }) => (
                                 <Box
                                     sx={{
                                         backgroundColor: "#163660",
@@ -99,6 +136,11 @@ export default function CrearCargaStepper() {
                         <StepContent>
                             <Box sx={{ mb: 2 }}>
                                 {paso.componente}
+                                {datosSinCompletar ? (
+                                    <Typography color="#ff3333">
+                                        Hay campos sin completar!
+                                    </Typography>
+                                ) : null}
                                 <Button
                                     variant="contained"
                                     onClick={handleProximoPaso}

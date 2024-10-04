@@ -1,20 +1,17 @@
-import Autocompletar from "./Autocompletar";
 import { Box } from "@mui/material";
 import Reloj from "./Reloj";
 import { useState, useEffect, useContext } from "react";
 import { ContextoGeneral } from "./Contexto";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
+import AutocompletarUbicacion from "./AutocompletarUbicacion";
 
 interface props {
-    ubicacionCarga: (id: number) => void;
-    ubicacionDescarga: (id: number) => void;
-    ubicacionBalanza: (id: number) => void;
+    datosNuevaCarga: {};
 }
 
 export default function SelectorDeUbicacion(selectorProps: props) {
-    const { ubicacionCarga, ubicacionDescarga, ubicacionBalanza } =
-        selectorProps;
+    let { datosNuevaCarga } = selectorProps;
     const { backendURL } = useContext(ContextoGeneral);
     const [ubicaciones, setUbicaciones] = useState<any[]>([]);
     const [requiereBalanza, setRequiereBalanza] = useState<boolean>(false); // Estado para el checkbox
@@ -43,20 +40,26 @@ export default function SelectorDeUbicacion(selectorProps: props) {
                             padding: "16px",
                         }}
                     >
-                        <Autocompletar
+                        <AutocompletarUbicacion
                             datos={ubicaciones}
                             title="Ubicación de Carga"
                             filtro="Carga"
-                            ubicacion={ubicacionCarga}
+                            datosNuevaCarga={datosNuevaCarga}
                         />
                         <Box display="flex" flexDirection="row" gap={2}>
                             <Box display="column" gap={2}>
                                 <>Inicio</>
-                                <Reloj />
+                                <Reloj
+                                    filtro="horaInicioCarga"
+                                    datosNuevaCarga={datosNuevaCarga}
+                                />
                             </Box>
                             <Box display="column">
                                 <>Fin</>
-                                <Reloj />
+                                <Reloj
+                                    filtro="horaFinCarga"
+                                    datosNuevaCarga={datosNuevaCarga}
+                                />
                             </Box>
                         </Box>
                     </Box>
@@ -71,20 +74,26 @@ export default function SelectorDeUbicacion(selectorProps: props) {
                             padding: "16px",
                         }}
                     >
-                        <Autocompletar
+                        <AutocompletarUbicacion
                             datos={ubicaciones}
                             title="Ubicación de Descarga"
                             filtro="Descarga"
-                            ubicacion={ubicacionDescarga}
+                            datosNuevaCarga={datosNuevaCarga}
                         />
                         <Box display="flex" flexDirection="row" gap={2}>
                             <Box display="column">
                                 <>Inicio</>
-                                <Reloj />
+                                <Reloj
+                                    filtro="horaInicioDescarga"
+                                    datosNuevaCarga={datosNuevaCarga}
+                                />
                             </Box>
                             <Box display="column">
                                 <>Fin</>
-                                <Reloj />
+                                <Reloj
+                                    filtro="horaFinDescarga"
+                                    datosNuevaCarga={datosNuevaCarga}
+                                />
                             </Box>
                         </Box>
                     </Box>
@@ -120,20 +129,26 @@ export default function SelectorDeUbicacion(selectorProps: props) {
                             padding: "16px",
                         }}
                     >
-                        <Autocompletar
+                        <AutocompletarUbicacion
                             datos={ubicaciones}
                             title="Ubicación de Balanza"
                             filtro="Balanza"
-                            ubicacion={ubicacionBalanza}
+                            datosNuevaCarga={datosNuevaCarga}
                         />
                         <Box display="flex" flexDirection="row" gap={2}>
                             <Box display="column">
                                 <>Inicio</>
-                                <Reloj />
+                                <Reloj
+                                    filtro="horaInicioBalanza"
+                                    datosNuevaCarga={datosNuevaCarga}
+                                />
                             </Box>
                             <Box display="column">
                                 <>Fin</>
-                                <Reloj />
+                                <Reloj
+                                    filtro="horaFinBalanza"
+                                    datosNuevaCarga={datosNuevaCarga}
+                                />
                             </Box>
                         </Box>
                     </Box>
