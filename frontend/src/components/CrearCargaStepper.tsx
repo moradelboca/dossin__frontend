@@ -6,7 +6,7 @@ import StepContent from "@mui/material/StepContent";
 import Button from "@mui/material/Button";
 import SelectorDeAcoplados from "./SelectorDeAcoplados";
 import SelectorDeUbicacion from "./SelectorDeUbicacion";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import SelectorTarifa from "./SelectorTarifa";
 import SelectorMasInfo from "./SelectorMasInfo";
 import SelectorProveedor from "./SelectorProveedor";
@@ -21,7 +21,6 @@ export default function CrearCargaStepper() {
             titulo: "Seleccionar Proveedor",
             componente: <SelectorProveedor datosNuevaCarga={datosNuevaCarga} />,
         },
-
         {
             titulo: "Seleccionar ubicacion y horarios",
             componente: (
