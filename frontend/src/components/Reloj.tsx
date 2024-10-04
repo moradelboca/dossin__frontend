@@ -5,11 +5,21 @@ import { MobileTimePicker } from "@mui/x-date-pickers/MobileTimePicker";
 import { useState } from "react";
 import { Box } from "@mui/material";
 
-export default function Reloj() {
-    const [horarioSeleccionado, setHorarioSeleccionado] = useState(dayjs());
+interface props {
+    filtro: any;
+    datosNuevaCarga: any;
+}
+
+export default function Reloj(props: props) {
+    let { filtro, datosNuevaCarga } = props;
+    const [horarioSeleccionado, setHorarioSeleccionado] =
+        useState<dayjs.Dayjs | null>(null);
 
     const manejarTiempo = (newValue: any) => {
         setHorarioSeleccionado(newValue);
+        if (newValue != null) {
+            datosNuevaCarga[filtro] = newValue.format("HH:mm");
+        }
     };
 
     return (

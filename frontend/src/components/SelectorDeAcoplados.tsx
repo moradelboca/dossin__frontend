@@ -1,22 +1,41 @@
 import { Grid2 as Grid } from "@mui/material";
 import { CustomBotonCamion } from "./botones/CustomBotonCamion";
+import { useState, useEffect, useContext } from "react";
+import { ContextoGeneral } from "./Contexto";
 
 interface props {
-    tiposAcopladosSeleccionados: string[];
+    datosNuevaCarga: any;
 }
 
 export default function SelectorDeAcoplados(selectorProps: props) {
-    const { tiposAcopladosSeleccionados } = selectorProps;
-    const titulos = [
-        "Batea",
-        "Semirremolque",
-        "Sider",
-        "Equipo",
-        "Tolva",
-        "Bitren",
-        "Carreton",
-        "Porta-Cont",
-    ];
+    const { datosNuevaCarga } = selectorProps;
+    const { backendURL } = useContext(ContextoGeneral);
+    const [tiposAcoplados, setTiposAcoplados] = useState<any[]>([]);
+    const tiposAcopladosSeleccionados: number[] = [];
+    let tiposAcopladosStrings: string[];
+
+    useEffect(() => {
+        return () => {
+            datosNuevaCarga["idsAcopladosPermitidos"] = tiposAcopladosIds;
+        };
+    }, []);
+
+    useEffect(() => {
+        fetch(`${backendURL}/tiposacoplados`)
+            .then((response) => response.json())
+            .then((tiposAcoplados) => setTiposAcoplados(tiposAcoplados))
+            .catch(() =>
+                console.error("Error al obtener las tiposAcoplados disponibles")
+            );
+    }, [backendURL]);
+
+    tiposAcopladosStrings = tiposAcoplados.map((tipoAcoplado) => {
+        return `${tipoAcoplado.nombre}`;
+    });
+    const tiposAcopladosIds = tiposAcoplados.map(
+        (tipoAcoplado) => tipoAcoplado.id
+    );
+
     const imagenes = [
         "https://i.imgur.com/KmmClLu.png",
         "https://i.imgur.com/fUnL2CF.png",
@@ -36,12 +55,13 @@ export default function SelectorDeAcoplados(selectorProps: props) {
                 gap: "15px",
             }}
         >
-            {titulos.map((titulo, indice) => (
+            {tiposAcopladosStrings.map((tipoAcoplado, indice) => (
                 <CustomBotonCamion
-                    key={titulo}
+                    key={tipoAcoplado}
                     imageSrc={imagenes[indice]}
-                    title={titulo}
+                    title={tipoAcoplado}
                     array={tiposAcopladosSeleccionados}
+                    id={indice + 1} // Pasamos el `id` que comienza en 1
                 />
             ))}
         </Grid>

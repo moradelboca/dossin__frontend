@@ -4,12 +4,12 @@ import Autocomplete from "@mui/material/Autocomplete";
 interface AutocompletarProps {
     title: string;
     datos: any[];
-    filtro?: string;
-    ubicacion: (id: number) => void;
+    filtro: string;
+    datosNuevaCarga: any;
 }
 
-export default function Autocompletar(props: AutocompletarProps) {
-    const { title, datos, filtro, ubicacion } = props;
+export default function AutocompletarUbicacion(props: AutocompletarProps) {
+    let { title, datos, filtro, datosNuevaCarga } = props;
     let ubicacionStrings = datos
         .filter((ubicacion) => ubicacion.tipoUbicacion === filtro)
         .map((ubicacion) => {
@@ -23,10 +23,8 @@ export default function Autocompletar(props: AutocompletarProps) {
 
     const seleccionarId = (e: any) => {
         if (e.target.value != undefined) {
-            console.log(datos);
-            console.log(ubicacionIds);
-            console.log(ubicacionIds[e.target.value]);
-            ubicacion(ubicacionIds[e.target.value]);
+            datosNuevaCarga["idUbicacion" + filtro] =
+                ubicacionIds[e.target.value];
         }
     };
 
