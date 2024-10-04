@@ -58,11 +58,9 @@ export function CarouselCargas() {
 
     useEffect(() => {
         fetch(`${backendURL}/cargas?incluirAnteriores=true`)
-            .then((response) => response.json())
-            .then((cargas) => setCargas(cargas))
-            .catch(() =>
-                console.error("Error al obtener las cargas disponibles")
-            );
+            .then((res) => res.json())
+            .then((data) => { setCargas(data) })
+            .catch(() => {console.error("Error al obtener las cargas") });
     }, []);
 
     return (
@@ -99,7 +97,8 @@ export function CarouselCargas() {
                         incluyeIVA={carga.incluyeIVA}
                         horaCarga={carga.horaCarga}
                         horaDescarga={carga.horaDescarga}
-                        imagen="https://images.pexels.com/photos/20787/pexels-photo.jpg?auto=compress&cs=tinysrgb&h=350"
+                        latitudCarga={carga.latitudCarga}
+                        longitudCarga={carga.longitudCarga}
                     />
                 ))}
             </Carousel>
