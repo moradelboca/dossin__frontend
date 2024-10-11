@@ -1,10 +1,11 @@
 import { Box } from "@mui/material";
-import Reloj from "./Reloj";
+import Reloj from "../Reloj";
 import { useState, useEffect, useContext } from "react";
-import { ContextoGeneral } from "./Contexto";
+import { ContextoGeneral } from "../Contexto";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
-import AutocompletarUbicacion from "./AutocompletarUbicacion";
+import AutocompletarUbicacion from "../autocompletar/AutocompletarUbicacion";
+import Typography from "@mui/material";
 
 interface props {
     datosNuevaCarga: {};

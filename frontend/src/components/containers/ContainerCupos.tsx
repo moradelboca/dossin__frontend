@@ -1,11 +1,18 @@
-import { Box, Grid2 as Grid } from "@mui/material";
-import { BotonIcon } from "./botones/IconButton";
+import {
+    Box,
+    Dialog,
+    DialogContent,
+    DialogTitle,
+    Grid2 as Grid,
+} from "@mui/material";
+import { BotonIcon } from "../botones/IconButton";
 import { AccessAlarmOutlined } from "@mui/icons-material";
-import { TarjetaCupos } from "./tarjetas/TarjetaCupos";
-import { TarjetaChoferesCarga } from "./tarjetas/CardGradientVerde";
+import { TarjetaCupos } from "../tarjetas/TarjetaCupos";
+import { TarjetaChoferesCarga } from "../tarjetas/CardGradientVerde";
 import { useEffect, useContext, useState } from "react";
-import { ContextoGeneral } from "./Contexto";
+import { ContextoGeneral } from "../Contexto";
 import { useParams } from "react-router-dom";
+import { CreadorCupos } from "../tarjetas/CreadorCupos";
 
 export function ContainerCupos() {
     const { idCarga } = useParams();
@@ -25,7 +32,18 @@ export function ContainerCupos() {
                 console.error("Error al obtener las cargas disponibles")
             );
     }, []);
+    // Estado para controlar el Dialog
+    const [openDialog, setOpenDialog] = useState(false);
 
+    // Función para abrir el Dialog
+    const handleClickCrearCupo = () => {
+        setOpenDialog(true);
+    };
+
+    // Función para cerrar el Dialog
+    const handleCloseDialog = () => {
+        setOpenDialog(false);
+    };
     return (
         <Box
             display="flex"
@@ -36,7 +54,8 @@ export function ContainerCupos() {
             alignItems={"center"}
         >
             <BotonIcon
-                title="Quiero crear un nuevo"
+                onClick={handleClickCrearCupo}
+                title="Quiero crear un nuevo cupo"
                 icon={<AccessAlarmOutlined />}
             />
 
@@ -82,6 +101,30 @@ export function ContainerCupos() {
                     </Grid>
                 </Grid>
             ))}
+            <Dialog
+                open={openDialog}
+                onClose={handleCloseDialog}
+                fullWidth
+                maxWidth="sm" // Puedes ajustar el tamaño según lo necesites
+            >
+                <DialogTitle sx={{ textAlign: "center" }}>
+                    Crear un nuevo cupo
+                </DialogTitle>
+                <DialogContent>
+                    <Box
+                        sx={{
+                            display: "flex",
+                            justifyContent: "center", // Centra horizontalmente
+                            alignItems: "center", // Centra verticalmente
+                            flexDirection: "column", // Asegura que los elementos se alineen en columna
+                            height: "100%", // Asegura que tome el 100% del alto disponible
+                            padding: "16px", // Espacio interno
+                        }}
+                    >
+                        <CreadorCupos datosNuevaCarga={undefined} />
+                    </Box>
+                </DialogContent>
+            </Dialog>
         </Box>
     );
 }

@@ -39,13 +39,10 @@ export function CustomBotonCamion(props: CustomButtomProps) {
     // Alternar el estado cuando se hace clic
     function handleClick() {
         setIsPressed(!isPressed); // Alterna entre true y false
-
-        const acopladoId = id; // Usar el id pasado por props en lugar de un index
-
         if (!isPressed) {
-            array.push(parseInt(acopladoId)); // Guarda el ID del acoplado
+            array.push(parseInt(id)); // Guarda el ID del acoplado
         } else {
-            const pos = array.indexOf(acopladoId);
+            const pos = array.indexOf(id);
             if (pos !== -1) {
                 array.splice(pos, 1); // Elimina el ID si ya está seleccionado
             }

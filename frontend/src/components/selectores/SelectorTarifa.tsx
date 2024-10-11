@@ -1,14 +1,48 @@
 import { Box } from "@mui/material";
 import TextField from "@mui/material/TextField";
 import { useState, useEffect, useContext } from "react";
-import { ContextoGeneral } from "./Contexto";
+import { ContextoGeneral } from "../Contexto";
 import Autocomplete from "@mui/material/Autocomplete";
 import Checkbox from "@mui/material/Checkbox";
 import FormControlLabel from "@mui/material/FormControlLabel";
+import { NumericFormat, NumericFormatProps } from "react-number-format";
+import React from "react";
+import Stack from "@mui/material/Stack";
 
 interface props {
     datosNuevaCarga: any;
 }
+interface CustomProps {
+    onChange: (event: { target: { name: string; value: string } }) => void;
+    name: string;
+}
+const NumericFormatCustom = React.forwardRef<NumericFormatProps, CustomProps>(
+    function NumericFormatCustom(props, ref) {
+        const { onChange, ...other } = props;
+
+        return (
+            <NumericFormat
+                {...other}
+                getInputRef={ref}
+                onValueChange={(values) => {
+                    // Verificar si el valor es negativo
+                    if (Number(values.value) < 0) {
+                        return; // No hacer nada si el valor es negativo
+                    }
+                    onChange({
+                        target: {
+                            name: props.name,
+                            value: values.value,
+                        },
+                    });
+                }}
+                thousandSeparator
+                valueIsNumericString
+                prefix="$"
+            />
+        );
+    }
+);
 
 export default function SelectorTarifa(selectorProps: props) {
     let { datosNuevaCarga } = selectorProps;
@@ -39,9 +73,25 @@ export default function SelectorTarifa(selectorProps: props) {
             datosNuevaCarga["idTipoTarifa"] = unidadesIds[index];
         }
     };
-    const seleccionarTarifa = (e: any) => {
-        datosNuevaCarga["tarifa"] = parseInt(e.target.value);
+    const seleccionarTarifa = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const tarifa = Number(event.target.value);
+
+        // Si la tarifa es menor o igual a 10 millones, se guarda.
+        if (tarifa <= 10000000) {
+            datosNuevaCarga["tarifa"] = tarifa;
+            setValues({
+                ...values,
+                [event.target.name]: event.target.value,
+            });
+        } else {
+            // Si la tarifa es mayor a 10 millones, no se guarda nada y se limpia el campo.
+            datosNuevaCarga["tarifa"] = null;
+        }
     };
+
+    const [values, setValues] = React.useState({
+        numberformat: "",
+    });
 
     return (
         <Box display="flex" flexDirection="column">
@@ -54,18 +104,23 @@ export default function SelectorTarifa(selectorProps: props) {
                 width={"800px"}
             >
                 <Box display="column" gap={2}>
-                    <Box>
-                        <TextField
-                            id="outlined-basic"
-                            label="Tarifa"
-                            variant="outlined"
-                            type="number" // Solo permite números
-                            inputProps={{
-                                inputMode: "numeric", // Teclado numérico en móviles
-                                pattern: "[0-9]*", // Acepta solo dígitos
-                            }}
-                            onChange={seleccionarTarifa} // Actualizar el valor de la tarifa
-                        />
+                    <Box display="column" gap={2}>
+                        <Stack direction="row" spacing={2}>
+                            <TextField
+                                label="Tarifa"
+                                value={values.numberformat}
+                                onChange={seleccionarTarifa}
+                                name="numberformat"
+                                id="formatted-numberformat-input"
+                                slotProps={{
+                                    input: {
+                                        inputComponent:
+                                            NumericFormatCustom as any,
+                                    },
+                                }}
+                                variant="outlined"
+                            />
+                        </Stack>
                     </Box>
                 </Box>
                 <>X</>

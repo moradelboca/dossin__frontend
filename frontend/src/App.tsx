@@ -1,14 +1,25 @@
-import { ContainerCargas } from "./components/ContainerCargas";
+import { ContainerCargas } from "./components/containers/ContainerCargas";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Nav } from "./components/nav/Nav";
-import ContainerInconvenientes from "./components/ContainerInconvenientes";
-import { ContainerCupos } from "./components/ContainerCupos";
+import ContainerInconvenientes from "./components/containers/ContainerInconvenientes";
+import { ContainerCupos } from "./components/containers/ContainerCupos";
 import { CssBaseline } from "@mui/material";
 import Box from "@mui/material/Box";
 import { ContextoGeneral, ValoresContexto } from "./components/Contexto";
-import CrearCargaStepper from "./components/CrearCargaStepper";
+import { CreadorCupos } from "./components/tarjetas/CreadorCupos";
+import { useState, useContext } from "react";
+import { CreadorTurno } from "./components/tarjetas/CreadorTurno";
+import Empresas from "./components/tablas/Empresas";
+import Choferes from "./components/tablas/Choferes";
+import TabCamiones from "./components/tablas/tabCamiones";
 
 function App() {
+    const [datosNuevaCarga, setDatosNuevaCarga] = useState<any>({});
+    const [datosSinCompletar, setDatosSinCompletar] = useState(false);
+    const [horarioIncorrecto, setHorarioIncorrecto] = useState(false);
+    const [pasoActivo, setPasoActivo] = useState(0);
+
+    const { backendURL } = useContext(ContextoGeneral);
     return (
         <BrowserRouter>
             <ContextoGeneral.Provider value={ValoresContexto}>
@@ -25,7 +36,11 @@ function App() {
                             <Routes>
                                 <Route
                                     path="/"
-                                    element={<ContainerInconvenientes />}
+                                    element={
+                                        <CreadorTurno
+                                            datosNuevaCarga={datosNuevaCarga}
+                                        />
+                                    }
                                 />
                                 <Route
                                     path="/cargas"
@@ -40,8 +55,20 @@ function App() {
                                     element={<ContainerCupos />}
                                 />
                                 <Route
-                                    path="cargas/crearCarga"
-                                    element={<CrearCargaStepper />}
+                                    path="/choferes"
+                                    element={<Choferes />}
+                                />
+                                <Route
+                                    path="/empresas"
+                                    element={<Empresas />}
+                                />
+                                <Route
+                                    path="/camiones"
+                                    element={<TabCamiones />}
+                                />
+                                <Route
+                                    path="/inconvenientes"
+                                    element={<ContainerInconvenientes />}
                                 />
                             </Routes>
                         </Box>
@@ -58,7 +85,7 @@ function App() {
                 src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
                 integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
                 crossOrigin="anonymous"
-            ></script> 
+            ></script>
         </BrowserRouter>
     );
 }

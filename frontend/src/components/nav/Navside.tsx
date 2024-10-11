@@ -5,9 +5,10 @@ import List from "@mui/material/List";
 import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
+import { ErrorOutline } from "@mui/icons-material";
+import { ViewInAr } from "@mui/icons-material";
+import { GridView } from "@mui/icons-material";
 import {
-    DashboardOutlined,
-    AddToPhotosOutlined,
     GroupsOutlined,
     AddLocationAltOutlined,
     DomainAddOutlined,
@@ -55,21 +56,36 @@ export default function Navside(navSideProps: NavsideProps) {
 
     const listasDeNavegacion = [
         ["Home"],
-        ["Cargas", "Choferes", "Ubicaciones", "Empresas", "Camiones"],
+        [
+            "Cargas",
+            "Choferes",
+            "Ubicaciones",
+            "Empresas",
+            "Camiones",
+            "Inconvenientes",
+        ],
     ];
     const listasDeIconos = [
-        [<DashboardOutlined />],
+        [<GridView />],
         [
-            <AddToPhotosOutlined />,
+            <ViewInAr />,
             <GroupsOutlined />,
             <AddLocationAltOutlined />,
             <DomainAddOutlined />,
             <LocalShippingOutlined />,
+            <ErrorOutline />,
         ],
     ];
     const listasDeRutas = [
         ["/"],
-        ["/cargas", "/choferes", "/ubicaciones", "/empresas", "/camiones"],
+        [
+            "/cargas",
+            "/choferes",
+            "/ubicaciones",
+            "/empresas",
+            "/camiones",
+            "/inconvenientes",
+        ],
     ];
 
     return (

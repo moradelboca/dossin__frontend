@@ -4,18 +4,23 @@ import Step from "@mui/material/Step";
 import StepLabel from "@mui/material/StepLabel";
 import StepContent from "@mui/material/StepContent";
 import Button from "@mui/material/Button";
-import SelectorDeAcoplados from "./SelectorDeAcoplados";
-import SelectorDeUbicacion from "./SelectorDeUbicacion";
-import { useEffect, useState } from "react";
-import SelectorTarifa from "./SelectorTarifa";
-import SelectorMasInfo from "./SelectorMasInfo";
-import SelectorProveedor from "./SelectorProveedor";
+import SelectorDeAcoplados from "../selectores/SelectorDeAcoplados";
+import SelectorDeUbicacion from "../selectores/SelectorDeUbicacion";
+import { useEffect, useState, useContext } from "react";
+import SelectorTarifa from "../selectores/SelectorTarifa";
+import SelectorMasInfo from "../selectores/SelectorMasInfo";
+import SelectorProveedor from "../selectores/SelectorProveedor";
 import { Typography } from "@mui/material";
+import { ContextoGeneral } from "../Contexto";
 
 export default function CrearCargaStepper() {
     const [datosNuevaCarga, setDatosNuevaCarga] = useState<any>({});
     const [datosSinCompletar, setDatosSinCompletar] = useState(false);
+    const [horarioIncorrecto, setHorarioIncorrecto] = useState(false);
     const [pasoActivo, setPasoActivo] = useState(0);
+
+    const { backendURL } = useContext(ContextoGeneral);
+
     const pasos = [
         {
             titulo: "Seleccionar Proveedor",
@@ -44,6 +49,9 @@ export default function CrearCargaStepper() {
     ];
 
     const handleProximoPaso = () => {
+        setDatosSinCompletar(false);
+        setHorarioIncorrecto(false);
+
         switch (pasoActivo) {
             case 0:
                 if (
@@ -67,6 +75,16 @@ export default function CrearCargaStepper() {
                     setDatosSinCompletar(true);
                     return;
                 } else {
+                    // Verificación de horarios solo en el paso 2
+                    if (
+                        datosNuevaCarga["horaInicioCarga"] >=
+                            datosNuevaCarga["horaFinCarga"] ||
+                        datosNuevaCarga["horaInicioDescarga"] >=
+                            datosNuevaCarga["horaFinDescarga"]
+                    ) {
+                        setHorarioIncorrecto(true);
+                        return;
+                    }
                     if (
                         (datosNuevaCarga["idUbicacionBalanza"] ||
                             datosNuevaCarga["horaInicioBalanza"] ||
@@ -79,7 +97,6 @@ export default function CrearCargaStepper() {
                         return;
                     }
                 }
-                setDatosSinCompletar(true);
                 break;
             case 3:
                 if (
@@ -90,9 +107,22 @@ export default function CrearCargaStepper() {
                     return;
                 }
                 break;
+            default:
+                break;
         }
-        setDatosSinCompletar(false);
+
         setPasoActivo((prevActiveStep) => prevActiveStep + 1);
+        console.log(datosNuevaCarga);
+
+        if (pasoActivo === pasos.length - 1) {
+            datosNuevaCarga["creadoPor"] = "test@test.com";
+
+            fetch(`${backendURL}/cargas`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(datosNuevaCarga),
+            });
+        }
     };
 
     const handleAnteriorPaso = () => {
@@ -138,9 +168,15 @@ export default function CrearCargaStepper() {
                                 {paso.componente}
                                 {datosSinCompletar ? (
                                     <Typography color="#ff3333">
-                                        Hay campos sin completar!
+                                        Hay campos sin completar, o estan mal!
                                     </Typography>
                                 ) : null}
+                                {horarioIncorrecto && pasoActivo === 1 && (
+                                    <Typography color="#ff3333">
+                                        La hora de inicio no puede ser mayor o
+                                        igual a la de fin!
+                                    </Typography>
+                                )}
                                 <Button
                                     variant="contained"
                                     onClick={handleProximoPaso}

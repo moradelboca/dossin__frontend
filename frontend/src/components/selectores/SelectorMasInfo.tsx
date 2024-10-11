@@ -1,7 +1,7 @@
 import { Box } from "@mui/material";
 import TextField from "@mui/material/TextField";
 import { useState, useEffect, useContext } from "react";
-import { ContextoGeneral } from "./Contexto";
+import { ContextoGeneral } from "../Contexto";
 import Autocomplete from "@mui/material/Autocomplete";
 
 interface props {
@@ -22,7 +22,7 @@ export default function SelectorMasInfo(selectorProps: props) {
             .catch(() =>
                 console.error("Error al obtener los Cargamentos disponibles")
             );
-    }, [backendURL]);
+    }, []);
 
     const seleccionarDescripcion = (e: any) => {
         datosNuevaCarga["descripcion"] = e.target.value;
