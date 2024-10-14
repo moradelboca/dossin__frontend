@@ -57,7 +57,7 @@ export function CarouselCargas() {
     const [cargas, setCargas] = useState<any[]>([]);
 
     useEffect(() => {
-        fetch(`${backendURL}/cargas?incluirAnteriores=true`)
+        fetch(`${backendURL}/cargas`)
             .then((res) => res.json())
             .then((data) => { setCargas(data) })
             .catch(() => {console.error("Error al obtener las cargas") });

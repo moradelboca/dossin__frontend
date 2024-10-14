@@ -1,28 +1,19 @@
-import { Grid2 as Grid } from "@mui/material";
+import { Box, Grid2 as Grid, Typography } from "@mui/material";
 import { CustomBotonCamion } from "../botones/CustomBotonCamion";
 import { useState, useEffect, useContext } from "react";
 import { ContextoGeneral } from "../Contexto";
+import { ContextoStepper } from "../tarjetas/CrearCargaStepper";
 
-interface props {
-    datosNuevaCarga: any;
-}
 
-export default function SelectorDeAcoplados(selectorProps: props) {
-    const { datosNuevaCarga } = selectorProps;
+export default function SelectorDeAcoplados() {
     const { backendURL } = useContext(ContextoGeneral);
+    const { datosSinCompletar } = useContext(ContextoStepper)
     const [tiposAcoplados, setTiposAcoplados] = useState<any[]>([]);
-    const [tiposAcopladosSeleccionados] = useState([]);
 
     useEffect(() => {
-        return () => {
-            datosNuevaCarga["idsTiposAcoplados"] = tiposAcopladosSeleccionados;
-        };
-    }, []);
-
-    useEffect(() => {
-        fetch(`${backendURL}/tiposacoplados`)
+        fetch(`${backendURL}/acoplados/tiposacoplados`)
             .then((response) => response.json())
-            .then((tiposAcoplados) => setTiposAcoplados(tiposAcoplados))
+            .then((data) => setTiposAcoplados(data))
             .catch(() =>
                 console.error("Error al obtener las tiposAcoplados disponibles")
             );
@@ -39,31 +30,39 @@ export default function SelectorDeAcoplados(selectorProps: props) {
         { nombre: "PortaCont", imagen: "https://i.imgur.com/VNQNsnN.png" },
     ];
     return (
-        <Grid
-            container
-            sx={{
-                maxWidth: 800,
-                margin: "0",
-                gap: "15px",
-            }}
-        >
-            {tiposAcoplados.map((tipoAcoplado) => {
-                const imagenSeleccionada = imagenes.find(
-                    (imagen: any) => imagen.nombre === tipoAcoplado.nombre
-                );
+        <Box>
+            <Grid
+                container
+                sx={{
+                    maxWidth: 800,
+                    margin: "0",
+                    gap: "15px",
+                }}
+            >
+                {tiposAcoplados.map((tipoAcoplado) => {
+                    const imagenSeleccionada = imagenes.find(
+                        (imagen: any) => imagen.nombre === tipoAcoplado.nombre
+                    );
 
-                return (
-                    <CustomBotonCamion
-                        key={tipoAcoplado.id}
-                        imageSrc={
-                            imagenSeleccionada ? imagenSeleccionada.imagen : ""
-                        } // Si se encuentra la imagen, la mostramos, si no, cadena vacía
-                        title={tipoAcoplado.nombre}
-                        array={tiposAcopladosSeleccionados}
-                        id={tipoAcoplado.id} // Pasamos el id del acoplado
-                    />
-                );
-            })}
-        </Grid>
+                    return (
+                        <CustomBotonCamion
+                            key={tipoAcoplado.id}
+                            imageSrc={
+                                imagenSeleccionada
+                                    ? imagenSeleccionada.imagen
+                                    : ""
+                            }
+                            title={tipoAcoplado.nombre}
+                            id={tipoAcoplado.id}
+                        />
+                    );
+                })}
+            </Grid>
+            {datosSinCompletar ? (
+                <Typography color="red">
+                    Debes seleccionar al menos un tipo de acoplado!
+                </Typography>
+            ) : null}
+        </Box>
     );
 }

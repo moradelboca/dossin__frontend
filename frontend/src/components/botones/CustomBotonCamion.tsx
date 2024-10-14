@@ -1,6 +1,7 @@
 import { styled, Typography } from "@mui/material";
 import Button from "@mui/material/Button";
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { ContextoStepper } from "../tarjetas/CrearCargaStepper";
 
 const StyledBoton = styled(Button)<{ isPressed: boolean }>(({ isPressed }) => ({
     background: isPressed ? "#347ad6" : "#163660", // Cambia el color según el estado
@@ -28,23 +29,22 @@ const StyledTypography = styled(Typography)<{ isPressed: boolean }>(
 interface CustomButtomProps {
     title: string;
     imageSrc?: string;
-    array: number[];
     id: any;
 }
 
 export function CustomBotonCamion(props: CustomButtomProps) {
-    const { title, imageSrc, array, id } = props;
-    const [isPressed, setIsPressed] = useState(false);
+    const { datosNuevaCarga } = useContext(ContextoStepper)
+    const { title, imageSrc, id } = props;
+    const [isPressed, setIsPressed] = useState(datosNuevaCarga["idsTiposAcoplados"].includes(id));
 
-    // Alternar el estado cuando se hace clic
     function handleClick() {
-        setIsPressed(!isPressed); // Alterna entre true y false
+        setIsPressed(!isPressed); 
         if (!isPressed) {
-            array.push(parseInt(id)); // Guarda el ID del acoplado
+            datosNuevaCarga["idsTiposAcoplados"].push(parseInt(id)); 
         } else {
-            const pos = array.indexOf(id);
+            const pos = datosNuevaCarga["idsTiposAcoplados"].indexOf(id);
             if (pos !== -1) {
-                array.splice(pos, 1); // Elimina el ID si ya está seleccionado
+                datosNuevaCarga["idsTiposAcoplados"].splice(pos, 1);
             }
         }
     }

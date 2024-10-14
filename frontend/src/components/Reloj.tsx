@@ -2,23 +2,25 @@ import dayjs from "dayjs";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { MobileTimePicker } from "@mui/x-date-pickers/MobileTimePicker";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { Box } from "@mui/material";
+import { ContextoStepper } from "./tarjetas/CrearCargaStepper";
 
 interface props {
     filtro: any;
-    datosNuevaCarga: any;
 }
 
 export default function Reloj(props: props) {
-    let { filtro, datosNuevaCarga } = props;
-    const [horarioSeleccionado, setHorarioSeleccionado] =
-        useState<dayjs.Dayjs | null>(null);
+    const { datosNuevaCarga, datosSinCompletar } = useContext(ContextoStepper)
+    let { filtro } = props;
+    const [horarioSeleccionado, setHorarioSeleccionado] = useState<dayjs.Dayjs | null>(
+        datosNuevaCarga[filtro] ? dayjs(datosNuevaCarga[filtro], "HH:mm") : null
+    );
 
-    const manejarTiempo = (newValue: any) => {
-        setHorarioSeleccionado(newValue);
-        if (newValue != null) {
-            datosNuevaCarga[filtro] = newValue.format("HH:mm");
+    const manejarTiempo = (seleccionado: any) => {
+        if (seleccionado != null) {
+            datosNuevaCarga[filtro] = seleccionado.format("HH:mm");
+            setHorarioSeleccionado(seleccionado);
         }
     };
 
@@ -26,9 +28,15 @@ export default function Reloj(props: props) {
         <Box width="140px">
             <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <MobileTimePicker
-                    value={horarioSeleccionado} // Usa `value` en lugar de `defaultValue`
-                    onChange={manejarTiempo} // Actualiza el estado con el valor seleccionado
-                    ampm={false} // Muestra el formato de 24 horas
+                    value={horarioSeleccionado}
+                    defaultValue={horarioSeleccionado}
+                    onChange={manejarTiempo}
+                    ampm={false}
+                    slotProps={{
+                        textField: {
+                            error: !horarioSeleccionado && datosSinCompletar,
+                        },
+                    }}
                 />
             </LocalizationProvider>
         </Box>

@@ -3,16 +3,14 @@ import TextField from "@mui/material/TextField";
 import { useState, useEffect, useContext } from "react";
 import { ContextoGeneral } from "../Contexto";
 import Autocomplete from "@mui/material/Autocomplete";
-import {
-    NumericFormat,
-    NumericFormatProps,
-    PatternFormat,
-} from "react-number-format";
+import { PatternFormat } from "react-number-format";
 import React from "react";
 import Stack from "@mui/material/Stack";
+import { ContextoStepper } from "../tarjetas/CrearCargaStepper";
 
 interface Props {
     datosNuevaCarga: any;
+    datosSinCompletar: boolean;
 }
 interface CustomProps {
     onChange: (event: { target: { name: string; value: string } }) => void;
@@ -28,7 +26,7 @@ const KmFormat = React.forwardRef<any, CustomProps>(
                 {...other}
                 getInputRef={ref}
                 format="####"
-                mask="_" // Puedes personalizar la máscara que desees
+                mask="" // Puedes personalizar la máscara que desees
                 onValueChange={(values) => {
                     // Verifica si el valor es negativo
                     if (Number(values.value) < 0) {
@@ -47,16 +45,20 @@ const KmFormat = React.forwardRef<any, CustomProps>(
     }
 );
 
-export default function SelectorProveedor({ datosNuevaCarga }: Props) {
+export default function SelectorProveedor() {
+    const { datosNuevaCarga, datosSinCompletar } = useContext(ContextoStepper);
     const { backendURL } = useContext(ContextoGeneral);
     const [cargamentos, setCargamentos] = useState<any[]>([]);
     const [proveedores, setProveedores] = useState<any[]>([]);
-    const [isFocused, setIsFocused] = useState(false);
+    const [valueProveedores, setValueProveedores] = useState<any>(datosNuevaCarga["nombreProveedor"] || null);
+    const [valueCargamentos, setValueCargamentos] = useState<any>(datosNuevaCarga["nombreCargamento"] || null);
 
     useEffect(() => {
-        fetch(`${backendURL}/cargamentos`)
+        fetch(`${backendURL}/cargas/cargamentos`)
             .then((response) => response.json())
-            .then((cargamentos) => setCargamentos(cargamentos))
+            .then((car) => {
+                setCargamentos(car)
+            })
             .catch(() =>
                 console.error("Error al obtener los Cargamentos disponibles")
             );
@@ -69,40 +71,29 @@ export default function SelectorProveedor({ datosNuevaCarga }: Props) {
             );
     }, []);
 
-    const cargamentosStrings = cargamentos.map(
-        (cargamento) => cargamento.nombre
-    );
-    const proveedoresStrings = proveedores.map((proveedor) => proveedor.nombre);
-    const cargamentosIds = cargamentos.map((cargamento) => cargamento.id);
-    const proveedoresIds = proveedores.map((proveedor) => proveedor.id);
-    const [values, setValues] = React.useState({
-        numberformat: "",
-    });
-
     const seleccionarKilometros = (event: any) => {
         datosNuevaCarga["cantidadKm"] = Number(event.target.value);
     };
 
     const seleccionarCargamento = (event: any, seleccionado: string | null) => {
         if (seleccionado) {
+            const cargamentosStrings = cargamentos.map((cargamento) => cargamento.nombre);
             const index = cargamentosStrings.indexOf(seleccionado);
+            const cargamentosIds = cargamentos.map((cargamento) => cargamento.id);
             datosNuevaCarga["idCargamento"] = cargamentosIds[index];
+            datosNuevaCarga["nombreCargamento"] = seleccionado;
+            setValueCargamentos(seleccionado);
         }
     };
     const seleccionarProveedor = (event: any, seleccionado: string | null) => {
         if (seleccionado) {
+            const proveedoresStrings = proveedores.map((proveedor) => proveedor.nombre);
             const index = proveedoresStrings.indexOf(seleccionado);
+            const proveedoresIds = proveedores.map((proveedor) => proveedor.id);
             datosNuevaCarga["idProveedor"] = proveedoresIds[index];
+            datosNuevaCarga["nombreProveedor"] = seleccionado;
+            setValueProveedores(seleccionado);
         }
-    };
-    const mapearListaAOtra = (
-        listaOrigen: any[],
-        listaDestino: any[],
-        elemento: any
-    ) => {
-        console.log(elemento);
-        const index = listaOrigen.indexOf(elemento);
-        return index !== -1 ? listaDestino[index] : undefined;
     };
 
     return (
@@ -115,19 +106,13 @@ export default function SelectorProveedor({ datosNuevaCarga }: Props) {
             width={"800px"}
         >
             <Autocomplete
-                options={proveedoresStrings}
-                value={
-                    mapearListaAOtra(
-                        proveedoresIds,
-                        proveedoresStrings,
-                        datosNuevaCarga["idProveedor"]
-                    ) ?? null
-                }
-                clearOnEscape={false}
-                onInputChange={seleccionarProveedor} // Maneja el cambio de cargamento
+                options={proveedores.map((proveedor: any) => proveedor.nombre)} 
+                value={valueProveedores}
+                defaultValue={valueProveedores}
+                onChange={seleccionarProveedor} 
                 sx={{ width: 540 }}
                 renderInput={(params) => (
-                    <TextField {...params} label="Proveedor" />
+                    <TextField {...params} error={!valueProveedores ? datosSinCompletar : false} label="Proveedor" />
                 )}
             />
             <Box
@@ -143,6 +128,7 @@ export default function SelectorProveedor({ datosNuevaCarga }: Props) {
                         <TextField
                             label="Kilometros"
                             value={datosNuevaCarga["cantidadKm"]}
+                            error={!datosNuevaCarga["cantidadKm"] ? datosSinCompletar : false}
                             onChange={seleccionarKilometros}
                             name="numberformat"
                             id="formatted-numberformat-input"
@@ -158,11 +144,15 @@ export default function SelectorProveedor({ datosNuevaCarga }: Props) {
                 <Box display="column" gap={2}>
                     <Autocomplete
                         disablePortal
-                        options={cargamentosStrings}
+                        options={cargamentos.map(
+                            (cargamento: any) => cargamento.nombre
+                        )}
+                        value={valueCargamentos}
+                        defaultValue={valueCargamentos}
                         onChange={seleccionarCargamento} // Maneja el cambio de cargamento
                         sx={{ width: 300 }}
                         renderInput={(params) => (
-                            <TextField {...params} label="Cargamento" />
+                            <TextField {...params} error={!valueCargamentos ? datosSinCompletar : false} label="Cargamento" />
                         )}
                     />
                 </Box>

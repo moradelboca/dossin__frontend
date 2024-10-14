@@ -8,10 +8,9 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import { NumericFormat, NumericFormatProps } from "react-number-format";
 import React from "react";
 import Stack from "@mui/material/Stack";
+import { ContextoStepper } from "../tarjetas/CrearCargaStepper";
 
-interface props {
-    datosNuevaCarga: any;
-}
+
 interface CustomProps {
     onChange: (event: { target: { name: string; value: string } }) => void;
     name: string;
@@ -20,15 +19,25 @@ const NumericFormatCustom = React.forwardRef<NumericFormatProps, CustomProps>(
     function NumericFormatCustom(props, ref) {
         const { onChange, ...other } = props;
 
+        const isAllowed = (values: any) => {
+            const { formattedValue } = values;
+            // Remove the prefix and separators to count only the digits
+            const numericValue = formattedValue.replace(/[$.,]/g, '');
+            return numericValue.length <= 12;
+        };
+
         return (
             <NumericFormat
                 {...other}
                 getInputRef={ref}
+                thousandSeparator="."
+                decimalSeparator=","
+                prefix="$"
+                decimalScale={2}
+                fixedDecimalScale={true}
+                allowNegative={false}
+                isAllowed={isAllowed}
                 onValueChange={(values) => {
-                    // Verificar si el valor es negativo
-                    if (Number(values.value) < 0) {
-                        return; // No hacer nada si el valor es negativo
-                    }
                     onChange({
                         target: {
                             name: props.name,
@@ -36,62 +45,40 @@ const NumericFormatCustom = React.forwardRef<NumericFormatProps, CustomProps>(
                         },
                     });
                 }}
-                thousandSeparator
-                valueIsNumericString
-                prefix="$"
             />
         );
     }
 );
 
-export default function SelectorTarifa(selectorProps: props) {
-    let { datosNuevaCarga } = selectorProps;
+export default function SelectorTarifa() {
+    const { datosNuevaCarga, datosSinCompletar } = useContext(ContextoStepper)
     const { backendURL } = useContext(ContextoGeneral);
     const [tarifas, setTarifas] = useState<any[]>([]);
-    let unidadesStrings: string[];
+    const [tarifaSeleccionada, setTarifaSeleccionada] = useState<any>(datosNuevaCarga["nombreTipoTarifa"] || null);
 
     useEffect(() => {
-        fetch(`${backendURL}/tipotarifas`)
+        fetch(`${backendURL}/cargas/tipostarifas`)
             .then((response) => response.json())
-            .then((tarifas) => setTarifas(tarifas))
+            .then((tarifas) => { setTarifas(tarifas) })
             .catch(() =>
                 console.error("Error al obtener las Tarifas disponibles")
             );
-    }, [backendURL]);
+    }, []);
 
-    unidadesStrings = tarifas.map((tarifa) => {
-        return `${tarifa.nombre}`;
-    });
-
-    let unidadesIds = tarifas.map((tarifa) => {
-        return tarifa.id;
-    });
-
-    const seleccionarId = (e: any, value: string | null) => {
-        const index = unidadesStrings.indexOf(value || "");
-        if (index !== -1) {
-            datosNuevaCarga["idTipoTarifa"] = unidadesIds[index];
+    const seleccionarTiposTarifas = (event: any, seleccionado: string | null) => {
+        if (seleccionado) {
+            const tarifasStrings = tarifas.map((tarifas) => tarifas.nombre);
+            const index = tarifasStrings.indexOf(seleccionado);
+            const tarifasIds = tarifas.map((tarifas) => tarifas.id);
+            datosNuevaCarga["idTipoTarifa"] = tarifasIds[index];
+            datosNuevaCarga["nombreTipoTarifa"] = seleccionado;
+            setTarifaSeleccionada(seleccionado);
         }
     };
+
     const seleccionarTarifa = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const tarifa = Number(event.target.value);
-
-        // Si la tarifa es menor o igual a 10 millones, se guarda.
-        if (tarifa <= 10000000) {
-            datosNuevaCarga["tarifa"] = tarifa;
-            setValues({
-                ...values,
-                [event.target.name]: event.target.value,
-            });
-        } else {
-            // Si la tarifa es mayor a 10 millones, no se guarda nada y se limpia el campo.
-            datosNuevaCarga["tarifa"] = null;
-        }
+        datosNuevaCarga["tarifa"] = Number(event.target.value);
     };
-
-    const [values, setValues] = React.useState({
-        numberformat: "",
-    });
 
     return (
         <Box display="flex" flexDirection="column">
@@ -108,7 +95,8 @@ export default function SelectorTarifa(selectorProps: props) {
                         <Stack direction="row" spacing={2}>
                             <TextField
                                 label="Tarifa"
-                                value={values.numberformat}
+                                error={datosSinCompletar && !datosNuevaCarga["tarifa"]}
+                                value={datosNuevaCarga["tarifa"]}
                                 onChange={seleccionarTarifa}
                                 name="numberformat"
                                 id="formatted-numberformat-input"
@@ -123,15 +111,17 @@ export default function SelectorTarifa(selectorProps: props) {
                         </Stack>
                     </Box>
                 </Box>
-                <>X</>
+                <>/</>
                 <Box display="column" gap={2}>
                     <Autocomplete
                         disablePortal
-                        options={unidadesStrings}
+                        options={tarifas.map((tarifa) => tarifa.nombre)}
+                        value={tarifaSeleccionada}
+                        defaultValue={tarifaSeleccionada}
+                        onChange={seleccionarTiposTarifas}
                         sx={{ width: 300 }}
-                        onChange={(e, value) => seleccionarId(e, value)} // Actualizar el ID de la unidad seleccionada
                         renderInput={(params) => (
-                            <TextField {...params} label={"Unidades"} />
+                            <TextField {...params} error={!tarifaSeleccionada ? datosSinCompletar : false} label={"Unidades"} />
                         )}
                     />
                 </Box>
@@ -139,18 +129,19 @@ export default function SelectorTarifa(selectorProps: props) {
             <FormControlLabel
                 control={
                     <Checkbox
+                        value={datosNuevaCarga["incluyeIVA"]}
                         onChange={(e) => {
-                            datosNuevaCarga["incluyeIVA"] = e.target.checked; // Asigna true o false dependiendo del estado del Checkbox
+                            datosNuevaCarga["incluyeIVA"] = e.target.checked; 
                         }}
                         sx={{
-                            color: "#163660", // Color por defecto
+                            color: "#163660", 
                             "&.Mui-checked": {
-                                color: "#163660", // Color cuando está seleccionado
+                                color: "#163660",
                             },
                         }}
                     />
                 }
-                label="Incluye IVA?"
+                label="Incluye IVA"
             />
         </Box>
     );

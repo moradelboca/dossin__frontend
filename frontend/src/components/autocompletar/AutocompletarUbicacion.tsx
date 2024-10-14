@@ -1,40 +1,45 @@
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
+import { ContextoStepper } from "../tarjetas/CrearCargaStepper";
+import { useContext, useState } from "react";
 
 interface AutocompletarProps {
     title: string;
-    datos: any[];
+    ubicaciones: any[];
     filtro: string;
-    datosNuevaCarga: any;
 }
 
 export default function AutocompletarUbicacion(props: AutocompletarProps) {
-    let { title, datos, filtro, datosNuevaCarga } = props;
-    let ubicacionStrings = datos
-        .filter((ubicacion) => ubicacion.tipoUbicacion === filtro)
-        .map((ubicacion) => {
-            return `${ubicacion.nombre}, ${ubicacion.provincia}, ${ubicacion.pais}`;
-        });
-    let ubicacionIds = datos
-        .filter((ubicacion) => ubicacion.tipoUbicacion == filtro)
-        .map((ubicacion) => {
-            return ubicacion.id;
-        });
+    const { datosNuevaCarga, datosSinCompletar } = useContext(ContextoStepper);
+    let { title, ubicaciones, filtro } = props;
+    let [ubicacionSeleccionada, setUbicacionSeleccionada] = useState<any>(
+        datosNuevaCarga["nombreUbicacion" + filtro] || null
+    );
 
-    const seleccionarId = (e: any) => {
-        if (e.target.value != undefined) {
-            datosNuevaCarga["idUbicacion" + filtro] =
-                ubicacionIds[e.target.value];
+    const seleccionarUbicacion = (event: any, seleccionado: string | null) => {
+        if (seleccionado) {
+            const ubicacionesStrings = ubicaciones.map((ubicacion) => `${ubicacion.nombre}, ${ubicacion.provincia}, ${ubicacion.pais}`);
+            const index = ubicacionesStrings.indexOf(seleccionado);
+            const ubicacionesIds = ubicaciones.map((ubicacion) => ubicacion.id);
+            datosNuevaCarga["idUbicacion" + filtro] = ubicacionesIds[index];
+            datosNuevaCarga["nombreUbicacion" + filtro] = seleccionado;
+            setUbicacionSeleccionada(seleccionado);
         }
     };
 
     return (
         <Autocomplete
             disablePortal
-            options={ubicacionStrings}
+            options={ubicaciones
+                .filter((ubicacion) => ubicacion.tipoUbicacion === filtro)
+                .map((ubicacion) => {
+                    return `${ubicacion.nombre}, ${ubicacion.provincia}, ${ubicacion.pais}`;
+                })}
             sx={{ width: 300 }}
-            onChange={(e) => seleccionarId(e)}
-            renderInput={(params) => <TextField {...params} label={title} />}
+            value={ubicacionSeleccionada}
+            defaultValue={ubicacionSeleccionada}
+            onChange={seleccionarUbicacion}
+            renderInput={(params) => <TextField {...params} error={!ubicacionSeleccionada ? datosSinCompletar : false} label={title} />}
         />
     );
 }

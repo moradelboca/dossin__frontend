@@ -1,21 +1,18 @@
-import { Box } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import Reloj from "../Reloj";
 import { useState, useEffect, useContext } from "react";
 import { ContextoGeneral } from "../Contexto";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
 import AutocompletarUbicacion from "../autocompletar/AutocompletarUbicacion";
-import Typography from "@mui/material";
+import { ContextoStepper } from "../tarjetas/CrearCargaStepper";
 
-interface props {
-    datosNuevaCarga: {};
-}
-
-export default function SelectorDeUbicacion(selectorProps: props) {
-    let { datosNuevaCarga } = selectorProps;
+export default function SelectorDeUbicacion() {
+    const { datosNuevaCarga, datosSinCompletar } = useContext(ContextoStepper);
+    
     const { backendURL } = useContext(ContextoGeneral);
     const [ubicaciones, setUbicaciones] = useState<any[]>([]);
-    const [requiereBalanza, setRequiereBalanza] = useState<boolean>(false); // Estado para el checkbox
+    const [requiereBalanza, setRequiereBalanza] = useState<boolean>(datosNuevaCarga["requiereBalanza"] ?? false);
 
     useEffect(() => {
         fetch(`${backendURL}/ubicaciones`)
@@ -42,25 +39,18 @@ export default function SelectorDeUbicacion(selectorProps: props) {
                         }}
                     >
                         <AutocompletarUbicacion
-                            datos={ubicaciones}
+                            ubicaciones={ubicaciones}
                             title="Ubicación de Carga"
                             filtro="Carga"
-                            datosNuevaCarga={datosNuevaCarga}
                         />
                         <Box display="flex" flexDirection="row" gap={2}>
                             <Box display="column" gap={2}>
                                 <>Inicio</>
-                                <Reloj
-                                    filtro="horaInicioCarga"
-                                    datosNuevaCarga={datosNuevaCarga}
-                                />
+                                <Reloj filtro="horaInicioCarga" />
                             </Box>
                             <Box display="column">
                                 <>Fin</>
-                                <Reloj
-                                    filtro="horaFinCarga"
-                                    datosNuevaCarga={datosNuevaCarga}
-                                />
+                                <Reloj filtro="horaFinCarga" />
                             </Box>
                         </Box>
                     </Box>
@@ -76,25 +66,18 @@ export default function SelectorDeUbicacion(selectorProps: props) {
                         }}
                     >
                         <AutocompletarUbicacion
-                            datos={ubicaciones}
+                            ubicaciones={ubicaciones}
                             title="Ubicación de Descarga"
                             filtro="Descarga"
-                            datosNuevaCarga={datosNuevaCarga}
                         />
                         <Box display="flex" flexDirection="row" gap={2}>
                             <Box display="column">
                                 <>Inicio</>
-                                <Reloj
-                                    filtro="horaInicioDescarga"
-                                    datosNuevaCarga={datosNuevaCarga}
-                                />
+                                <Reloj filtro="horaInicioDescarga" />
                             </Box>
                             <Box display="column">
                                 <>Fin</>
-                                <Reloj
-                                    filtro="horaFinDescarga"
-                                    datosNuevaCarga={datosNuevaCarga}
-                                />
+                                <Reloj filtro="horaFinDescarga" />
                             </Box>
                         </Box>
                     </Box>
@@ -103,20 +86,21 @@ export default function SelectorDeUbicacion(selectorProps: props) {
                     control={
                         <Checkbox
                             checked={requiereBalanza}
-                            onChange={(e) =>
-                                setRequiereBalanza(e.target.checked)
-                            }
+                            onChange={(e) => {
+                                setRequiereBalanza(e.target.checked);
+                                datosNuevaCarga["requiereBalanza"] =
+                                    e.target.checked;
+                            }}
                             sx={{
-                                color: "#163660", // Color por defecto
+                                color: "#163660",
                                 "&.Mui-checked": {
-                                    color: "#163660", // Color cuando está seleccionado
+                                    color: "#163660",
                                 },
                             }}
                         />
                     }
-                    label="Requiere balanza?"
+                    label="Requiere balanza"
                 />
-                {/* Mostrar la opción de "Ubicación balanza" solo si requiereBalanza es true */}
                 {requiereBalanza && (
                     <Box
                         display="column"
@@ -131,28 +115,27 @@ export default function SelectorDeUbicacion(selectorProps: props) {
                         }}
                     >
                         <AutocompletarUbicacion
-                            datos={ubicaciones}
+                            ubicaciones={ubicaciones}
                             title="Ubicación de Balanza"
                             filtro="Balanza"
-                            datosNuevaCarga={datosNuevaCarga}
                         />
                         <Box display="flex" flexDirection="row" gap={2}>
                             <Box display="column">
                                 <>Inicio</>
-                                <Reloj
-                                    filtro="horaInicioBalanza"
-                                    datosNuevaCarga={datosNuevaCarga}
-                                />
+                                <Reloj filtro="horaInicioBalanza" />
                             </Box>
                             <Box display="column">
                                 <>Fin</>
-                                <Reloj
-                                    filtro="horaFinBalanza"
-                                    datosNuevaCarga={datosNuevaCarga}
-                                />
+                                <Reloj filtro="horaFinBalanza" />
                             </Box>
                         </Box>
                     </Box>
+                )}
+                {datosSinCompletar && (
+                    <Typography color="#ff3333">
+                        Las horas de incio deben ser menores a las
+                        de fin.
+                    </Typography>
                 )}
             </Box>
         </>

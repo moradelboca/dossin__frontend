@@ -2,14 +2,13 @@ import { BotonIcon } from "../botones/IconButton";
 import { AccessAlarmOutlined } from "@mui/icons-material";
 import Box from "@mui/material/Box";
 import { CarouselCargas } from "../carousel/CarouselCargas";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { CargaDialog } from "../tarjetas/CargaDialog";
 import CrearCargaStepper from "../tarjetas/CrearCargaStepper";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogTitle } from "@mui/material";
 
 export function ContainerCargas() {
-    const navigate = useNavigate();
 
     const { idCarga } = useParams();
 
@@ -46,12 +45,12 @@ export function ContainerCargas() {
             <Dialog
                 open={openDialog}
                 onClose={handleCloseDialog}
+                maxWidth="lg"
                 fullWidth
-                maxWidth="md"
             >
                 <DialogTitle>Crear Nueva Carga</DialogTitle>
-                <DialogContent>
-                    <CrearCargaStepper />
+                <DialogContent sx={{height:"80vh", alignContent:"center"}}>
+                    <CrearCargaStepper handleCloseDialog={handleCloseDialog}/>
                 </DialogContent>
             </Dialog>
         </Box>

@@ -6,20 +6,11 @@ import { ContainerCupos } from "./components/containers/ContainerCupos";
 import { CssBaseline } from "@mui/material";
 import Box from "@mui/material/Box";
 import { ContextoGeneral, ValoresContexto } from "./components/Contexto";
-import { CreadorCupos } from "./components/tarjetas/CreadorCupos";
-import { useState, useContext } from "react";
-import { CreadorTurno } from "./components/tarjetas/CreadorTurno";
 import Empresas from "./components/tablas/Empresas";
 import Choferes from "./components/tablas/Choferes";
 import TabCamiones from "./components/tablas/tabCamiones";
 
 function App() {
-    const [datosNuevaCarga, setDatosNuevaCarga] = useState<any>({});
-    const [datosSinCompletar, setDatosSinCompletar] = useState(false);
-    const [horarioIncorrecto, setHorarioIncorrecto] = useState(false);
-    const [pasoActivo, setPasoActivo] = useState(0);
-
-    const { backendURL } = useContext(ContextoGeneral);
     return (
         <BrowserRouter>
             <ContextoGeneral.Provider value={ValoresContexto}>
@@ -34,14 +25,6 @@ function App() {
                             }}
                         >
                             <Routes>
-                                <Route
-                                    path="/"
-                                    element={
-                                        <CreadorTurno
-                                            datosNuevaCarga={datosNuevaCarga}
-                                        />
-                                    }
-                                />
                                 <Route
                                     path="/cargas"
                                     element={<ContainerCargas />}
