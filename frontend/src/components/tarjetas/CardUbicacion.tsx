@@ -10,25 +10,24 @@ import { ContextoGeneral } from "../Contexto";
 import { useNavigate } from "react-router-dom";
 import { Mapa } from "../Mapa";
 
-
 const CustomTypography = styled(Typography)(() => ({
-  fontFamily: "Arial",
-  fontSize: "1rem",
-  color: "#163660",
-  textTransform: "uppercase",
-  textAlign: "center",
+    fontFamily: "Arial",
+    fontSize: "1rem",
+    color: "#163660",
+    textTransform: "uppercase",
+    textAlign: "center",
 }));
 
-
-export function CardUbicacion(carga: any) {
+export function CardUbicacion(props: any) {
     const navigate = useNavigate();
+    const { datosCarga } = props;
 
     const handleClickAbrirDialog = () => {
-        navigate(`/cargas/${carga.idCarga}`);
+        navigate(`/cargas/${datosCarga.id}`);
     };
 
     const handleClickVerCupos = () => {
-        navigate(`/cargas/${carga.idCarga}/cupos`);
+        navigate(`/cargas/${datosCarga.id}/cupos`);
     };
 
     const { theme } = useContext(ContextoGeneral);
@@ -47,7 +46,14 @@ export function CardUbicacion(carga: any) {
                     },
                 }}
             >
-                {carga.latitudCarga ? <Mapa coordenadas={[carga.latitudCarga, carga.longitudCarga]}/> : null}
+                {datosCarga.ubicacionCarga ? (
+                    <Mapa
+                        coordenadas={[
+                            datosCarga.ubicacionCarga.latitud,
+                            datosCarga.ubicacionCarga.longitud,
+                        ]}
+                    />
+                ) : null}
                 <CardContent
                     sx={{
                         backgroundColor: theme.colores.gris,
@@ -55,10 +61,7 @@ export function CardUbicacion(carga: any) {
                     }}
                 >
                     <CustomTypography variant={"h3"}>
-                        {carga.ubicacionCarga} - {carga.ubicacionDescarga}
-                    </CustomTypography>
-                    <CustomTypography variant={"body1"}>
-                        {carga.fechaMinima} - {carga.fechaMaxima}{" "}
+                        {datosCarga.id} - {datosCarga.id}
                     </CustomTypography>
                     <Box
                         sx={{

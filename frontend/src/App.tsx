@@ -9,6 +9,7 @@ import { ContextoGeneral, ValoresContexto } from "./components/Contexto";
 import Empresas from "./components/tablas/Empresas";
 import Choferes from "./components/tablas/Choferes";
 import TabCamiones from "./components/tablas/tabCamiones";
+import { MapaMain } from "./components/MapaMain";
 
 function App() {
     return (
@@ -19,7 +20,7 @@ function App() {
                         <Nav />
                         <Box
                             sx={{
-                                marginTop: "85px",
+                                marginTop: "65px",
                                 overflowX: "hidden",
                                 width: "100%",
                             }}
@@ -40,6 +41,10 @@ function App() {
                                 <Route
                                     path="/choferes"
                                     element={<Choferes />}
+                                />
+                                <Route
+                                    path="/ubicaciones"
+                                    element={<MapaMain />}
                                 />
                                 <Route
                                     path="/empresas"

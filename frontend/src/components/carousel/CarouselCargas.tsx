@@ -59,8 +59,13 @@ export function CarouselCargas() {
     useEffect(() => {
         fetch(`${backendURL}/cargas`)
             .then((res) => res.json())
-            .then((data) => { setCargas(data) })
-            .catch(() => {console.error("Error al obtener las cargas") });
+            .then((data) => {
+                setCargas(data);
+                console.log(data);
+            })
+            .catch(() => {
+                console.error("Error al obtener las cargas");
+            });
     }, []);
 
     return (
@@ -83,23 +88,7 @@ export function CarouselCargas() {
                 centerMode
             >
                 {cargas.map((carga, i) => (
-                    <CardUbicacion
-                        key={i}
-                        idCarga={carga.id}
-                        ubicacionCarga={carga.ubicacionCargaNombre}
-                        ubicacionDescarga={carga.ubicacionDescargaNombre}
-                        fechaMinima={carga.fechaMinimaDisponible}
-                        fechaMaxima={carga.fechaMaximaDisponible}
-                        tarifa={carga.tarifa}
-                        tipoTarifa={carga.tipoTarifa}
-                        tiposAcoplados={carga.tiposDeAcoplados}
-                        km={carga.cantidadKm}
-                        incluyeIVA={carga.incluyeIVA}
-                        horaCarga={carga.horaCarga}
-                        horaDescarga={carga.horaDescarga}
-                        latitudCarga={carga.latitudCarga}
-                        longitudCarga={carga.longitudCarga}
-                    />
+                    <CardUbicacion key={i} datosCarga={carga} />
                 ))}
             </Carousel>
         </Box>
