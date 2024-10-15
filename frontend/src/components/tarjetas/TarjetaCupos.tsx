@@ -1,9 +1,21 @@
-import { Box, Typography } from "@mui/material";
+import {
+    Autocomplete,
+    Box,
+    Button,
+    Dialog,
+    DialogContent,
+    DialogTitle,
+    TextField,
+    Typography,
+} from "@mui/material";
 import { CustomButtom } from "../botones/CustomButtom";
 import { styled } from "@mui/material/styles";
 import Grid from "@mui/material/Grid2";
 import Divider from "@mui/material/Divider";
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { CreadorTurno } from "./CreadorTurno";
+import { ContextoGeneral } from "../Contexto";
+import ClearSharpIcon from "@mui/icons-material/ClearSharp";
 
 const StyledCaja = styled(Box)(() => ({
     minWidth: 180,
@@ -27,19 +39,32 @@ const StyledCaja = styled(Box)(() => ({
 }));
 
 interface TarjetaProps {
-    fecha: string;
+    fecha?: string;
     cuposDisponibles: number;
     cuposConfirmados: number;
 }
 
 export function TarjetaCupos(props: TarjetaProps) {
     const { fecha, cuposDisponibles, cuposConfirmados } = props;
-
+    const { theme } = useContext(ContextoGeneral);
     const [cuposDisponiblesEstado, setCuposDisponiblesEstado] =
         useState(cuposDisponibles);
 
+    const [openDialog, setOpenDialog] = useState(false);
+    const [openDialog2, setOpenDialog2] = useState(false);
+
     function handleClick() {
         setCuposDisponiblesEstado(cuposDisponiblesEstado + 1);
+        setOpenDialog2(true);
+    }
+
+    function handleClickDialog() {
+        setOpenDialog(true);
+    }
+
+    function handleCloseDialog() {
+        setOpenDialog(false);
+        setOpenDialog2(false);
     }
 
     return (
@@ -87,8 +112,134 @@ export function TarjetaCupos(props: TarjetaProps) {
                         </Typography>
                     </Grid>
                 </Grid>
-                <CustomButtom onClick={handleClick} title="Crear nuevo turno" />
+                <Box display={"flex"} flexDirection={"row"} gap={2}>
+                    <CustomButtom
+                        onClick={handleClickDialog}
+                        title="Crear turno"
+                    />
+                    <CustomButtom onClick={handleClick} title="Ver mas" />
+                </Box>
             </StyledCaja>
+
+            <Dialog
+                open={openDialog}
+                onClose={handleCloseDialog}
+                fullWidth
+                maxWidth="md"
+            >
+                <ClearSharpIcon
+                    onClick={handleCloseDialog}
+                    sx={{
+                        position: "absolute",
+                        top: "10px",
+                        right: "10px",
+                        cursor: "pointer",
+                        color: theme.colores.azul,
+                    }}
+                />
+                <DialogTitle>Detalles del Cupo</DialogTitle>
+                <DialogContent>
+                    <Box
+                        display="flex"
+                        justifyContent="center"
+                        alignItems="center"
+                        minHeight="200px"
+                    >
+                        <CreadorTurno />
+                    </Box>
+                </DialogContent>
+            </Dialog>
+            <Dialog
+                open={openDialog2}
+                onClose={handleCloseDialog}
+                fullWidth
+                maxWidth="sm"
+            >
+                <ClearSharpIcon
+                    onClick={handleCloseDialog}
+                    sx={{
+                        position: "absolute",
+                        top: "10px",
+                        right: "10px",
+                        cursor: "pointer",
+                        color: theme.colores.azul,
+                    }}
+                />
+                <DialogTitle>Cupos Disponibles</DialogTitle>
+                <DialogContent>
+                    <Box
+                        display="flex"
+                        justifyContent="center"
+                        alignItems="center"
+                        flexDirection="column"
+                        minHeight="200px"
+                        gap={5}
+                    >
+                        <Box display="flex" alignItems="center" gap={1}>
+                            <Button
+                                sx={{
+                                    backgroundColor: theme.colores.azul,
+                                    color: theme.colores.gris,
+                                    width: "20px",
+                                    "&:hover": {
+                                        backgroundColor:
+                                            theme.colores.azulOscuro,
+                                    },
+                                    borderRadius: "50px",
+                                }}
+                                variant="contained"
+                                onClick={() =>
+                                    setCuposDisponiblesEstado(
+                                        Math.max(0, cuposDisponiblesEstado - 1)
+                                    )
+                                }
+                            >
+                                -
+                            </Button>
+                            <TextField
+                                value={cuposDisponiblesEstado}
+                                InputProps={{
+                                    readOnly: true,
+                                }}
+                                variant="outlined"
+                                sx={{ width: 100, textAlign: "center" }}
+                            />
+                            <Button
+                                sx={{
+                                    backgroundColor: theme.colores.azul,
+                                    color: theme.colores.gris,
+                                    width: "20px",
+                                    "&:hover": {
+                                        backgroundColor:
+                                            theme.colores.azulOscuro,
+                                    },
+                                    borderRadius: "50px",
+                                }}
+                                variant="contained"
+                                onClick={() =>
+                                    setCuposDisponiblesEstado(
+                                        cuposDisponiblesEstado + 1
+                                    )
+                                }
+                            >
+                                +
+                            </Button>
+                        </Box>
+                        <Button
+                            sx={{
+                                backgroundColor: theme.colores.azul,
+                                color: theme.colores.gris,
+                                "&:hover": {
+                                    backgroundColor: theme.colores.azulOscuro,
+                                },
+                            }}
+                            variant="contained"
+                        >
+                            Guardar
+                        </Button>
+                    </Box>
+                </DialogContent>
+            </Dialog>
         </>
     );
 }

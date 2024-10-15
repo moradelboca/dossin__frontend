@@ -4,9 +4,13 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { PickersDay } from "@mui/x-date-pickers/PickersDay";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import dayjs, { Dayjs } from "dayjs";
-import { Box, Typography } from "@mui/material";
+import { Box, Button, Typography } from "@mui/material";
 import FormControlLabel from "@mui/material/FormControlLabel";
-import { NumericFormat, NumericFormatProps } from "react-number-format";
+import {
+    NumericFormat,
+    NumericFormatProps,
+    PatternFormat,
+} from "react-number-format";
 import React from "react";
 import Stack from "@mui/material/Stack";
 import TextField from "@mui/material/TextField";
@@ -35,26 +39,26 @@ const CustomDay = (props: any) => {
     );
 };
 
-interface props {
-    datosNuevaCarga: any;
-}
 interface CustomProps {
     onChange: (event: { target: { name: string; value: string } }) => void;
     name: string;
 }
-const NumericFormatCustom = React.forwardRef<NumericFormatProps, CustomProps>(
-    function NumericFormatCustom(props, ref) {
+const cuposFromat = React.forwardRef<NumericFormatProps, CustomProps>(
+    function cuposFromat(props, ref) {
         const { onChange, ...other } = props;
 
         return (
-            <NumericFormat
+            <PatternFormat
                 {...other}
                 getInputRef={ref}
+                format="###"
+                mask="" // Puedes personalizar la máscara que desees
                 onValueChange={(values) => {
-                    // Verificar si el valor es negativo
+                    // Verifica si el valor es negativo
                     if (Number(values.value) < 0) {
                         return; // No hacer nada si el valor es negativo
                     }
+
                     onChange({
                         target: {
                             name: props.name,
@@ -62,24 +66,44 @@ const NumericFormatCustom = React.forwardRef<NumericFormatProps, CustomProps>(
                         },
                     });
                 }}
-                thousandSeparator
-                valueIsNumericString
-                prefix=""
             />
         );
     }
 );
 
-export function CreadorCupos(selectorProps: props) {
-    let { datosNuevaCarga } = selectorProps;
+export function CreadorCupos(props: any) {
+    let { idCarga } = props;
     const { backendURL } = useContext(ContextoGeneral);
     const [selectedDates, setSelectedDates] = useState<Dayjs[]>([]);
-    const [open, setOpen] = useState(true); // Estado para controlar la apertura
+    const [cupoSeleccionado, setCupoSeleccionado] = useState<number | null>(
+        null
+    );
+    const [error, setError] = useState(false);
+    const [errorFecha, setErrorFecha] = useState(false);
 
-    // Inicializa datosNuevaCarga si es undefined
-    if (!datosNuevaCarga) {
-        datosNuevaCarga = {}; // Inicializa como un objeto vacío si es necesario
-    }
+    const handleClickGuardar = () => {
+        if (cupoSeleccionado == 0 || cupoSeleccionado == null) {
+            setError(true);
+        } else {
+            setError(false); // Opcional: resetea el estado de error si la condición no se cumple
+        }
+
+        if (selectedDates.length == 0) {
+            setErrorFecha(true);
+        } else {
+            setErrorFecha(false); // Opcional: resetea el estado de error si la condición no se cumple
+        }
+
+        for (let fecha of selectedDates) {
+            const cupoDeCarga = {
+                idCarga: idCarga,
+                fecha: fecha.format("YYYY-MM-DD"),
+                cupos: cupoSeleccionado,
+            };
+            console.log(cupoDeCarga);
+            // hacer fetch
+        }
+    };
 
     const handleDateChange = (date: Dayjs | null) => {
         if (
@@ -100,12 +124,8 @@ export function CreadorCupos(selectorProps: props) {
                     return [...prev, date];
                 }
             });
-            // Mantener el DatePicker abierto después de la selección
-            setOpen(true);
         }
     };
-
-    const [error, setError] = useState<string | null>(null);
 
     const [values, setValues] = React.useState({
         numberformat: "",
@@ -113,14 +133,7 @@ export function CreadorCupos(selectorProps: props) {
 
     const seleccionarCupos = (event: React.ChangeEvent<HTMLInputElement>) => {
         const cupos = Number(event.target.value);
-        if (cupos > 1000) {
-            setError("No se pueden más de 1000 cupos al día!");
-            datosNuevaCarga["cupos"] = null; // Asigna null si el valor es inválido
-        } else {
-            setError(null); // Limpia el error si es un valor válido
-            datosNuevaCarga["cupos"] = cupos; // Asigna el valor válido
-        }
-
+        setCupoSeleccionado(cupos);
         setValues({
             ...values,
             [event.target.name]: event.target.value,
@@ -157,6 +170,8 @@ export function CreadorCupos(selectorProps: props) {
                 <Stack direction="row" spacing={2}>
                     <Box width="300px">
                         <TextField
+                            fullWidth
+                            error={error}
                             label="Cupos"
                             value={values.numberformat}
                             onChange={seleccionarCupos}
@@ -164,32 +179,20 @@ export function CreadorCupos(selectorProps: props) {
                             id="formatted-numberformat-input"
                             slotProps={{
                                 input: {
-                                    inputComponent: NumericFormatCustom as any,
+                                    inputComponent: cuposFromat as any,
                                 },
                             }}
                             variant="outlined"
                         />
-                        {error && (
-                            <Typography
-                                color="#ff3333"
-                                style={{ marginTop: "8px" }}
-                            >
-                                {error}
+                        {errorFecha && (
+                            <Typography color="#ff3333">
+                                Debes seleccionar al menos una fecha
                             </Typography>
                         )}
+                        <Button onClick={handleClickGuardar}>Guardar</Button>
                     </Box>
                 </Stack>
             </Box>
-            <div>
-                <h4>Fechas seleccionadas:</h4>
-                <ul>
-                    {selectedDates.map((date) => (
-                        <li key={date.toString()}>
-                            {date.format("YYYY-MM-DD")}
-                        </li>
-                    ))}
-                </ul>
-            </div>
         </>
     );
 }

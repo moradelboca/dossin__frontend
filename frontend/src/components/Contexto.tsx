@@ -6,6 +6,7 @@ export const ValoresContexto = {
         colores: {
             texto: "#000",
             azul: "#163660",
+            azulOscuro: "#0e213b",
             gris: "#D9D9D9",
         },
     },

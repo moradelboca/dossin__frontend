@@ -1,6 +1,5 @@
 import * as React from "react";
 import Box from "@mui/material/Box";
-import Card from "@mui/material/Card";
 import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
@@ -11,19 +10,29 @@ import { TextField } from "@mui/material";
 import { CustomButtom } from "../botones/CustomButtom";
 
 interface Props {
-    datosNuevaCarga: any;
+    datosNuevaCarga?: any;
 }
 
 export default function Turno({ datosNuevaCarga }: Props) {
     const { backendURL } = useContext(ContextoGeneral);
     const [cargamentos, setCargamentos] = useState<any[]>([]);
+    const [patentesCamiones, setPatentesCamiones] = useState<any[]>([]);
 
     useEffect(() => {
-        fetch(`${backendURL}/cargamentos`)
+        fetch(`${backendURL}/cargas/cargamentos`)
             .then((response) => response.json())
-            .then((cargamentos) => setCargamentos(cargamentos))
+            .then((car) => {
+                setCargamentos(car);
+            })
             .catch(() =>
                 console.error("Error al obtener los Cargamentos disponibles")
+            );
+
+        fetch(`${backendURL}/camiones`)
+            .then((response) => response.json())
+            .then((p) => setPatentesCamiones(p))
+            .catch(() =>
+                console.error("Error al obtener los Proveedores disponibles")
             );
     }, []);
 
@@ -31,13 +40,15 @@ export default function Turno({ datosNuevaCarga }: Props) {
         (cargamento) => cargamento.nombre
     );
     const cargamentosIds = cargamentos.map((cargamento) => cargamento.id);
-
     const seleccionarCargamento = (event: any, newValue: string | null) => {
         if (newValue) {
             const index = cargamentosStrings.indexOf(newValue);
             datosNuevaCarga["idCargamento"] = cargamentosIds[index];
         }
     };
+    const patentesCamionesStrings = patentesCamiones.map(
+        (patenteCamion) => patenteCamion.patente
+    );
 
     return (
         <React.Fragment>
@@ -81,7 +92,7 @@ export default function Turno({ datosNuevaCarga }: Props) {
                             <Autocomplete
                                 disablePortal
                                 options={cargamentosStrings}
-                                onChange={seleccionarCargamento} // Maneja el cambio de cargamento
+                                onChange={seleccionarCargamento}
                                 sx={{ width: 300 }}
                                 renderInput={(params) => (
                                     <TextField
@@ -92,8 +103,7 @@ export default function Turno({ datosNuevaCarga }: Props) {
                             />
                             <Autocomplete
                                 disablePortal
-                                options={cargamentosStrings}
-                                onChange={seleccionarCargamento} // Maneja el cambio de cargamento
+                                options={patentesCamionesStrings}
                                 sx={{ width: 300 }}
                                 renderInput={(params) => (
                                     <TextField
@@ -180,12 +190,7 @@ export default function Turno({ datosNuevaCarga }: Props) {
 export function CreadorTurno({ datosNuevaCarga }: Props) {
     return (
         <Box sx={{ height: "570px", width: "720px" }}>
-            <Card
-                variant="outlined"
-                sx={{ backgroundColor: "#f0f0f0", borderRadius: "10px" }}
-            >
-                <Turno datosNuevaCarga={datosNuevaCarga} />
-            </Card>
+            <Turno datosNuevaCarga={datosNuevaCarga} />
         </Box>
     );
 }

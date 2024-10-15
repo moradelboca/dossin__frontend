@@ -4,6 +4,7 @@ import {
     DialogContent,
     DialogTitle,
     Grid2 as Grid,
+    Typography,
 } from "@mui/material";
 import { BotonIcon } from "../botones/IconButton";
 import { AccessAlarmOutlined } from "@mui/icons-material";
@@ -13,11 +14,15 @@ import { useEffect, useContext, useState } from "react";
 import { ContextoGeneral } from "../Contexto";
 import { useParams } from "react-router-dom";
 import { CreadorCupos } from "../tarjetas/CreadorCupos";
+import CancelIcon from "@mui/icons-material/Cancel";
+import ClearSharpIcon from "@mui/icons-material/ClearSharp";
 
 export function ContainerCupos() {
     const { idCarga } = useParams();
-    const { backendURL } = useContext(ContextoGeneral);
+    const { backendURL, theme } = useContext(ContextoGeneral);
     const [cupos, setCupos] = useState<any[]>([]);
+    const [sinCupos, setSinCupos] = useState<any[]>([]);
+    const [datosNuevoCupo, setDatosNuevoCupo] = useState<boolean>(false);
 
     useEffect(() => {
         fetch(
@@ -25,14 +30,17 @@ export function ContainerCupos() {
         )
             .then((response) => response.json())
             .then((cupos) => {
-                setCupos(cupos);
-                console.log(cupos);
+                if (cupos.length === 0) {
+                    setDatosNuevoCupo(true); // No hay cupos disponibles
+                } else {
+                    setCupos(cupos); // Setea los cupos si existen
+                }
             })
-            .catch(() =>
-                console.error("Error al obtener las cargas disponibles")
-            );
+            .catch(() => {
+                setDatosNuevoCupo(true); // Error al obtener datos o sin datos
+                console.error("Error al obtener las cupos disponibles");
+            });
     }, []);
-    // Estado para controlar el Dialog
     const [openDialog, setOpenDialog] = useState(false);
 
     // Función para abrir el Dialog
@@ -101,13 +109,46 @@ export function ContainerCupos() {
                     </Grid>
                 </Grid>
             ))}
+            {datosNuevoCupo === true && (
+                <Box
+                    display={"flex"}
+                    flexDirection={"row"}
+                    width={"100%"}
+                    justifyContent={"center"}
+                    alignItems={"center"}
+                    gap={3}
+                >
+                    <CancelIcon
+                        sx={{
+                            color: "red",
+                            borderRadius: "50%",
+                            padding: "5px",
+                            width: "50px",
+                            height: "50px",
+                        }}
+                    />
+                    <Typography variant="h5">
+                        <b>Al parecer no hay cupos.</b>
+                    </Typography>
+                </Box>
+            )}
             <Dialog
                 open={openDialog}
                 onClose={handleCloseDialog}
                 fullWidth
                 maxWidth="sm" // Puedes ajustar el tamaño según lo necesites
             >
-                <DialogTitle sx={{ textAlign: "center" }}>
+                <ClearSharpIcon
+                    onClick={handleCloseDialog}
+                    sx={{
+                        position: "absolute",
+                        top: "10px",
+                        right: "10px",
+                        cursor: "pointer",
+                        color: theme.colores.azul,
+                    }}
+                />
+                <DialogTitle sx={{ textAlign: "start" }}>
                     Crear un nuevo cupo
                 </DialogTitle>
                 <DialogContent>
@@ -121,7 +162,7 @@ export function ContainerCupos() {
                             padding: "16px", // Espacio interno
                         }}
                     >
-                        <CreadorCupos datosNuevaCarga={undefined} />
+                        <CreadorCupos idCarga={idCarga} />
                     </Box>
                 </DialogContent>
             </Dialog>

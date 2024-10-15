@@ -10,6 +10,7 @@ import Empresas from "./components/tablas/Empresas";
 import Choferes from "./components/tablas/Choferes";
 import TabCamiones from "./components/tablas/tabCamiones";
 import { MapaMain } from "./components/MapaMain";
+import { TarjetaCupos } from "./components/tarjetas/TarjetaCupos";
 
 function App() {
     return (
@@ -26,6 +27,15 @@ function App() {
                             }}
                         >
                             <Routes>
+                                <Route
+                                    path="/"
+                                    element={
+                                        <TarjetaCupos
+                                            cuposConfirmados={5}
+                                            cuposDisponibles={5}
+                                        />
+                                    }
+                                />
                                 <Route
                                     path="/cargas"
                                     element={<ContainerCargas />}

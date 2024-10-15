@@ -9,6 +9,7 @@ import {
     Autocomplete,
     TextField,
     IconButton,
+    Stack,
 } from "@mui/material";
 import L from "leaflet";
 import {
@@ -25,6 +26,11 @@ import cargamos from "../../images/cargamos.png";
 import { ContextoGeneral } from "./Contexto";
 import AutocompletarUbicacionMapa from "./autocompletar/AutocompletarUbicacionMapa";
 import { AddLocationAltOutlined } from "@mui/icons-material";
+import {
+    NumericFormat,
+    NumericFormatProps,
+    PatternFormat,
+} from "react-number-format";
 
 const { BaseLayer, Overlay } = LayersControl;
 
@@ -70,10 +76,48 @@ function ZoomToLocation({
 
     return null;
 }
+interface CustomProps {
+    onChange: (event: { target: { name: string; value: string } }) => void;
+    name: string;
+}
+const latLongFormat = React.forwardRef<NumericFormatProps, CustomProps>(
+    function NumericFormatCustom(props, ref) {
+        const { onChange, ...other } = props;
+
+        const isAllowed = (values: any) => {
+            const { formattedValue } = values;
+            // Remove the prefix and separators to count only the digits
+            const numericValue = formattedValue.replace(/[$.,]/g, "");
+            return numericValue.length <= 12;
+        };
+
+        return (
+            <NumericFormat
+                {...other}
+                getInputRef={ref}
+                thousandSeparator="."
+                decimalSeparator=","
+                prefix=""
+                decimalScale={2}
+                fixedDecimalScale={true}
+                allowNegative={true}
+                isAllowed={isAllowed}
+                onValueChange={(values) => {
+                    onChange({
+                        target: {
+                            name: props.name,
+                            value: values.value,
+                        },
+                    });
+                }}
+            />
+        );
+    }
+);
 
 export function MapaMain() {
     const [openDialog, setOpenDialog] = useState(false);
-    const { backendURL } = useContext(ContextoGeneral);
+    const { backendURL, theme } = useContext(ContextoGeneral);
     const [ubicaciones, setUbicaciones] = useState<Ubicacion[]>([]);
     const [selectedLocation, setSelectedLocation] = useState<{
         lat: number;
@@ -104,20 +148,19 @@ export function MapaMain() {
     const tipoUbicacionOptions = ["Todas", "Carga", "Descarga", "Balanza"];
 
     return (
-        <Box>
+        <Box position={"relative"}>
             <Box
                 width={"fit-content"}
                 height={"fit-content"}
                 sx={{
                     zIndex: 1000,
                     position: "absolute",
-                    top: 80,
-                    left: 130,
+                    top: 10,
+                    left: 80,
                     display: "flex",
                     gap: "10px",
                 }}
             >
-                {/* Componente de autocompletar ubicación */}
                 <AutocompletarUbicacionMapa
                     ubicaciones={ubicaciones}
                     title="Ubicación de Carga"
@@ -138,7 +181,17 @@ export function MapaMain() {
                         setTipoUbicacionSeleccionado(value || "Carga"); // Actualizamos el filtro según la selección
                     }}
                 />
-                <IconButton sx={{ color: "white" }}>
+                <IconButton
+                    sx={{
+                        backgroundColor: theme.colores.azul,
+                        color: theme.colores.gris,
+                        width: "55px",
+                        "&:hover": {
+                            backgroundColor: theme.colores.azulOscuro,
+                        },
+                    }}
+                    onClick={() => handleMarkerClick()}
+                >
                     <AddLocationAltOutlined />
                 </IconButton>
             </Box>
@@ -211,13 +264,84 @@ export function MapaMain() {
             <Dialog open={openDialog} onClose={handleClose}>
                 <DialogTitle>Detalles del Punto</DialogTitle>
                 <DialogContent>
-                    <p>
-                        Coordenadas:{" "}
-                        {selectedLocation
-                            ? `${selectedLocation.lat}, ${selectedLocation.lng}`
-                            : "N/A"}
-                    </p>
-                    <p>Descripción: Este es un ejemplo de diálogo.</p>
+                    <Box
+                        display="flex"
+                        flexDirection="column"
+                        gap={2}
+                        alignContent={"center"}
+                        alignItems={"center"}
+                        marginTop={2}
+                        marginBottom={1}
+                    >
+                        <TextField
+                            id="outlined-basic"
+                            label="URL Google Maps"
+                            variant="outlined"
+                            slotProps={{
+                                htmlInput: {
+                                    maxLength: 200,
+                                },
+                            }}
+                            sx={{ width: 350 }}
+                        />
+                        <TextField
+                            id="outlined-basic"
+                            label="Nombre"
+                            variant="outlined"
+                            slotProps={{
+                                htmlInput: {
+                                    maxLength: 50,
+                                },
+                            }}
+                            sx={{ width: 350 }}
+                        />
+                        <Stack direction="row" spacing={2}>
+                            <TextField
+                                label="Latitud"
+                                name="numberformat"
+                                id="formatted-numberformat-input"
+                                slotProps={{
+                                    input: {
+                                        inputComponent: latLongFormat as any,
+                                    },
+                                }}
+                                variant="outlined"
+                                sx={{ width: 350 }}
+                            />
+                        </Stack>
+                        <Stack direction="row" spacing={2}>
+                            <TextField
+                                label="Longitud"
+                                name="numberformat"
+                                id="formatted-numberformat-input"
+                                slotProps={{
+                                    input: {
+                                        inputComponent: latLongFormat as any,
+                                    },
+                                }}
+                                variant="outlined"
+                                sx={{ width: 350 }}
+                            />
+                        </Stack>
+                        <Autocomplete
+                            options={tipoUbicacionOptions}
+                            renderInput={(params) => (
+                                <TextField
+                                    {...params}
+                                    label="Tipo"
+                                    sx={{ width: 350 }}
+                                />
+                            )}
+                            sx={{
+                                width: 350,
+                                background: "white",
+                                borderRadius: "6px",
+                            }}
+                            onChange={(event, value) => {
+                                setTipoUbicacionSeleccionado(value || "Carga");
+                            }}
+                        />
+                    </Box>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleClose}>Cerrar</Button>

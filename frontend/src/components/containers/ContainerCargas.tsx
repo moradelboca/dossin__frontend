@@ -9,7 +9,6 @@ import { useState } from "react";
 import { Dialog, DialogContent, DialogTitle } from "@mui/material";
 
 export function ContainerCargas() {
-
     const { idCarga } = useParams();
 
     // Estado para controlar el Dialog
@@ -49,8 +48,8 @@ export function ContainerCargas() {
                 fullWidth
             >
                 <DialogTitle>Crear Nueva Carga</DialogTitle>
-                <DialogContent sx={{height:"80vh", alignContent:"center"}}>
-                    <CrearCargaStepper handleCloseDialog={handleCloseDialog}/>
+                <DialogContent sx={{ height: "80vh", alignContent: "center" }}>
+                    <CrearCargaStepper handleCloseDialog={handleCloseDialog} />
                 </DialogContent>
             </Dialog>
         </Box>
