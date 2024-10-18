@@ -13,7 +13,7 @@ import { styled } from "@mui/material/styles";
 import Grid from "@mui/material/Grid2";
 import Divider from "@mui/material/Divider";
 import { useContext, useState } from "react";
-import { CreadorTurno } from "./CreadorTurno";
+import CreadorTurno from "./CreadorTurno";
 import { ContextoGeneral } from "../Contexto";
 import ClearSharpIcon from "@mui/icons-material/ClearSharp";
 
@@ -42,10 +42,11 @@ interface TarjetaProps {
     fecha?: string;
     cuposDisponibles: number;
     cuposConfirmados: number;
+    idCarga: any;
 }
 
 export function TarjetaCupos(props: TarjetaProps) {
-    const { fecha, cuposDisponibles, cuposConfirmados } = props;
+    const { idCarga, fecha, cuposDisponibles, cuposConfirmados } = props;
     const { theme } = useContext(ContextoGeneral);
     const [cuposDisponiblesEstado, setCuposDisponiblesEstado] =
         useState(cuposDisponibles);
@@ -145,7 +146,7 @@ export function TarjetaCupos(props: TarjetaProps) {
                         alignItems="center"
                         minHeight="200px"
                     >
-                        <CreadorTurno />
+                        <CreadorTurno idCarga={idCarga} fecha={fecha} />
                     </Box>
                 </DialogContent>
             </Dialog>

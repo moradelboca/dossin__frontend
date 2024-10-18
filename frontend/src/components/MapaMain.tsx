@@ -21,8 +21,9 @@ import {
     useMap,
 } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
-import pin from "../../images/pin.png";
-import cargamos from "../../images/cargamos.png";
+import pin from "../../images/pinbox.png";
+import cargamos from "../../images/pinBALA2.png";
+import ok from "../../images/pinokaaa.png";
 import { ContextoGeneral } from "./Contexto";
 import AutocompletarUbicacionMapa from "./autocompletar/AutocompletarUbicacionMapa";
 import { AddLocationAltOutlined } from "@mui/icons-material";
@@ -34,17 +35,23 @@ import {
 
 const { BaseLayer, Overlay } = LayersControl;
 
-const customIcon = L.icon({
-    iconUrl: pin,
-    iconSize: [56, 56],
-    iconAnchor: [28, 28],
+const balanzaIcon = L.icon({
+    iconUrl: cargamos,
+    iconSize: [45, 51],
+    iconAnchor: [22, 51],
+    popupAnchor: [0, -28],
+});
+const okIcon = L.icon({
+    iconUrl: ok,
+    iconSize: [45, 51],
+    iconAnchor: [22, 51],
     popupAnchor: [0, -28],
 });
 
-const customIcon1 = L.icon({
-    iconUrl: cargamos,
-    iconSize: [56, 56],
-    iconAnchor: [28, 28],
+const pinIcon = L.icon({
+    iconUrl: pin,
+    iconSize: [45, 51],
+    iconAnchor: [22, 51],
     popupAnchor: [0, -28],
 });
 
@@ -207,18 +214,18 @@ export function MapaMain() {
                 />
 
                 <LayersControl position="topright">
-                    <BaseLayer checked name="OpenStreetMap">
+                    <BaseLayer checked name="CartoDB Positron">
                         <TileLayer
-                            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                            url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
+                            subdomains="abcd"
+                            maxZoom={20}
                         />
                     </BaseLayer>
-
                     <BaseLayer name="Esri WorldImagery">
-                        <TileLayer
-                            attribution="Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community"
-                            url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
-                        />
+                        <TileLayer url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}" />
+                    </BaseLayer>
+                    <BaseLayer name="OpenStreetMap">
+                        <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
                     </BaseLayer>
 
                     {ubicaciones.map((ubicacion, index) => (
@@ -234,8 +241,8 @@ export function MapaMain() {
                                 ]}
                                 icon={
                                     ubicacion.tipoUbicacion === "Balanza"
-                                        ? customIcon1
-                                        : customIcon
+                                        ? balanzaIcon
+                                        : pinIcon
                                 }
                             >
                                 <Popup>

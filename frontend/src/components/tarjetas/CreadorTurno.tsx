@@ -9,47 +9,101 @@ import Autocomplete from "@mui/material/Autocomplete";
 import { TextField } from "@mui/material";
 import { CustomButtom } from "../botones/CustomButtom";
 
-interface Props {
-    datosNuevaCarga?: any;
+interface CreadorProps {
+    fecha?: string;
+    idCarga?: any;
 }
 
-export default function Turno({ datosNuevaCarga }: Props) {
+export default function CreadorTurno(props: CreadorProps) {
+    const { idCarga, fecha } = props;
     const { backendURL } = useContext(ContextoGeneral);
-    const [cargamentos, setCargamentos] = useState<any[]>([]);
+    const [choferes, setChoferes] = useState<any[]>([]);
     const [patentesCamiones, setPatentesCamiones] = useState<any[]>([]);
+    const [patentesAcoplados, setPatentesAcoplados] = useState<any[]>([]);
+    const [empresasTransportistas, setEmpresasTransportistas] = useState<any[]>(
+        []
+    );
+    const [choferSeleccionado, setChoferSeleccionado] = useState<Number | null>(
+        null
+    );
+    const [
+        empresaTransportistaSeleccionada,
+        setEmpresaTransportistaSeleccionada,
+    ] = useState<Number | null>(null);
+    const [patenteCamionSeleccionada, setPatenteCamionSeleccionada] = useState<
+        string | null
+    >(null);
+    const [patenteAcopladoSeleccionada, setPatenteAcopladoSeleccionada] =
+        useState<string | null>(null);
+    const [
+        patenteAcopladoSeleccionadaExtra,
+        setPatenteAcopladoSeleccionadaExtra,
+    ] = useState<string | null>(null);
+    const [error, setError] = useState(false);
 
     useEffect(() => {
-        fetch(`${backendURL}/cargas/cargamentos`)
+        fetch(`${backendURL}/choferes`)
             .then((response) => response.json())
             .then((car) => {
-                setCargamentos(car);
+                setChoferes(car);
             })
             .catch(() =>
-                console.error("Error al obtener los Cargamentos disponibles")
+                console.error("Error al obtener los choferes disponibles")
             );
-
+        fetch(`${backendURL}/empresasTransportistas`)
+            .then((response) => response.json())
+            .then((e) => {
+                setEmpresasTransportistas(e);
+            })
+            .catch(() =>
+                console.error("Error al obtener los choferes disponibles")
+            );
         fetch(`${backendURL}/camiones`)
             .then((response) => response.json())
             .then((p) => setPatentesCamiones(p))
             .catch(() =>
-                console.error("Error al obtener los Proveedores disponibles")
+                console.error("Error al obtener los patentes disponibles")
+            );
+        fetch(`${backendURL}/acoplados`)
+            .then((response) => response.json())
+            .then((a) => setPatentesAcoplados(a))
+            .catch(() =>
+                console.error("Error al obtener los patentes disponibles")
             );
     }, []);
 
-    const cargamentosStrings = cargamentos.map(
-        (cargamento) => cargamento.nombre
-    );
-    const cargamentosIds = cargamentos.map((cargamento) => cargamento.id);
-    const seleccionarCargamento = (event: any, newValue: string | null) => {
-        if (newValue) {
-            const index = cargamentosStrings.indexOf(newValue);
-            datosNuevaCarga["idCargamento"] = cargamentosIds[index];
+    const handleClickGuardar = () => {
+        setError(false);
+        if (
+            !choferSeleccionado ||
+            !patenteCamionSeleccionada ||
+            !patenteAcopladoSeleccionada ||
+            !empresaTransportistaSeleccionada
+        ) {
+            setError(true);
+            return;
         }
+        const turno = {
+            cuilChofer: choferSeleccionado,
+            patenteCamion: patenteCamionSeleccionada,
+            cuitEmpresa: empresaTransportistaSeleccionada,
+            patenteAcoplado: patenteAcopladoSeleccionada,
+            patenteAcopladoExtra: patenteAcopladoSeleccionadaExtra,
+        };
+        console.log(turno);
+        fetch(`${backendURL}/cargas/${idCarga}/cupos/${fecha}/turnos`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(turno),
+        })
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error("Error al crear la turno");
+                }
+                response.json();
+            })
+            .catch(() => {});
     };
-    const patentesCamionesStrings = patentesCamiones.map(
-        (patenteCamion) => patenteCamion.patente
-    );
-
     return (
         <React.Fragment>
             <Box
@@ -91,11 +145,14 @@ export default function Turno({ datosNuevaCarga }: Props) {
                         >
                             <Autocomplete
                                 disablePortal
-                                options={cargamentosStrings}
-                                onChange={seleccionarCargamento}
+                                options={choferes.map((chofer) =>
+                                    chofer.cuil.toString()
+                                )}
+                                onChange={(e, v) => setChoferSeleccionado(v)}
                                 sx={{ width: 300 }}
                                 renderInput={(params) => (
                                     <TextField
+                                        error={error && !choferSeleccionado}
                                         {...params}
                                         label="Cuil chofer"
                                     />
@@ -103,10 +160,18 @@ export default function Turno({ datosNuevaCarga }: Props) {
                             />
                             <Autocomplete
                                 disablePortal
-                                options={patentesCamionesStrings}
+                                options={patentesCamiones.map((patenteCamion) =>
+                                    patenteCamion.patente.toString()
+                                )}
+                                onChange={(e, v) =>
+                                    setPatenteCamionSeleccionada(v)
+                                }
                                 sx={{ width: 300 }}
                                 renderInput={(params) => (
                                     <TextField
+                                        error={
+                                            error && !patenteCamionSeleccionada
+                                        }
                                         {...params}
                                         label="Patente camion"
                                     />
@@ -124,11 +189,19 @@ export default function Turno({ datosNuevaCarga }: Props) {
                         >
                             <Autocomplete
                                 disablePortal
-                                options={cargamentosStrings}
-                                onChange={seleccionarCargamento} // Maneja el cambio de cargamento
+                                options={empresasTransportistas.map((empresa) =>
+                                    empresa.cuit.toString()
+                                )}
+                                onChange={(e, v) =>
+                                    setEmpresaTransportistaSeleccionada(v)
+                                }
                                 sx={{ width: 300 }}
                                 renderInput={(params) => (
                                     <TextField
+                                        error={
+                                            error &&
+                                            !empresaTransportistaSeleccionada
+                                        }
                                         {...params}
                                         label="Cuit empresa"
                                     />
@@ -136,11 +209,20 @@ export default function Turno({ datosNuevaCarga }: Props) {
                             />
                             <Autocomplete
                                 disablePortal
-                                options={cargamentosStrings}
-                                onChange={seleccionarCargamento} // Maneja el cambio de cargamento
+                                options={patentesAcoplados.map(
+                                    (patenteAcoplado) =>
+                                        patenteAcoplado.patente.toString()
+                                )}
+                                onChange={(e, v) =>
+                                    setPatenteAcopladoSeleccionada(v)
+                                }
                                 sx={{ width: 300 }}
                                 renderInput={(params) => (
                                     <TextField
+                                        error={
+                                            error &&
+                                            !patenteAcopladoSeleccionada
+                                        }
                                         {...params}
                                         label="Patente semi"
                                     />
@@ -158,8 +240,13 @@ export default function Turno({ datosNuevaCarga }: Props) {
                         >
                             <Autocomplete
                                 disablePortal
-                                options={cargamentosStrings}
-                                onChange={seleccionarCargamento} // Maneja el cambio de cargamento
+                                options={patentesAcoplados.map(
+                                    (patenteAcoplado) =>
+                                        patenteAcoplado.patente.toString()
+                                )}
+                                onChange={(e, v) =>
+                                    setPatenteAcopladoSeleccionadaExtra(v)
+                                }
                                 sx={{ width: 300 }}
                                 renderInput={(params) => (
                                     <TextField
@@ -178,19 +265,14 @@ export default function Turno({ datosNuevaCarga }: Props) {
                                 justifyContent: "center",
                             }}
                         >
-                            <CustomButtom title="Confirmar" />
+                            <CustomButtom
+                                onClick={handleClickGuardar}
+                                title="Confirmar"
+                            />
                         </Box>
                     </Box>
                 </CardActions>
             </Box>
         </React.Fragment>
-    );
-}
-
-export function CreadorTurno({ datosNuevaCarga }: Props) {
-    return (
-        <Box sx={{ height: "570px", width: "720px" }}>
-            <Turno datosNuevaCarga={datosNuevaCarga} />
-        </Box>
     );
 }

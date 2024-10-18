@@ -21,8 +21,6 @@ export function ContainerCupos() {
     const { idCarga } = useParams();
     const { backendURL, theme } = useContext(ContextoGeneral);
     const [cupos, setCupos] = useState<any[]>([]);
-    const [sinCupos, setSinCupos] = useState<any[]>([]);
-    const [datosNuevoCupo, setDatosNuevoCupo] = useState<boolean>(false);
 
     useEffect(() => {
         fetch(
@@ -30,14 +28,9 @@ export function ContainerCupos() {
         )
             .then((response) => response.json())
             .then((cupos) => {
-                if (cupos.length === 0) {
-                    setDatosNuevoCupo(true); // No hay cupos disponibles
-                } else {
-                    setCupos(cupos); // Setea los cupos si existen
-                }
+                setCupos(cupos); // Setea los cupos si existen
             })
             .catch(() => {
-                setDatosNuevoCupo(true); // Error al obtener datos o sin datos
                 console.error("Error al obtener las cupos disponibles");
             });
     }, []);
@@ -81,6 +74,7 @@ export function ContainerCupos() {
                         fecha={cupo.fecha}
                         cuposDisponibles={cupo.cupos}
                         cuposConfirmados={cupo.turnos.length}
+                        idCarga={idCarga}
                     />
 
                     <Grid
@@ -109,7 +103,7 @@ export function ContainerCupos() {
                     </Grid>
                 </Grid>
             ))}
-            {datosNuevoCupo === true && (
+            {cupos.length === 0 && (
                 <Box
                     display={"flex"}
                     flexDirection={"row"}

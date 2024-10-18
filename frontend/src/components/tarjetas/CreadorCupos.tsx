@@ -82,26 +82,35 @@ export function CreadorCupos(props: any) {
     const [errorFecha, setErrorFecha] = useState(false);
 
     const handleClickGuardar = () => {
+        setError(false);
+        setErrorFecha(false);
         if (cupoSeleccionado == 0 || cupoSeleccionado == null) {
             setError(true);
-        } else {
-            setError(false); // Opcional: resetea el estado de error si la condición no se cumple
+            return;
         }
 
         if (selectedDates.length == 0) {
             setErrorFecha(true);
-        } else {
-            setErrorFecha(false); // Opcional: resetea el estado de error si la condición no se cumple
+            return;
         }
 
         for (let fecha of selectedDates) {
             const cupoDeCarga = {
-                idCarga: idCarga,
                 fecha: fecha.format("YYYY-MM-DD"),
                 cupos: cupoSeleccionado,
             };
-            console.log(cupoDeCarga);
-            // hacer fetch
+            fetch(`${backendURL}/cargas/${idCarga}/cupos`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(cupoDeCarga),
+            })
+                .then((response) => {
+                    if (!response.ok) {
+                        throw new Error("Error al crear la carga");
+                    }
+                    response.json();
+                })
+                .catch(() => {});
         }
     };
 
