@@ -1,11 +1,5 @@
 import * as React from "react";
-import {
-    DataGrid,
-    GridColDef,
-    GridRowModes,
-    GridSlots,
-    GridToolbar,
-} from "@mui/x-data-grid";
+import { DataGrid, GridColDef, GridToolbarQuickFilter } from "@mui/x-data-grid";
 import {
     Box,
     Button,
@@ -17,18 +11,18 @@ import {
     TextField,
     Typography,
 } from "@mui/material";
-import SettingsIcon from "@mui/icons-material/Settings";
 import { choferes } from "./listachoferes"; // Importar los datos de empresas.ts
 import { GridRowsProp } from "@mui/x-data-grid";
 import { GridRowModesModel } from "@mui/x-data-grid";
 import { GridToolbarContainer } from "@mui/x-data-grid";
-import { PersonAddAlt } from "@mui/icons-material";
+import { DomainAdd, PersonAddAlt } from "@mui/icons-material";
 import { GridToolbarFilterButton } from "@mui/x-data-grid";
 import { GridToolbarExport } from "@mui/x-data-grid";
 import { GridToolbarColumnsButton } from "@mui/x-data-grid";
-import { NumericFormat, NumericFormatProps } from "react-number-format";
+import BorderColorIcon from "@mui/icons-material/BorderColor";
 import AutocompletarPais from "../autocompletar/AutocompletarPais";
 import { PatternFormat } from "react-number-format";
+import { ContextoGeneral } from "../Contexto";
 
 interface EditToolbarProps {
     setRows: (newRows: (oldRows: GridRowsProp) => GridRowsProp) => void;
@@ -40,19 +34,61 @@ interface EditToolbarProps {
 
 function EditToolbar(props: EditToolbarProps) {
     const { setRows, setRowModesModel, onAdd } = props;
+    const { theme } = React.useContext(ContextoGeneral);
 
     return (
-        <GridToolbarContainer>
-            <Button
-                color="primary"
-                startIcon={<PersonAddAlt />}
-                onClick={onAdd}
+        <GridToolbarContainer sx={{ marginBottom: 1 }}>
+            <Box
+                sx={{
+                    flexGrow: 1,
+                    display: "flex",
+                    justifyContent: "flex-start",
+                }}
             >
-                Agregar chofer
-            </Button>
-            <GridToolbarFilterButton />
-            <GridToolbarExport />
-            <GridToolbarColumnsButton />
+                <GridToolbarQuickFilter />
+            </Box>
+            <Box
+                sx={{
+                    display: "flex",
+                    justifyContent: "flex-end",
+                    marginRight: 3,
+                }}
+            >
+                <Button
+                    startIcon={<PersonAddAlt />}
+                    onClick={onAdd}
+                    sx={{ color: theme.colores.azul }}
+                >
+                    Agregar chofer
+                </Button>
+                <GridToolbarFilterButton
+                    slotProps={{
+                        button: {
+                            sx: {
+                                color: theme.colores.azul,
+                            },
+                        },
+                    }}
+                />
+                <GridToolbarExport
+                    slotProps={{
+                        button: {
+                            sx: {
+                                color: theme.colores.azul,
+                            },
+                        },
+                    }}
+                />
+                <GridToolbarColumnsButton
+                    slotProps={{
+                        button: {
+                            sx: {
+                                color: theme.colores.azul,
+                            },
+                        },
+                    }}
+                />
+            </Box>
         </GridToolbarContainer>
     );
 }
@@ -151,6 +187,7 @@ export default function Choferes() {
     const [isEditMode, setIsEditMode] = React.useState(false);
     const [selectedRow, setSelectedRow] = React.useState<any>(null);
     const [editedRow, setEditedRow] = React.useState<any>(null);
+    const { theme } = React.useContext(ContextoGeneral);
 
     const handleOpen = (row: any) => {
         setSelectedRow(row);
@@ -200,22 +237,100 @@ export default function Choferes() {
     };
 
     const columns: GridColDef[] = [
-        { field: "cuil", headerName: "Cuil", width: 150 },
-        { field: "numeroCel", headerName: "Número Celular", width: 150 },
-        { field: "nombre", headerName: "Nombre", width: 150 },
-        { field: "apellido", headerName: "Apellido", width: 150 },
-        { field: "edad", headerName: "Edad", width: 130 },
-        { field: "cuitEmpresa", headerName: "Cuit Empresa", width: 150 },
-        { field: "urlInti", headerName: "URL Inti", width: 200 },
-        { field: "idUbicacion", headerName: "ID Ubicacion", width: 130 },
+        {
+            field: "cuil",
+            headerName: "Cuil",
+            flex: 1,
+            renderHeader: () => (
+                <strong style={{ color: theme.colores.grisOscuro }}>
+                    Cuil
+                </strong>
+            ),
+        },
+        {
+            field: "numeroCel",
+            headerName: "Número Celular",
+            flex: 1,
+            renderHeader: () => (
+                <strong style={{ color: theme.colores.grisOscuro }}>
+                    Número Celular
+                </strong>
+            ),
+        },
+        {
+            field: "nombre",
+            headerName: "Nombre",
+            flex: 1,
+            renderHeader: () => (
+                <strong style={{ color: theme.colores.grisOscuro }}>
+                    Nombre
+                </strong>
+            ),
+        },
+        {
+            field: "apellido",
+            headerName: "Apellido",
+            flex: 1,
+            renderHeader: () => (
+                <strong style={{ color: theme.colores.grisOscuro }}>
+                    Apellido
+                </strong>
+            ),
+        },
+        {
+            field: "edad",
+            headerName: "Edad",
+            flex: 1,
+            renderHeader: () => (
+                <strong style={{ color: theme.colores.grisOscuro }}>
+                    Edad
+                </strong>
+            ),
+        },
+        {
+            field: "cuitEmpresa",
+            headerName: "Cuit Empresa",
+            flex: 1,
+            renderHeader: () => (
+                <strong style={{ color: theme.colores.grisOscuro }}>
+                    Cuit Empresa
+                </strong>
+            ),
+        },
+        {
+            field: "urlInti",
+            headerName: "URL Inti",
+            flex: 1,
+            renderHeader: () => (
+                <strong style={{ color: theme.colores.grisOscuro }}>
+                    URL Inti
+                </strong>
+            ),
+        },
+        {
+            field: "idUbicacion",
+            headerName: "ID Ubicacion",
+            flex: 1,
+            renderHeader: () => (
+                <strong style={{ color: theme.colores.grisOscuro }}>
+                    ID Ubicacion
+                </strong>
+            ),
+        },
         {
             field: "edit",
             headerName: "Edit",
             width: 100,
+            renderHeader: () => (
+                <strong style={{ color: theme.colores.grisOscuro }}>
+                    Edit
+                </strong>
+            ),
             renderCell: (params) => (
-                <SettingsIcon
+                <BorderColorIcon
                     onClick={() => handleOpen(params.row)}
-                    style={{ cursor: "pointer", color: "#1976d2" }}
+                    fontSize="small"
+                    style={{ cursor: "pointer", color: theme.colores.azul }}
                 />
             ),
         },
@@ -223,205 +338,237 @@ export default function Choferes() {
 
     return (
         <>
-            <Typography variant="h5" component="div" sx={{ color: "#163660" }}>
-                Choferes
-            </Typography>
-            <Box margin="10px" sx={{ height: "80%", width: "100%" }}>
-                <DataGrid
-                    rows={rows}
-                    columns={columns}
-                    slots={{
-                        toolbar: (props) => (
-                            <EditToolbar
-                                setRows={function (
-                                    newRows: (
-                                        oldRows: GridRowsProp
-                                    ) => GridRowsProp
-                                ): void {
-                                    throw new Error(
-                                        "Function not implemented."
-                                    );
-                                }}
-                                setRowModesModel={function (
-                                    newModel: (
-                                        oldModel: GridRowModesModel
-                                    ) => GridRowModesModel
-                                ): void {
-                                    throw new Error(
-                                        "Function not implemented."
-                                    );
-                                }}
-                                {...props}
-                                onAdd={handleAddClick}
-                            />
-                        ),
+            <Box
+                sx={{
+                    backgroundColor: theme.colores.grisClaro,
+                    height: "91vh",
+                    width: "96vw",
+                    padding: 3,
+                }}
+            >
+                <Typography
+                    variant="h5"
+                    component="div"
+                    sx={{
+                        color: theme.colores.azul,
+                        fontWeight: "bold",
+                        mb: 2,
+                        fontSize: "2rem",
+                        pb: 1,
+                        marginLeft: 1,
                     }}
-                />
-                <Dialog open={open} onClose={handleClose}>
-                    <DialogTitle>
-                        {isEditMode ? "Edit Row" : "Add Row"}
-                    </DialogTitle>
-                    <DialogContent>
-                        <Stack direction="row" spacing={2}>
-                            <TextField
-                                margin="dense"
-                                label="Cuil"
-                                name="numberformat"
-                                id="formatted-numberformat-input"
-                                fullWidth
-                                variant="outlined"
-                                slotProps={{
-                                    input: {
-                                        inputComponent: CuilFormat as any,
-                                    },
-                                }}
-                                value={editedRow?.cuil || ""}
-                                onChange={(e) =>
-                                    setEditedRow({
-                                        ...editedRow,
-                                        cuil: e.target.value,
-                                    })
-                                }
-                            />
-                        </Stack>
-                        <Box
-                            display="flex"
-                            flexDirection="row"
-                            gap={2}
-                            alignContent={"center"}
-                            alignItems={"center"}
-                            marginTop={2}
-                            marginBottom={1}
-                        >
-                            <Box width={"100px"}>
-                                <AutocompletarPais />
-                            </Box>
-                            <>-</>
-                            <Stack width="400px" direction="row" spacing={2}>
+                >
+                    Choferes
+                </Typography>
+                <Box margin="10px" sx={{ height: "90%", width: "100%" }}>
+                    <DataGrid
+                        rows={rows}
+                        columns={columns}
+                        sx={{
+                            "& .MuiDataGrid-columnHeader": {
+                                backgroundColor: theme.colores.grisClaro,
+                                color: theme.colores.grisOscuro,
+                            },
+                            border: "none",
+                        }}
+                        slots={{
+                            toolbar: (props) => (
+                                <EditToolbar
+                                    setRows={function (
+                                        newRows: (
+                                            oldRows: GridRowsProp
+                                        ) => GridRowsProp
+                                    ): void {
+                                        throw new Error(
+                                            "Function not implemented."
+                                        );
+                                    }}
+                                    setRowModesModel={function (
+                                        newModel: (
+                                            oldModel: GridRowModesModel
+                                        ) => GridRowModesModel
+                                    ): void {
+                                        throw new Error(
+                                            "Function not implemented."
+                                        );
+                                    }}
+                                    {...props}
+                                    onAdd={handleAddClick}
+                                />
+                            ),
+                        }}
+                    />
+                    <Dialog open={open} onClose={handleClose}>
+                        <DialogTitle>
+                            {isEditMode ? "Edit Row" : "Add Row"}
+                        </DialogTitle>
+                        <DialogContent>
+                            <Stack direction="row" spacing={2}>
                                 <TextField
                                     margin="dense"
-                                    label="Numero"
+                                    label="Cuil"
                                     name="numberformat"
                                     id="formatted-numberformat-input"
                                     fullWidth
                                     variant="outlined"
                                     slotProps={{
                                         input: {
-                                            inputComponent: NumeroFormat as any,
+                                            inputComponent: CuilFormat as any,
                                         },
                                     }}
-                                    value={editedRow?.numeroCel || ""}
+                                    value={editedRow?.cuil || ""}
                                     onChange={(e) =>
                                         setEditedRow({
                                             ...editedRow,
-                                            numerocel: e.target.value,
+                                            cuil: e.target.value,
                                         })
                                     }
                                 />
                             </Stack>
-                        </Box>
-                        <TextField
-                            margin="dense"
-                            label="Nombre"
-                            type="text"
-                            fullWidth
-                            variant="outlined"
-                            value={editedRow?.nombre || ""}
-                            onChange={(e) =>
-                                setEditedRow({
-                                    ...editedRow,
-                                    nombre: e.target.value,
-                                })
-                            }
-                        />
-                        <TextField
-                            margin="dense"
-                            label="Apellido"
-                            type="text"
-                            fullWidth
-                            variant="outlined"
-                            value={editedRow?.apellido || ""}
-                            onChange={(e) =>
-                                setEditedRow({
-                                    ...editedRow,
-                                    apellido: e.target.value,
-                                })
-                            }
-                        />
-                        <Stack direction="row" spacing={2}>
+                            <Box
+                                display="flex"
+                                flexDirection="row"
+                                gap={2}
+                                alignContent={"center"}
+                                alignItems={"center"}
+                                marginTop={2}
+                                marginBottom={1}
+                            >
+                                <Box width={"100px"}>
+                                    <AutocompletarPais />
+                                </Box>
+                                <>-</>
+                                <Stack
+                                    width="400px"
+                                    direction="row"
+                                    spacing={2}
+                                >
+                                    <TextField
+                                        margin="dense"
+                                        label="Numero"
+                                        name="numberformat"
+                                        id="formatted-numberformat-input"
+                                        fullWidth
+                                        variant="outlined"
+                                        slotProps={{
+                                            input: {
+                                                inputComponent:
+                                                    NumeroFormat as any,
+                                            },
+                                        }}
+                                        value={editedRow?.numeroCel || ""}
+                                        onChange={(e) =>
+                                            setEditedRow({
+                                                ...editedRow,
+                                                numerocel: e.target.value,
+                                            })
+                                        }
+                                    />
+                                </Stack>
+                            </Box>
                             <TextField
                                 margin="dense"
-                                label="Edad"
-                                name="numberformat"
-                                id="formatted-numberformat-input"
+                                label="Nombre"
+                                type="text"
                                 fullWidth
                                 variant="outlined"
-                                slotProps={{
-                                    input: {
-                                        inputComponent: EdadFormat as any,
-                                    },
-                                }}
-                                value={editedRow?.edad || ""}
+                                value={editedRow?.nombre || ""}
                                 onChange={(e) =>
                                     setEditedRow({
                                         ...editedRow,
-                                        edad: e.target.value,
+                                        nombre: e.target.value,
                                     })
                                 }
                             />
-                        </Stack>
-                        <TextField
-                            margin="dense"
-                            label="Cuit Empresa"
-                            type="text"
-                            fullWidth
-                            variant="outlined"
-                            value={editedRow?.cuitEmpresa || ""}
-                            onChange={(e) =>
-                                setEditedRow({
-                                    ...editedRow,
-                                    cuitEmpresa: e.target.value,
-                                })
-                            }
-                        />
-                        <TextField
-                            margin="dense"
-                            label="URL Inti"
-                            type="text"
-                            fullWidth
-                            variant="outlined"
-                            value={editedRow?.urlInti || ""}
-                            onChange={(e) =>
-                                setEditedRow({
-                                    ...editedRow,
-                                    urlInti: e.target.value,
-                                })
-                            }
-                        />
-                        <TextField
-                            margin="dense"
-                            label="ID Ubicacion"
-                            type="text"
-                            fullWidth
-                            variant="outlined"
-                            value={editedRow?.idUbicacion || ""}
-                            onChange={(e) =>
-                                setEditedRow({
-                                    ...editedRow,
-                                    idUbicacion: e.target.value,
-                                })
-                            }
-                        />
-                    </DialogContent>
-                    <DialogActions>
-                        <Button onClick={handleClose} color="primary">
-                            Cancelar
-                        </Button>
-                        <Button onClick={handleSave} color="primary">
-                            Guardar
-                        </Button>
-                    </DialogActions>
-                </Dialog>
+                            <TextField
+                                margin="dense"
+                                label="Apellido"
+                                type="text"
+                                fullWidth
+                                variant="outlined"
+                                value={editedRow?.apellido || ""}
+                                onChange={(e) =>
+                                    setEditedRow({
+                                        ...editedRow,
+                                        apellido: e.target.value,
+                                    })
+                                }
+                            />
+                            <Stack direction="row" spacing={2}>
+                                <TextField
+                                    margin="dense"
+                                    label="Edad"
+                                    name="numberformat"
+                                    id="formatted-numberformat-input"
+                                    fullWidth
+                                    variant="outlined"
+                                    slotProps={{
+                                        input: {
+                                            inputComponent: EdadFormat as any,
+                                        },
+                                    }}
+                                    value={editedRow?.edad || ""}
+                                    onChange={(e) =>
+                                        setEditedRow({
+                                            ...editedRow,
+                                            edad: e.target.value,
+                                        })
+                                    }
+                                />
+                            </Stack>
+                            <TextField
+                                margin="dense"
+                                label="Cuit Empresa"
+                                type="text"
+                                fullWidth
+                                variant="outlined"
+                                value={editedRow?.cuitEmpresa || ""}
+                                onChange={(e) =>
+                                    setEditedRow({
+                                        ...editedRow,
+                                        cuitEmpresa: e.target.value,
+                                    })
+                                }
+                            />
+                            <TextField
+                                margin="dense"
+                                label="URL Inti"
+                                type="text"
+                                fullWidth
+                                variant="outlined"
+                                value={editedRow?.urlInti || ""}
+                                onChange={(e) =>
+                                    setEditedRow({
+                                        ...editedRow,
+                                        urlInti: e.target.value,
+                                    })
+                                }
+                            />
+                            <TextField
+                                margin="dense"
+                                label="ID Ubicacion"
+                                type="text"
+                                fullWidth
+                                variant="outlined"
+                                value={editedRow?.idUbicacion || ""}
+                                onChange={(e) =>
+                                    setEditedRow({
+                                        ...editedRow,
+                                        idUbicacion: e.target.value,
+                                    })
+                                }
+                            />
+                        </DialogContent>
+                        <DialogActions>
+                            <Button onClick={handleClose} color="primary">
+                                Cancelar
+                            </Button>
+                            <Button onClick={handleSave} color="primary">
+                                Guardar
+                            </Button>
+                        </DialogActions>
+                    </Dialog>
+                </Box>
             </Box>
         </>
     );

@@ -23,9 +23,13 @@ export function ContainerCupos() {
     const [cupos, setCupos] = useState<any[]>([]);
 
     useEffect(() => {
-        fetch(
-            `${backendURL}/cargas/${idCarga}/cupos?incluirAnteriores=true&incluirErrores=true`
-        )
+        fetch(`${backendURL}/cargas/${idCarga}/cupos`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "ngrok-skip-browser-warning": "true",
+            },
+        })
             .then((response) => response.json())
             .then((cupos) => {
                 setCupos(cupos); // Setea los cupos si existen
@@ -69,6 +73,7 @@ export function ContainerCupos() {
                     flexWrap={"nowrap"}
                     marginLeft={"50px"}
                     alignItems={"center"}
+                    justifyContent={"center"}
                 >
                     <TarjetaCupos
                         fecha={cupo.fecha}

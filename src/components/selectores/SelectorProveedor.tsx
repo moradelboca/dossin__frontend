@@ -50,20 +50,36 @@ export default function SelectorProveedor() {
     const { backendURL } = useContext(ContextoGeneral);
     const [cargamentos, setCargamentos] = useState<any[]>([]);
     const [proveedores, setProveedores] = useState<any[]>([]);
-    const [valueProveedores, setValueProveedores] = useState<any>(datosNuevaCarga["nombreProveedor"] || null);
-    const [valueCargamentos, setValueCargamentos] = useState<any>(datosNuevaCarga["nombreCargamento"] || null);
+    const [valueProveedores, setValueProveedores] = useState<any>(
+        datosNuevaCarga["nombreProveedor"] || null
+    );
+    const [valueCargamentos, setValueCargamentos] = useState<any>(
+        datosNuevaCarga["nombreCargamento"] || null
+    );
 
     useEffect(() => {
-        fetch(`${backendURL}/cargas/cargamentos`)
+        fetch(`${backendURL}/cargas/cargamentos`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "ngrok-skip-browser-warning": "true",
+            },
+        })
             .then((response) => response.json())
             .then((car) => {
-                setCargamentos(car)
+                setCargamentos(car);
             })
             .catch(() =>
                 console.error("Error al obtener los Cargamentos disponibles")
             );
 
-        fetch(`${backendURL}/proveedores`)
+        fetch(`${backendURL}/proveedores`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "ngrok-skip-browser-warning": "true",
+            },
+        })
             .then((response) => response.json())
             .then((p) => setProveedores(p))
             .catch(() =>
@@ -77,9 +93,13 @@ export default function SelectorProveedor() {
 
     const seleccionarCargamento = (event: any, seleccionado: string | null) => {
         if (seleccionado) {
-            const cargamentosStrings = cargamentos.map((cargamento) => cargamento.nombre);
+            const cargamentosStrings = cargamentos.map(
+                (cargamento) => cargamento.nombre
+            );
             const index = cargamentosStrings.indexOf(seleccionado);
-            const cargamentosIds = cargamentos.map((cargamento) => cargamento.id);
+            const cargamentosIds = cargamentos.map(
+                (cargamento) => cargamento.id
+            );
             datosNuevaCarga["idCargamento"] = cargamentosIds[index];
             datosNuevaCarga["nombreCargamento"] = seleccionado;
             setValueCargamentos(seleccionado);
@@ -87,7 +107,9 @@ export default function SelectorProveedor() {
     };
     const seleccionarProveedor = (event: any, seleccionado: string | null) => {
         if (seleccionado) {
-            const proveedoresStrings = proveedores.map((proveedor) => proveedor.nombre);
+            const proveedoresStrings = proveedores.map(
+                (proveedor) => proveedor.nombre
+            );
             const index = proveedoresStrings.indexOf(seleccionado);
             const proveedoresIds = proveedores.map((proveedor) => proveedor.id);
             datosNuevaCarga["idProveedor"] = proveedoresIds[index];
@@ -106,13 +128,17 @@ export default function SelectorProveedor() {
             width={"800px"}
         >
             <Autocomplete
-                options={proveedores.map((proveedor: any) => proveedor.nombre)} 
+                options={proveedores.map((proveedor: any) => proveedor.nombre)}
                 value={valueProveedores}
                 defaultValue={valueProveedores}
-                onChange={seleccionarProveedor} 
+                onChange={seleccionarProveedor}
                 sx={{ width: 540 }}
                 renderInput={(params) => (
-                    <TextField {...params} error={!valueProveedores ? datosSinCompletar : false} label="Proveedor" />
+                    <TextField
+                        {...params}
+                        error={!valueProveedores ? datosSinCompletar : false}
+                        label="Proveedor"
+                    />
                 )}
             />
             <Box
@@ -128,7 +154,11 @@ export default function SelectorProveedor() {
                         <TextField
                             label="Kilometros"
                             value={datosNuevaCarga["cantidadKm"]}
-                            error={!datosNuevaCarga["cantidadKm"] ? datosSinCompletar : false}
+                            error={
+                                !datosNuevaCarga["cantidadKm"]
+                                    ? datosSinCompletar
+                                    : false
+                            }
                             onChange={seleccionarKilometros}
                             name="numberformat"
                             id="formatted-numberformat-input"
@@ -152,7 +182,15 @@ export default function SelectorProveedor() {
                         onChange={seleccionarCargamento} // Maneja el cambio de cargamento
                         sx={{ width: 300 }}
                         renderInput={(params) => (
-                            <TextField {...params} error={!valueCargamentos ? datosSinCompletar : false} label="Cargamento" />
+                            <TextField
+                                {...params}
+                                error={
+                                    !valueCargamentos
+                                        ? datosSinCompletar
+                                        : false
+                                }
+                                label="Cargamento"
+                            />
                         )}
                     />
                 </Box>

@@ -19,6 +19,7 @@ import CrearCargaStepper from "./tarjetas/CrearCargaStepper";
 import { CustomButtom } from "./botones/CustomButtom";
 import { useNavigate } from "react-router-dom";
 import AddIcon from "@mui/icons-material/Add";
+import BorderColorIcon from "@mui/icons-material/BorderColor";
 
 export function ContainerTarjetasCargas() {
     const { backendURL } = useContext(ContextoGeneral);
@@ -27,22 +28,35 @@ export function ContainerTarjetasCargas() {
     const [cupos, setCupos] = useState<any[]>([]);
     const [openDialog, setOpenDialog] = useState(false);
     const navigate = useNavigate();
+    const [pasoSeleccionado, setPasoSeleccionado] = useState<any>(null);
 
     useEffect(() => {
-        fetch(`${backendURL}/cargas`)
+        fetch(`${backendURL}/cargas`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "ngrok-skip-browser-warning": "true",
+            },
+        })
             .then((res) => res.json())
             .then((data) => {
                 setCargas(data);
             })
-            .catch(() => {
+            .catch((e) => {
+                console.log(e);
                 console.error("Error al obtener las cargas");
             });
     }, []);
     useEffect(() => {
+        console.log(cargaSeleccionada);
         if (cargaSeleccionada?.id) {
-            fetch(
-                `${backendURL}/cargas/${cargaSeleccionada.id}/cupos?incluirAnteriores=true&incluirErrores=true`
-            )
+            fetch(`${backendURL}/cargas/${cargaSeleccionada.id}/cupos`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "ngrok-skip-browser-warning": "true",
+                },
+            })
                 .then((response) => response.json())
                 .then((cupos) => {
                     setCupos(cupos);
@@ -59,10 +73,41 @@ export function ContainerTarjetasCargas() {
     const handleClickCrearCarga = () => {
         setOpenDialog(true);
     };
+    const handleClickEditarTarifa = () => {
+        if (cargaSeleccionada) {
+            setOpenDialog(true);
+            setPasoSeleccionado(3);
+        }
+    };
+    const handleClickEditarRecorrido = () => {
+        if (cargaSeleccionada) {
+            setOpenDialog(true);
+            setPasoSeleccionado(1);
+        }
+    };
+    const handleClickEditarDetalle = () => {
+        if (cargaSeleccionada) {
+            setOpenDialog(true);
+            setPasoSeleccionado(4);
+        }
+    };
+    const handleClickEditarKilometros = () => {
+        if (cargaSeleccionada) {
+            setOpenDialog(true);
+            setPasoSeleccionado(2);
+        }
+    };
+    const handleClickEditarTipoAcoplado = () => {
+        if (cargaSeleccionada) {
+            setOpenDialog(true);
+            setPasoSeleccionado(2);
+        }
+    };
 
     const handleCloseDialog = () => {
         setOpenDialog(false);
     };
+
     const handleClickVerCupos = () => {
         navigate(`/cargas/${cargaSeleccionada.id}/cupos`);
     };
@@ -89,9 +134,10 @@ export function ContainerTarjetasCargas() {
                     display: "flex",
                     flexDirection: "column",
                     gap: 2,
-                    minWidth: 256,
-                    maxWidth: 550,
+                    maxWidth: "35vw",
                     overflowY: "auto",
+                    overflowX: "hidden",
+                    alignItems: "center",
                 }}
             >
                 <BotonIcon
@@ -164,10 +210,27 @@ export function ContainerTarjetasCargas() {
                                 marginLeft: 4,
                             }}
                         >
-                            <Typography>Recorrido</Typography>
                             <Box
                                 sx={{
-                                    marginTop: 1,
+                                    display: "flex",
+                                    flexDirection: "row",
+                                    justifyContent: "space-between",
+                                    alignItems: "center",
+                                    width: "100%",
+                                    marginRight: 3,
+                                    margingBottom: 1,
+                                }}
+                            >
+                                <Typography>Recorrido</Typography>
+                                <IconButton
+                                    onClick={handleClickEditarRecorrido}
+                                >
+                                    <BorderColorIcon sx={{ fontSize: 17 }} />
+                                </IconButton>
+                            </Box>
+                            <Box
+                                sx={{
+                                    marginTop: 0,
                                 }}
                             >
                                 <Mapa2
@@ -208,12 +271,9 @@ export function ContainerTarjetasCargas() {
                                 sx={{
                                     display: "flex",
                                     flexDirection: "row",
-                                    gap: 10,
-                                    justifyContent: "flex-start",
+                                    justifyContent: "space-between",
                                     alignItems: "center",
-                                    marginBottom: 0,
-                                    paddingBottom: 0,
-                                    maxWidth: 300,
+                                    width: "100%",
                                 }}
                             >
                                 <Typography>Cupos</Typography>
@@ -312,7 +372,7 @@ export function ContainerTarjetasCargas() {
                         {/* Caja 1 */}
                         <Box
                             marginTop={0}
-                            marginLeft={8}
+                            marginLeft={2}
                             marginBottom={1}
                             sx={{
                                 width: { xs: "100%", md: "50%" },
@@ -335,9 +395,24 @@ export function ContainerTarjetasCargas() {
                                     height: "100%",
                                 }}
                             >
-                                <Typography sx={{ alignSelf: "flex-start" }}>
-                                    Tarifa
-                                </Typography>
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        flexDirection: "row",
+                                        justifyContent: "space-between",
+                                        alignItems: "center",
+                                        width: "100%",
+                                    }}
+                                >
+                                    <Typography>Tarifa</Typography>
+                                    <IconButton
+                                        onClick={handleClickEditarTarifa}
+                                    >
+                                        <BorderColorIcon
+                                            sx={{ fontSize: 17 }}
+                                        />
+                                    </IconButton>
+                                </Box>
                                 <Box
                                     sx={{
                                         border: "1px solid #ccc",
@@ -345,13 +420,13 @@ export function ContainerTarjetasCargas() {
                                         padding: 2,
                                         width: "100%",
                                         textAlign: "left",
-                                        marginRight: 5,
                                     }}
                                 >
                                     <Typography
                                         variant="subtitle2"
                                         sx={{ marginLeft: 2 }}
                                         color="#90979f"
+                                        minHeight={22}
                                     >
                                         ${cargaSeleccionada?.tarifa} /
                                         {cargaSeleccionada?.tipoTarifa}
@@ -371,11 +446,27 @@ export function ContainerTarjetasCargas() {
                                     flexDirection: "column",
                                     width: "100%",
                                     height: "100%",
+                                    marginLeft: 2,
                                 }}
                             >
-                                <Typography sx={{ alignSelf: "flex-start" }}>
-                                    Kilómetros:
-                                </Typography>
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        flexDirection: "row",
+                                        justifyContent: "space-between",
+                                        alignItems: "center",
+                                        width: "100%",
+                                    }}
+                                >
+                                    <Typography>Kilometros</Typography>
+                                    <IconButton
+                                        onClick={handleClickEditarKilometros}
+                                    >
+                                        <BorderColorIcon
+                                            sx={{ fontSize: 17 }}
+                                        />
+                                    </IconButton>
+                                </Box>
                                 <Box
                                     sx={{
                                         border: "1px solid #ccc",
@@ -389,7 +480,7 @@ export function ContainerTarjetasCargas() {
                                         variant="subtitle2"
                                         sx={{ marginLeft: 2 }}
                                         color="#90979f"
-                                        minHeight={20}
+                                        minHeight={22}
                                     >
                                         {cargaSeleccionada?.cantidadKm}
                                     </Typography>
@@ -407,9 +498,22 @@ export function ContainerTarjetasCargas() {
                                     height: "100%",
                                 }}
                             >
-                                <Typography sx={{ alignSelf: "flex-start" }}>
-                                    Cupos creados
-                                </Typography>
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        flexDirection: "row",
+                                        justifyContent: "space-between",
+                                        alignItems: "center",
+                                        width: "100%",
+                                    }}
+                                >
+                                    <Typography>Cupos creados</Typography>
+                                    <IconButton onClick={handleClickVerCupos}>
+                                        <BorderColorIcon
+                                            sx={{ fontSize: 17 }}
+                                        />
+                                    </IconButton>
+                                </Box>
                                 <Box
                                     sx={{
                                         border: "1px solid #ccc",
@@ -417,13 +521,13 @@ export function ContainerTarjetasCargas() {
                                         padding: 2,
                                         width: "100%",
                                         textAlign: "left",
-                                        marginRight: 5,
                                     }}
                                 >
                                     <Typography
                                         variant="subtitle2"
                                         sx={{ marginLeft: 2 }}
                                         color="#90979f"
+                                        minHeight={22}
                                     >
                                         {cupos.length}
                                     </Typography>
@@ -439,11 +543,27 @@ export function ContainerTarjetasCargas() {
                                     flexDirection: "column",
                                     width: "100%",
                                     height: "100%",
+                                    marginLeft: 2,
                                 }}
                             >
-                                <Typography sx={{ alignSelf: "flex-start" }}>
-                                    Tipos de camiones
-                                </Typography>
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        flexDirection: "row",
+                                        justifyContent: "space-between",
+                                        alignItems: "center",
+                                        width: "100%",
+                                    }}
+                                >
+                                    <Typography>Tipo de acoplado</Typography>
+                                    <IconButton
+                                        onClick={handleClickEditarTipoAcoplado}
+                                    >
+                                        <BorderColorIcon
+                                            sx={{ fontSize: 17 }}
+                                        />
+                                    </IconButton>
+                                </Box>
                                 <Box
                                     sx={{
                                         border: "1px solid #ccc",
@@ -457,7 +577,7 @@ export function ContainerTarjetasCargas() {
                                         variant="subtitle2"
                                         sx={{ marginLeft: 2 }}
                                         color="#90979f"
-                                        minHeight={20}
+                                        minHeight={22}
                                     >
                                         {cargaSeleccionada?.tiposAcoplados}
                                     </Typography>
@@ -476,14 +596,20 @@ export function ContainerTarjetasCargas() {
                                 padding: 2,
                             }}
                         >
-                            <Typography
+                            <Box
                                 sx={{
-                                    marginLeft: 2,
-                                    alignSelf: "flex-start",
+                                    display: "flex",
+                                    flexDirection: "row",
+                                    justifyContent: "space-between",
+                                    alignItems: "center",
+                                    width: "100%",
                                 }}
                             >
-                                Detalles
-                            </Typography>
+                                <Typography>Detalles</Typography>
+                                <IconButton onClick={handleClickEditarDetalle}>
+                                    <BorderColorIcon sx={{ fontSize: 17 }} />
+                                </IconButton>
+                            </Box>
                             <Box
                                 sx={{
                                     border: "1px solid #ccc",
@@ -520,7 +646,11 @@ export function ContainerTarjetasCargas() {
             >
                 <DialogTitle>Crear Nueva Carga</DialogTitle>
                 <DialogContent sx={{ height: "80vh", alignContent: "center" }}>
-                    <CrearCargaStepper handleCloseDialog={handleCloseDialog} />
+                    <CrearCargaStepper
+                        datosCarga={cargaSeleccionada}
+                        pasoSeleccionado={pasoSeleccionado}
+                        handleCloseDialog={handleCloseDialog}
+                    />
                 </DialogContent>
             </Dialog>
         </Box>

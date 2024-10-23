@@ -134,7 +134,13 @@ export function MapaMain() {
         useState<string>("Carga");
 
     useEffect(() => {
-        fetch(`${backendURL}/ubicaciones`)
+        fetch(`${backendURL}/ubicaciones`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "ngrok-skip-browser-warning": "true",
+            },
+        })
             .then((response) => response.json())
             .then((ubicaciones) => {
                 setUbicaciones(ubicaciones);
@@ -171,8 +177,8 @@ export function MapaMain() {
                 <AutocompletarUbicacionMapa
                     ubicaciones={ubicaciones}
                     title="Ubicación de Carga"
-                    filtro={tipoUbicacionSeleccionado} // Pasamos el tipo de ubicación seleccionado
-                    onSelectLocation={setSelectedLocation} // Actualizar la ubicación seleccionada
+                    filtro={tipoUbicacionSeleccionado}
+                    onSelectLocation={setSelectedLocation}
                 />
                 <Autocomplete
                     options={tipoUbicacionOptions}

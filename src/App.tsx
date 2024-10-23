@@ -10,8 +10,9 @@ import Empresas from "./components/tablas/Empresas";
 import Choferes from "./components/tablas/Choferes";
 import TabCamiones from "./components/tablas/tabCamiones";
 import { MapaMain } from "./components/MapaMain";
-import { TarjetaCupos } from "./components/tarjetas/TarjetaCupos";
-import { TarjetaCarga } from "./components/tarjetas/TarjetaCarga";
+import WeatherChart from "./components/Clima";
+import Clima from "./components/Clima";
+import TarifaApp from "./components/calculadora/Calculadora";
 
 function App() {
     return (
@@ -28,9 +29,7 @@ function App() {
                             }}
                         >
                             <Routes>
-                                <Route
-                                    path="/" //element={<TarjetaCarga />}
-                                />
+                                <Route path="/" />
                                 <Route
                                     path="/cargas"
                                     element={<ContainerCargas />}
@@ -62,6 +61,11 @@ function App() {
                                 <Route
                                     path="/inconvenientes"
                                     element={<ContainerInconvenientes />}
+                                />
+                                <Route path="/clima" element={<Clima />} />
+                                <Route
+                                    path="/calculadora"
+                                    element={<TarifaApp />}
                                 />
                             </Routes>
                         </Box>

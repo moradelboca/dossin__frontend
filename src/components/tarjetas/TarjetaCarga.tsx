@@ -23,18 +23,22 @@ export function TarjetaCarga(props: any) {
     return (
         <Box
             sx={{
+                width: "100%",
                 minWidth: 256,
-                maxWidth: 500,
+                maxWidth: 450,
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                flexGrow: 1,
             }}
         >
             <Card
                 onClick={onClick}
                 sx={{
-                    minWidth: 256,
-                    maxWidth: 500,
                     borderRadius: "16px",
                     boxShadow: "none",
                     transition: "0.2s",
+                    flexGrow: 1,
                     "&:hover": {
                         boxShadow: `0 0 10px ${theme.colores.gris}`,
                         transform: "scale(1.05)",
@@ -45,6 +49,7 @@ export function TarjetaCarga(props: any) {
                     sx={{
                         backgroundColor: "#ffffff",
                         padding: "10px",
+                        flexGrow: 1,
                     }}
                 >
                     <Box

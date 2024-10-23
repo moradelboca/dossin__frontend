@@ -9,13 +9,21 @@ import { ContextoStepper } from "../tarjetas/CrearCargaStepper";
 
 export default function SelectorDeUbicacion() {
     const { datosNuevaCarga, datosSinCompletar } = useContext(ContextoStepper);
-    
+
     const { backendURL } = useContext(ContextoGeneral);
     const [ubicaciones, setUbicaciones] = useState<any[]>([]);
-    const [requiereBalanza, setRequiereBalanza] = useState<boolean>(datosNuevaCarga["requiereBalanza"] ?? false);
+    const [requiereBalanza, setRequiereBalanza] = useState<boolean>(
+        datosNuevaCarga["requiereBalanza"] ?? false
+    );
 
     useEffect(() => {
-        fetch(`${backendURL}/ubicaciones`)
+        fetch(`${backendURL}/ubicaciones`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "ngrok-skip-browser-warning": "true",
+            },
+        })
             .then((response) => response.json())
             .then((ubicaciones) => setUbicaciones(ubicaciones))
             .catch(() =>
@@ -133,8 +141,7 @@ export default function SelectorDeUbicacion() {
                 )}
                 {datosSinCompletar && (
                     <Typography color="#ff3333">
-                        Las horas de incio deben ser menores a las
-                        de fin.
+                        Las horas de incio deben ser menores a las de fin.
                     </Typography>
                 )}
             </Box>

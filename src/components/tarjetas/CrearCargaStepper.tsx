@@ -12,11 +12,10 @@ import SelectorMasInfo from "../selectores/SelectorMasInfo";
 import SelectorProveedor from "../selectores/SelectorProveedor";
 import { Typography } from "@mui/material";
 import { ContextoGeneral } from "../Contexto";
-import CheckIcon from '@mui/icons-material/Check';
-import CancelIcon from '@mui/icons-material/Cancel';
-import CircularProgress from '@mui/material/CircularProgress';
-import { useNavigate } from "react-router-dom";
-import ClearSharpIcon from '@mui/icons-material/ClearSharp';
+import CheckIcon from "@mui/icons-material/Check";
+import CancelIcon from "@mui/icons-material/Cancel";
+import CircularProgress from "@mui/material/CircularProgress";
+import ClearSharpIcon from "@mui/icons-material/ClearSharp";
 
 export const ContextoStepper = createContext<{
     datosNuevaCarga: any;
@@ -31,14 +30,16 @@ export const ContextoStepper = createContext<{
 });
 
 export default function CrearCargaStepper(props: any) {
-    const { handleCloseDialog } = props;
-    const [datosNuevaCarga, setDatosNuevaCarga] = useState<any>({
-        requiereBalanza: false,
-        idsTiposAcoplados: [],
-        incluyeIVA: false,
-    });
+    const { pasoSeleccionado, datosCarga, handleCloseDialog } = props;
+    const [datosNuevaCarga, setDatosNuevaCarga] = useState<any>(
+        datosCarga ?? {
+            requiereBalanza: false,
+            idsTiposAcoplados: [],
+            incluyeIVA: false,
+        }
+    );
     const [datosSinCompletar, setDatosSinCompletar] = useState(false);
-    const [pasoActivo, setPasoActivo] = useState(0);
+    const [pasoActivo, setPasoActivo] = useState<number>(pasoSeleccionado ?? 0);
     const [estadoCarga, setEstadoCarga] = useState("Creando");
 
     const { backendURL, theme } = useContext(ContextoGeneral);
@@ -46,27 +47,23 @@ export default function CrearCargaStepper(props: any) {
     const pasos = [
         {
             titulo: "Seleccionar Proveedor",
-            componente: <SelectorProveedor/>,
+            componente: <SelectorProveedor />,
         },
         {
             titulo: "Seleccionar ubicacion y horarios",
-            componente: (
-                <SelectorDeUbicacion/>
-            ),
+            componente: <SelectorDeUbicacion />,
         },
         {
             titulo: "Seleccionar acoplados permitidos",
-            componente: (
-                <SelectorDeAcoplados/>
-            ),
+            componente: <SelectorDeAcoplados />,
         },
         {
             titulo: "Seleccionar tarifa",
-            componente: <SelectorTarifa/>,
+            componente: <SelectorTarifa />,
         },
         {
             titulo: "Mas informacion",
-            componente: <SelectorMasInfo/>,
+            componente: <SelectorMasInfo />,
         },
     ];
 
@@ -92,20 +89,21 @@ export default function CrearCargaStepper(props: any) {
                     !datosNuevaCarga["horaFinCarga"] ||
                     !datosNuevaCarga["horaInicioDescarga"] ||
                     !datosNuevaCarga["horaFinDescarga"] ||
-                    (datosNuevaCarga["requiereBalanza"] && (
-                        !datosNuevaCarga["horaInicioBalanza"] ||
-                        !datosNuevaCarga["horaFinBalanza"] ||
-                        !datosNuevaCarga["idUbicacionBalanza"]
-                    )) ||
-                    datosNuevaCarga["horaInicioCarga"] >= datosNuevaCarga["horaFinCarga"] ||
-                    datosNuevaCarga["horaInicioDescarga"] >= datosNuevaCarga["horaFinDescarga"] ||
-                    (datosNuevaCarga["requiereBalanza"] && (
-                        datosNuevaCarga["horaInicioBalanza"] >= datosNuevaCarga["horaFinBalanza"]
-                    ))
+                    (datosNuevaCarga["requiereBalanza"] &&
+                        (!datosNuevaCarga["horaInicioBalanza"] ||
+                            !datosNuevaCarga["horaFinBalanza"] ||
+                            !datosNuevaCarga["idUbicacionBalanza"])) ||
+                    datosNuevaCarga["horaInicioCarga"] >=
+                        datosNuevaCarga["horaFinCarga"] ||
+                    datosNuevaCarga["horaInicioDescarga"] >=
+                        datosNuevaCarga["horaFinDescarga"] ||
+                    (datosNuevaCarga["requiereBalanza"] &&
+                        datosNuevaCarga["horaInicioBalanza"] >=
+                            datosNuevaCarga["horaFinBalanza"])
                 ) {
                     setDatosSinCompletar(true);
                     return;
-                } 
+                }
                 break;
             case 2:
                 if (datosNuevaCarga["idsTiposAcoplados"].length === 0) {
@@ -141,7 +139,7 @@ export default function CrearCargaStepper(props: any) {
                     if (!response.ok) {
                         throw new Error("Error al crear la carga");
                     }
-                    response.json()
+                    response.json();
                 })
                 .then(() => {
                     setTimeout(() => {

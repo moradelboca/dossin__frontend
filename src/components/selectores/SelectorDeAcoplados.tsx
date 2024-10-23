@@ -4,14 +4,19 @@ import { useState, useEffect, useContext } from "react";
 import { ContextoGeneral } from "../Contexto";
 import { ContextoStepper } from "../tarjetas/CrearCargaStepper";
 
-
 export default function SelectorDeAcoplados() {
     const { backendURL } = useContext(ContextoGeneral);
-    const { datosSinCompletar } = useContext(ContextoStepper)
+    const { datosSinCompletar } = useContext(ContextoStepper);
     const [tiposAcoplados, setTiposAcoplados] = useState<any[]>([]);
 
     useEffect(() => {
-        fetch(`${backendURL}/acoplados/tiposacoplados`)
+        fetch(`${backendURL}/acoplados/tiposacoplados`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "ngrok-skip-browser-warning": "true",
+            },
+        })
             .then((response) => response.json())
             .then((data) => setTiposAcoplados(data))
             .catch(() =>

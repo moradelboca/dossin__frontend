@@ -10,7 +10,6 @@ import React from "react";
 import Stack from "@mui/material/Stack";
 import { ContextoStepper } from "../tarjetas/CrearCargaStepper";
 
-
 interface CustomProps {
     onChange: (event: { target: { name: string; value: string } }) => void;
     name: string;
@@ -22,7 +21,7 @@ const NumericFormatCustom = React.forwardRef<NumericFormatProps, CustomProps>(
         const isAllowed = (values: any) => {
             const { formattedValue } = values;
             // Remove the prefix and separators to count only the digits
-            const numericValue = formattedValue.replace(/[$.,]/g, '');
+            const numericValue = formattedValue.replace(/[$.,]/g, "");
             return numericValue.length <= 12;
         };
 
@@ -51,21 +50,34 @@ const NumericFormatCustom = React.forwardRef<NumericFormatProps, CustomProps>(
 );
 
 export default function SelectorTarifa() {
-    const { datosNuevaCarga, datosSinCompletar } = useContext(ContextoStepper)
+    const { datosNuevaCarga, datosSinCompletar } = useContext(ContextoStepper);
     const { backendURL } = useContext(ContextoGeneral);
     const [tarifas, setTarifas] = useState<any[]>([]);
-    const [tarifaSeleccionada, setTarifaSeleccionada] = useState<any>(datosNuevaCarga["nombreTipoTarifa"] || null);
+    const [tarifaSeleccionada, setTarifaSeleccionada] = useState<any>(
+        datosNuevaCarga["nombreTipoTarifa"] || null
+    );
 
     useEffect(() => {
-        fetch(`${backendURL}/cargas/tipostarifas`)
+        fetch(`${backendURL}/cargas/tipostarifas`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "ngrok-skip-browser-warning": "true",
+            },
+        })
             .then((response) => response.json())
-            .then((tarifas) => { setTarifas(tarifas) })
+            .then((tarifas) => {
+                setTarifas(tarifas);
+            })
             .catch(() =>
                 console.error("Error al obtener las Tarifas disponibles")
             );
     }, []);
 
-    const seleccionarTiposTarifas = (event: any, seleccionado: string | null) => {
+    const seleccionarTiposTarifas = (
+        event: any,
+        seleccionado: string | null
+    ) => {
         if (seleccionado) {
             const tarifasStrings = tarifas.map((tarifas) => tarifas.nombre);
             const index = tarifasStrings.indexOf(seleccionado);
@@ -95,7 +107,10 @@ export default function SelectorTarifa() {
                         <Stack direction="row" spacing={2}>
                             <TextField
                                 label="Tarifa"
-                                error={datosSinCompletar && !datosNuevaCarga["tarifa"]}
+                                error={
+                                    datosSinCompletar &&
+                                    !datosNuevaCarga["tarifa"]
+                                }
                                 value={datosNuevaCarga["tarifa"]}
                                 onChange={seleccionarTarifa}
                                 name="numberformat"
@@ -121,7 +136,15 @@ export default function SelectorTarifa() {
                         onChange={seleccionarTiposTarifas}
                         sx={{ width: 300 }}
                         renderInput={(params) => (
-                            <TextField {...params} error={!tarifaSeleccionada ? datosSinCompletar : false} label={"Unidades"} />
+                            <TextField
+                                {...params}
+                                error={
+                                    !tarifaSeleccionada
+                                        ? datosSinCompletar
+                                        : false
+                                }
+                                label={"Unidades"}
+                            />
                         )}
                     />
                 </Box>
@@ -131,10 +154,10 @@ export default function SelectorTarifa() {
                     <Checkbox
                         value={datosNuevaCarga["incluyeIVA"]}
                         onChange={(e) => {
-                            datosNuevaCarga["incluyeIVA"] = e.target.checked; 
+                            datosNuevaCarga["incluyeIVA"] = e.target.checked;
                         }}
                         sx={{
-                            color: "#163660", 
+                            color: "#163660",
                             "&.Mui-checked": {
                                 color: "#163660",
                             },
