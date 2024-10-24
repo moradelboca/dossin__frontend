@@ -2,13 +2,13 @@ import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
 import { Box, CardActionArea } from "@mui/material";
-import { CustomButtom } from "../botones/CustomButtom";
+import { CustomButtom } from "../../botones/CustomButtom";
 import { styled } from "@mui/material/styles";
 import Divider from "@mui/material/Divider";
 import { useContext } from "react";
-import { ContextoGeneral } from "../Contexto";
+import { ContextoGeneral } from "../../Contexto";
 import { useNavigate } from "react-router-dom";
-import { Mapa } from "../Mapa";
+import { Mapa2 } from "../Mapa2";
 
 const CustomTypography = styled(Typography)(() => ({
     fontFamily: "Arial",
@@ -47,7 +47,7 @@ export function CardUbicacion(props: any) {
                 }}
             >
                 {datosCarga.ubicacionCarga ? (
-                    <Mapa
+                    <Mapa2
                         coordenadas={[
                             datosCarga.ubicacionCarga.latitud,
                             datosCarga.ubicacionCarga.longitud,

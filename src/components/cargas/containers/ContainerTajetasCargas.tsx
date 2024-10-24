@@ -71,38 +71,9 @@ export function ContainerTarjetasCargas() {
         setCargaSeleccionada(carga);
     };
 
-    const handleClickCrearCarga = () => {
+    const handleClickAbrirDialog = (paso: any) => {
+        setPasoSeleccionado(paso);
         setOpenDialog(true);
-    };
-    const handleClickEditarTarifa = () => {
-        if (cargaSeleccionada) {
-            setOpenDialog(true);
-            setPasoSeleccionado(3);
-        }
-    };
-    const handleClickEditarRecorrido = () => {
-        if (cargaSeleccionada) {
-            setOpenDialog(true);
-            setPasoSeleccionado(1);
-        }
-    };
-    const handleClickEditarDetalle = () => {
-        if (cargaSeleccionada) {
-            setOpenDialog(true);
-            setPasoSeleccionado(4);
-        }
-    };
-    const handleClickEditarKilometros = () => {
-        if (cargaSeleccionada) {
-            setOpenDialog(true);
-            setPasoSeleccionado(0);
-        }
-    };
-    const handleClickEditarTipoAcoplado = () => {
-        if (cargaSeleccionada) {
-            setOpenDialog(true);
-            setPasoSeleccionado(2);
-        }
     };
 
     const handleCloseDialog = () => {
@@ -112,16 +83,13 @@ export function ContainerTarjetasCargas() {
     const handleClickVerCupos = () => {
         navigate(`/cargas/${cargaSeleccionada.id}/cupos`);
     };
-    const handleClickAbrirDialog = () => {
-        navigate(`/cargas/${cargaSeleccionada.id}`);
-    };
-    const SeleccionarCarga = (event: any, seleccionado: string | null) => {
+
+    const SeleccionarCarga = (event: any, seleccionado: any | null) => {
         const cargaEncontrada = cargas.find(
-            (carga) => carga.id === seleccionado
+            (carga) => carga.provincia === seleccionado?.value
         );
         setCargaSeleccionada(cargaEncontrada || null);
     };
-
     return (
         <Box
             sx={{
@@ -150,18 +118,22 @@ export function ContainerTarjetasCargas() {
                 <BotonIcon
                     title="Quiero crear una nueva carga"
                     icon={<AccessAlarmOutlined />}
-                    onClick={handleClickCrearCarga}
+                    onClick={() => handleClickAbrirDialog(0)}
                 />
 
                 <Autocomplete
                     disablePortal
-                    options={cargas.map((carga) => carga.id)} // Mapea los IDs de las cargas
-                    value={cargaSeleccionada ? cargaSeleccionada.id : null} // Muestra el ID de la carga seleccionada
-                    onChange={SeleccionarCarga} // Establece la carga seleccionada
-                    renderInput={(params) => (
-                        <TextField {...params} label={"Unidades"} />
+                    options={cargas.map(
+                        (carga) => carga.ubicacionCarga.provincia
                     )}
-                    sx={{ width: 300, mb: 2 }} // Añade un margen inferior
+                    value={
+                        cargaSeleccionada ? cargaSeleccionada.provincia : null
+                    }
+                    onChange={SeleccionarCarga}
+                    renderInput={(params) => (
+                        <TextField {...params} label={"Provincia"} />
+                    )}
+                    sx={{ width: 300, mb: 2 }}
                 />
 
                 {cargaSeleccionada ? (
@@ -263,7 +235,8 @@ export function ContainerTarjetasCargas() {
                             >
                                 <Typography>Recorrido</Typography>
                                 <IconButton
-                                    onClick={handleClickEditarRecorrido}
+                                    disabled={!cargaSeleccionada}
+                                    onClick={() => handleClickAbrirDialog(1)}
                                 >
                                     <BorderColorIcon sx={{ fontSize: 17 }} />
                                 </IconButton>
@@ -317,7 +290,10 @@ export function ContainerTarjetasCargas() {
                                 }}
                             >
                                 <Typography>Cupos</Typography>
-                                <IconButton onClick={handleClickVerCupos}>
+                                <IconButton
+                                    disabled={!cargaSeleccionada}
+                                    onClick={handleClickVerCupos}
+                                >
                                     <AddIcon />
                                 </IconButton>
                             </Box>
@@ -446,7 +422,10 @@ export function ContainerTarjetasCargas() {
                                 >
                                     <Typography>Tarifa</Typography>
                                     <IconButton
-                                        onClick={handleClickEditarTarifa}
+                                        disabled={!cargaSeleccionada}
+                                        onClick={() =>
+                                            handleClickAbrirDialog(3)
+                                        }
                                     >
                                         <BorderColorIcon
                                             sx={{ fontSize: 17 }}
@@ -500,7 +479,10 @@ export function ContainerTarjetasCargas() {
                                 >
                                     <Typography>Kilometros</Typography>
                                     <IconButton
-                                        onClick={handleClickEditarKilometros}
+                                        disabled={!cargaSeleccionada}
+                                        onClick={() =>
+                                            handleClickAbrirDialog(0)
+                                        }
                                     >
                                         <BorderColorIcon
                                             sx={{ fontSize: 17 }}
@@ -548,7 +530,10 @@ export function ContainerTarjetasCargas() {
                                     }}
                                 >
                                     <Typography>Cupos creados</Typography>
-                                    <IconButton onClick={handleClickVerCupos}>
+                                    <IconButton
+                                        disabled={!cargaSeleccionada}
+                                        onClick={handleClickVerCupos}
+                                    >
                                         <BorderColorIcon
                                             sx={{ fontSize: 17 }}
                                         />
@@ -597,7 +582,10 @@ export function ContainerTarjetasCargas() {
                                 >
                                     <Typography>Tipo de acoplado</Typography>
                                     <IconButton
-                                        onClick={handleClickEditarTipoAcoplado}
+                                        disabled={!cargaSeleccionada}
+                                        onClick={() =>
+                                            handleClickAbrirDialog(2)
+                                        }
                                     >
                                         <BorderColorIcon
                                             sx={{ fontSize: 17 }}
@@ -646,7 +634,10 @@ export function ContainerTarjetasCargas() {
                                 }}
                             >
                                 <Typography>Detalles</Typography>
-                                <IconButton onClick={handleClickEditarDetalle}>
+                                <IconButton
+                                    disabled={!cargaSeleccionada}
+                                    onClick={() => handleClickAbrirDialog(4)}
+                                >
                                     <BorderColorIcon sx={{ fontSize: 17 }} />
                                 </IconButton>
                             </Box>

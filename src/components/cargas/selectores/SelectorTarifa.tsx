@@ -56,7 +56,7 @@ export default function SelectorTarifa() {
     const [tarifaSeleccionada, setTarifaSeleccionada] = useState<any>(
         datosNuevaCarga["nombreTipoTarifa"] || null
     );
-
+    console.log(datosNuevaCarga);
     useEffect(() => {
         fetch(`${backendURL}/cargas/tipostarifas`, {
             method: "GET",
@@ -74,10 +74,7 @@ export default function SelectorTarifa() {
             );
     }, []);
 
-    const seleccionarTiposTarifas = (
-        event: any,
-        seleccionado: string | null
-    ) => {
+    const seleccionarTiposTarifas = (event: any, seleccionado: any | null) => {
         if (seleccionado) {
             const tarifasStrings = tarifas.map((tarifas) => tarifas.nombre);
             const index = tarifasStrings.indexOf(seleccionado);

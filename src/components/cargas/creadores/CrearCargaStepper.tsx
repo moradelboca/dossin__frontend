@@ -31,13 +31,17 @@ export const ContextoStepper = createContext<{
 
 export default function CrearCargaStepper(props: any) {
     const { pasoSeleccionado, datosCarga, handleCloseDialog } = props;
-    const [datosNuevaCarga, setDatosNuevaCarga] = useState<any>(
-        datosCarga ?? {
-            requiereBalanza: false,
-            idsTiposAcoplados: [],
-            incluyeIVA: false,
-        }
-    );
+    const [datosNuevaCarga, setDatosNuevaCarga] = useState<any>({
+        ...datosCarga,
+        requiereBalanza: false,
+        idsTiposAcoplados: [],
+        incluyeIVA: datosCarga?.incluyeIVA || false,
+        nombreTipoTarifa: datosCarga?.tipoTarifa,
+        nombreProveedor: datosCarga?.proveedor,
+        nombreCargamento: datosCarga?.cargamento,
+        nombreUbicacionCarga: datosCarga?.ubicacionCarga.nombre,
+        nombreUbicacionDescarga: datosCarga?.ubicacionDescarga.nombre,
+    });
     const [datosSinCompletar, setDatosSinCompletar] = useState(false);
     const [pasoActivo, setPasoActivo] = useState<number>(pasoSeleccionado ?? 0);
     const [estadoCarga, setEstadoCarga] = useState("Creando");
