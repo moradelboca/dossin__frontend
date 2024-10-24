@@ -5,7 +5,6 @@ import Avatar from "@mui/material/Avatar";
 import Tooltip from "@mui/material/Tooltip";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import Typography from "@mui/material/Typography";
 import { styled } from "@mui/material/styles";
 import { Divider, ListItemIcon } from "@mui/material";
 import { Logout, PersonAdd, Settings } from "@mui/icons-material";

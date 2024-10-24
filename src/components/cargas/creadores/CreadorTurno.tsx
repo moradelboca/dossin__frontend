@@ -148,7 +148,7 @@ export default function CreadorTurno(props: CreadorProps) {
                                 options={choferes.map((chofer) =>
                                     chofer.cuil.toString()
                                 )}
-                                onChange={(e, v) => setChoferSeleccionado(v)}
+                                onChange={(_e, v) => setChoferSeleccionado(v)}
                                 sx={{ width: 300 }}
                                 renderInput={(params) => (
                                     <TextField
@@ -163,7 +163,7 @@ export default function CreadorTurno(props: CreadorProps) {
                                 options={patentesCamiones.map((patenteCamion) =>
                                     patenteCamion.patente.toString()
                                 )}
-                                onChange={(e, v) =>
+                                onChange={(_e, v) =>
                                     setPatenteCamionSeleccionada(v)
                                 }
                                 sx={{ width: 300 }}
@@ -192,7 +192,7 @@ export default function CreadorTurno(props: CreadorProps) {
                                 options={empresasTransportistas.map((empresa) =>
                                     empresa.cuit.toString()
                                 )}
-                                onChange={(e, v) =>
+                                onChange={(_e, v) =>
                                     setEmpresaTransportistaSeleccionada(v)
                                 }
                                 sx={{ width: 300 }}
@@ -213,7 +213,7 @@ export default function CreadorTurno(props: CreadorProps) {
                                     (patenteAcoplado) =>
                                         patenteAcoplado.patente.toString()
                                 )}
-                                onChange={(e, v) =>
+                                onChange={(_e, v) =>
                                     setPatenteAcopladoSeleccionada(v)
                                 }
                                 sx={{ width: 300 }}
@@ -244,7 +244,7 @@ export default function CreadorTurno(props: CreadorProps) {
                                     (patenteAcoplado) =>
                                         patenteAcoplado.patente.toString()
                                 )}
-                                onChange={(e, v) =>
+                                onChange={(_e, v) =>
                                     setPatenteAcopladoSeleccionadaExtra(v)
                                 }
                                 sx={{ width: 300 }}

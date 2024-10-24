@@ -8,10 +8,6 @@ import React from "react";
 import Stack from "@mui/material/Stack";
 import { ContextoStepper } from "../creadores/CrearCargaStepper";
 
-interface Props {
-    datosNuevaCarga: any;
-    datosSinCompletar: boolean;
-}
 interface CustomProps {
     onChange: (event: { target: { name: string; value: string } }) => void;
     name: string;
@@ -91,7 +87,10 @@ export default function SelectorProveedor() {
         datosNuevaCarga["cantidadKm"] = Number(event.target.value);
     };
 
-    const seleccionarCargamento = (event: any, seleccionado: string | null) => {
+    const seleccionarCargamento = (
+        _event: any,
+        seleccionado: string | null
+    ) => {
         if (seleccionado) {
             const cargamentosStrings = cargamentos.map(
                 (cargamento) => cargamento.nombre
@@ -105,7 +104,7 @@ export default function SelectorProveedor() {
             setValueCargamentos(seleccionado);
         }
     };
-    const seleccionarProveedor = (event: any, seleccionado: string | null) => {
+    const seleccionarProveedor = (_event: any, seleccionado: string | null) => {
         if (seleccionado) {
             const proveedoresStrings = proveedores.map(
                 (proveedor) => proveedor.nombre

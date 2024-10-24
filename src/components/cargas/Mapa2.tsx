@@ -11,9 +11,9 @@ import pin from "../../../images/pinbox.png";
 import cargamos from "../../../images/pinBALA2.png";
 import ok from "../../../images/pinokaaa.png";
 
-import L, { Popup } from "leaflet";
+import L from "leaflet";
 import { useEffect, useState } from "react";
-const { BaseLayer, Overlay } = LayersControl;
+const { BaseLayer } = LayersControl;
 
 const balanzaIcon = L.icon({
     iconUrl: cargamos,

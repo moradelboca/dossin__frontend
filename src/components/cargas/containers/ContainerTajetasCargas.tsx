@@ -84,7 +84,7 @@ export function ContainerTarjetasCargas() {
         navigate(`/cargas/${cargaSeleccionada.id}/cupos`);
     };
 
-    const SeleccionarCarga = (event: any, seleccionado: any | null) => {
+    const SeleccionarCarga = (_event: any, seleccionado: any | null) => {
         const cargaEncontrada = cargas.find(
             (carga) => carga.provincia === seleccionado?.value
         );

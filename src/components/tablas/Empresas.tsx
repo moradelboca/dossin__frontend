@@ -14,7 +14,7 @@ import {
 import { GridRowsProp } from "@mui/x-data-grid";
 import { GridRowModesModel } from "@mui/x-data-grid";
 import { GridToolbarContainer } from "@mui/x-data-grid";
-import { DomainAdd, Height } from "@mui/icons-material";
+import { DomainAdd } from "@mui/icons-material";
 import { GridToolbarFilterButton } from "@mui/x-data-grid";
 import { GridToolbarExport } from "@mui/x-data-grid";
 import { GridToolbarColumnsButton } from "@mui/x-data-grid";
@@ -22,7 +22,6 @@ import { PatternFormat } from "react-number-format";
 import AutocompletarPais from "../cargas/autocompletar/AutocompletarPais";
 import { ContextoGeneral } from "../Contexto";
 import BorderColorIcon from "@mui/icons-material/BorderColor";
-import { GridToolbarQuickFilterProps } from "@mui/x-data-grid";
 
 interface EditToolbarProps {
     setRows: (newRows: (oldRows: GridRowsProp) => GridRowsProp) => void;
@@ -34,7 +33,7 @@ interface EditToolbarProps {
 
 function EditToolbar(props: EditToolbarProps) {
     const { theme } = React.useContext(ContextoGeneral);
-    const { setRows, setRowModesModel, onAdd } = props;
+    const { onAdd } = props;
 
     return (
         <GridToolbarContainer sx={{ marginBottom: 1 }}>
@@ -380,20 +379,12 @@ export default function Empresas() {
                         slots={{
                             toolbar: (props) => (
                                 <EditToolbar
-                                    setRows={function (
-                                        newRows: (
-                                            oldRows: GridRowsProp
-                                        ) => GridRowsProp
-                                    ): void {
+                                    setRows={function (): void {
                                         throw new Error(
                                             "Function not implemented."
                                         );
                                     }}
-                                    setRowModesModel={function (
-                                        newModel: (
-                                            oldModel: GridRowModesModel
-                                        ) => GridRowModesModel
-                                    ): void {
+                                    setRowModesModel={function (): void {
                                         throw new Error(
                                             "Function not implemented."
                                         );

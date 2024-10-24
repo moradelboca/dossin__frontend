@@ -23,15 +23,11 @@ import {
 import "leaflet/dist/leaflet.css";
 import pin from "../../../images/pinbox.png";
 import cargamos from "../../../images/pinBALA2.png";
-import ok from "../../../images/pinokaaa.png";
+//import ok from "../../../images/pinokaaa.png";
 import { ContextoGeneral } from "../Contexto";
 import AutocompletarUbicacionMapa from "../cargas/autocompletar/AutocompletarUbicacionMapa";
 import { AddLocationAltOutlined } from "@mui/icons-material";
-import {
-    NumericFormat,
-    NumericFormatProps,
-    PatternFormat,
-} from "react-number-format";
+import { NumericFormat, NumericFormatProps } from "react-number-format";
 
 const { BaseLayer, Overlay } = LayersControl;
 
@@ -41,12 +37,12 @@ const balanzaIcon = L.icon({
     iconAnchor: [22, 51],
     popupAnchor: [0, -28],
 });
-const okIcon = L.icon({
+/* const okIcon = L.icon({
     iconUrl: ok,
     iconSize: [45, 51],
     iconAnchor: [22, 51],
     popupAnchor: [0, -28],
-});
+}); */
 
 const pinIcon = L.icon({
     iconUrl: pin,
@@ -190,7 +186,7 @@ export function MapaMain() {
                         background: "white",
                         borderRadius: "6px",
                     }}
-                    onChange={(event, value) => {
+                    onChange={(_event, value) => {
                         setTipoUbicacionSeleccionado(value || "Todas");
                     }}
                     defaultValue={tipoUbicacionOptions[0]}
@@ -351,7 +347,7 @@ export function MapaMain() {
                                 background: "white",
                                 borderRadius: "6px",
                             }}
-                            onChange={(event, value) => {
+                            onChange={(_event, value) => {
                                 setTipoUbicacionSeleccionado(value || "Todas");
                             }}
                             defaultValue={tipoUbicacionOptions[0]}

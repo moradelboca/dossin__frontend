@@ -5,16 +5,11 @@ import { PickersDay } from "@mui/x-date-pickers/PickersDay";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import dayjs, { Dayjs } from "dayjs";
 import { Box, Button, Typography } from "@mui/material";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import {
-    NumericFormat,
-    NumericFormatProps,
-    PatternFormat,
-} from "react-number-format";
+import { NumericFormatProps, PatternFormat } from "react-number-format";
 import React from "react";
 import Stack from "@mui/material/Stack";
 import TextField from "@mui/material/TextField";
-import { useState, useEffect, useContext } from "react";
+import { useState, useContext } from "react";
 import { ContextoGeneral } from "../../Contexto";
 
 // Tema personalizado
@@ -27,7 +22,7 @@ const theme = createTheme({
 });
 
 const CustomDay = (props: any) => {
-    const { day, selected, onClick } = props;
+    const { selected, onClick } = props;
 
     return (
         <PickersDay

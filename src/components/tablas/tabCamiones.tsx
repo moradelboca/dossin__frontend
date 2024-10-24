@@ -10,7 +10,7 @@ export default function TabCamiones() {
     const [value, setValue] = React.useState("one");
     const { theme } = React.useContext(ContextoGeneral);
 
-    const handleChange = (event: React.SyntheticEvent, newValue: string) => {
+    const handleChange = (_event: React.SyntheticEvent, newValue: string) => {
         setValue(newValue);
     };
     return (

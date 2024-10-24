@@ -16,7 +16,7 @@ export default function AutocompletarUbicacion(props: AutocompletarProps) {
         datosNuevaCarga["nombreUbicacion" + filtro] || null
     );
 
-    const seleccionarUbicacion = (event: any, seleccionado: string | null) => {
+    const seleccionarUbicacion = (_event: any, seleccionado: string | null) => {
         if (seleccionado) {
             const ubicacionesStrings = ubicaciones.map(
                 (ubicacion) =>
@@ -36,7 +36,7 @@ export default function AutocompletarUbicacion(props: AutocompletarProps) {
             options={ubicaciones
                 .filter((ubicacion) => ubicacion.tipoUbicacion === filtro)
                 .map((ubicacion) => {
-                    return `${ubicacion.nombre}, ${ubicacion.provincia}, ${ubicacion.pais}`;
+                    return `${ubicacion.nombre}, ${ubicacion.localidad}, ${ubicacion.provincia}`;
                 })}
             sx={{ width: 300 }}
             value={ubicacionSeleccionada}

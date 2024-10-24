@@ -7,7 +7,6 @@ import Divider from "@mui/material/Divider";
 import { styled } from "@mui/material/styles";
 import Color from "color"; // v3.2.1
 import { CustomButtom } from "../botones/CustomButtom";
-import { useState } from "react";
 
 const defaultColor = "#d9d9d9"; // Gris claro
 

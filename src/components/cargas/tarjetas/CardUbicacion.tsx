@@ -1,10 +1,9 @@
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
-import { Box, CardActionArea } from "@mui/material";
+import { Box } from "@mui/material";
 import { CustomButtom } from "../../botones/CustomButtom";
 import { styled } from "@mui/material/styles";
-import Divider from "@mui/material/Divider";
 import { useContext } from "react";
 import { ContextoGeneral } from "../../Contexto";
 import { useNavigate } from "react-router-dom";

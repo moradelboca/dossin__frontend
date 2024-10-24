@@ -74,7 +74,7 @@ export default function SelectorTarifa() {
             );
     }, []);
 
-    const seleccionarTiposTarifas = (event: any, seleccionado: any | null) => {
+    const seleccionarTiposTarifas = (_event: any, seleccionado: any | null) => {
         if (seleccionado) {
             const tarifasStrings = tarifas.map((tarifas) => tarifas.nombre);
             const index = tarifasStrings.indexOf(seleccionado);

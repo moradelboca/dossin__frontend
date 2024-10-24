@@ -36,7 +36,7 @@ interface EditToolbarProps {
 }
 
 function EditToolbar(props: EditToolbarProps) {
-    const { setRows, setRowModesModel, onAdd } = props;
+    const { onAdd } = props;
     const { theme } = React.useContext(ContextoGeneral);
 
     return (
@@ -282,20 +282,12 @@ export default function Camiones() {
                         slots={{
                             toolbar: (props) => (
                                 <EditToolbar
-                                    setRows={function (
-                                        newRows: (
-                                            oldRows: GridRowsProp
-                                        ) => GridRowsProp
-                                    ): void {
+                                    setRows={function (): void {
                                         throw new Error(
                                             "Function not implemented."
                                         );
                                     }}
-                                    setRowModesModel={function (
-                                        newModel: (
-                                            oldModel: GridRowModesModel
-                                        ) => GridRowModesModel
-                                    ): void {
+                                    setRowModesModel={function (): void {
                                         throw new Error(
                                             "Function not implemented."
                                         );
