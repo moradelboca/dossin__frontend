@@ -5,8 +5,9 @@ import Avatar from "@mui/material/Avatar";
 import Tooltip from "@mui/material/Tooltip";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import Typography from "@mui/material/Typography";
 import { styled } from "@mui/material/styles";
+import { Divider, ListItemIcon } from "@mui/material";
+import { Logout, PersonAdd, Settings } from "@mui/icons-material";
 
 const CustomToolbar = styled(Toolbar)<{ ancho?: number; transicion: string }>(
     ({ ancho, transicion }) => ({
@@ -56,40 +57,74 @@ export default function Navbar(props: NavbarProps) {
                     alt="Logo"
                     style={{ height: "40px" }}
                 />
-                <Tooltip title="Open settings">
+                <Tooltip title="Ajustes">
                     <IconButton onClick={handleClickAbrirMenuUsuario}>
-                        <Avatar
-                            alt="Remy Sharp"
-                            src="/static/images/avatar/2.jpg"
-                        />
+                        <Avatar sx={{ width: 32, height: 32 }}>M</Avatar>
                     </IconButton>
                 </Tooltip>
                 <Menu
-                    sx={{ mt: "45px" }}
-                    id="menu-appbar"
                     anchorEl={anchorMenuUsuario}
-                    anchorOrigin={{
-                        vertical: "top",
-                        horizontal: "right",
-                    }}
-                    keepMounted
-                    transformOrigin={{
-                        vertical: "top",
-                        horizontal: "right",
-                    }}
+                    id="account-menu"
                     open={Boolean(anchorMenuUsuario)}
                     onClose={handleClickCerrarMenuUsuario}
+                    onClick={handleClickCerrarMenuUsuario}
+                    slotProps={{
+                        paper: {
+                            elevation: 0,
+                            sx: {
+                                overflow: "visible",
+                                filter: "drop-shadow(0px 2px 8px rgba(0,0,0,0.32))",
+                                mt: 1.5,
+                                "& .MuiAvatar-root": {
+                                    width: 32,
+                                    height: 32,
+                                    ml: -0.5,
+                                    mr: 1,
+                                },
+                                "&::before": {
+                                    content: '""',
+                                    display: "block",
+                                    position: "absolute",
+                                    top: 0,
+                                    right: 14,
+                                    width: 10,
+                                    height: 10,
+                                    bgcolor: "background.paper",
+                                    transform: "translateY(-50%) rotate(45deg)",
+                                    zIndex: 0,
+                                },
+                            },
+                        },
+                    }}
+                    transformOrigin={{ horizontal: "right", vertical: "top" }}
+                    anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
                 >
-                    {["Logout"].map((setting) => (
-                        <MenuItem
-                            key={setting}
-                            onClick={handleClickCerrarMenuUsuario}
-                        >
-                            <Typography sx={{ textAlign: "center" }}>
-                                {setting}
-                            </Typography>
-                        </MenuItem>
-                    ))}
+                    <MenuItem onClick={handleClickCerrarMenuUsuario}>
+                        <Avatar /> Perfil
+                    </MenuItem>
+                    <MenuItem onClick={handleClickCerrarMenuUsuario}>
+                        <Avatar />
+                        Mi cuenta
+                    </MenuItem>
+                    <Divider />
+                    <MenuItem onClick={handleClickCerrarMenuUsuario}>
+                        <ListItemIcon>
+                            <PersonAdd fontSize="small" />
+                        </ListItemIcon>
+                        Agregar otra cuenta
+                    </MenuItem>
+                    <MenuItem onClick={handleClickCerrarMenuUsuario}>
+                        <ListItemIcon>
+                            <Settings fontSize="small" />
+                        </ListItemIcon>
+                        Ajustes
+                    </MenuItem>
+                    <MenuItem onClick={handleClickCerrarMenuUsuario}>
+                        <ListItemIcon>
+                            <Logout fontSize="small" />
+                        </ListItemIcon>
+                        Logout
+                    </MenuItem>
                 </Menu>
             </CustomToolbar>
         </>

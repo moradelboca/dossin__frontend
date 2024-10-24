@@ -4,31 +4,39 @@ import Tab from "@mui/material/Tab";
 import Box from "@mui/material/Box";
 import Camiones from "./Camiones";
 import Acoplados from "./Acoplados";
+import { ContextoGeneral } from "../Contexto";
 
 export default function TabCamiones() {
     const [value, setValue] = React.useState("one");
+    const { theme } = React.useContext(ContextoGeneral);
 
-    const handleChange = (event: React.SyntheticEvent, newValue: string) => {
+    const handleChange = (_event: React.SyntheticEvent, newValue: string) => {
         setValue(newValue);
     };
-
     return (
-        <Box sx={{ width: "100%", height: "80%" }}>
+        <Box
+            sx={{
+                width: "100%",
+                height: "80%",
+
+                backgroundColor: theme.colores.grisClaro,
+            }}
+        >
             <Tabs
                 value={value}
                 onChange={handleChange}
+                textColor="inherit"
                 sx={{
                     "& .MuiTab-root": {
-                        color: "gray", // Color del texto cuando no está seleccionado
+                        color: "gray",
                     },
                     "& .Mui-selected": {
-                        color: "#163660", // Color del texto cuando está seleccionado
+                        color: theme.colores.azul,
                     },
                     "& .MuiTabs-indicator": {
-                        backgroundColor: "#163660", // Color del indicador
+                        backgroundColor: theme.colores.azul,
                     },
                 }}
-                aria-label="secondary tabs example"
             >
                 <Tab value="one" label="Camiones" />
                 <Tab value="two" label="Acoplados" />

@@ -2,8 +2,8 @@ import * as React from "react";
 import {
     DataGrid,
     GridColDef,
-    GridRowModes,
     GridRowsProp,
+    GridToolbarQuickFilter,
 } from "@mui/x-data-grid";
 import {
     Box,
@@ -16,8 +16,6 @@ import {
     TextField,
     Typography,
 } from "@mui/material";
-import SettingsIcon from "@mui/icons-material/Settings";
-import { camiones } from "./listacamiones"; // Importar los datos de listacamiones.ts
 import { GridRowModesModel } from "@mui/x-data-grid";
 import {
     GridToolbarContainer,
@@ -26,7 +24,8 @@ import {
     GridToolbarFilterButton,
 } from "@mui/x-data-grid";
 import { Add } from "@mui/icons-material";
-import { PatternFormat } from "react-number-format";
+import BorderColorIcon from "@mui/icons-material/BorderColor";
+import { ContextoGeneral } from "../Contexto";
 
 interface EditToolbarProps {
     setRows: (newRows: (oldRows: GridRowsProp) => GridRowsProp) => void;
@@ -37,26 +36,109 @@ interface EditToolbarProps {
 }
 
 function EditToolbar(props: EditToolbarProps) {
-    const { setRows, setRowModesModel, onAdd } = props;
+    const { onAdd } = props;
+    const { theme } = React.useContext(ContextoGeneral);
 
     return (
-        <GridToolbarContainer>
-            <Button color="primary" startIcon={<Add />} onClick={onAdd}>
-                Agregar camión
-            </Button>
-            <GridToolbarFilterButton />
-            <GridToolbarExport />
-            <GridToolbarColumnsButton />
+        <GridToolbarContainer sx={{ marginBottom: 1 }}>
+            <Box
+                sx={{
+                    flexGrow: 1,
+                    display: "flex",
+                    justifyContent: "flex-start",
+                }}
+            >
+                <GridToolbarQuickFilter />
+            </Box>
+            <Box
+                sx={{
+                    display: "flex",
+                    justifyContent: "flex-end",
+                    marginRight: 3,
+                }}
+            >
+                <Button
+                    color="primary"
+                    startIcon={<Add />}
+                    onClick={onAdd}
+                    sx={{ color: theme.colores.azul }}
+                >
+                    Agregar camión
+                </Button>
+                <GridToolbarFilterButton
+                    slotProps={{
+                        button: {
+                            sx: {
+                                color: theme.colores.azul,
+                            },
+                        },
+                    }}
+                />
+                <GridToolbarExport
+                    slotProps={{
+                        button: {
+                            sx: {
+                                color: theme.colores.azul,
+                            },
+                        },
+                    }}
+                />
+                <GridToolbarColumnsButton
+                    slotProps={{
+                        button: {
+                            sx: {
+                                color: theme.colores.azul,
+                            },
+                        },
+                    }}
+                />
+            </Box>
         </GridToolbarContainer>
     );
 }
 export default function Camiones() {
-    const [rows, setRows] = React.useState(camiones);
     const [open, setOpen] = React.useState(false);
     const [isEditMode, setIsEditMode] = React.useState(false);
     const [selectedRow, setSelectedRow] = React.useState<any>(null);
     const [editedRow, setEditedRow] = React.useState<any>(null);
     const [errorMessage, setErrorMessage] = React.useState("");
+    const { backendURL, theme } = React.useContext(ContextoGeneral);
+    const [camiones, setCamiones] = React.useState<any[]>([]);
+
+    React.useEffect(() => {
+        fetch(`${backendURL}/camiones`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "ngrok-skip-browser-warning": "true",
+            },
+        })
+            .then((response) => response.json())
+            .then((data) => {
+                setCamiones(data);
+                const formattedData = data.map(
+                    (item: {
+                        patente: any;
+                        urlRTO: any;
+                        urlPolizaSeguro: any;
+                        urlRuta: any;
+                    }) => ({
+                        ...item,
+                        patente: item.patente || "No especificado",
+                        urlRTO: item.urlRTO || "No especificado",
+                        urlPolizaSeguro:
+                            item.urlPolizaSeguro || "No especificado",
+                        urlRuta: item.urlRuta || "No especificado",
+                    })
+                );
+                setRows(formattedData);
+            })
+            .catch(() =>
+                console.error("Error al obtener las tiposAcoplados disponibles")
+            );
+    }, []);
+
+    const [rows, setRows] = React.useState(camiones);
 
     // Expresión regular que valida los formatos de patente "LLLNNN" o "LLNNNLL"
     const regex = /^([A-Za-z]{3}\d{3}|[A-Za-z]{2}\d{3}[A-Za-z]{2})$/;
@@ -71,15 +153,14 @@ export default function Camiones() {
     const handleClose = () => {
         setOpen(false);
         setIsEditMode(false);
-        setErrorMessage(""); // Limpiar mensaje de error al cerrar
+        setErrorMessage("");
     };
 
     const handleSave = () => {
         if (editedRow) {
-            // Verificar si el valor ingresado cumple con los formatos "LLLNNN" o "LLNNNLL"
             if (!regex.test(editedRow.patente)) {
                 setErrorMessage("Ingresaste mal la patente!");
-                return; // Salir si la patente no es válida
+                return;
             }
 
             if (isEditMode) {
@@ -117,22 +198,60 @@ export default function Camiones() {
     };
 
     const columns: GridColDef[] = [
-        { field: "patente", headerName: "Patente", width: 150 },
-        { field: "urlRTO", headerName: "URL RTO", width: 200 },
+        {
+            field: "patente",
+            headerName: "Patente",
+            flex: 1,
+            renderHeader: () => (
+                <strong style={{ color: theme.colores.grisOscuro }}>
+                    Patente
+                </strong>
+            ),
+        },
+        {
+            field: "urlRTO",
+            headerName: "URL RTO",
+            flex: 1,
+            renderHeader: () => (
+                <strong style={{ color: theme.colores.grisOscuro }}>
+                    URL RTO
+                </strong>
+            ),
+        },
         {
             field: "urlPolizaSeguro",
             headerName: "URL Póliza de Seguro",
-            width: 200,
+            flex: 1,
+            renderHeader: () => (
+                <strong style={{ color: theme.colores.grisOscuro }}>
+                    URL Póliza de Seguro
+                </strong>
+            ),
         },
-        { field: "urlRuta", headerName: "URL Ruta", width: 200 },
+        {
+            field: "urlRuta",
+            headerName: "URL Ruta",
+            flex: 1,
+            renderHeader: () => (
+                <strong style={{ color: theme.colores.grisOscuro }}>
+                    URL Ruta
+                </strong>
+            ),
+        },
         {
             field: "edit",
             headerName: "Edit",
             width: 100,
+            renderHeader: () => (
+                <strong style={{ color: theme.colores.grisOscuro }}>
+                    Edit
+                </strong>
+            ),
             renderCell: (params) => (
-                <SettingsIcon
+                <BorderColorIcon
                     onClick={() => handleOpen(params.row)}
-                    style={{ cursor: "pointer", color: "#1976d2" }}
+                    fontSize="small"
+                    style={{ cursor: "pointer", color: theme.colores.azul }}
                 />
             ),
         },
@@ -140,110 +259,119 @@ export default function Camiones() {
 
     return (
         <>
-            <Box margin="10px" sx={{ height: "100%", width: "100%" }}>
-                <DataGrid
-                    rows={rows}
-                    columns={columns}
-                    slots={{
-                        toolbar: (props) => (
-                            <EditToolbar
-                                setRows={function (
-                                    newRows: (
-                                        oldRows: GridRowsProp
-                                    ) => GridRowsProp
-                                ): void {
-                                    throw new Error(
-                                        "Function not implemented."
-                                    );
-                                }}
-                                setRowModesModel={function (
-                                    newModel: (
-                                        oldModel: GridRowModesModel
-                                    ) => GridRowModesModel
-                                ): void {
-                                    throw new Error(
-                                        "Function not implemented."
-                                    );
-                                }}
-                                {...props}
-                                onAdd={handleAddClick}
-                            />
-                        ),
-                    }}
-                />
-                <Dialog open={open} onClose={handleClose}>
-                    <DialogTitle>
-                        {isEditMode ? "Edit Row" : "Add Row"}
-                    </DialogTitle>
-                    <DialogContent>
-                        <Stack direction="row" spacing={2}>
+            <Box
+                sx={{
+                    backgroundColor: theme.colores.grisClaro,
+                    height: "82vh",
+                    width: "100%",
+                    padding: 3,
+                }}
+            >
+                <Box margin="10px" sx={{ height: "90%", width: "100%" }}>
+                    <DataGrid
+                        rows={rows}
+                        columns={columns}
+                        getRowId={(row) => row.patente}
+                        sx={{
+                            "& .MuiDataGrid-columnHeader": {
+                                backgroundColor: theme.colores.grisClaro,
+                                color: theme.colores.grisOscuro,
+                            },
+                            border: "none",
+                        }}
+                        slots={{
+                            toolbar: (props) => (
+                                <EditToolbar
+                                    setRows={function (): void {
+                                        throw new Error(
+                                            "Function not implemented."
+                                        );
+                                    }}
+                                    setRowModesModel={function (): void {
+                                        throw new Error(
+                                            "Function not implemented."
+                                        );
+                                    }}
+                                    {...props}
+                                    onAdd={handleAddClick}
+                                />
+                            ),
+                        }}
+                    />
+                    <Dialog open={open} onClose={handleClose}>
+                        <DialogTitle>
+                            {isEditMode ? "Edit Row" : "Add Row"}
+                        </DialogTitle>
+                        <DialogContent>
+                            <Stack direction="row" spacing={2}>
+                                <TextField
+                                    margin="dense"
+                                    label="Patente"
+                                    name="patente"
+                                    fullWidth
+                                    variant="outlined"
+                                    value={editedRow?.patente || ""}
+                                    onChange={handleChange}
+                                />
+                            </Stack>
                             <TextField
                                 margin="dense"
-                                label="Patente"
-                                name="patente"
+                                label="URL RTO"
+                                type="text"
                                 fullWidth
                                 variant="outlined"
-                                value={editedRow?.patente || ""}
-                                onChange={handleChange}
+                                value={editedRow?.urlRTO || ""}
+                                onChange={(e) =>
+                                    setEditedRow({
+                                        ...editedRow,
+                                        urlRTO: e.target.value,
+                                    })
+                                }
                             />
-                        </Stack>
-                        <TextField
-                            margin="dense"
-                            label="URL RTO"
-                            type="text"
-                            fullWidth
-                            variant="outlined"
-                            value={editedRow?.urlRTO || ""}
-                            onChange={(e) =>
-                                setEditedRow({
-                                    ...editedRow,
-                                    urlRTO: e.target.value,
-                                })
-                            }
-                        />
-                        <TextField
-                            margin="dense"
-                            label="URL Póliza de Seguro"
-                            type="text"
-                            fullWidth
-                            variant="outlined"
-                            value={editedRow?.urlPolizaSeguro || ""}
-                            onChange={(e) =>
-                                setEditedRow({
-                                    ...editedRow,
-                                    urlPolizaSeguro: e.target.value,
-                                })
-                            }
-                        />
-                        <TextField
-                            margin="dense"
-                            label="URL Ruta"
-                            type="text"
-                            fullWidth
-                            variant="outlined"
-                            value={editedRow?.urlRuta || ""}
-                            onChange={(e) =>
-                                setEditedRow({
-                                    ...editedRow,
-                                    urlRuta: e.target.value,
-                                })
-                            }
-                        />
-                        {errorMessage && ( // Mostrar mensaje de error si existe
-                            <Typography color="#ff3333">
-                                {errorMessage}
-                            </Typography>
-                        )}
-                    </DialogContent>
-                    <DialogActions>
-                        <Button onClick={handleClose} color="primary">
-                            Cancelar
-                        </Button>
-                        <Button onClick={handleSave} color="primary">
-                            Guardar
-                        </Button>
-                    </DialogActions>
-                </Dialog>
+                            <TextField
+                                margin="dense"
+                                label="URL Póliza de Seguro"
+                                type="text"
+                                fullWidth
+                                variant="outlined"
+                                value={editedRow?.urlPolizaSeguro || ""}
+                                onChange={(e) =>
+                                    setEditedRow({
+                                        ...editedRow,
+                                        urlPolizaSeguro: e.target.value,
+                                    })
+                                }
+                            />
+                            <TextField
+                                margin="dense"
+                                label="URL Ruta"
+                                type="text"
+                                fullWidth
+                                variant="outlined"
+                                value={editedRow?.urlRuta || ""}
+                                onChange={(e) =>
+                                    setEditedRow({
+                                        ...editedRow,
+                                        urlRuta: e.target.value,
+                                    })
+                                }
+                            />
+                            {errorMessage && ( // Mostrar mensaje de error si existe
+                                <Typography color="#ff3333">
+                                    {errorMessage}
+                                </Typography>
+                            )}
+                        </DialogContent>
+                        <DialogActions>
+                            <Button onClick={handleClose} color="primary">
+                                Cancelar
+                            </Button>
+                            <Button onClick={handleSave} color="primary">
+                                Guardar
+                            </Button>
+                        </DialogActions>
+                    </Dialog>
+                </Box>
             </Box>
         </>
     );
