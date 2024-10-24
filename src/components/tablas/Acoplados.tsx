@@ -16,7 +16,6 @@ import {
     TextField,
     Typography,
 } from "@mui/material";
-import { camiones } from "./listacamiones"; // Importar los datos de listacamiones.ts
 import { GridRowModesModel } from "@mui/x-data-grid";
 import {
     GridToolbarContainer,
@@ -27,6 +26,7 @@ import {
 import { Add } from "@mui/icons-material";
 import { ContextoGeneral } from "../Contexto";
 import BorderColorIcon from "@mui/icons-material/BorderColor";
+import { useState } from "react";
 
 interface EditToolbarProps {
     setRows: (newRows: (oldRows: GridRowsProp) => GridRowsProp) => void;
@@ -97,13 +97,48 @@ function EditToolbar(props: EditToolbarProps) {
     );
 }
 export default function Acoplados() {
-    const [rows, setRows] = React.useState(camiones);
     const [open, setOpen] = React.useState(false);
     const [isEditMode, setIsEditMode] = React.useState(false);
     const [selectedRow, setSelectedRow] = React.useState<any>(null);
     const [editedRow, setEditedRow] = React.useState<any>(null);
     const [errorMessage, setErrorMessage] = React.useState("");
-    const { theme } = React.useContext(ContextoGeneral);
+    const { backendURL, theme } = React.useContext(ContextoGeneral);
+    const [acoplados, setAcoplados] = useState<any[]>([]);
+
+    React.useEffect(() => {
+        fetch(`${backendURL}/acoplados`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "ngrok-skip-browser-warning": "true",
+            },
+        })
+            .then((response) => response.json())
+            .then((data) => {
+                setAcoplados(data);
+                const formattedData = data.map(
+                    (item: {
+                        patente: any;
+                        urlRTO: any;
+                        urlPolizaSeguro: any;
+                        urlRuta: any;
+                    }) => ({
+                        ...item,
+                        patente: item.patente || "No especificado",
+                        urlRTO: item.urlRTO || "No especificado",
+                        urlPolizaSeguro:
+                            item.urlPolizaSeguro || "No especificado",
+                        urlRuta: item.urlRuta || "No especificado",
+                    })
+                );
+                setRows(formattedData);
+            })
+            .catch(() =>
+                console.error("Error al obtener las tiposAcoplados disponibles")
+            );
+    }, []);
+
+    const [rows, setRows] = React.useState(acoplados);
 
     // Expresión regular que valida los formatos de patente "LLLNNN" o "LLNNNLL"
     const regex = /^([A-Za-z]{3}\d{3}|[A-Za-z]{2}\d{3}[A-Za-z]{2})$/;
@@ -148,7 +183,6 @@ export default function Acoplados() {
 
     const handleAddClick = () => {
         setEditedRow({
-            id: 0,
             patente: "",
             urlRTO: "",
             urlPolizaSeguro: "",
@@ -237,6 +271,7 @@ export default function Acoplados() {
                     <DataGrid
                         rows={rows}
                         columns={columns}
+                        getRowId={(row) => row.patente}
                         sx={{
                             "& .MuiDataGrid-columnHeader": {
                                 backgroundColor: theme.colores.grisClaro,

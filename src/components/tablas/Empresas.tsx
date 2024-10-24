@@ -11,7 +11,6 @@ import {
     TextField,
     Typography,
 } from "@mui/material";
-import { empresas } from "./listaempresas";
 import { GridRowsProp } from "@mui/x-data-grid";
 import { GridRowModesModel } from "@mui/x-data-grid";
 import { GridToolbarContainer } from "@mui/x-data-grid";
@@ -20,7 +19,7 @@ import { GridToolbarFilterButton } from "@mui/x-data-grid";
 import { GridToolbarExport } from "@mui/x-data-grid";
 import { GridToolbarColumnsButton } from "@mui/x-data-grid";
 import { PatternFormat } from "react-number-format";
-import AutocompletarPais from "../autocompletar/AutocompletarPais";
+import AutocompletarPais from "../cargas/autocompletar/AutocompletarPais";
 import { ContextoGeneral } from "../Contexto";
 import BorderColorIcon from "@mui/icons-material/BorderColor";
 import { GridToolbarQuickFilterProps } from "@mui/x-data-grid";
@@ -151,12 +150,56 @@ const NumeroFormat = React.forwardRef<any, CustomProps>(
 );
 
 export default function Empresas() {
-    const [rows, setRows] = React.useState(empresas);
     const [open, setOpen] = React.useState(false);
     const [isEditMode, setIsEditMode] = React.useState(false);
     const [selectedRow, setSelectedRow] = React.useState<any>(null);
     const [editedRow, setEditedRow] = React.useState<any>(null);
-    const { theme } = React.useContext(ContextoGeneral);
+    const { backendURL, theme } = React.useContext(ContextoGeneral);
+    const [empresas, setEmpresas] = React.useState<any[]>([]);
+
+    React.useEffect(() => {
+        fetch(`${backendURL}/empresastransportistas`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "ngrok-skip-browser-warning": "true",
+            },
+        })
+            .then((response) => response.json())
+            .then((data) => {
+                setEmpresas(data);
+                const formattedData = data.map(
+                    (item: {
+                        cuit: any;
+                        razonSocial: any;
+                        patente: any;
+                        idUbicacion: any;
+                        numeroCel: any;
+                        urlConstanciaAfip: any;
+                        urlConstanciaCbu: any;
+                        email: any;
+                    }) => ({
+                        ...item,
+                        cuit: item.cuit || "No especificado",
+                        razonSocial: item.razonSocial || "No especificado",
+                        patente: item.patente || "No especificado",
+                        idUbicacion: item.idUbicacion || "No especificado",
+                        numeroCel: item.numeroCel || "No especificado",
+                        urlConstanciaAfip:
+                            item.urlConstanciaAfip || "No especificado",
+                        urlConstanciaCbu:
+                            item.urlConstanciaCbu || "No especificado",
+                        email: item.email || "No especificado",
+                    })
+                );
+                setRows(formattedData);
+            })
+            .catch(() =>
+                console.error("Error al obtener las tiposAcoplados disponibles")
+            );
+    }, []);
+
+    const [rows, setRows] = React.useState(empresas);
 
     const handleOpen = (row: any) => {
         setSelectedRow(row);
@@ -304,7 +347,7 @@ export default function Empresas() {
                 sx={{
                     backgroundColor: theme.colores.grisClaro,
                     height: "91vh",
-                    width: "96vw",
+                    width: "100%",
                     padding: 3,
                 }}
             >
@@ -326,6 +369,7 @@ export default function Empresas() {
                     <DataGrid
                         rows={rows}
                         columns={columns}
+                        getRowId={(row) => row.cuit}
                         sx={{
                             "& .MuiDataGrid-columnHeader": {
                                 backgroundColor: theme.colores.grisClaro,

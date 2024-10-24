@@ -11,7 +11,6 @@ import {
     TextField,
     Typography,
 } from "@mui/material";
-import { choferes } from "./listachoferes"; // Importar los datos de empresas.ts
 import { GridRowsProp } from "@mui/x-data-grid";
 import { GridRowModesModel } from "@mui/x-data-grid";
 import { GridToolbarContainer } from "@mui/x-data-grid";
@@ -20,7 +19,7 @@ import { GridToolbarFilterButton } from "@mui/x-data-grid";
 import { GridToolbarExport } from "@mui/x-data-grid";
 import { GridToolbarColumnsButton } from "@mui/x-data-grid";
 import BorderColorIcon from "@mui/icons-material/BorderColor";
-import AutocompletarPais from "../autocompletar/AutocompletarPais";
+import AutocompletarPais from "../cargas/autocompletar/AutocompletarPais";
 import { PatternFormat } from "react-number-format";
 import { ContextoGeneral } from "../Contexto";
 
@@ -182,12 +181,63 @@ const EdadFormat = React.forwardRef<any, CustomProps>(
     }
 );
 export default function Choferes() {
-    const [rows, setRows] = React.useState(choferes); // Usar los datos importados
     const [open, setOpen] = React.useState(false);
     const [isEditMode, setIsEditMode] = React.useState(false);
     const [selectedRow, setSelectedRow] = React.useState<any>(null);
     const [editedRow, setEditedRow] = React.useState<any>(null);
-    const { theme } = React.useContext(ContextoGeneral);
+    const { backendURL, theme } = React.useContext(ContextoGeneral);
+
+    const [choferes, setchoferes] = React.useState<any[]>([]);
+
+    React.useEffect(() => {
+        fetch(`${backendURL}/choferes`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "ngrok-skip-browser-warning": "true",
+            },
+        })
+            .then((response) => response.json())
+            .then((data) => {
+                setchoferes(data);
+                const formattedData = data.map(
+                    (item: {
+                        cuil: any;
+                        edad: any;
+                        nombre: any;
+                        urlInti: any;
+                        idUbicacion: any;
+                        apellido: any;
+                        cuitEmpresa: any;
+                        numeroCel: any;
+                        urlConstanciaCbu: any;
+                        urlConstanciaAfip: any;
+                        email: any;
+                    }) => ({
+                        ...item,
+                        cuil: item.cuil || "No especificado",
+                        edad: item.edad || "No especificado",
+                        nombre: item.nombre || "No especificado",
+                        urlInti: item.urlInti || "No especificado",
+                        idUbicacion: item.idUbicacion || "No especificado",
+                        apellido: item.apellido || "No especificado",
+                        cuitEmpresa: item.cuitEmpresa || "No especificado",
+                        numeroCel: item.numeroCel || "No especificado",
+                        urlConstanciaCbu:
+                            item.urlConstanciaCbu || "No especificado",
+                        urlConstanciaAfip:
+                            item.urlConstanciaAfip || "No especificado",
+                        email: item.email || "No especificado",
+                    })
+                );
+                setRows(formattedData);
+            })
+            .catch(() =>
+                console.error("Error al obtener las tiposAcoplados disponibles")
+            );
+    }, []);
+
+    const [rows, setRows] = React.useState(choferes);
 
     const handleOpen = (row: any) => {
         setSelectedRow(row);
@@ -222,7 +272,6 @@ export default function Choferes() {
 
     const handleAddClick = () => {
         setEditedRow({
-            id: 0,
             cuil: "",
             numeroCel: "",
             nombre: "",
@@ -342,7 +391,7 @@ export default function Choferes() {
                 sx={{
                     backgroundColor: theme.colores.grisClaro,
                     height: "91vh",
-                    width: "96vw",
+                    width: "100%",
                     padding: 3,
                 }}
             >
@@ -364,6 +413,7 @@ export default function Choferes() {
                     <DataGrid
                         rows={rows}
                         columns={columns}
+                        getRowId={(row) => row.cuil}
                         sx={{
                             "& .MuiDataGrid-columnHeader": {
                                 backgroundColor: theme.colores.grisClaro,

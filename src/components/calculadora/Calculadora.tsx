@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { TextField, Button, Box, Typography } from "@mui/material";
+import { TextField, Box, Typography } from "@mui/material";
 import Papa from "papaparse";
 import { BotonIcon } from "../botones/IconButton";
 import CalculateOutlinedIcon from "@mui/icons-material/CalculateOutlined";
@@ -9,6 +9,7 @@ import {
     PatternFormat,
 } from "react-number-format";
 import { ContextoGeneral } from "../Contexto";
+import { DataGrid, GridColDef } from "@mui/x-data-grid";
 
 interface CustomProps {
     onChange: (event: { target: { name: string; value: string } }) => void;
@@ -82,6 +83,40 @@ const TnFormat = React.forwardRef<NumericFormatProps, CustomProps>(
         );
     }
 );
+const NumericFormatCustom = React.forwardRef<NumericFormatProps, CustomProps>(
+    function NumericFormatCustom(props, ref) {
+        const { onChange, ...other } = props;
+
+        const isAllowed = (values: any) => {
+            const { formattedValue } = values;
+            // Remove the prefix and separators to count only the digits
+            const numericValue = formattedValue.replace(/[$.,]/g, "");
+            return numericValue.length <= 9;
+        };
+
+        return (
+            <NumericFormat
+                {...other}
+                getInputRef={ref}
+                thousandSeparator="."
+                decimalSeparator=","
+                prefix="$"
+                decimalScale={2}
+                fixedDecimalScale={true}
+                allowNegative={false}
+                isAllowed={isAllowed}
+                onValueChange={(values) => {
+                    onChange({
+                        target: {
+                            name: props.name,
+                            value: values.value,
+                        },
+                    });
+                }}
+            />
+        );
+    }
+);
 
 const PorcentajeFormat = React.forwardRef<any, CustomProps>(
     function PorcentajeFormat(props, ref) {
@@ -114,6 +149,7 @@ const TarifaApp = () => {
     const { theme } = React.useContext(ContextoGeneral);
     const [km, setKm] = useState<number | null>(null);
     const [tn, setTn] = useState<number | null>(null);
+    const [precio, setPrecio] = useState<number | null>(null);
     const [descuento, setDescuento] = useState<number>(0);
     const [tarifaSinDescuento, setTarifaSinDescuento] = useState<number | null>(
         null
@@ -130,6 +166,12 @@ const TarifaApp = () => {
     );
     const [tarifaPorToneladaConDescuento, setTarifaPorToneladaConDescuento] =
         useState<number | null>(null);
+    const [incidenciaSinDescuento, setIncidenciaSinDescuento] = useState<
+        number | null
+    >(null);
+    const [incidenciaConDescuento, setIncidenciaConDescuento] = useState<
+        number | null
+    >(null);
 
     const handleCalcular = async () => {
         const response = await fetch("/tarifas.csv");
@@ -165,15 +207,86 @@ const TarifaApp = () => {
                 setTarifaPorKm(tarifaBruta / km);
                 setTarifaPorKmConDescuento(tarifaConDescuentoCalc / km);
             }
+            if (precio !== null && precio !== undefined) {
+                setIncidenciaSinDescuento((tarifaBruta / (precio * tn)) * 100);
+                setIncidenciaConDescuento(
+                    (tarifaConDescuentoCalc / (precio * tn)) * 100
+                );
+            }
         }
     };
+    const columns: GridColDef[] = [
+        {
+            field: "concepto",
+            headerName: "Concepto",
+            flex: 2,
+            renderHeader: () => (
+                <strong style={{ color: theme.colores.grisOscuro }}>
+                    Concepto
+                </strong>
+            ),
+        },
+        {
+            field: "valor",
+            headerName: "Valor",
+            flex: 1,
+            renderHeader: () => (
+                <strong style={{ color: theme.colores.grisOscuro }}>
+                    Valor
+                </strong>
+            ),
+        },
+    ];
+
+    const rows = [
+        {
+            id: 1,
+            concepto: "Tarifa ($/tn)",
+            valor: tarifaPorTonelada?.toFixed(2) || "-",
+        },
+        {
+            id: 2,
+            concepto: "Tarifa total ($)",
+            valor: tarifaSinDescuento?.toFixed(2) || "-",
+        },
+        {
+            id: 3,
+            concepto: "Tarifa con descuento ($/tn)",
+            valor: tarifaPorToneladaConDescuento?.toFixed(2) || "-",
+        },
+        {
+            id: 4,
+            concepto: "Tarifa total con descuento ($)",
+            valor: tarifaConDescuento?.toFixed(2) || "-",
+        },
+        {
+            id: 5,
+            concepto: "Tarifa por KM ($/km)",
+            valor: tarifaPorKm?.toFixed(2) || "-",
+        },
+        {
+            id: 6,
+            concepto: "Tarifa por KM con Descuento ($/km)",
+            valor: tarifaPorKmConDescuento?.toFixed(2) || "-",
+        },
+        {
+            id: 7,
+            concepto: "Incidencia del flete (%)",
+            valor: incidenciaSinDescuento?.toFixed(2) || "-",
+        },
+        {
+            id: 8,
+            concepto: "Incidencia del flete con descuento (%)",
+            valor: incidenciaConDescuento?.toFixed(2) || "-",
+        },
+    ];
 
     return (
         <Box
             sx={{
                 backgroundColor: theme.colores.grisClaro,
                 height: "91vh",
-                width: "96vw",
+                width: "100%",
                 padding: 3,
             }}
         >
@@ -191,89 +304,98 @@ const TarifaApp = () => {
             >
                 Calculadora
             </Typography>
+
             <Box
                 display="flex"
-                flexDirection="column"
+                flexDirection="row"
                 gap={2}
-                width={"500px"}
-                padding={3}
-                justifyContent={"center"}
-                alignItems={"center"}
+                justifyContent={"flex-start"}
+                alignItems={"flex-start"}
+                width={"100%"}
             >
-                <TextField
-                    label="KM"
-                    value={km ?? ""}
-                    onChange={(e) => setKm(parseInt(e.target.value))}
-                    id="formatted-numberformat-input"
-                    slotProps={{
-                        input: {
-                            inputComponent: KmFormat as any,
-                        },
+                <Box
+                    display="flex"
+                    flexDirection="column"
+                    gap={2}
+                    width={"500px"}
+                    padding={3}
+                    justifyContent={"center"}
+                    alignItems={"center"}
+                >
+                    <TextField
+                        label="Kilometros a recorrer"
+                        value={km ?? ""}
+                        onChange={(e) => setKm(parseInt(e.target.value))}
+                        id="formatted-numberformat-input"
+                        slotProps={{
+                            input: {
+                                inputComponent: KmFormat as any,
+                            },
+                        }}
+                        sx={{ width: "100%" }}
+                    />
+                    <TextField
+                        label="Toneladas a transportar"
+                        value={tn ?? ""}
+                        onChange={(e) => setTn(parseInt(e.target.value))}
+                        id="formatted-numberformat-input"
+                        slotProps={{
+                            input: {
+                                inputComponent: TnFormat as any,
+                            },
+                        }}
+                        sx={{ width: "100%" }}
+                    />
+                    <TextField
+                        label="Precio del grano de referencia"
+                        value={precio ?? ""}
+                        onChange={(e) => setPrecio(parseInt(e.target.value))}
+                        id="formatted-numberformat-input"
+                        slotProps={{
+                            input: {
+                                inputComponent: NumericFormatCustom as any,
+                            },
+                        }}
+                        sx={{ width: "100%" }}
+                    />
+                    <TextField
+                        label="Porcentaje de Descuento"
+                        value={descuento}
+                        onChange={(e) =>
+                            setDescuento(parseFloat(e.target.value))
+                        }
+                        id="formatted-numberformat-input"
+                        slotProps={{
+                            input: {
+                                inputComponent: PorcentajeFormat as any,
+                            },
+                        }}
+                        sx={{ width: "100%" }}
+                    />
+                    <BotonIcon
+                        onClick={handleCalcular}
+                        title="Calcular tarifa"
+                        icon={<CalculateOutlinedIcon />}
+                    />
+                </Box>
+                <Box
+                    sx={{
+                        width: "100%",
+                        padding: 3,
+                        maxWidth: "500px",
+                        minWidth: "100px",
                     }}
-                    sx={{ width: "100%" }}
-                />
-                <TextField
-                    label="TN"
-                    value={tn ?? ""}
-                    onChange={(e) => setTn(parseInt(e.target.value))}
-                    id="formatted-numberformat-input"
-                    slotProps={{
-                        input: {
-                            inputComponent: TnFormat as any,
-                        },
-                    }}
-                    sx={{ width: "100%" }}
-                />
-                <TextField
-                    label="Porcentaje de Descuento"
-                    value={descuento}
-                    onChange={(e) => setDescuento(parseFloat(e.target.value))}
-                    id="formatted-numberformat-input"
-                    slotProps={{
-                        input: {
-                            inputComponent: PorcentajeFormat as any,
-                        },
-                    }}
-                    sx={{ width: "100%" }}
-                />
-                <BotonIcon
-                    onClick={handleCalcular}
-                    title="Calcular tarifa"
-                    icon={<CalculateOutlinedIcon />}
-                />
-                {tarifaPorTonelada !== null && (
-                    <Typography>
-                        Tarifa: {tarifaPorTonelada.toFixed(2)} $/tn
-                    </Typography>
-                )}
-                {tarifaSinDescuento !== null && (
-                    <Typography>
-                        Tarifa total: {tarifaSinDescuento.toFixed(2)} $
-                    </Typography>
-                )}
-                {tarifaPorToneladaConDescuento !== null && (
-                    <Typography>
-                        Tarifa con descuento:
-                        {tarifaPorToneladaConDescuento.toFixed(2)} $/tn
-                    </Typography>
-                )}
-                {tarifaConDescuento !== null && (
-                    <Typography>
-                        Tarifa total con descuento:{" "}
-                        {tarifaConDescuento.toFixed(2)} $
-                    </Typography>
-                )}
-                {tarifaPorKm !== null && (
-                    <Typography>
-                        Tarifa por KM: {tarifaPorKm.toFixed(2)} $/km
-                    </Typography>
-                )}
-                {tarifaPorKmConDescuento !== null && (
-                    <Typography>
-                        Tarifa por KM con Descuento:
-                        {tarifaPorKmConDescuento.toFixed(2)} $/km
-                    </Typography>
-                )}
+                >
+                    <DataGrid
+                        rows={rows}
+                        columns={columns}
+                        hideFooter
+                        sx={{
+                            backgroundColor: "#fff",
+                            borderRadius: "16px",
+                        }}
+                    />
+                </Box>
             </Box>
         </Box>
     );
