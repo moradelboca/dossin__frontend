@@ -20,6 +20,8 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import { Link } from "react-router-dom";
 import { ListItemButton } from "@mui/material";
+import ThunderstormOutlinedIcon from "@mui/icons-material/ThunderstormOutlined";
+import CalculateOutlinedIcon from "@mui/icons-material/CalculateOutlined";
 
 const CustomMuiDrawer = styled(MuiDrawer)<{
     ancho?: number;
@@ -63,6 +65,8 @@ export default function Navside(navSideProps: NavsideProps) {
             "Empresas",
             "Camiones",
             "Inconvenientes",
+            "Clima",
+            "Calculadora",
         ],
     ];
     const listasDeIconos = [
@@ -74,6 +78,8 @@ export default function Navside(navSideProps: NavsideProps) {
             <DomainAddOutlined />,
             <LocalShippingOutlined />,
             <ErrorOutline />,
+            <ThunderstormOutlinedIcon />,
+            <CalculateOutlinedIcon />,
         ],
     ];
     const listasDeRutas = [
@@ -85,6 +91,8 @@ export default function Navside(navSideProps: NavsideProps) {
             "/empresas",
             "/camiones",
             "/inconvenientes",
+            "/clima",
+            "/calculadora",
         ],
     ];
 

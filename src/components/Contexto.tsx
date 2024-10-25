@@ -8,6 +8,8 @@ export const ValoresContexto = {
             azul: "#163660",
             azulOscuro: "#0e213b",
             gris: "#D9D9D9",
+            grisOscuro: "#5c5c5c",
+            grisClaro: "#f6f6f6",
         },
     },
 };
