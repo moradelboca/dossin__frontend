@@ -6,7 +6,7 @@ import StepContent from "@mui/material/StepContent";
 import Button from "@mui/material/Button";
 import SelectorDeAcoplados from "../selectores/SelectorDeAcoplados";
 import SelectorDeUbicacion from "../selectores/SelectorDeUbicacion";
-import { useState, useContext, createContext } from "react";
+import { useState, useContext, createContext, useEffect } from "react";
 import SelectorTarifa from "../selectores/SelectorTarifa";
 import SelectorMasInfo from "../selectores/SelectorMasInfo";
 import SelectorProveedor from "../selectores/SelectorProveedor";
@@ -32,19 +32,41 @@ export const ContextoStepper = createContext<{
 export default function CrearCargaStepper(props: any) {
     const { pasoSeleccionado, datosCarga, handleCloseDialog } = props;
     const [datosNuevaCarga, setDatosNuevaCarga] = useState<any>({
-        ...datosCarga,
-        requiereBalanza: false,
-        idsTiposAcoplados: [],
+        idsTiposAcoplados: datosCarga?.tiposAcoplados
+            ? datosCarga.tiposAcoplados.map((acoplado: any) => acoplado.id)
+            : [],
         incluyeIVA: datosCarga?.incluyeIVA || false,
-        nombreTipoTarifa: datosCarga?.tipoTarifa,
-        nombreProveedor: datosCarga?.proveedor,
-        nombreCargamento: datosCarga?.cargamento,
+        nombreTipoTarifa: datosCarga?.tipoTarifa.nombre,
+        idTipoTarifa: datosCarga?.tipoTarifa.id,
+        tarifa: datosCarga?.tarifa,
+        descripcion: datosCarga?.descripcion,
+        nombreProveedor: datosCarga?.proveedor.nombre,
+        nombreCargamento: datosCarga?.cargamento.nombre,
         nombreUbicacionCarga: datosCarga?.ubicacionCarga.nombre,
+        idUbicacionCarga: datosCarga?.ubicacionCarga.id,
         nombreUbicacionDescarga: datosCarga?.ubicacionDescarga.nombre,
+        idUbicacionDescarga: datosCarga?.ubicacionDescarga.id,
+        requiereBalanza: datosCarga?.horaInicioBalanza ? true : false,
+        nombreUbicacionBalanza: datosCarga?.ubicacionBalanza?.nombre || "",
+        idUbicacionBalanza: datosCarga?.ubicacionBalanza?.id || "",
+        idProveedor: datosCarga?.proveedor.id,
+        idCargamento: datosCarga?.cargamento.id,
+        cantidadKm: datosCarga?.cantidadKm,
+        horaInicioCarga: datosCarga?.horaInicioCarga,
+        horaFinCarga: datosCarga?.horaFinCarga,
+        horaInicioDescarga: datosCarga?.horaInicioDescarga,
+        horaFinDescarga: datosCarga?.horaFinDescarga,
+        horaInicioBalanza: datosCarga?.horaInicioBalanza,
+        horaFinBalanza: datosCarga?.horaFinBalanza,
     });
     const [datosSinCompletar, setDatosSinCompletar] = useState(false);
     const [pasoActivo, setPasoActivo] = useState<number>(pasoSeleccionado ?? 0);
     const [estadoCarga, setEstadoCarga] = useState("Creando");
+    useEffect(() => {
+        if (pasoSeleccionado !== undefined && pasoSeleccionado !== null) {
+            setEstadoCarga("Actualizando");
+        }
+    }, [pasoSeleccionado]);
 
     const { backendURL, theme } = useContext(ContextoGeneral);
 
@@ -73,7 +95,6 @@ export default function CrearCargaStepper(props: any) {
 
     const handleProximoPaso = () => {
         setDatosSinCompletar(false);
-
         switch (pasoActivo) {
             case 0:
                 if (
@@ -124,6 +145,12 @@ export default function CrearCargaStepper(props: any) {
                     return;
                 }
                 break;
+            case 4:
+                if (!datosNuevaCarga["descripcion"]) {
+                    setDatosSinCompletar(true);
+                    return;
+                }
+                break;
             default:
                 break;
         }
@@ -131,16 +158,32 @@ export default function CrearCargaStepper(props: any) {
         setPasoActivo((prevActiveStep) => prevActiveStep + 1);
 
         if (pasoActivo === pasos.length - 1) {
+            const body = { ...datosNuevaCarga };
+            delete body["nombreUbicacionCarga"];
+            delete body["nombreUbicacionDescarga"];
+            delete body["nombreUbicacionBalanza"];
+            delete body["nombreTipoTarifa"];
+            delete body["nombreProveedor"];
+            delete body["nombreCargamento"];
+            const metodo = estadoCarga === "Creando" ? "POST" : "PUT";
             setEstadoCarga("Cargando");
             datosNuevaCarga["creadoPor"] = "test@test.com";
-
-            fetch(`${backendURL}/cargas`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(datosNuevaCarga),
+            const url =
+                estadoCarga === "Creando"
+                    ? `${backendURL}/cargas`
+                    : `${backendURL}/cargas/${datosCarga?.id}`;
+            console.log(JSON.stringify(body));
+            fetch(`${url}`, {
+                method: metodo,
+                headers: {
+                    "Content-Type": "application/json",
+                    "ngrok-skip-browser-warning": "true",
+                },
+                body: JSON.stringify(body),
             })
                 .then((response) => {
                     if (!response.ok) {
+                        console.log(response);
                         throw new Error("Error al crear la carga");
                     }
                     response.json();
@@ -153,7 +196,8 @@ export default function CrearCargaStepper(props: any) {
                         handleCloseDialog();
                     }, 4000);
                 })
-                .catch(() => {
+                .catch((e) => {
+                    console.log(e);
                     setEstadoCarga("Error");
                 });
         }
@@ -183,7 +227,7 @@ export default function CrearCargaStepper(props: any) {
                     color: theme.colores.azul,
                 }}
             />
-            {estadoCarga === "Creando" && (
+            {(estadoCarga === "Creando" || estadoCarga === "Actualizando") && (
                 <Box
                     sx={{
                         display: "flex",
@@ -199,18 +243,18 @@ export default function CrearCargaStepper(props: any) {
                                         <Box
                                             sx={{
                                                 backgroundColor: "#163660",
-                                                border: "2px solid #163660", // Borde azul para los pasos que faltan
-                                                borderRadius: "50%", // Asegura que el círculo tenga forma redonda
-                                                width: "24px", // Tamaño del ícono
-                                                height: "24px", // Tamaño del ícono
+                                                border: "2px solid #163660",
+                                                borderRadius: "50%",
+                                                width: "24px",
+                                                height: "24px",
                                                 display: "flex",
                                                 alignItems: "center",
                                                 justifyContent: "center",
                                                 color: "white",
-                                                fontSize: "12px", // Tamaño más pequeño para el número
+                                                fontSize: "12px",
                                             }}
                                         >
-                                            {completed ? "✓" : indice + 1}{" "}
+                                            {completed ? "✓" : indice + 1}
                                         </Box>
                                     )}
                                 >
@@ -225,15 +269,17 @@ export default function CrearCargaStepper(props: any) {
                                             sx={{
                                                 mt: 1,
                                                 mr: 1,
-                                                backgroundColor: "#163660", // Color azul personalizado
-                                                color: "#fff", // Color del texto
+                                                backgroundColor: "#163660",
+                                                color: "#fff",
                                                 "&:hover": {
-                                                    backgroundColor: "#0E2A45", // Azul más oscuro al hacer hover
+                                                    backgroundColor: "#0E2A45",
                                                 },
                                             }}
                                         >
                                             {indice === pasos.length - 1
-                                                ? "Terminar"
+                                                ? estadoCarga === "Creando"
+                                                    ? "Terminar"
+                                                    : "Actualizar"
                                                 : "Continuar"}
                                         </Button>
                                         <Button
@@ -242,10 +288,10 @@ export default function CrearCargaStepper(props: any) {
                                             sx={{
                                                 mt: 1,
                                                 mr: 1,
-                                                color: "#163660", // Color del texto azul para el botón
+                                                color: "#163660",
                                                 "&:hover": {
                                                     backgroundColor:
-                                                        "rgba(22, 54, 96, 0.1)", // Fondo azul en hover
+                                                        "rgba(22, 54, 96, 0.1)",
                                                 },
                                             }}
                                         >
@@ -258,6 +304,7 @@ export default function CrearCargaStepper(props: any) {
                     </Stepper>
                 </Box>
             )}
+
             {estadoCarga === "Cargando" && (
                 <Box
                     display={"flex"}

@@ -13,14 +13,17 @@ import {
     IconButton,
     Typography,
     TextField,
+    Menu,
+    MenuItem,
 } from "@mui/material";
 import { BotonIcon } from "../../botones/IconButton";
-import { AccessAlarmOutlined } from "@mui/icons-material";
+import { AccessAlarmOutlined, MoreVert } from "@mui/icons-material";
 import CrearCargaStepper from "../creadores/CrearCargaStepper";
 import { CustomButtom } from "../../botones/CustomButtom";
 import { useNavigate } from "react-router-dom";
 import AddIcon from "@mui/icons-material/Add";
 import BorderColorIcon from "@mui/icons-material/BorderColor";
+import React from "react";
 
 export function ContainerTarjetasCargas() {
     const { backendURL } = useContext(ContextoGeneral);
@@ -30,6 +33,9 @@ export function ContainerTarjetasCargas() {
     const [openDialog, setOpenDialog] = useState(false);
     const navigate = useNavigate();
     const [pasoSeleccionado, setPasoSeleccionado] = useState<any>(null);
+    const [provincia, setProvincia] = useState<string | null>(null);
+    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+    const open = Boolean(anchorEl);
 
     useEffect(() => {
         fetch(`${backendURL}/cargas`, {
@@ -49,7 +55,6 @@ export function ContainerTarjetasCargas() {
             });
     }, []);
     useEffect(() => {
-        console.log(cargaSeleccionada);
         if (cargaSeleccionada?.id) {
             fetch(`${backendURL}/cargas/${cargaSeleccionada.id}/cupos`, {
                 method: "GET",
@@ -63,6 +68,7 @@ export function ContainerTarjetasCargas() {
                     setCupos(cupos);
                 })
                 .catch(() => {
+                    setCupos([]);
                     console.error("Error al obtener los cupos disponibles");
                 });
         }
@@ -85,11 +91,16 @@ export function ContainerTarjetasCargas() {
     };
 
     const SeleccionarCarga = (_event: any, seleccionado: any | null) => {
-        const cargaEncontrada = cargas.find(
-            (carga) => carga.provincia === seleccionado?.value
-        );
-        setCargaSeleccionada(cargaEncontrada || null);
+        setProvincia(seleccionado?.value || null);
     };
+    const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
+
     return (
         <Box
             sx={{
@@ -115,27 +126,73 @@ export function ContainerTarjetasCargas() {
                     alignItems: "center",
                 }}
             >
-                <BotonIcon
-                    title="Quiero crear una nueva carga"
-                    icon={<AccessAlarmOutlined />}
-                    onClick={() => handleClickAbrirDialog(0)}
-                />
+                <Box
+                    display="flex"
+                    flexDirection="row"
+                    gap={2}
+                    alignItems="center"
+                >
+                    <BotonIcon
+                        title="Quiero crear una nueva carga"
+                        icon={<AccessAlarmOutlined />}
+                        onClick={() => handleClickAbrirDialog(0)}
+                    />
+                    <Box
+                        display="flex"
+                        flexDirection="row"
+                        gap={2}
+                        alignItems="center"
+                    >
+                        <IconButton
+                            aria-label="more"
+                            aria-controls={open ? "menu" : undefined}
+                            aria-haspopup="true"
+                            onClick={handleClick}
+                        >
+                            <MoreVert />
+                        </IconButton>
 
-                <Autocomplete
-                    disablePortal
-                    options={cargas.map(
-                        (carga) => carga.ubicacionCarga.provincia
-                    )}
-                    value={
-                        cargaSeleccionada ? cargaSeleccionada.provincia : null
-                    }
-                    onChange={SeleccionarCarga}
-                    renderInput={(params) => (
-                        <TextField {...params} label={"Provincia"} />
-                    )}
-                    sx={{ width: 300, mb: 2 }}
-                />
-
+                        <Menu
+                            id="menu"
+                            anchorEl={anchorEl}
+                            open={open}
+                            onClose={handleClose}
+                            MenuListProps={{
+                                "aria-labelledby": "menu-button",
+                            }}
+                            PaperProps={{
+                                style: {
+                                    maxHeight: 80 * 4.5,
+                                    width: "40ch",
+                                },
+                            }}
+                        >
+                            <MenuItem>
+                                <Autocomplete
+                                    disablePortal
+                                    options={[
+                                        ...new Set(
+                                            cargas.map(
+                                                (carga) =>
+                                                    carga.ubicacionCarga
+                                                        .provincia
+                                            )
+                                        ),
+                                    ]}
+                                    value={provincia || null}
+                                    onChange={SeleccionarCarga}
+                                    renderInput={(params) => (
+                                        <TextField
+                                            {...params}
+                                            label={"Provincia"}
+                                        />
+                                    )}
+                                    sx={{ width: 300, mb: 2 }}
+                                />
+                            </MenuItem>
+                        </Menu>
+                    </Box>
+                </Box>
                 {cargaSeleccionada ? (
                     <TarjetaCarga
                         onClick={() => handleCardClick(cargaSeleccionada)}
@@ -315,7 +372,7 @@ export function ContainerTarjetasCargas() {
                                     minHeight: 275,
                                 }}
                             >
-                                {cupos.length === 0 ? (
+                                {!cupos.length ? (
                                     <Typography
                                         variant="subtitle2"
                                         sx={{
@@ -448,7 +505,7 @@ export function ContainerTarjetasCargas() {
                                         minHeight={22}
                                     >
                                         ${cargaSeleccionada?.tarifa} /
-                                        {cargaSeleccionada?.tipoTarifa}
+                                        {cargaSeleccionada?.tipoTarifa.nombre}
                                         {cargaSeleccionada?.incluyeIva === 1
                                             ? "+IVA"
                                             : ""}
@@ -607,7 +664,18 @@ export function ContainerTarjetasCargas() {
                                         color="#90979f"
                                         minHeight={22}
                                     >
-                                        {cargaSeleccionada?.tiposAcoplados}
+                                        {cargaSeleccionada?.tiposAcoplados.map(
+                                            (acoplado: any, index: any) => (
+                                                <span key={index}>
+                                                    {acoplado.nombre}
+                                                    {index <
+                                                        cargaSeleccionada
+                                                            .tiposAcoplados
+                                                            .length -
+                                                            1 && ", "}
+                                                </span>
+                                            )
+                                        )}
                                     </Typography>
                                 </Box>
                             </Box>

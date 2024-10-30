@@ -20,7 +20,7 @@ export default function AutocompletarUbicacion(props: AutocompletarProps) {
         if (seleccionado) {
             const ubicacionesStrings = ubicaciones.map(
                 (ubicacion) =>
-                    `${ubicacion.nombre}, ${ubicacion.provincia}, ${ubicacion.pais}`
+                    `${ubicacion.nombre}, ${ubicacion.localidad}, ${ubicacion.provincia}`
             );
             const index = ubicacionesStrings.indexOf(seleccionado);
             const ubicacionesIds = ubicaciones.map((ubicacion) => ubicacion.id);
