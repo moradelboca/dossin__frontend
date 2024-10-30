@@ -1,28 +1,38 @@
-# Fase de build
-FROM node:16-alpine AS build
+# Etapa 1: Construcción
+FROM node:20.16.0 AS builder
 
+# Establece el directorio de trabajo
 WORKDIR /app
 
-# Copiar los archivos necesarios para la construcción
+# Copia los archivos de package.json y package-lock.json (o yarn.lock)
 COPY package.json ./
+COPY package-lock.json ./
 
-# Instalar las dependencias
+# Instala las dependencias
 RUN npm install
 
-# Copiar el resto del código fuente
+# Copia el resto de la aplicación
 COPY . .
 
-# Construir la aplicación
+# Construye la aplicación Next.js
 RUN npm run build
 
-# Fase de producción
-FROM nginx:alpine
+# Etapa 2: Servir la aplicación
+FROM node:20.16.0 AS runner
 
-# Copiar los archivos de build a Nginx
-COPY --from=build /app/build /usr/share/nginx/html
+# Establece el directorio de trabajo
+WORKDIR /app
 
-# Exponer el puerto 5173 para el tráfico HTTP
+# Copia solo los archivos necesarios desde la etapa de construcción
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/package.json ./
+COPY --from=builder /app/public ./public
+
+# Instala solo las dependencias de producción
+RUN npm install --only=production
+
+# Expone el puerto en el que correrá la aplicación
 EXPOSE 5173
 
-# Comando por defecto para iniciar Nginx
-CMD ["nginx", "-g", "daemon off;"]
+# Comando para iniciar la aplicación
+CMD ["npm", "start"]
