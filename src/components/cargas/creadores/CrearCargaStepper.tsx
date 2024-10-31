@@ -172,7 +172,6 @@ export default function CrearCargaStepper(props: any) {
                 estadoCarga === "Creando"
                     ? `${backendURL}/cargas`
                     : `${backendURL}/cargas/${datosCarga?.id}`;
-            console.log(JSON.stringify(body));
             fetch(`${url}`, {
                 method: metodo,
                 headers: {
