@@ -30,7 +30,10 @@ export const ContextoStepper = createContext<{
 });
 
 export default function CrearCargaStepper(props: any) {
-    const { pasoSeleccionado, datosCarga, handleCloseDialog } = props;
+    let { pasoSeleccionado, datosCarga, handleCloseDialog, creando } = props;
+    if (creando) {
+        datosCarga = null;
+    }
     const [datosNuevaCarga, setDatosNuevaCarga] = useState<any>({
         idsTiposAcoplados: datosCarga?.tiposAcoplados
             ? datosCarga.tiposAcoplados.map((acoplado: any) => acoplado.id)
@@ -63,13 +66,9 @@ export default function CrearCargaStepper(props: any) {
     const [pasoActivo, setPasoActivo] = useState<number>(pasoSeleccionado ?? 0);
     const [estadoCarga, setEstadoCarga] = useState("Creando");
     useEffect(() => {
-        if (pasoSeleccionado !== undefined && pasoSeleccionado !== null) {
-            setEstadoCarga("Actualizando");
-        }
-    }, [pasoSeleccionado]);
-
+        setEstadoCarga(creando ? "Creando" : "Actualizando");
+    }, [creando]);
     const { backendURL, theme } = useContext(ContextoGeneral);
-
     const pasos = [
         {
             titulo: "Seleccionar Proveedor",
@@ -156,22 +155,19 @@ export default function CrearCargaStepper(props: any) {
         }
 
         setPasoActivo((prevActiveStep) => prevActiveStep + 1);
-
         if (pasoActivo === pasos.length - 1) {
-            const body = { ...datosNuevaCarga };
+            const metodo = creando ? "POST" : "PUT";
+            const url = creando
+                ? `${backendURL}/cargas`
+                : `${backendURL}/cargas/${datosCarga?.id}`;
+            const body = { ...datosNuevaCarga, creadoPor: "test@test.com" };
             delete body["nombreUbicacionCarga"];
             delete body["nombreUbicacionDescarga"];
             delete body["nombreUbicacionBalanza"];
             delete body["nombreTipoTarifa"];
             delete body["nombreProveedor"];
             delete body["nombreCargamento"];
-            const metodo = estadoCarga === "Creando" ? "POST" : "PUT";
             setEstadoCarga("Cargando");
-            datosNuevaCarga["creadoPor"] = "test@test.com";
-            const url =
-                estadoCarga === "Creando"
-                    ? `${backendURL}/cargas`
-                    : `${backendURL}/cargas/${datosCarga?.id}`;
             fetch(`${url}`, {
                 method: metodo,
                 headers: {
@@ -182,21 +178,17 @@ export default function CrearCargaStepper(props: any) {
             })
                 .then((response) => {
                     if (!response.ok) {
-                        console.log(response);
                         throw new Error("Error al crear la carga");
                     }
                     response.json();
                 })
                 .then(() => {
-                    setTimeout(() => {
-                        setEstadoCarga("Creado");
-                    }, 2000);
+                    setEstadoCarga("Creado");
                     setTimeout(() => {
                         handleCloseDialog();
-                    }, 4000);
+                    }, 2000);
                 })
-                .catch((e) => {
-                    console.log(e);
+                .catch(() => {
                     setEstadoCarga("Error");
                 });
         }

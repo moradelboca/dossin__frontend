@@ -44,7 +44,12 @@ export default function ContainerDetalles() {
             >
                 <Typography
                     variant="subtitle2"
-                    sx={{ marginLeft: 2 }}
+                    sx={{
+                        marginLeft: 2,
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        wordBreak: "break-word",
+                    }}
                     color="#90979f"
                 >
                     {cargaSeleccionada?.descripcion}

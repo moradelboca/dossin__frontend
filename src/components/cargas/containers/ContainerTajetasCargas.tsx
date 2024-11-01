@@ -17,12 +17,14 @@ import {
 } from "@mui/material";
 import { BotonIcon } from "../../botones/IconButton";
 import { AccessAlarmOutlined, MoreVert } from "@mui/icons-material";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import CrearCargaStepper from "../creadores/CrearCargaStepper";
 import React from "react";
 import ContainerProximosCupos from "./ContainterProximosCupos";
 import ContainerDetalles from "./ContainerDetalles";
 import ContainerMapa from "./ContainerMapa";
 import ContainerInformacionCarga from "./ContainerInformacionCarga";
+import DeleteCarga from "../creadores/DeleteCarga";
 
 export const ContextoCargas = createContext<{
     cargaSeleccionada: Record<string, any>;
@@ -44,7 +46,9 @@ export function ContainerTarjetasCargas() {
     const [cargaSeleccionada, setCargaSeleccionada] = useState<any>(null);
     const [cupos, setCupos] = useState<any[]>([]);
     const [openDialog, setOpenDialog] = useState(false);
+    const [openDialogDelete, setOpenDialogDelete] = useState(false);
     const [pasoSeleccionado, setPasoSeleccionado] = useState<any>(null);
+    const [creando, setCreando] = useState(false);
     const [provincia, setProvincia] = useState<string | null>(null);
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
@@ -93,9 +97,13 @@ export function ContainerTarjetasCargas() {
         setPasoSeleccionado(paso);
         setOpenDialog(true);
     };
+    const handleCrearCarga = () => {
+        setCreando(true);
+    };
 
     const handleCloseDialog = () => {
         setOpenDialog(false);
+        setOpenDialogDelete(false);
     };
 
     const SeleccionarCarga = (_event: any, seleccionado: any | null) => {
@@ -107,6 +115,9 @@ export function ContainerTarjetasCargas() {
 
     const handleClose = () => {
         setAnchorEl(null);
+    };
+    const handleClickDeleteCarga = () => {
+        setOpenDialogDelete(true);
     };
 
     return (
@@ -151,7 +162,10 @@ export function ContainerTarjetasCargas() {
                         <BotonIcon
                             title="Quiero crear una nueva carga"
                             icon={<AccessAlarmOutlined />}
-                            onClick={() => handleClickAbrirDialog(0)}
+                            onClick={() => {
+                                handleClickAbrirDialog(0);
+                                handleCrearCarga();
+                            }}
                         />
                         <Box
                             display="flex"
@@ -250,18 +264,40 @@ export function ContainerTarjetasCargas() {
                         sx={{
                             marginLeft: 5,
                             marginTop: 2,
+                            marginRight: 5,
                             display: "flex",
-                            flexDirection: "row",
+                            justifyContent: "space-between",
+                            alignItems: "center",
                             width: "100%",
+                            maxWidth: "800px",
+                            flexWrap: "wrap",
                         }}
                     >
-                        <Typography variant="h6" color="#90979f">
-                            Id de Carga:
-                        </Typography>
-                        <Typography variant="h6">
-                            {cargaSeleccionada?.id}
-                        </Typography>
+                        <Box
+                            sx={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 1,
+                            }}
+                        >
+                            <Typography variant="h6" color="#90979f">
+                                Id de Carga:
+                            </Typography>
+                            <Typography variant="h6">
+                                {cargaSeleccionada?.id}
+                            </Typography>
+                        </Box>
+
+                        <IconButton
+                            disabled={!cargaSeleccionada}
+                            onClick={() => handleClickDeleteCarga()}
+                        >
+                            <DeleteOutlineIcon
+                                sx={{ fontSize: 20, color: "#d68384" }}
+                            />
+                        </IconButton>
                     </Box>
+
                     <Divider sx={{ marginTop: 1 }} />
                     <Grid2>
                         <Box
@@ -351,7 +387,9 @@ export function ContainerTarjetasCargas() {
                     maxWidth="lg"
                     fullWidth
                 >
-                    <DialogTitle>Crear Nueva Carga</DialogTitle>
+                    <DialogTitle>
+                        {creando ? "Crear Nueva Carga" : "Modificando Carga"}
+                    </DialogTitle>
                     <DialogContent
                         sx={{ height: "80vh", alignContent: "center" }}
                     >
@@ -359,8 +397,17 @@ export function ContainerTarjetasCargas() {
                             datosCarga={cargaSeleccionada}
                             pasoSeleccionado={pasoSeleccionado}
                             handleCloseDialog={handleCloseDialog}
+                            creando={creando}
                         />
                     </DialogContent>
+                </Dialog>
+                <Dialog
+                    open={openDialogDelete}
+                    onClose={handleCloseDialog}
+                    maxWidth="sm"
+                    fullWidth
+                >
+                    <DeleteCarga handleCloseDialog={handleCloseDialog} />
                 </Dialog>
             </Box>
         </ContextoCargas.Provider>
