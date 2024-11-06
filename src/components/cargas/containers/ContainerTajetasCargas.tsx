@@ -1,8 +1,7 @@
 import Box from "@mui/material/Box";
-import { useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { ContextoGeneral } from "../../Contexto";
 import { TarjetaCarga } from "../tarjetas/TarjetaCarga";
-import { Mapa2 } from "../Mapa2";
 import {
     Autocomplete,
     Dialog,
@@ -13,14 +12,33 @@ import {
     IconButton,
     Typography,
     TextField,
+    Menu,
+    MenuItem,
 } from "@mui/material";
 import { BotonIcon } from "../../botones/IconButton";
-import { AccessAlarmOutlined } from "@mui/icons-material";
+import { AccessAlarmOutlined, MoreVert } from "@mui/icons-material";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import CrearCargaStepper from "../creadores/CrearCargaStepper";
-import { CustomButtom } from "../../botones/CustomButtom";
-import { useNavigate } from "react-router-dom";
-import AddIcon from "@mui/icons-material/Add";
-import BorderColorIcon from "@mui/icons-material/BorderColor";
+import React from "react";
+import ContainerProximosCupos from "./ContainterProximosCupos";
+import ContainerDetalles from "./ContainerDetalles";
+import ContainerMapa from "./ContainerMapa";
+import ContainerInformacionCarga from "./ContainerInformacionCarga";
+import DeleteCarga from "../creadores/DeleteCarga";
+
+export const ContextoCargas = createContext<{
+    cargaSeleccionada: Record<string, any>;
+    setCargaSeleccionada: React.Dispatch<
+        React.SetStateAction<Record<string, any>>
+    >;
+    handleClickAbrirDialog: (paso: any) => void;
+    cupos: any[];
+}>({
+    cargaSeleccionada: {},
+    setCargaSeleccionada: () => {},
+    handleClickAbrirDialog: () => {},
+    cupos: [],
+});
 
 export function ContainerTarjetasCargas() {
     const { backendURL } = useContext(ContextoGeneral);
@@ -28,8 +46,12 @@ export function ContainerTarjetasCargas() {
     const [cargaSeleccionada, setCargaSeleccionada] = useState<any>(null);
     const [cupos, setCupos] = useState<any[]>([]);
     const [openDialog, setOpenDialog] = useState(false);
-    const navigate = useNavigate();
+    const [openDialogDelete, setOpenDialogDelete] = useState(false);
     const [pasoSeleccionado, setPasoSeleccionado] = useState<any>(null);
+    const [creando, setCreando] = useState(false);
+    const [provincia, setProvincia] = useState<string | null>(null);
+    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+    const open = Boolean(anchorEl);
 
     useEffect(() => {
         fetch(`${backendURL}/cargas`, {
@@ -49,7 +71,6 @@ export function ContainerTarjetasCargas() {
             });
     }, []);
     useEffect(() => {
-        console.log(cargaSeleccionada);
         if (cargaSeleccionada?.id) {
             fetch(`${backendURL}/cargas/${cargaSeleccionada.id}/cupos`, {
                 method: "GET",
@@ -63,6 +84,7 @@ export function ContainerTarjetasCargas() {
                     setCupos(cupos);
                 })
                 .catch(() => {
+                    setCupos([]);
                     console.error("Error al obtener los cupos disponibles");
                 });
         }
@@ -75,615 +97,319 @@ export function ContainerTarjetasCargas() {
         setPasoSeleccionado(paso);
         setOpenDialog(true);
     };
+    const handleCrearCarga = () => {
+        setCreando(true);
+    };
 
     const handleCloseDialog = () => {
         setOpenDialog(false);
-    };
-
-    const handleClickVerCupos = () => {
-        navigate(`/cargas/${cargaSeleccionada.id}/cupos`);
+        setOpenDialogDelete(false);
     };
 
     const SeleccionarCarga = (_event: any, seleccionado: any | null) => {
-        const cargaEncontrada = cargas.find(
-            (carga) => carga.provincia === seleccionado?.value
-        );
-        setCargaSeleccionada(cargaEncontrada || null);
+        setProvincia(seleccionado?.value || null);
     };
+    const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
+    const handleClickDeleteCarga = () => {
+        setOpenDialogDelete(true);
+    };
+
     return (
-        <Box
-            sx={{
-                p: 1,
-                width: "100%",
-                boxSizing: "border-box",
-                display: "flex",
-                flexDirection: "row",
-                gap: 1,
-                maxHeight: "85vh",
-                marginTop: 1,
+        <ContextoCargas.Provider
+            value={{
+                cargaSeleccionada,
+                setCargaSeleccionada,
+                handleClickAbrirDialog,
+                cupos,
             }}
         >
             <Box
                 sx={{
-                    flex: 1,
+                    p: 1,
+                    width: "100%",
+                    boxSizing: "border-box",
                     display: "flex",
-                    flexDirection: "column",
-                    gap: 2,
-                    maxWidth: "35vw",
-                    overflowY: "auto",
-                    overflowX: "hidden",
-                    alignItems: "center",
-                }}
-            >
-                <BotonIcon
-                    title="Quiero crear una nueva carga"
-                    icon={<AccessAlarmOutlined />}
-                    onClick={() => handleClickAbrirDialog(0)}
-                />
-
-                <Autocomplete
-                    disablePortal
-                    options={cargas.map(
-                        (carga) => carga.ubicacionCarga.provincia
-                    )}
-                    value={
-                        cargaSeleccionada ? cargaSeleccionada.provincia : null
-                    }
-                    onChange={SeleccionarCarga}
-                    renderInput={(params) => (
-                        <TextField {...params} label={"Provincia"} />
-                    )}
-                    sx={{ width: 300, mb: 2 }}
-                />
-
-                {cargaSeleccionada ? (
-                    <TarjetaCarga
-                        onClick={() => handleCardClick(cargaSeleccionada)}
-                        key={cargaSeleccionada.id}
-                        datosCarga={cargaSeleccionada}
-                        isSelected={true}
-                    />
-                ) : cargas.length > 0 ? (
-                    cargas.map((carga, i) => (
-                        <TarjetaCarga
-                            onClick={() => handleCardClick(carga)}
-                            key={i}
-                            datosCarga={carga}
-                            isSelected={false}
-                        />
-                    ))
-                ) : (
-                    <Typography
-                        variant="subtitle2"
-                        sx={{
-                            marginLeft: 2,
-                            marginTop: 2,
-                            marginRight: 2,
-                        }}
-                        color="#90979f"
-                    >
-                        Parece ser que no hay cargas.
-                    </Typography>
-                )}
-            </Box>
-            <Box
-                sx={{
-                    maxWidth: "100%",
-                    height: "84vh",
-                    maxHeight: "1300px",
-                    borderRadius: "16px",
-                    flex: 1,
-                    display: "flex",
-                    flexDirection: "column",
-                    backgroundColor: "#ffffff",
-                    overflowY: "auto",
-                    overflowX: "hidden",
+                    flexDirection: "row",
+                    gap: 1,
+                    maxHeight: "85vh",
+                    marginTop: 1,
                 }}
             >
                 <Box
                     sx={{
-                        marginLeft: 5,
-                        marginTop: 2,
+                        flex: 1,
                         display: "flex",
-                        flexDirection: "row",
-                        width: "100%",
+                        flexDirection: "column",
+                        gap: 2,
+                        maxWidth: "35vw",
+                        overflowY: "auto",
+                        overflowX: "hidden",
+                        alignItems: "center",
                     }}
                 >
-                    <Typography variant="h6" color="#90979f">
-                        Id de Carga:
-                    </Typography>
-                    <Typography variant="h6">
-                        {cargaSeleccionada?.id}
-                    </Typography>
-                    <CustomButtom
-                        title="Ver Detalles"
-                        onClick={handleClickAbrirDialog}
-                    />
+                    <Box
+                        display="flex"
+                        flexDirection="row"
+                        gap={2}
+                        alignItems="center"
+                    >
+                        <BotonIcon
+                            title="Quiero crear una nueva carga"
+                            icon={<AccessAlarmOutlined />}
+                            onClick={() => {
+                                handleClickAbrirDialog(0);
+                                handleCrearCarga();
+                            }}
+                        />
+                        <Box
+                            display="flex"
+                            flexDirection="row"
+                            gap={2}
+                            alignItems="center"
+                        >
+                            <IconButton
+                                aria-label="more"
+                                aria-controls={open ? "menu" : undefined}
+                                aria-haspopup="true"
+                                onClick={handleClick}
+                            >
+                                <MoreVert />
+                            </IconButton>
+
+                            <Menu
+                                id="menu"
+                                anchorEl={anchorEl}
+                                open={open}
+                                onClose={handleClose}
+                                MenuListProps={{
+                                    "aria-labelledby": "menu-button",
+                                }}
+                                PaperProps={{
+                                    style: {
+                                        maxHeight: 80 * 4.5,
+                                        width: "40ch",
+                                    },
+                                }}
+                            >
+                                <MenuItem>
+                                    <Autocomplete
+                                        disablePortal
+                                        options={[
+                                            ...new Set(
+                                                cargas.map(
+                                                    (carga) =>
+                                                        carga.ubicacionCarga
+                                                            .provincia
+                                                )
+                                            ),
+                                        ]}
+                                        value={provincia || null}
+                                        onChange={SeleccionarCarga}
+                                        renderInput={(params) => (
+                                            <TextField
+                                                {...params}
+                                                label={"Provincia"}
+                                            />
+                                        )}
+                                        sx={{ width: 300, mb: 2 }}
+                                    />
+                                </MenuItem>
+                            </Menu>
+                        </Box>
+                    </Box>
+                    {cargas.length > 0 ? (
+                        cargas.map((carga, i) => (
+                            <TarjetaCarga
+                                onClick={() => handleCardClick(carga)}
+                                key={i}
+                                datosCarga={carga}
+                                isSelected={carga.id === cargaSeleccionada?.id}
+                            />
+                        ))
+                    ) : (
+                        <Typography
+                            variant="subtitle2"
+                            sx={{
+                                marginLeft: 2,
+                                marginTop: 2,
+                                marginRight: 2,
+                            }}
+                            color="#90979f"
+                        >
+                            Parece ser que no hay cargas.
+                        </Typography>
+                    )}
                 </Box>
-                <Divider sx={{ marginTop: 1 }} />
-                <Grid2>
+                <Box
+                    sx={{
+                        maxWidth: "100%",
+                        height: "84vh",
+                        maxHeight: "1300px",
+                        borderRadius: "16px",
+                        flex: 1,
+                        display: "flex",
+                        flexDirection: "column",
+                        backgroundColor: "#ffffff",
+                        overflowY: "auto",
+                        overflowX: "hidden",
+                    }}
+                >
                     <Box
                         sx={{
-                            margin: 1,
+                            marginLeft: 5,
+                            marginTop: 2,
+                            marginRight: 5,
                             display: "flex",
-                            flexDirection: "row",
-                            borderRadius: "16px",
-                            height: "auto",
+                            justifyContent: "space-between",
+                            alignItems: "center",
                             width: "100%",
+                            maxWidth: "800px",
                             flexWrap: "wrap",
                         }}
                     >
                         <Box
                             sx={{
                                 display: "flex",
-                                flexDirection: "column",
-                                flex: 3,
-                                marginRight: 0,
-                                marginLeft: 4,
-                            }}
-                        >
-                            <Box
-                                sx={{
-                                    display: "flex",
-                                    flexDirection: "row",
-                                    justifyContent: "space-between",
-                                    alignItems: "center",
-                                    width: "100%",
-                                    marginRight: 3,
-                                    margingBottom: 1,
-                                }}
-                            >
-                                <Typography>Recorrido</Typography>
-                                <IconButton
-                                    disabled={!cargaSeleccionada}
-                                    onClick={() => handleClickAbrirDialog(1)}
-                                >
-                                    <BorderColorIcon sx={{ fontSize: 17 }} />
-                                </IconButton>
-                            </Box>
-                            <Box
-                                sx={{
-                                    marginTop: 0,
-                                }}
-                            >
-                                <Mapa2
-                                    coordenadasBalanza={[
-                                        cargaSeleccionada?.ubicacionBalanza
-                                            ?.latitud,
-                                        cargaSeleccionada?.ubicacionBalanza
-                                            ?.longitud,
-                                    ]}
-                                    coordenadasCarga={[
-                                        cargaSeleccionada?.ubicacionCarga
-                                            .latitud,
-                                        cargaSeleccionada?.ubicacionCarga
-                                            .longitud,
-                                    ]}
-                                    coordenadasDescarga={[
-                                        cargaSeleccionada?.ubicacionDescarga
-                                            .latitud,
-                                        cargaSeleccionada?.ubicacionDescarga
-                                            .longitud,
-                                    ]}
-                                />
-                            </Box>
-                        </Box>
-                        <Box
-                            sx={{
-                                marginRight: 4,
-                                display: "flex",
-                                flexDirection: "column",
-                                flex: 1,
-                                minWidth: 200,
-                                width: "100%",
                                 alignItems: "center",
-                                height: "100%",
+                                gap: 1,
                             }}
                         >
-                            <Box
-                                sx={{
-                                    display: "flex",
-                                    flexDirection: "row",
-                                    justifyContent: "space-between",
-                                    alignItems: "center",
-                                    width: "100%",
-                                }}
-                            >
-                                <Typography>Cupos</Typography>
-                                <IconButton
-                                    disabled={!cargaSeleccionada}
-                                    onClick={handleClickVerCupos}
-                                >
-                                    <AddIcon />
-                                </IconButton>
-                            </Box>
-                            <Box
-                                sx={{
-                                    width: "100%",
-                                    display: "flex",
-                                    flexDirection: "column",
-                                    borderRadius: "16px",
-                                    border: "1px solid #ccc",
-                                    overflowY: "auto",
-                                    alignItems: "center",
-                                    justifyContent: "center",
-                                    flexGrow: 1,
-                                    marginTop: 0,
-                                    maxWidth: 300,
-                                    maxHeight: 310,
-                                    marginBottom: 1,
-                                    minHeight: 275,
-                                }}
-                            >
-                                {cupos.length === 0 ? (
-                                    <Typography
-                                        variant="subtitle2"
-                                        sx={{
-                                            marginLeft: 2,
-                                            marginTop: 2,
-                                            marginRight: 2,
-                                        }}
-                                        color="#90979f"
-                                    >
-                                        Parece ser que no hay cupos.
-                                    </Typography>
-                                ) : (
-                                    cupos.slice(0, 3).map((cupo, i) => (
-                                        <Box
-                                            key={i}
-                                            minWidth={200}
-                                            sx={{
-                                                marginBottom: 1,
-                                                marginTop: 2,
-                                            }}
-                                        >
-                                            <Typography
-                                                variant="subtitle2"
-                                                sx={{
-                                                    marginLeft: 2,
-                                                    marginRight: 2,
-                                                }}
-                                                color="#90979f"
-                                            >
-                                                Fecha: {cupo.fecha}
-                                            </Typography>
-                                            <Typography
-                                                variant="subtitle2"
-                                                sx={{
-                                                    marginLeft: 2,
-                                                    marginRight: 2,
-                                                }}
-                                                color="#90979f"
-                                            >
-                                                Cupos confirmados:{" "}
-                                                {cupo.turnos.length} ⛟ 🗸
-                                            </Typography>
-                                            <Typography
-                                                variant="subtitle2"
-                                                sx={{
-                                                    marginLeft: 2,
-                                                    marginRight: 2,
-                                                }}
-                                                color="#90979f"
-                                            >
-                                                Cupos restantes: {cupo.cupos} ⛟
-                                                ⏱︎
-                                            </Typography>
-                                        </Box>
-                                    ))
-                                )}
-                            </Box>
+                            <Typography variant="h6" color="#90979f">
+                                Id de Carga:
+                            </Typography>
+                            <Typography variant="h6">
+                                {cargaSeleccionada?.id}
+                            </Typography>
                         </Box>
+
+                        <IconButton
+                            disabled={!cargaSeleccionada}
+                            onClick={() => handleClickDeleteCarga()}
+                        >
+                            <DeleteOutlineIcon
+                                sx={{ fontSize: 20, color: "#d68384" }}
+                            />
+                        </IconButton>
                     </Box>
-                    <Box
-                        sx={{
-                            maxWidth: "100%",
-                            borderRadius: "16px",
-                            display: "flex",
-                            flexDirection: { xs: "column", md: "row" },
-                            backgroundColor: "#ffffff",
-                            marginBottom: 3,
-                        }}
-                    >
-                        {/* Caja 1 */}
-                        <Box
-                            marginTop={0}
-                            marginLeft={2}
-                            marginBottom={1}
-                            sx={{
-                                width: { xs: "100%", md: "50%" },
-                                maxWidth: "500px",
-                                height: "100%",
-                                display: "grid",
-                                gridTemplateColumns: "repeat(2, 1fr)",
-                                gridTemplateRows: "repeat(2, 1fr)",
-                                padding: 1,
-                            }}
-                        >
-                            {/* Tarifa */}
-                            <Box
-                                sx={{
-                                    display: "flex",
-                                    justifyContent: "center",
-                                    alignItems: "center",
-                                    flexDirection: "column",
-                                    width: "100%",
-                                    height: "100%",
-                                }}
-                            >
-                                <Box
-                                    sx={{
-                                        display: "flex",
-                                        flexDirection: "row",
-                                        justifyContent: "space-between",
-                                        alignItems: "center",
-                                        width: "100%",
-                                    }}
-                                >
-                                    <Typography>Tarifa</Typography>
-                                    <IconButton
-                                        disabled={!cargaSeleccionada}
-                                        onClick={() =>
-                                            handleClickAbrirDialog(3)
-                                        }
-                                    >
-                                        <BorderColorIcon
-                                            sx={{ fontSize: 17 }}
-                                        />
-                                    </IconButton>
-                                </Box>
-                                <Box
-                                    sx={{
-                                        border: "1px solid #ccc",
-                                        borderRadius: "16px",
-                                        padding: 2,
-                                        width: "100%",
-                                        textAlign: "left",
-                                    }}
-                                >
-                                    <Typography
-                                        variant="subtitle2"
-                                        sx={{ marginLeft: 2 }}
-                                        color="#90979f"
-                                        minHeight={22}
-                                    >
-                                        ${cargaSeleccionada?.tarifa} /
-                                        {cargaSeleccionada?.tipoTarifa}
-                                        {cargaSeleccionada?.incluyeIva === 1
-                                            ? "+IVA"
-                                            : ""}
-                                    </Typography>
-                                </Box>
-                            </Box>
 
-                            {/* Kilómetros */}
-                            <Box
-                                sx={{
-                                    display: "flex",
-                                    justifyContent: "center",
-                                    alignItems: "center",
-                                    flexDirection: "column",
-                                    width: "100%",
-                                    height: "100%",
-                                    marginLeft: 2,
-                                }}
-                            >
-                                <Box
-                                    sx={{
-                                        display: "flex",
-                                        flexDirection: "row",
-                                        justifyContent: "space-between",
-                                        alignItems: "center",
-                                        width: "100%",
-                                    }}
-                                >
-                                    <Typography>Kilometros</Typography>
-                                    <IconButton
-                                        disabled={!cargaSeleccionada}
-                                        onClick={() =>
-                                            handleClickAbrirDialog(0)
-                                        }
-                                    >
-                                        <BorderColorIcon
-                                            sx={{ fontSize: 17 }}
-                                        />
-                                    </IconButton>
-                                </Box>
-                                <Box
-                                    sx={{
-                                        border: "1px solid #ccc",
-                                        borderRadius: "16px",
-                                        padding: 2,
-                                        width: "100%",
-                                        textAlign: "left",
-                                    }}
-                                >
-                                    <Typography
-                                        variant="subtitle2"
-                                        sx={{ marginLeft: 2 }}
-                                        color="#90979f"
-                                        minHeight={22}
-                                    >
-                                        {cargaSeleccionada?.cantidadKm}
-                                    </Typography>
-                                </Box>
-                            </Box>
-
-                            {/* Cupos creados */}
-                            <Box
-                                sx={{
-                                    display: "flex",
-                                    justifyContent: "center",
-                                    alignItems: "center",
-                                    flexDirection: "column",
-                                    width: "100%",
-                                    height: "100%",
-                                }}
-                            >
-                                <Box
-                                    sx={{
-                                        display: "flex",
-                                        flexDirection: "row",
-                                        justifyContent: "space-between",
-                                        alignItems: "center",
-                                        width: "100%",
-                                    }}
-                                >
-                                    <Typography>Cupos creados</Typography>
-                                    <IconButton
-                                        disabled={!cargaSeleccionada}
-                                        onClick={handleClickVerCupos}
-                                    >
-                                        <BorderColorIcon
-                                            sx={{ fontSize: 17 }}
-                                        />
-                                    </IconButton>
-                                </Box>
-                                <Box
-                                    sx={{
-                                        border: "1px solid #ccc",
-                                        borderRadius: "16px",
-                                        padding: 2,
-                                        width: "100%",
-                                        textAlign: "left",
-                                    }}
-                                >
-                                    <Typography
-                                        variant="subtitle2"
-                                        sx={{ marginLeft: 2 }}
-                                        color="#90979f"
-                                        minHeight={22}
-                                    >
-                                        {cupos.length}
-                                    </Typography>
-                                </Box>
-                            </Box>
-
-                            {/* Tipos de camiones */}
-                            <Box
-                                sx={{
-                                    display: "flex",
-                                    justifyContent: "center",
-                                    alignItems: "center",
-                                    flexDirection: "column",
-                                    width: "100%",
-                                    height: "100%",
-                                    marginLeft: 2,
-                                }}
-                            >
-                                <Box
-                                    sx={{
-                                        display: "flex",
-                                        flexDirection: "row",
-                                        justifyContent: "space-between",
-                                        alignItems: "center",
-                                        width: "100%",
-                                    }}
-                                >
-                                    <Typography>Tipo de acoplado</Typography>
-                                    <IconButton
-                                        disabled={!cargaSeleccionada}
-                                        onClick={() =>
-                                            handleClickAbrirDialog(2)
-                                        }
-                                    >
-                                        <BorderColorIcon
-                                            sx={{ fontSize: 17 }}
-                                        />
-                                    </IconButton>
-                                </Box>
-                                <Box
-                                    sx={{
-                                        border: "1px solid #ccc",
-                                        borderRadius: "16px",
-                                        padding: 2,
-                                        width: "100%",
-                                        textAlign: "left",
-                                    }}
-                                >
-                                    <Typography
-                                        variant="subtitle2"
-                                        sx={{ marginLeft: 2 }}
-                                        color="#90979f"
-                                        minHeight={22}
-                                    >
-                                        {cargaSeleccionada?.tiposAcoplados}
-                                    </Typography>
-                                </Box>
-                            </Box>
-                        </Box>
-
-                        {/* Caja 2 */}
+                    <Divider sx={{ marginTop: 1 }} />
+                    <Grid2>
                         <Box
                             sx={{
+                                margin: 1,
                                 display: "flex",
-                                flexDirection: "column",
-                                width: { xs: "100%", md: "50%" },
-                                height: "100%",
-                                marginLeft: 1,
-                                padding: 2,
+                                flexDirection: "row",
+                                borderRadius: "16px",
+                                height: "auto",
+                                width: "100%",
+                                flexWrap: "wrap",
                             }}
                         >
                             <Box
                                 sx={{
                                     display: "flex",
-                                    flexDirection: "row",
-                                    justifyContent: "space-between",
-                                    alignItems: "center",
-                                    width: "100%",
+                                    flexDirection: "column",
+                                    flex: 3,
+                                    marginRight: 0,
+                                    marginLeft: 4,
                                 }}
                             >
-                                <Typography>Detalles</Typography>
-                                <IconButton
-                                    disabled={!cargaSeleccionada}
-                                    onClick={() => handleClickAbrirDialog(4)}
-                                >
-                                    <BorderColorIcon sx={{ fontSize: 17 }} />
-                                </IconButton>
+                                <ContainerMapa />
                             </Box>
                             <Box
                                 sx={{
-                                    border: "1px solid #ccc",
-                                    borderRadius: "16px",
-                                    padding: 2,
-                                    width: "100%",
-                                    height: "100%",
-                                    maxHeight: "145px",
-                                    textAlign: "left",
-                                    boxSizing: "border-box",
+                                    marginRight: 4,
                                     display: "flex",
                                     flexDirection: "column",
-                                    justifyContent: "space-between",
-                                    minHeight: 125,
+                                    flex: 1,
+                                    minWidth: 200,
+                                    width: "100%",
+                                    alignItems: "center",
+                                    height: "100%",
                                 }}
                             >
-                                <Typography
-                                    variant="subtitle2"
-                                    sx={{ marginLeft: 2 }}
-                                    color="#90979f"
-                                >
-                                    {cargaSeleccionada?.descripcion}
-                                </Typography>
+                                <ContainerProximosCupos />
                             </Box>
                         </Box>
-                    </Box>
-                </Grid2>
+                        <Box
+                            sx={{
+                                maxWidth: "100%",
+                                borderRadius: "16px",
+                                display: "flex",
+                                flexDirection: { xs: "column", md: "row" },
+                                backgroundColor: "#ffffff",
+                                marginBottom: 3,
+                            }}
+                        >
+                            {/* Caja 1 */}
+                            <Box
+                                marginTop={0}
+                                marginLeft={2}
+                                marginBottom={1}
+                                sx={{
+                                    width: { xs: "100%", md: "50%" },
+                                    maxWidth: "500px",
+                                    height: "100%",
+                                    display: "grid",
+                                    gridTemplateColumns: "repeat(2, 1fr)",
+                                    gridTemplateRows: "repeat(2, 1fr)",
+                                    padding: 1,
+                                }}
+                            >
+                                <ContainerInformacionCarga />
+                            </Box>
+
+                            {/* Caja 2 */}
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    width: { xs: "100%", md: "50%" },
+                                    height: "100%",
+                                    marginLeft: 1,
+                                    padding: 2,
+                                }}
+                            >
+                                <ContainerDetalles />
+                            </Box>
+                        </Box>
+                    </Grid2>
+                </Box>
+                <Dialog
+                    open={openDialog}
+                    onClose={handleCloseDialog}
+                    maxWidth="lg"
+                    fullWidth
+                >
+                    <DialogTitle>
+                        {creando ? "Crear Nueva Carga" : "Modificando Carga"}
+                    </DialogTitle>
+                    <DialogContent
+                        sx={{ height: "80vh", alignContent: "center" }}
+                    >
+                        <CrearCargaStepper
+                            datosCarga={cargaSeleccionada}
+                            pasoSeleccionado={pasoSeleccionado}
+                            handleCloseDialog={handleCloseDialog}
+                            creando={creando}
+                        />
+                    </DialogContent>
+                </Dialog>
+                <Dialog
+                    open={openDialogDelete}
+                    onClose={handleCloseDialog}
+                    maxWidth="sm"
+                    fullWidth
+                >
+                    <DeleteCarga handleCloseDialog={handleCloseDialog} />
+                </Dialog>
             </Box>
-            <Dialog
-                open={openDialog}
-                onClose={handleCloseDialog}
-                maxWidth="lg"
-                fullWidth
-            >
-                <DialogTitle>Crear Nueva Carga</DialogTitle>
-                <DialogContent sx={{ height: "80vh", alignContent: "center" }}>
-                    <CrearCargaStepper
-                        datosCarga={cargaSeleccionada}
-                        pasoSeleccionado={pasoSeleccionado}
-                        handleCloseDialog={handleCloseDialog}
-                    />
-                </DialogContent>
-            </Dialog>
-        </Box>
+        </ContextoCargas.Provider>
     );
 }

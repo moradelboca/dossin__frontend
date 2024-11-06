@@ -19,10 +19,9 @@ export default function Reloj(props: props) {
                 ? dayjs(datosNuevaCarga[filtro], "HH:mm")
                 : null
         );
-
     const manejarTiempo = (seleccionado: any) => {
         if (seleccionado != null) {
-            datosNuevaCarga[filtro] = seleccionado.format("HH:mm");
+            datosNuevaCarga[filtro] = seleccionado.format("HH:mm") + ":00";
             setHorarioSeleccionado(seleccionado);
         }
     };

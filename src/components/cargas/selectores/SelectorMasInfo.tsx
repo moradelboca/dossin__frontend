@@ -22,14 +22,15 @@ export default function SelectorMasInfo() {
                         variant="outlined"
                         slotProps={{
                             htmlInput: {
-                                maxLength: 100, // Límite de 100 caracteres
+                                maxLength: 100,
                             },
                         }}
                         multiline
-                        rows={focused ? 4 : 1} // Cambia el tamaño al enfocarse
-                        onFocus={() => setFocused(true)} // Cambia el estado al enfocarse
-                        onBlur={() => setFocused(false)} // Vuelve al estado original al salir del foco
-                        onChange={seleccionarDescripcion} // Guardar la descripción
+                        value={datosNuevaCarga["descripcion"]}
+                        rows={focused ? 4 : 1}
+                        onFocus={() => setFocused(true)}
+                        onBlur={() => setFocused(false)}
+                        onChange={seleccionarDescripcion}
                         fullWidth
                     />
                 </Box>

@@ -117,6 +117,40 @@ const NumericFormatCustom = React.forwardRef<NumericFormatProps, CustomProps>(
         );
     }
 );
+const ContraFleteFormat = React.forwardRef<NumericFormatProps, CustomProps>(
+    function ContraFleteFormat(props, ref) {
+        const { onChange, ...other } = props;
+
+        const isAllowed = (values: any) => {
+            const { formattedValue } = values;
+            // Remove the prefix and separators to count only the digits
+            const numericValue = formattedValue.replace(/[$.,]/g, "");
+            return numericValue.length <= 7;
+        };
+
+        return (
+            <NumericFormat
+                {...other}
+                getInputRef={ref}
+                thousandSeparator="."
+                decimalSeparator=","
+                prefix="$"
+                decimalScale={2}
+                fixedDecimalScale={true}
+                allowNegative={false}
+                isAllowed={isAllowed}
+                onValueChange={(values) => {
+                    onChange({
+                        target: {
+                            name: props.name,
+                            value: values.value,
+                        },
+                    });
+                }}
+            />
+        );
+    }
+);
 
 const PorcentajeFormat = React.forwardRef<any, CustomProps>(
     function PorcentajeFormat(props, ref) {
@@ -166,12 +200,17 @@ const TarifaApp = () => {
     );
     const [tarifaPorToneladaConDescuento, setTarifaPorToneladaConDescuento] =
         useState<number | null>(null);
-    const [incidenciaSinDescuento, setIncidenciaSinDescuento] = useState<
+    const [incideciasConDescContra, setIncideciasConDescContra] = useState<
         number | null
     >(null);
     const [incidenciaConDescuento, setIncidenciaConDescuento] = useState<
         number | null
     >(null);
+    const [contraFlete, setContraFlete] = useState<number | null>(null);
+    const [
+        tarifaPorToneladaConDescuentoContra,
+        setTarifaPorToneladaConDescuentoContra,
+    ] = useState<number | null>(null);
 
     const handleCalcular = async () => {
         const response = await fetch("/tarifas.csv");
@@ -197,21 +236,35 @@ const TarifaApp = () => {
                 tarifaPorToneladaValue -
                 (tarifaPorToneladaValue * descuento) / 100;
 
+            // Seteamos las tarifas base
             setTarifaSinDescuento(tarifaBruta);
             setTarifaConDescuento(tarifaConDescuentoCalc);
             setTarifaPorToneladaConDescuento(
                 tarifaPorToneladaConDescuentoValue
             );
 
+            // Calculamos tarifa por tonelada con contra-flete
+            const tarifaToneladaConDescContra =
+                tarifaPorToneladaValue -
+                (tarifaPorToneladaValue * descuento) / 100 +
+                (contraFlete || 0) * tn;
+            setTarifaPorToneladaConDescuentoContra(tarifaToneladaConDescContra);
+
+            // Si hay km, calculamos tarifas por kilómetro
             if (km !== null) {
                 setTarifaPorKm(tarifaBruta / km);
                 setTarifaPorKmConDescuento(tarifaConDescuentoCalc / km);
             }
-            if (precio !== null && precio !== undefined) {
-                setIncidenciaSinDescuento((tarifaBruta / (precio * tn)) * 100);
-                setIncidenciaConDescuento(
-                    (tarifaConDescuentoCalc / (precio * tn)) * 100
-                );
+
+            // Si hay precio, calculamos incidencias
+            if (precio) {
+                const incidenciaConDesc =
+                    (tarifaConDescuentoCalc / (precio * tn)) * 100;
+                const incidenciaDescContra =
+                    (tarifaToneladaConDescContra / (precio * tn)) * 100;
+
+                setIncidenciaConDescuento(incidenciaConDesc);
+                setIncideciasConDescContra(incidenciaDescContra);
             }
         }
     };
@@ -261,23 +314,28 @@ const TarifaApp = () => {
         },
         {
             id: 5,
+            concepto: "Tarifa total con descuento y Contraflete ($)",
+            valor: tarifaPorToneladaConDescuentoContra?.toFixed(2) || "-",
+        },
+        {
+            id: 6,
             concepto: "Tarifa por KM ($/km)",
             valor: tarifaPorKm?.toFixed(2) || "-",
         },
         {
-            id: 6,
+            id: 7,
             concepto: "Tarifa por KM con Descuento ($/km)",
             valor: tarifaPorKmConDescuento?.toFixed(2) || "-",
-        },
-        {
-            id: 7,
-            concepto: "Incidencia del flete (%)",
-            valor: incidenciaSinDescuento?.toFixed(2) || "-",
         },
         {
             id: 8,
             concepto: "Incidencia del flete con descuento (%)",
             valor: incidenciaConDescuento?.toFixed(2) || "-",
+        },
+        {
+            id: 9,
+            concepto: "Incidencia del flete con descuento y contraflete(%)",
+            valor: incideciasConDescContra?.toFixed(2) || "-",
         },
     ];
 
@@ -372,6 +430,20 @@ const TarifaApp = () => {
                         }}
                         sx={{ width: "100%" }}
                     />
+                    <TextField
+                        label="Contra flete"
+                        value={contraFlete ?? ""}
+                        onChange={(e) =>
+                            setContraFlete(parseInt(e.target.value))
+                        }
+                        id="formatted-numberformat-input"
+                        slotProps={{
+                            input: {
+                                inputComponent: ContraFleteFormat as any,
+                            },
+                        }}
+                        sx={{ width: "100%" }}
+                    />
                     <BotonIcon
                         onClick={handleCalcular}
                         title="Calcular tarifa"
@@ -382,7 +454,7 @@ const TarifaApp = () => {
                     sx={{
                         width: "100%",
                         padding: 3,
-                        maxWidth: "500px",
+                        maxWidth: "600px",
                         minWidth: "100px",
                     }}
                 >

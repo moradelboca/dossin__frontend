@@ -2,7 +2,6 @@ import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
 import { Box } from "@mui/material";
-
 import { useContext } from "react";
 import { ContextoGeneral } from "../../Contexto";
 
@@ -51,7 +50,7 @@ export function TarjetaCarga(props: any) {
                     >
                         <Typography color="#90979f">Carga: # </Typography>
                         <Typography>
-                            {datosCarga.id}, {datosCarga.cargamento}
+                            {datosCarga.id}, {datosCarga.cargamento.nombre}
                         </Typography>
                     </Box>
                     <Box

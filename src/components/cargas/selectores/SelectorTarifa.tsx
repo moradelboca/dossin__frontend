@@ -56,7 +56,6 @@ export default function SelectorTarifa() {
     const [tarifaSeleccionada, setTarifaSeleccionada] = useState<any>(
         datosNuevaCarga["nombreTipoTarifa"] || null
     );
-    console.log(datosNuevaCarga);
     useEffect(() => {
         fetch(`${backendURL}/cargas/tipostarifas`, {
             method: "GET",
