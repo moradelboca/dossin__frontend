@@ -19,7 +19,7 @@ export function CreadorUbicacion() {
     const datosNuevaUbicacion: any = {};
     console.log(datosNuevaUbicacion);
 
-    const [tipoUbicacionSeleccionado, setTipoUbicacionSeleccionado] =
+    const [_tipoUbicacionSeleccionado, setTipoUbicacionSeleccionado] =
         useState<string>("Todas");
 
     useEffect(() => {
