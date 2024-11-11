@@ -178,7 +178,7 @@ export default function SelectorProveedor() {
                         )}
                         value={valueCargamentos}
                         defaultValue={valueCargamentos}
-                        onChange={seleccionarCargamento} // Maneja el cambio de cargamento
+                        onChange={seleccionarCargamento}
                         sx={{ width: 300 }}
                         renderInput={(params) => (
                             <TextField
