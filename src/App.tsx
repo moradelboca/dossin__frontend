@@ -8,7 +8,7 @@ import Box from "@mui/material/Box";
 import { ContextoGeneral, ValoresContexto } from "./components/Contexto";
 import Empresas from "./components/tablas/Empresas";
 import Choferes from "./components/tablas/Choferes";
-import TabCamiones from "./components/tablas/tabCamiones";
+import TabCamiones from "./components/Camiones y acoplados/tabCamiones";
 import { MapaMain } from "./components/mapa/MapaMain";
 import Clima from "./components/clima/Clima";
 import TarifaApp from "./components/calculadora/Calculadora";

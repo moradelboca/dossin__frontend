@@ -90,7 +90,6 @@ export default function CreadorTurno(props: CreadorProps) {
             patenteAcoplado: patenteAcopladoSeleccionada,
             patenteAcopladoExtra: patenteAcopladoSeleccionadaExtra,
         };
-        console.log(turno);
         fetch(`${backendURL}/cargas/${idCarga}/cupos/${fecha}/turnos`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },

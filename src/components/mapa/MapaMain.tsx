@@ -1,15 +1,12 @@
-import React, { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import {
     Box,
     Dialog,
     DialogTitle,
-    DialogContent,
-    DialogActions,
     Button,
     Autocomplete,
     TextField,
     IconButton,
-    Stack,
 } from "@mui/material";
 import L from "leaflet";
 import {
@@ -23,11 +20,10 @@ import {
 import "leaflet/dist/leaflet.css";
 import pin from "../../../images/pinbox.png";
 import cargamos from "../../../images/pinBALA2.png";
-//import ok from "../../../images/pinokaaa.png";
 import { ContextoGeneral } from "../Contexto";
 import AutocompletarUbicacionMapa from "../cargas/autocompletar/AutocompletarUbicacionMapa";
 import { AddLocationAltOutlined } from "@mui/icons-material";
-import { NumericFormat, NumericFormatProps } from "react-number-format";
+import { CreadorUbicacion } from "./CreadorUbicacion";
 
 const { BaseLayer, Overlay } = LayersControl;
 
@@ -37,12 +33,6 @@ const balanzaIcon = L.icon({
     iconAnchor: [22, 51],
     popupAnchor: [0, -28],
 });
-/* const okIcon = L.icon({
-    iconUrl: ok,
-    iconSize: [45, 51],
-    iconAnchor: [22, 51],
-    popupAnchor: [0, -28],
-}); */
 
 const pinIcon = L.icon({
     iconUrl: pin,
@@ -79,44 +69,6 @@ function ZoomToLocation({
 
     return null;
 }
-interface CustomProps {
-    onChange: (event: { target: { name: string; value: string } }) => void;
-    name: string;
-}
-const latLongFormat = React.forwardRef<NumericFormatProps, CustomProps>(
-    function NumericFormatCustom(props, ref) {
-        const { onChange, ...other } = props;
-
-        const isAllowed = (values: any) => {
-            const { formattedValue } = values;
-            // Remove the prefix and separators to count only the digits
-            const numericValue = formattedValue.replace(/[$.,]/g, "");
-            return numericValue.length <= 12;
-        };
-
-        return (
-            <NumericFormat
-                {...other}
-                getInputRef={ref}
-                thousandSeparator="."
-                decimalSeparator=","
-                prefix=""
-                decimalScale={2}
-                fixedDecimalScale={true}
-                allowNegative={true}
-                isAllowed={isAllowed}
-                onValueChange={(values) => {
-                    onChange({
-                        target: {
-                            name: props.name,
-                            value: values.value,
-                        },
-                    });
-                }}
-            />
-        );
-    }
-);
 
 export function MapaMain() {
     const [openDialog, setOpenDialog] = useState(false);
@@ -273,90 +225,7 @@ export function MapaMain() {
 
             <Dialog open={openDialog} onClose={handleClose}>
                 <DialogTitle>Detalles del Punto</DialogTitle>
-                <DialogContent>
-                    <Box
-                        display="flex"
-                        flexDirection="column"
-                        gap={2}
-                        alignContent={"center"}
-                        alignItems={"center"}
-                        marginTop={2}
-                        marginBottom={1}
-                    >
-                        <TextField
-                            id="outlined-basic"
-                            label="URL Google Maps"
-                            variant="outlined"
-                            slotProps={{
-                                htmlInput: {
-                                    maxLength: 200,
-                                },
-                            }}
-                            sx={{ width: 350 }}
-                        />
-                        <TextField
-                            id="outlined-basic"
-                            label="Nombre"
-                            variant="outlined"
-                            slotProps={{
-                                htmlInput: {
-                                    maxLength: 50,
-                                },
-                            }}
-                            sx={{ width: 350 }}
-                        />
-                        <Stack direction="row" spacing={2}>
-                            <TextField
-                                label="Latitud"
-                                name="numberformat"
-                                id="formatted-numberformat-input"
-                                slotProps={{
-                                    input: {
-                                        inputComponent: latLongFormat as any,
-                                    },
-                                }}
-                                variant="outlined"
-                                sx={{ width: 350 }}
-                            />
-                        </Stack>
-                        <Stack direction="row" spacing={2}>
-                            <TextField
-                                label="Longitud"
-                                name="numberformat"
-                                id="formatted-numberformat-input"
-                                slotProps={{
-                                    input: {
-                                        inputComponent: latLongFormat as any,
-                                    },
-                                }}
-                                variant="outlined"
-                                sx={{ width: 350 }}
-                            />
-                        </Stack>
-                        <Autocomplete
-                            options={tipoUbicacionOptions}
-                            renderInput={(params) => (
-                                <TextField
-                                    {...params}
-                                    label="Tipo"
-                                    sx={{ width: 350 }}
-                                />
-                            )}
-                            sx={{
-                                width: 350,
-                                background: "white",
-                                borderRadius: "6px",
-                            }}
-                            onChange={(_event, value) => {
-                                setTipoUbicacionSeleccionado(value || "Todas");
-                            }}
-                            defaultValue={tipoUbicacionOptions[0]}
-                        />
-                    </Box>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleClose}>Cerrar</Button>
-                </DialogActions>
+                <CreadorUbicacion />
             </Dialog>
         </Box>
     );
