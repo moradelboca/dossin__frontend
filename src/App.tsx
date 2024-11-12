@@ -15,7 +15,7 @@ import TarifaApp from "./components/calculadora/Calculadora";
 
 function App() {
     return (
-        <BrowserRouter basename="/">
+        <BrowserRouter basename="/admin">
             <ContextoGeneral.Provider value={ValoresContexto}>
                 <Box sx={{ display: "flex", height: "100vh", width: "100vw" }}>
                     <CssBaseline>
