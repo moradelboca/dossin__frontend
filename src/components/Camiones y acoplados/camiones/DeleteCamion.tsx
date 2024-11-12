@@ -1,6 +1,6 @@
 import { Box, Button, Typography } from "@mui/material";
 import { useContext } from "react";
-import { ContextoGeneral } from "../Contexto";
+import { ContextoGeneral } from "../../Contexto";
 import ClearSharpIcon from "@mui/icons-material/ClearSharp";
 
 interface Camiones {
@@ -19,7 +19,7 @@ export default function DeleteCamion(props: Camiones) {
         handleCloseDialog();
     };
 
-    const borrarCarga = () => {
+    const borrarCamion = () => {
         fetch(`${backendURL}/camiones/${patente}`, {
             method: "DELETE",
             headers: {
@@ -35,7 +35,7 @@ export default function DeleteCamion(props: Camiones) {
                 setCamiones(newCamiones);
             })
             .catch((error) => {
-                console.error("Error al borrar la carga", error);
+                console.error("Error al borrar el camion", error);
             });
         handleCloseDialog();
         handleClose();
@@ -82,7 +82,7 @@ export default function DeleteCamion(props: Camiones) {
                 >
                     <Button
                         variant="text"
-                        onClick={borrarCarga}
+                        onClick={borrarCamion}
                         sx={{
                             color: "#d68384",
                             width: "100%",

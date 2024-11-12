@@ -1,13 +1,6 @@
-import {
-    Button,
-    Dialog,
-    IconButton,
-    Stack,
-    TextField,
-    Typography,
-} from "@mui/material";
+import { Button, Dialog, IconButton, TextField } from "@mui/material";
 import * as React from "react";
-import { ContextoGeneral } from "../Contexto";
+import { ContextoGeneral } from "../../Contexto";
 import { useContext, useState } from "react";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import DeleteCamion from "./DeleteCamion";
@@ -55,50 +48,69 @@ export default function CreadorCamiones(props: Camiones) {
         datosNuevoCamion["urlRuta"] = e.target.value;
         setDatosNuevoCamion({ ...datosNuevoCamion });
     };
-    const [errorMessage, setErrorMessage] = React.useState("");
+    const [errorPatente, setErrorPatente] = React.useState(false);
+    const [errorRto, setErrorRto] = React.useState(false);
+    const [errorPoliza, setErrorPoliza] = React.useState(false);
+    const [errorRuta, setErrorRuta] = React.useState(false);
 
     // Expresión regular que valida los formatos de patente "LLLNNN" o "LLNNNLL"
     const regex = /^([A-Za-z]{3}\d{3}|[A-Za-z]{2}\d{3}[A-Za-z]{2})$/;
+    const regexUrl =
+        /^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)\.[a-z]{2,5}(:[0-9]{1,5})?(\/.)?$/;
 
     const handleSave = () => {
-        if (datosNuevoCamion) {
-            if (!regex.test(datosNuevoCamion["patente"])) {
-                setErrorMessage("Ingresaste mal la patente!");
-                return;
-            }
-            const metodo = !camionSeleccionado ? "POST" : "PUT";
-            const url = !camionSeleccionado
-                ? `${backendURL}/camiones`
-                : `${backendURL}/camiones/${datosNuevoCamion["patente"]}`;
-            fetch(url, {
-                method: metodo,
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(datosNuevoCamion),
+        if (!datosNuevoCamion) return;
+
+        const validPatente = regex.test(datosNuevoCamion["patente"]);
+        setErrorPatente(!validPatente);
+
+        const validRto =
+            !datosNuevoCamion["urlRTO"] ||
+            regexUrl.test(datosNuevoCamion["urlRTO"]);
+        setErrorRto(!validRto);
+
+        const validPoliza =
+            !datosNuevoCamion["urlPolizaSeguro"] ||
+            regexUrl.test(datosNuevoCamion["urlPolizaSeguro"]);
+        setErrorPoliza(!validPoliza);
+
+        const validRuta =
+            !datosNuevoCamion["urlRuta"] ||
+            regexUrl.test(datosNuevoCamion["urlRuta"]);
+        setErrorRuta(!validRuta);
+
+        if (!validPatente || !validRto || !validPoliza || !validRuta) return;
+
+        const metodo = camionSeleccionado ? "PUT" : "POST";
+        const url = camionSeleccionado
+            ? `${backendURL}/camiones/${datosNuevoCamion["patente"]}`
+            : `${backendURL}/camiones`;
+
+        fetch(url, {
+            method: metodo,
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(datosNuevoCamion),
+        })
+            .then((response) => {
+                if (!response.ok) throw new Error("Error al crear la turno");
+                return response.json();
             })
-                .then((response) => {
-                    if (!response.ok) {
-                        throw new Error("Error al crear la turno");
+            .then((data) => {
+                if (metodo === "POST") {
+                    setCamiones((camiones: any) => [...camiones, data]);
+                } else {
+                    const index = camiones.findIndex(
+                        (camion: { patente: any }) =>
+                            camion.patente === datosNuevoCamion.patente
+                    );
+                    if (index !== -1) {
+                        camiones[index] = data;
+                        setCamiones([...camiones]);
                     }
-                    if (metodo == "POST") {
-                        response.json().then((data) => {
-                            setCamiones((camiones: any) => [...camiones, data]);
-                        });
-                    }
-                    if (metodo == "PUT") {
-                        response.json().then((data) => {
-                            const index = camiones.findIndex(
-                                (camion: { patente: any }) =>
-                                    camion.patente === datosNuevoCamion.patente
-                            );
-                            if (index !== -1) {
-                                camiones[index] = data;
-                                setCamiones([...camiones]);
-                            }
-                        });
-                    }
-                })
-                .catch(() => {});
-        }
+                }
+            })
+            .catch(() => {});
+
         handleClose();
     };
 
@@ -111,25 +123,31 @@ export default function CreadorCamiones(props: Camiones) {
 
     return (
         <>
-            <Stack direction="row" spacing={2}>
-                <TextField
-                    margin="dense"
-                    label="Patente"
-                    name="patente"
-                    fullWidth
-                    variant="outlined"
-                    value={datosNuevoCamion["patente"]}
-                    onChange={setPatente}
-                />
-            </Stack>
+            <TextField
+                margin="dense"
+                label="Patente"
+                name="patente"
+                fullWidth
+                variant="outlined"
+                value={camionSeleccionado && camionSeleccionado["patente"]}
+                onChange={setPatente}
+                error={errorPatente}
+                disabled={camionSeleccionado !== null}
+                defaultValue={camionSeleccionado !== null ? "Disabled" : ""}
+            />
             <TextField
                 margin="dense"
                 label="URL RTO"
                 type="text"
                 fullWidth
                 variant="outlined"
-                value={datosNuevoCamion["urlRTO"]}
+                value={
+                    camionSeleccionado &&
+                    camionSeleccionado["urlRTO"] &&
+                    datosNuevoCamion["urlRTO"]
+                }
                 onChange={setUrlRTO}
+                error={errorRto}
             />
             <TextField
                 margin="dense"
@@ -137,8 +155,13 @@ export default function CreadorCamiones(props: Camiones) {
                 type="text"
                 fullWidth
                 variant="outlined"
-                value={datosNuevoCamion?.urlPolizaSeguro}
+                value={
+                    camionSeleccionado &&
+                    camionSeleccionado["urlPolizaSeguro"] &&
+                    datosNuevoCamion["urlPolizaSeguro"]
+                }
                 onChange={urlPoliza}
+                error={errorPoliza}
             />
             <TextField
                 margin="dense"
@@ -146,11 +169,15 @@ export default function CreadorCamiones(props: Camiones) {
                 type="text"
                 fullWidth
                 variant="outlined"
-                value={urlRuta}
+                value={
+                    camionSeleccionado &&
+                    camionSeleccionado["urlRuta"] &&
+                    datosNuevoCamion["urlRuta"]
+                }
+                onChange={urlRuta}
+                error={errorRuta}
             />
-            {errorMessage && ( // Mostrar mensaje de error si existe
-                <Typography color="#ff3333">{errorMessage}</Typography>
-            )}
+
             <Button onClick={handleClose} color="primary">
                 Cancelar
             </Button>
