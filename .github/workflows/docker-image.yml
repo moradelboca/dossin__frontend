@@ -32,6 +32,8 @@ jobs:
           context: .
           push: true
           tags: ghcr.io/${{ github.repository }}/frontend_service:latest
-
+          build-args: |
+            REACT_APP_BACKEND_URL=${{ secrets.REACT_APP_BACKEND_URL }}
+            
       - name: Log out from GitHub Container Registry
         run: docker logout ghcr.io
