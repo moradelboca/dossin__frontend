@@ -1,23 +1,24 @@
 import * as React from "react";
+import { DataGrid, GridColDef, GridToolbarQuickFilter } from "@mui/x-data-grid";
 import {
-    DataGrid,
-    GridColDef,
-    GridRowsProp,
-    GridToolbarQuickFilter,
-} from "@mui/x-data-grid";
-import { Box, Button, Dialog, DialogContent, DialogTitle } from "@mui/material";
+    Box,
+    Button,
+    Dialog,
+    DialogContent,
+    DialogTitle,
+    Typography,
+} from "@mui/material";
+import { GridRowsProp } from "@mui/x-data-grid";
 import { GridRowModesModel } from "@mui/x-data-grid";
-import {
-    GridToolbarContainer,
-    GridToolbarExport,
-    GridToolbarColumnsButton,
-    GridToolbarFilterButton,
-} from "@mui/x-data-grid";
-import { Add } from "@mui/icons-material";
-import { ContextoGeneral } from "../../Contexto";
+import { GridToolbarContainer } from "@mui/x-data-grid";
+import { GridToolbarFilterButton } from "@mui/x-data-grid";
+import { GridToolbarExport } from "@mui/x-data-grid";
+import { GridToolbarColumnsButton } from "@mui/x-data-grid";
 import BorderColorIcon from "@mui/icons-material/BorderColor";
-import { useEffect, useState } from "react";
-import CreadorAcoplados from "./CreadorAcoplados";
+import { ContextoGeneral } from "../Contexto";
+import { PersonAddAlt } from "@mui/icons-material";
+import { useEffect } from "react";
+import CreadorChoferes from "./CreadorChoferes";
 
 interface EditToolbarProps {
     setRows: (newRows: (oldRows: GridRowsProp) => GridRowsProp) => void;
@@ -50,11 +51,11 @@ function EditToolbar(props: EditToolbarProps) {
                 }}
             >
                 <Button
-                    startIcon={<Add />}
+                    startIcon={<PersonAddAlt />}
                     onClick={onAdd}
                     sx={{ color: theme.colores.azul }}
                 >
-                    Agregar acoplado
+                    Agregar chofer
                 </Button>
                 <GridToolbarFilterButton
                     slotProps={{
@@ -87,15 +88,16 @@ function EditToolbar(props: EditToolbarProps) {
         </GridToolbarContainer>
     );
 }
-export default function Acoplados() {
+
+export default function Choferes() {
     const [open, setOpen] = React.useState(false);
-    const [acopladoSeleccionado, setAcopladoSeleccionado] =
+    const [choferSeleccionado, setChoferSeleccionado] =
         React.useState<any>(null);
     const { backendURL, theme } = React.useContext(ContextoGeneral);
-    const [acoplados, setAcoplados] = useState<any[]>([]);
+    const [choferes, setChoferes] = React.useState<any[]>([]);
 
-    const refreshAcoplados = () => {
-        fetch(`${backendURL}/acoplados`, {
+    const refreshChoferes = () => {
+        fetch(`${backendURL}/choferes`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -104,43 +106,48 @@ export default function Acoplados() {
         })
             .then((response) => response.json())
             .then((data) => {
-                setAcoplados(data);
+                setChoferes(data);
             })
             .catch(() =>
-                console.error("Error al obtener las tiposAcoplados disponibles")
+                console.error("Error al obtener los choferes disponibles")
             );
     };
-
     useEffect(() => {
-        refreshAcoplados();
+        refreshChoferes();
     }, []);
 
-    const handleOpen = (acoplado: any) => {
-        if (acoplado) {
-            setAcopladoSeleccionado(acoplado);
+    const handleOpen = (chofer: any) => {
+        if (chofer) {
+            setChoferSeleccionado(chofer);
         }
         setOpen(true);
     };
 
     const handleClose = () => {
         setOpen(false);
-        setAcopladoSeleccionado(null);
+        setChoferSeleccionado(null);
     };
 
     // A partir de aca definimos las columnas
     const fields = [
-        "patente",
-        "tipoAcoplado",
-        "urlRTO",
-        "urlPolizaSeguro",
-        "urlRuta",
+        "cuil",
+        "numeroCel",
+        "nombre",
+        "apellido",
+        "edad",
+        "cuitEmpresa",
+        "urlLINTI",
+        "idUbicacion",
     ];
     const headerNames = [
-        "Patente",
-        "Tipo Acoplado",
-        "URL RTO",
-        "URL Póliza de Seguro",
-        "URL Ruta",
+        "Cuil",
+        "Numero Celular",
+        "Nombre",
+        "Apellido",
+        "Edad",
+        "Cuit Empresa",
+        "URL Linti",
+        "Ubicacion",
     ];
     const columns: GridColDef[] = fields.map((field, index) => ({
         field: field,
@@ -174,23 +181,41 @@ export default function Acoplados() {
             <Box
                 sx={{
                     backgroundColor: theme.colores.grisClaro,
-                    height: "82vh",
+                    height: "91vh",
                     width: "100%",
                     padding: 3,
                 }}
             >
+                <Typography
+                    variant="h5"
+                    component="div"
+                    sx={{
+                        color: theme.colores.azul,
+                        fontWeight: "bold",
+                        mb: 2,
+                        fontSize: "2rem",
+                        pb: 1,
+                        marginLeft: 1,
+                    }}
+                >
+                    Choferes
+                </Typography>
                 <Box margin="10px" sx={{ height: "90%", width: "100%" }}>
                     <DataGrid
-                        rows={acoplados.map((acoplado) => ({
-                            patente: acoplado.patente,
-                            tipoAcoplado: acoplado.tipoAcoplado,
-                            urlRTO: acoplado.urlRTO || "No especificado",
-                            urlPolizaSeguro:
-                                acoplado.urlPolizaSeguro || "No especificado",
-                            urlRuta: acoplado.urlRuta || "No especificado",
+                        rows={choferes.map((chofer) => ({
+                            cuil: chofer.cuil,
+                            numeroCel: chofer.numeroCel || "No especificado",
+                            nombre: chofer.nombre || "No especificado",
+                            apellido: chofer.apellido || "No especificado",
+                            edad: chofer.edad || "No especificado",
+                            cuitEmpresa:
+                                chofer.cuitEmpresa || "No especificado",
+                            urlLINTI: chofer.urlLINTI || "No especificado",
+                            idUbicacion:
+                                chofer.idUbicacion || "No especificado",
                         }))}
                         columns={columns}
-                        getRowId={(row) => row.patente}
+                        getRowId={(row) => row.cuil}
                         sx={{
                             "& .MuiDataGrid-columnHeader": {
                                 backgroundColor: theme.colores.grisClaro,
@@ -219,16 +244,16 @@ export default function Acoplados() {
                     />
                     <Dialog open={open} onClose={handleClose}>
                         <DialogTitle>
-                            {acopladoSeleccionado
+                            {choferSeleccionado
                                 ? "Editar camion"
                                 : "Crear camion"}
                         </DialogTitle>
                         <DialogContent>
-                            <CreadorAcoplados
-                                acopladoSeleccionado={acopladoSeleccionado}
+                            <CreadorChoferes
+                                choferSeleccionado={choferSeleccionado}
                                 handleClose={handleClose}
-                                acoplados={acoplados}
-                                setAcoplados={setAcoplados}
+                                choferes={choferes}
+                                setChoferes={setChoferes}
                             />
                         </DialogContent>
                     </Dialog>

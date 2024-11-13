@@ -1,35 +1,36 @@
 import * as React from "react";
+import { DataGrid, GridColDef, GridToolbarQuickFilter } from "@mui/x-data-grid";
 import {
-    DataGrid,
-    GridColDef,
-    GridRowsProp,
-    GridToolbarQuickFilter,
-} from "@mui/x-data-grid";
-import { Box, Button, Dialog, DialogContent, DialogTitle } from "@mui/material";
+    Box,
+    Button,
+    Dialog,
+    DialogContent,
+    DialogTitle,
+    Typography,
+} from "@mui/material";
+import { GridRowsProp } from "@mui/x-data-grid";
 import { GridRowModesModel } from "@mui/x-data-grid";
-import {
-    GridToolbarContainer,
-    GridToolbarExport,
-    GridToolbarColumnsButton,
-    GridToolbarFilterButton,
-} from "@mui/x-data-grid";
-import { Add } from "@mui/icons-material";
-import { ContextoGeneral } from "../../Contexto";
+import { GridToolbarContainer } from "@mui/x-data-grid";
+import { DomainAdd } from "@mui/icons-material";
+import { GridToolbarFilterButton } from "@mui/x-data-grid";
+import { GridToolbarExport } from "@mui/x-data-grid";
+import { GridToolbarColumnsButton } from "@mui/x-data-grid";
+import { ContextoGeneral } from "../Contexto";
 import BorderColorIcon from "@mui/icons-material/BorderColor";
-import { useEffect, useState } from "react";
-import CreadorAcoplados from "./CreadorAcoplados";
+import { useEffect } from "react";
+import CreadorEmpresas from "./CreadorEmpresas";
 
 interface EditToolbarProps {
     setRows: (newRows: (oldRows: GridRowsProp) => GridRowsProp) => void;
     setRowModesModel: (
         newModel: (oldModel: GridRowModesModel) => GridRowModesModel
     ) => void;
-    onAdd: () => void; // Nueva prop para manejar el diálogo de agregar
+    onAdd: () => void;
 }
 
 function EditToolbar(props: EditToolbarProps) {
-    const { onAdd } = props;
     const { theme } = React.useContext(ContextoGeneral);
+    const { onAdd } = props;
 
     return (
         <GridToolbarContainer sx={{ marginBottom: 1 }}>
@@ -50,11 +51,11 @@ function EditToolbar(props: EditToolbarProps) {
                 }}
             >
                 <Button
-                    startIcon={<Add />}
+                    startIcon={<DomainAdd />}
                     onClick={onAdd}
                     sx={{ color: theme.colores.azul }}
                 >
-                    Agregar acoplado
+                    Agregar Empresa
                 </Button>
                 <GridToolbarFilterButton
                     slotProps={{
@@ -87,15 +88,16 @@ function EditToolbar(props: EditToolbarProps) {
         </GridToolbarContainer>
     );
 }
-export default function Acoplados() {
+
+export default function Empresas() {
     const [open, setOpen] = React.useState(false);
-    const [acopladoSeleccionado, setAcopladoSeleccionado] =
+    const [empresaSeleccionada, setEmpresaSeleccionada] =
         React.useState<any>(null);
     const { backendURL, theme } = React.useContext(ContextoGeneral);
-    const [acoplados, setAcoplados] = useState<any[]>([]);
+    const [empresas, setEmpresas] = React.useState<any[]>([]);
 
-    const refreshAcoplados = () => {
-        fetch(`${backendURL}/acoplados`, {
+    const refreshEmpresas = () => {
+        fetch(`${backendURL}/empresastransportistas`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -104,43 +106,48 @@ export default function Acoplados() {
         })
             .then((response) => response.json())
             .then((data) => {
-                setAcoplados(data);
+                setEmpresas(data);
             })
             .catch(() =>
-                console.error("Error al obtener las tiposAcoplados disponibles")
+                console.error("Error al obtener los choferes disponibles")
             );
     };
-
     useEffect(() => {
-        refreshAcoplados();
+        refreshEmpresas();
     }, []);
 
-    const handleOpen = (acoplado: any) => {
-        if (acoplado) {
-            setAcopladoSeleccionado(acoplado);
+    const handleOpen = (empresa: any) => {
+        if (empresa) {
+            setEmpresaSeleccionada(empresa);
         }
         setOpen(true);
     };
 
     const handleClose = () => {
         setOpen(false);
-        setAcopladoSeleccionado(null);
+        setEmpresaSeleccionada(null);
     };
 
     // A partir de aca definimos las columnas
     const fields = [
-        "patente",
-        "tipoAcoplado",
-        "urlRTO",
-        "urlPolizaSeguro",
-        "urlRuta",
+        "cuit",
+        "razonSocial",
+        "nombreFantasia",
+        "numeroCel",
+        "idUbicacion",
+        "urlConstanciaAfip",
+        "urlConstanciaCbu",
+        "email",
     ];
     const headerNames = [
-        "Patente",
-        "Tipo Acoplado",
-        "URL RTO",
-        "URL Póliza de Seguro",
-        "URL Ruta",
+        "Cuit",
+        "Razon Social",
+        "Nombre Fantasia",
+        "Numero Cel",
+        "Ubicacion",
+        "URL Constancia Afip ",
+        "URL Constancia Cbu",
+        "Email",
     ];
     const columns: GridColDef[] = fields.map((field, index) => ({
         field: field,
@@ -174,23 +181,44 @@ export default function Acoplados() {
             <Box
                 sx={{
                     backgroundColor: theme.colores.grisClaro,
-                    height: "82vh",
+                    height: "91vh",
                     width: "100%",
                     padding: 3,
                 }}
             >
+                <Typography
+                    variant="h5"
+                    component="div"
+                    sx={{
+                        color: theme.colores.azul,
+                        fontWeight: "bold",
+                        mb: 2,
+                        fontSize: "2rem",
+                        pb: 1,
+                        marginLeft: 1,
+                    }}
+                >
+                    Empresas
+                </Typography>
                 <Box margin="10px" sx={{ height: "90%", width: "100%" }}>
                     <DataGrid
-                        rows={acoplados.map((acoplado) => ({
-                            patente: acoplado.patente,
-                            tipoAcoplado: acoplado.tipoAcoplado,
-                            urlRTO: acoplado.urlRTO || "No especificado",
-                            urlPolizaSeguro:
-                                acoplado.urlPolizaSeguro || "No especificado",
-                            urlRuta: acoplado.urlRuta || "No especificado",
+                        rows={empresas.map((empresa) => ({
+                            cuit: empresa.cuit,
+                            razonSocial:
+                                empresa.razonSocial || "No especificado",
+                            nombreFantasia:
+                                empresa.nombreFantasia || "No especificado",
+                            numeroCel: empresa.numeroCel || "No especificado",
+                            idUbicacion:
+                                empresa.idUbicacion || "No especificado",
+                            urlConstanciaAfip:
+                                empresa.urlConstanciaAfip || "No especificado",
+                            urlConstanciaCbu:
+                                empresa.urlConstanciaCbu || "No especificado",
+                            email: empresa.email || "No especificado",
                         }))}
                         columns={columns}
-                        getRowId={(row) => row.patente}
+                        getRowId={(row) => row.cuit}
                         sx={{
                             "& .MuiDataGrid-columnHeader": {
                                 backgroundColor: theme.colores.grisClaro,
@@ -219,16 +247,16 @@ export default function Acoplados() {
                     />
                     <Dialog open={open} onClose={handleClose}>
                         <DialogTitle>
-                            {acopladoSeleccionado
-                                ? "Editar camion"
-                                : "Crear camion"}
+                            {empresaSeleccionada
+                                ? "Editar empresa"
+                                : "Crear empresa"}
                         </DialogTitle>
                         <DialogContent>
-                            <CreadorAcoplados
-                                acopladoSeleccionado={acopladoSeleccionado}
+                            <CreadorEmpresas
+                                empresaSeleccionada={empresaSeleccionada}
                                 handleClose={handleClose}
-                                acoplados={acoplados}
-                                setAcoplados={setAcoplados}
+                                empresas={empresas}
+                                setEmpresas={setEmpresas}
                             />
                         </DialogContent>
                     </Dialog>
