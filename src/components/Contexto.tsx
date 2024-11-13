@@ -1,7 +1,7 @@
 import { createContext } from "react";
 
 export const ValoresContexto = {
-    backendURL: "https://ee77-181-80-17-235.ngrok-free.app/api",
+    backendURL: process.env.REACT_APP_BACKEND_URL,
     theme: {
         colores: {
             texto: "#000",
