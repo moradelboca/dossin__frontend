@@ -1,6 +1,10 @@
 # Etapa 1: Construcción
 FROM node:20.16.0 AS builder
 
+# Define las variables de entorno durante la construcción
+ARG REACT_APP_BACKEND_URL
+ENV REACT_APP_BACKEND_URL=${REACT_APP_BACKEND_URL}
+
 # Establece el directorio de trabajo
 WORKDIR /app
 
@@ -14,16 +18,15 @@ RUN npm install
 # Copia el resto de la aplicación
 COPY . .
 
-# Construye la aplicación Next.js
+# Construye la aplicación React
 RUN npm run build
 
 # Etapa 2: Servir la aplicación
 FROM node:20.16.0 AS runner
 
-# Establece el directorio de trabajo
 WORKDIR /app
 
-# Copia solo los archivos necesarios desde la etapa de construcción
+# Copia los archivos generados en la etapa de construcción
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/package.json ./
 COPY --from=builder /app/public ./public
@@ -36,3 +39,4 @@ EXPOSE 5173
 
 # Comando para iniciar la aplicación
 CMD ["npm", "start"]
+
