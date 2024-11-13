@@ -2,8 +2,8 @@ import * as React from "react";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Box from "@mui/material/Box";
-import Camiones from "./Camiones";
-import Acoplados from "./Acoplados";
+import Camiones from "./camiones/Camiones";
+import Acoplados from "./acoplados/Acoplados";
 import { ContextoGeneral } from "../Contexto";
 
 export default function TabCamiones() {

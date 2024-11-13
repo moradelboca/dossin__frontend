@@ -14,10 +14,10 @@ import {
     GridToolbarFilterButton,
 } from "@mui/x-data-grid";
 import { Add } from "@mui/icons-material";
+import { ContextoGeneral } from "../../Contexto";
 import BorderColorIcon from "@mui/icons-material/BorderColor";
-import { ContextoGeneral } from "../Contexto";
-import CreadorCamiones from "./CreadorCamiones";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import CreadorAcoplados from "./CreadorAcoplados";
 
 interface EditToolbarProps {
     setRows: (newRows: (oldRows: GridRowsProp) => GridRowsProp) => void;
@@ -50,12 +50,11 @@ function EditToolbar(props: EditToolbarProps) {
                 }}
             >
                 <Button
-                    color="primary"
                     startIcon={<Add />}
                     onClick={onAdd}
                     sx={{ color: theme.colores.azul }}
                 >
-                    Agregar camión
+                    Agregar acoplado
                 </Button>
                 <GridToolbarFilterButton
                     slotProps={{
@@ -88,15 +87,15 @@ function EditToolbar(props: EditToolbarProps) {
         </GridToolbarContainer>
     );
 }
-export default function Camiones() {
+export default function Acoplados() {
     const [open, setOpen] = React.useState(false);
-    const [camionSeleccionado, setCamionSeleccionado] =
+    const [acopladoSeleccionado, setAcopladoSeleccionado] =
         React.useState<any>(null);
     const { backendURL, theme } = React.useContext(ContextoGeneral);
-    const [camiones, setCamiones] = React.useState<any[]>([]);
+    const [acoplados, setAcoplados] = useState<any[]>([]);
 
-    const refreshCamiones = () => {
-        fetch(`${backendURL}/camiones`, {
+    const refreshAcoplados = () => {
+        fetch(`${backendURL}/acoplados`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -105,32 +104,40 @@ export default function Camiones() {
         })
             .then((response) => response.json())
             .then((data) => {
-                setCamiones(data);
+                setAcoplados(data);
             })
             .catch(() =>
                 console.error("Error al obtener las tiposAcoplados disponibles")
             );
     };
+
     useEffect(() => {
-        refreshCamiones();
+        refreshAcoplados();
     }, []);
 
-    const handleOpen = (camion: any) => {
-        if (camion) {
-            setCamionSeleccionado(camion);
+    const handleOpen = (acoplado: any) => {
+        if (acoplado) {
+            setAcopladoSeleccionado(acoplado);
         }
         setOpen(true);
     };
 
     const handleClose = () => {
         setOpen(false);
-        setCamionSeleccionado(null);
+        setAcopladoSeleccionado(null);
     };
 
     // A partir de aca definimos las columnas
-    const fields = ["patente", "urlRTO", "urlPolizaSeguro", "urlRuta"];
+    const fields = [
+        "patente",
+        "tipoAcoplado",
+        "urlRTO",
+        "urlPolizaSeguro",
+        "urlRuta",
+    ];
     const headerNames = [
         "Patente",
+        "Tipo Acoplado",
         "URL RTO",
         "URL Póliza de Seguro",
         "URL Ruta",
@@ -174,12 +181,13 @@ export default function Camiones() {
             >
                 <Box margin="10px" sx={{ height: "90%", width: "100%" }}>
                     <DataGrid
-                        rows={camiones.map((camion) => ({
-                            patente: camion.patente,
-                            urlRTO: camion.urlRTO || "No especificado",
+                        rows={acoplados.map((acoplado) => ({
+                            patente: acoplado.patente,
+                            tipoAcoplado: acoplado.tipoAcoplado,
+                            urlRTO: acoplado.urlRTO || "No especificado",
                             urlPolizaSeguro:
-                                camion.urlPolizaSeguro || "No especificado",
-                            urlRuta: camion.urlRuta || "No especificado",
+                                acoplado.urlPolizaSeguro || "No especificado",
+                            urlRuta: acoplado.urlRuta || "No especificado",
                         }))}
                         columns={columns}
                         getRowId={(row) => row.patente}
@@ -211,16 +219,16 @@ export default function Camiones() {
                     />
                     <Dialog open={open} onClose={handleClose}>
                         <DialogTitle>
-                            {camionSeleccionado
+                            {acopladoSeleccionado
                                 ? "Editar camion"
                                 : "Crear camion"}
                         </DialogTitle>
                         <DialogContent>
-                            <CreadorCamiones
-                                camionSeleccionado={camionSeleccionado}
+                            <CreadorAcoplados
+                                acopladoSeleccionado={acopladoSeleccionado}
                                 handleClose={handleClose}
-                                camiones={camiones}
-                                setCamiones={setCamiones}
+                                acoplados={acoplados}
+                                setAcoplados={setAcoplados}
                             />
                         </DialogContent>
                     </Dialog>

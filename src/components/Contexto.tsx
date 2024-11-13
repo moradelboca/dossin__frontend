@@ -1,7 +1,7 @@
 import { createContext } from "react";
 
 export const ValoresContexto = {
-    backendURL: process.env.REACT_APP_BACKEND_URL || 'http://localhost:3000',
+    backendURL: process.env.REACT_APP_BACKEND_URL,
     theme: {
         colores: {
             texto: "#000",
