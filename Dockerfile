@@ -2,8 +2,8 @@
 FROM node:20.16.0 AS builder
 
 # Define las variables de entorno durante la construcción
-ARG REACT_APP_BACKEND_URL
-ENV REACT_APP_BACKEND_URL=${REACT_APP_BACKEND_URL}
+ARG VITE_BACKEND_URL
+ENV VITE_BACKEND_URL=${VITE_BACKEND_URL}
 
 # Establece el directorio de trabajo
 WORKDIR /app
