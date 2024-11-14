@@ -1,7 +1,7 @@
 import { createContext } from "react";
 
 export const ValoresContexto = {
-    backendURL: process.env.REACT_APP_BACKEND_URL,
+    backendURL: import.meta.env.VITE_BACKEND_URL,
     theme: {
         colores: {
             texto: "#000",
