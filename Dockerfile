@@ -15,8 +15,9 @@ FROM node:20.16.0 AS runner
 
 WORKDIR /
 
-COPY --from=builder /build ./build
+COPY --from=builder /dist ./dist
 COPY --from=builder /package.json ./
+COPY --from=builder /public ./public
 
 RUN npm install --omit=dev
 
