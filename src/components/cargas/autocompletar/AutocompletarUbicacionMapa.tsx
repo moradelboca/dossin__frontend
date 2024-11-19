@@ -7,10 +7,11 @@ interface AutocompletarProps {
     ubicaciones: any[];
     filtro: string;
     onSelectLocation: (location: { lat: number; lng: number }) => void;
+    estadoCarga: boolean;
 }
 
 export default function AutocompletarUbicacionMapa(props: AutocompletarProps) {
-    let { title, ubicaciones, filtro, onSelectLocation } = props;
+    let { title, ubicaciones, filtro, onSelectLocation, estadoCarga } = props;
     let [ubicacionSeleccionada, setUbicacionSeleccionada] = useState<any>(null);
 
     const ubicacionesFiltradas = ubicaciones.filter(
@@ -37,11 +38,14 @@ export default function AutocompletarUbicacionMapa(props: AutocompletarProps) {
 
     return (
         <Autocomplete
-            options={ubicacionesFiltradas.map((ubicacion) => {
-                return `${ubicacion.nombre}, ${ubicacion.provincia}, ${ubicacion.pais}`;
-            })}
+            options={ubicacionesFiltradas}
+            groupBy={(ubicacion) => ubicacion.provincia}
+            getOptionLabel={(ubicacion) =>
+                `${ubicacion.nombre}, ${ubicacion.provincia}, ${ubicacion.pais}`
+            }
             value={ubicacionSeleccionada}
             defaultValue={ubicacionSeleccionada}
+            loading={estadoCarga}
             sx={{
                 width: 300,
                 background: "white",
@@ -52,6 +56,22 @@ export default function AutocompletarUbicacionMapa(props: AutocompletarProps) {
                 seleccionarUbicacion(event, seleccionado);
             }}
             renderInput={(params) => <TextField {...params} label={title} />}
+            renderGroup={(params) => {
+                const { key, group, children } = params;
+                return (
+                    <li key={key}>
+                        <div
+                            style={{
+                                fontWeight: "bold",
+                                padding: "8px 16px",
+                            }}
+                        >
+                            {group}
+                        </div>
+                        <ul style={{ padding: 0, margin: 0 }}>{children}</ul>
+                    </li>
+                );
+            }}
         />
     );
 }

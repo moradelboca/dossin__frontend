@@ -5,7 +5,15 @@ import {
     GridRowsProp,
     GridToolbarQuickFilter,
 } from "@mui/x-data-grid";
-import { Box, Button, Dialog, DialogContent, DialogTitle } from "@mui/material";
+import {
+    Box,
+    Button,
+    CircularProgress,
+    Dialog,
+    DialogContent,
+    DialogTitle,
+    Typography,
+} from "@mui/material";
 import { GridRowModesModel } from "@mui/x-data-grid";
 import {
     GridToolbarContainer,
@@ -17,7 +25,7 @@ import { Add } from "@mui/icons-material";
 import BorderColorIcon from "@mui/icons-material/BorderColor";
 import { ContextoGeneral } from "../../Contexto";
 import CreadorCamiones from "./CreadorCamiones";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 interface EditToolbarProps {
     setRows: (newRows: (oldRows: GridRowsProp) => GridRowsProp) => void;
@@ -94,6 +102,7 @@ export default function Camiones() {
         React.useState<any>(null);
     const { backendURL, theme } = React.useContext(ContextoGeneral);
     const [camiones, setCamiones] = React.useState<any[]>([]);
+    const [estadoCarga, setEstadoCarga] = useState("Cargando");
 
     const refreshCamiones = () => {
         fetch(`${backendURL}/camiones`, {
@@ -106,6 +115,7 @@ export default function Camiones() {
             .then((response) => response.json())
             .then((data) => {
                 setCamiones(data);
+                setEstadoCarga("Cargado");
             })
             .catch(() =>
                 console.error("Error al obtener las tiposAcoplados disponibles")
@@ -173,42 +183,66 @@ export default function Camiones() {
                 }}
             >
                 <Box margin="10px" sx={{ height: "90%", width: "100%" }}>
-                    <DataGrid
-                        rows={camiones.map((camion) => ({
-                            patente: camion.patente,
-                            urlRTO: camion.urlRTO || "No especificado",
-                            urlPolizaSeguro:
-                                camion.urlPolizaSeguro || "No especificado",
-                            urlRuta: camion.urlRuta || "No especificado",
-                        }))}
-                        columns={columns}
-                        getRowId={(row) => row.patente}
-                        sx={{
-                            "& .MuiDataGrid-columnHeader": {
-                                backgroundColor: theme.colores.grisClaro,
-                                color: theme.colores.grisOscuro,
-                            },
-                            border: "none",
-                        }}
-                        slots={{
-                            toolbar: (props) => (
-                                <EditToolbar
-                                    setRows={function (): void {
-                                        throw new Error(
-                                            "Function not implemented."
-                                        );
-                                    }}
-                                    setRowModesModel={function (): void {
-                                        throw new Error(
-                                            "Function not implemented."
-                                        );
-                                    }}
-                                    {...props}
-                                    onAdd={() => handleOpen(null)}
-                                />
-                            ),
-                        }}
-                    />
+                    {estadoCarga === "Cargando" && (
+                        <Box
+                            display={"flex"}
+                            flexDirection={"row"}
+                            width={"100%"}
+                            height={"100%"}
+                            justifyContent={"center"}
+                            alignItems={"center"}
+                            gap={3}
+                        >
+                            <CircularProgress
+                                sx={{
+                                    padding: "5px",
+                                    width: "30px",
+                                    height: "30px",
+                                }}
+                            />
+                            <Typography variant="h5">
+                                <b>Cargando...</b>
+                            </Typography>
+                        </Box>
+                    )}
+                    {estadoCarga === "Cargado" && (
+                        <DataGrid
+                            rows={camiones.map((camion) => ({
+                                patente: camion.patente,
+                                urlRTO: camion.urlRTO || "No especificado",
+                                urlPolizaSeguro:
+                                    camion.urlPolizaSeguro || "No especificado",
+                                urlRuta: camion.urlRuta || "No especificado",
+                            }))}
+                            columns={columns}
+                            getRowId={(row) => row.patente}
+                            sx={{
+                                "& .MuiDataGrid-columnHeader": {
+                                    backgroundColor: theme.colores.grisClaro,
+                                    color: theme.colores.grisOscuro,
+                                },
+                                border: "none",
+                            }}
+                            slots={{
+                                toolbar: (props) => (
+                                    <EditToolbar
+                                        setRows={function (): void {
+                                            throw new Error(
+                                                "Function not implemented."
+                                            );
+                                        }}
+                                        setRowModesModel={function (): void {
+                                            throw new Error(
+                                                "Function not implemented."
+                                            );
+                                        }}
+                                        {...props}
+                                        onAdd={() => handleOpen(null)}
+                                    />
+                                ),
+                            }}
+                        />
+                    )}
                     <Dialog open={open} onClose={handleClose}>
                         <DialogTitle>
                             {camionSeleccionado

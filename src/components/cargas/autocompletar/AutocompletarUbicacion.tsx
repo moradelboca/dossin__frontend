@@ -7,11 +7,12 @@ interface AutocompletarProps {
     title: string;
     ubicaciones: any[];
     filtro: string;
+    estadoCarga: boolean;
 }
 
 export default function AutocompletarUbicacion(props: AutocompletarProps) {
     const { datosNuevaCarga, datosSinCompletar } = useContext(ContextoStepper);
-    let { title, ubicaciones, filtro } = props;
+    let { title, ubicaciones, filtro, estadoCarga } = props;
     let [ubicacionSeleccionada, setUbicacionSeleccionada] = useState<any>(
         datosNuevaCarga["nombreUbicacion" + filtro] || null
     );
@@ -42,6 +43,7 @@ export default function AutocompletarUbicacion(props: AutocompletarProps) {
             value={ubicacionSeleccionada}
             defaultValue={ubicacionSeleccionada}
             onChange={seleccionarUbicacion}
+            loading={estadoCarga}
             renderInput={(params) => (
                 <TextField
                     {...params}

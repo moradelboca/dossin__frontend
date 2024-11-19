@@ -15,6 +15,7 @@ export default function SelectorDeUbicacion() {
     const [requiereBalanza, setRequiereBalanza] = useState<boolean>(
         datosNuevaCarga["requiereBalanza"] ?? false
     );
+    const [estadoCarga, setEstadoCarga] = useState(true);
 
     useEffect(() => {
         fetch(`${backendURL}/ubicaciones`, {
@@ -25,7 +26,10 @@ export default function SelectorDeUbicacion() {
             },
         })
             .then((response) => response.json())
-            .then((ubicaciones) => setUbicaciones(ubicaciones))
+            .then((ubicaciones) => {
+                setUbicaciones(ubicaciones);
+                setEstadoCarga(false);
+            })
             .catch(() =>
                 console.error("Error al obtener las Ubicaciones disponibles")
             );
@@ -50,6 +54,7 @@ export default function SelectorDeUbicacion() {
                             ubicaciones={ubicaciones}
                             title="Ubicación de Carga"
                             filtro="Carga"
+                            estadoCarga={estadoCarga}
                         />
                         <Box display="flex" flexDirection="row" gap={2}>
                             <Box display="column" gap={2}>
@@ -77,6 +82,7 @@ export default function SelectorDeUbicacion() {
                             ubicaciones={ubicaciones}
                             title="Ubicación de Descarga"
                             filtro="Descarga"
+                            estadoCarga={estadoCarga}
                         />
                         <Box display="flex" flexDirection="row" gap={2}>
                             <Box display="column">
@@ -126,6 +132,7 @@ export default function SelectorDeUbicacion() {
                             ubicaciones={ubicaciones}
                             title="Ubicación de Balanza"
                             filtro="Balanza"
+                            estadoCarga={estadoCarga}
                         />
                         <Box display="flex" flexDirection="row" gap={2}>
                             <Box display="column">

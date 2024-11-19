@@ -12,6 +12,7 @@ import TabCamiones from "./components/Camiones y acoplados/tabCamiones";
 import { MapaMain } from "./components/mapa/MapaMain";
 import Clima from "./components/clima/Clima";
 import TarifaApp from "./components/calculadora/Calculadora";
+import PaginaNoDisponible from "./components/inconvenientes/PaginaNoDisponible";
 
 function App() {
     return (
@@ -65,6 +66,10 @@ function App() {
                                 <Route
                                     path="/calculadora"
                                     element={<TarifaApp />}
+                                />
+                                <Route
+                                    path="*"
+                                    element={<PaginaNoDisponible />}
                                 />
                             </Routes>
                         </Box>

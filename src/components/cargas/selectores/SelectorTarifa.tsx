@@ -56,6 +56,8 @@ export default function SelectorTarifa() {
     const [tarifaSeleccionada, setTarifaSeleccionada] = useState<any>(
         datosNuevaCarga["nombreTipoTarifa"] || null
     );
+    const [estadoCarga, setEstadoCarga] = useState(true);
+
     useEffect(() => {
         fetch(`${backendURL}/cargas/tipostarifas`, {
             method: "GET",
@@ -67,6 +69,7 @@ export default function SelectorTarifa() {
             .then((response) => response.json())
             .then((tarifas) => {
                 setTarifas(tarifas);
+                setEstadoCarga(false);
             })
             .catch(() =>
                 console.error("Error al obtener las Tarifas disponibles")
@@ -131,6 +134,7 @@ export default function SelectorTarifa() {
                         defaultValue={tarifaSeleccionada}
                         onChange={seleccionarTiposTarifas}
                         sx={{ width: 300 }}
+                        loading={estadoCarga}
                         renderInput={(params) => (
                             <TextField
                                 {...params}

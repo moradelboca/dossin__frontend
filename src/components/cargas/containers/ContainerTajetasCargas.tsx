@@ -14,6 +14,7 @@ import {
     TextField,
     Menu,
     MenuItem,
+    CircularProgress,
 } from "@mui/material";
 import { BotonIcon } from "../../botones/IconButton";
 import { AccessAlarmOutlined, MoreVert } from "@mui/icons-material";
@@ -52,6 +53,7 @@ export function ContainerTarjetasCargas() {
     const [provincia, setProvincia] = useState<string | null>(null);
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
+    const [estadoCarga, setEstadoCarga] = useState("Cargando");
 
     useEffect(() => {
         fetch(`${backendURL}/cargas`, {
@@ -64,9 +66,9 @@ export function ContainerTarjetasCargas() {
             .then((res) => res.json())
             .then((data) => {
                 setCargas(data);
+                setEstadoCarga("Cargado");
             })
-            .catch((e) => {
-                console.log(e);
+            .catch((_e) => {
                 console.error("Error al obtener las cargas");
             });
     }, []);
@@ -223,28 +225,53 @@ export function ContainerTarjetasCargas() {
                             </Menu>
                         </Box>
                     </Box>
-                    {cargas.length > 0 ? (
-                        cargas.map((carga, i) => (
-                            <TarjetaCarga
-                                onClick={() => handleCardClick(carga)}
-                                key={i}
-                                datosCarga={carga}
-                                isSelected={carga.id === cargaSeleccionada?.id}
-                            />
-                        ))
-                    ) : (
-                        <Typography
-                            variant="subtitle2"
-                            sx={{
-                                marginLeft: 2,
-                                marginTop: 2,
-                                marginRight: 2,
-                            }}
-                            color="#90979f"
+                    {estadoCarga === "Cargando" && (
+                        <Box
+                            display={"flex"}
+                            flexDirection={"row"}
+                            width={"100%"}
+                            height={"100%"}
+                            justifyContent={"center"}
+                            alignItems={"center"}
+                            gap={3}
                         >
-                            Parece ser que no hay cargas.
-                        </Typography>
+                            <CircularProgress
+                                sx={{
+                                    padding: "5px",
+                                    width: "30px",
+                                    height: "30px",
+                                }}
+                            />
+                            <Typography variant="h6">
+                                <b>Cargando...</b>
+                            </Typography>
+                        </Box>
                     )}
+                    {estadoCarga === "Cargado" &&
+                        (Array.isArray(cargas) && cargas.length > 0 ? (
+                            cargas.map((carga, i) => (
+                                <TarjetaCarga
+                                    onClick={() => handleCardClick(carga)}
+                                    key={i}
+                                    datosCarga={carga}
+                                    isSelected={
+                                        carga.id === cargaSeleccionada?.id
+                                    }
+                                />
+                            ))
+                        ) : (
+                            <Typography
+                                variant="subtitle2"
+                                sx={{
+                                    marginLeft: 2,
+                                    marginTop: 2,
+                                    marginRight: 2,
+                                }}
+                                color="#90979f"
+                            >
+                                Parece ser que no hay cargas.
+                            </Typography>
+                        ))}
                 </Box>
                 <Box
                     sx={{

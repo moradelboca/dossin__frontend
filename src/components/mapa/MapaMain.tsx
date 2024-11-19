@@ -80,6 +80,7 @@ export function MapaMain() {
     } | null>(null);
     const [tipoUbicacionSeleccionado, setTipoUbicacionSeleccionado] =
         useState<string>("Todas");
+    const [estadoCarga, setEstadoCarga] = useState(true);
 
     useEffect(() => {
         fetch(`${backendURL}/ubicaciones`, {
@@ -92,6 +93,7 @@ export function MapaMain() {
             .then((response) => response.json())
             .then((ubicaciones) => {
                 setUbicaciones(ubicaciones);
+                setEstadoCarga(false);
             })
             .catch(() =>
                 console.error("Error al obtener las ubicaciones disponibles")
@@ -127,6 +129,7 @@ export function MapaMain() {
                     title="Ubicación de Carga"
                     filtro={tipoUbicacionSeleccionado}
                     onSelectLocation={setSelectedLocation}
+                    estadoCarga={estadoCarga}
                 />
                 <Autocomplete
                     options={tipoUbicacionOptions}
