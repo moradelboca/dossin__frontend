@@ -22,7 +22,7 @@ export function ContainerCupos() {
     const { backendURL, theme } = useContext(ContextoGeneral);
     const [cupos, setCupos] = useState<any[]>([]);
 
-    useEffect(() => {
+    const refreshCupos = () => {
         fetch(`${backendURL}/cargas/${idCarga}/cupos`, {
             method: "GET",
             headers: {
@@ -37,8 +37,12 @@ export function ContainerCupos() {
             .catch(() => {
                 console.error("Error al obtener las cupos disponibles");
             });
-    }, []);
+    };
     const [openDialog, setOpenDialog] = useState(false);
+
+    useEffect(() => {
+        refreshCupos();
+    }, []);
 
     // Función para abrir el Dialog
     const handleClickCrearCupo = () => {
@@ -80,6 +84,7 @@ export function ContainerCupos() {
                         cuposDisponibles={cupo.cupos}
                         cuposConfirmados={cupo.turnos.length}
                         idCarga={idCarga}
+                        refreshCupos={refreshCupos}
                     />
 
                     <Grid
@@ -161,7 +166,11 @@ export function ContainerCupos() {
                             padding: "16px", // Espacio interno
                         }}
                     >
-                        <CreadorCupos idCarga={idCarga} />
+                        <CreadorCupos
+                            idCarga={idCarga}
+                            refreshCupos={refreshCupos}
+                            handleCloseDialog={handleCloseDialog}
+                        />
                     </Box>
                 </DialogContent>
             </Dialog>

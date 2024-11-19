@@ -7,7 +7,7 @@ import { styled } from "@mui/material/styles";
 import { useContext } from "react";
 import { ContextoGeneral } from "../../Contexto";
 import { useNavigate } from "react-router-dom";
-import { Mapa2 } from "../Mapa2";
+import { Mapa2 } from "./Mapa2";
 
 const CustomTypography = styled(Typography)(() => ({
     fontFamily: "Arial",

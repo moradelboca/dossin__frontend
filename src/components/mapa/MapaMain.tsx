@@ -18,8 +18,6 @@ import {
     useMap,
 } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
-import pin from "../../../images/pinbox.png";
-import cargamos from "../../../images/pinBALA2.png";
 import { ContextoGeneral } from "../Contexto";
 import AutocompletarUbicacionMapa from "../cargas/autocompletar/AutocompletarUbicacionMapa";
 import { AddLocationAltOutlined } from "@mui/icons-material";
@@ -28,14 +26,14 @@ import { CreadorUbicacion } from "./CreadorUbicacion";
 const { BaseLayer, Overlay } = LayersControl;
 
 const balanzaIcon = L.icon({
-    iconUrl: cargamos,
+    iconUrl: "https://i.imgur.com/yFbV2Nx.png",
     iconSize: [45, 51],
     iconAnchor: [22, 51],
     popupAnchor: [0, -28],
 });
 
 const pinIcon = L.icon({
-    iconUrl: pin,
+    iconUrl: "https://i.imgur.com/9Try738.png",
     iconSize: [45, 51],
     iconAnchor: [22, 51],
     popupAnchor: [0, -28],

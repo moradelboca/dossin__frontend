@@ -7,29 +7,26 @@ import {
     Polyline,
     useMap,
 } from "react-leaflet";
-import pin from "../../../images/pinbox.png";
-import cargamos from "../../../images/pinBALA2.png";
-import ok from "../../../images/pinokaaa.png";
 
 import L from "leaflet";
 import { useEffect, useState } from "react";
 const { BaseLayer } = LayersControl;
 
 const balanzaIcon = L.icon({
-    iconUrl: cargamos,
+    iconUrl: "https://i.imgur.com/yFbV2Nx.png",
     iconSize: [45, 51],
     iconAnchor: [22, 51],
     popupAnchor: [0, -28],
 });
 const okIcon = L.icon({
-    iconUrl: ok,
+    iconUrl: "https://i.imgur.com/GaUWXH5.png",
     iconSize: [45, 51],
     iconAnchor: [22, 51],
     popupAnchor: [0, -28],
 });
 
 const pinIcon = L.icon({
-    iconUrl: pin,
+    iconUrl: "https://i.imgur.com/9Try738.png",
     iconSize: [45, 51],
     iconAnchor: [22, 51],
     popupAnchor: [0, -28],

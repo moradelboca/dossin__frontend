@@ -42,10 +42,12 @@ interface TarjetaProps {
     cuposDisponibles: number;
     cuposConfirmados: number;
     idCarga: any;
+    refreshCupos: any;
 }
 
 export function TarjetaCupos(props: TarjetaProps) {
-    const { idCarga, fecha, cuposDisponibles, cuposConfirmados } = props;
+    const { idCarga, fecha, cuposDisponibles, cuposConfirmados, refreshCupos } =
+        props;
     const { theme } = useContext(ContextoGeneral);
     const [cuposDisponiblesEstado, setCuposDisponiblesEstado] =
         useState(cuposDisponibles);
@@ -145,7 +147,12 @@ export function TarjetaCupos(props: TarjetaProps) {
                         alignItems="center"
                         minHeight="200px"
                     >
-                        <CreadorTurno idCarga={idCarga} fecha={fecha} />
+                        <CreadorTurno
+                            idCarga={idCarga}
+                            fecha={fecha}
+                            refreshCupos={refreshCupos}
+                            handleCloseDialog={handleCloseDialog}
+                        />
                     </Box>
                 </DialogContent>
             </Dialog>

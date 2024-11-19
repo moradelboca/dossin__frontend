@@ -55,7 +55,7 @@ export function ContainerTarjetasCargas() {
     const open = Boolean(anchorEl);
     const [estadoCarga, setEstadoCarga] = useState("Cargando");
 
-    useEffect(() => {
+    const refreshCargas = () => {
         fetch(`${backendURL}/cargas`, {
             method: "GET",
             headers: {
@@ -71,7 +71,7 @@ export function ContainerTarjetasCargas() {
             .catch((_e) => {
                 console.error("Error al obtener las cargas");
             });
-    }, []);
+    };
     useEffect(() => {
         if (cargaSeleccionada?.id) {
             fetch(`${backendURL}/cargas/${cargaSeleccionada.id}/cupos`, {
@@ -91,6 +91,10 @@ export function ContainerTarjetasCargas() {
                 });
         }
     }, [cargaSeleccionada]);
+
+    useEffect(() => {
+        refreshCargas();
+    }, []);
     const handleCardClick = (carga: any) => {
         setCargaSeleccionada(carga);
     };
@@ -425,6 +429,7 @@ export function ContainerTarjetasCargas() {
                             pasoSeleccionado={pasoSeleccionado}
                             handleCloseDialog={handleCloseDialog}
                             creando={creando}
+                            refreshCargas={refreshCargas}
                         />
                     </DialogContent>
                 </Dialog>

@@ -12,10 +12,12 @@ import { CustomButtom } from "../../botones/CustomButtom";
 interface CreadorProps {
     fecha?: string;
     idCarga?: any;
+    refreshCupos?: any;
+    handleCloseDialog?: any;
 }
 
 export default function CreadorTurno(props: CreadorProps) {
-    const { idCarga, fecha } = props;
+    const { idCarga, fecha, refreshCupos, handleCloseDialog } = props;
     const { backendURL } = useContext(ContextoGeneral);
     const [choferes, setChoferes] = useState<any[]>([]);
     const [patentesCamiones, setPatentesCamiones] = useState<any[]>([]);
@@ -42,33 +44,61 @@ export default function CreadorTurno(props: CreadorProps) {
     const [error, setError] = useState(false);
 
     useEffect(() => {
-        fetch(`${backendURL}/choferes`)
+        fetch(`${backendURL}/choferes`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "ngrok-skip-browser-warning": "true",
+            },
+        })
             .then((response) => response.json())
-            .then((car) => {
-                setChoferes(car);
+            .then((data) => {
+                setChoferes(data);
             })
             .catch(() =>
                 console.error("Error al obtener los choferes disponibles")
             );
-        fetch(`${backendURL}/empresasTransportistas`)
+        fetch(`${backendURL}/empresastransportistas`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "ngrok-skip-browser-warning": "true",
+            },
+        })
             .then((response) => response.json())
-            .then((e) => {
-                setEmpresasTransportistas(e);
+            .then((data) => {
+                setEmpresasTransportistas(data);
             })
             .catch(() =>
                 console.error("Error al obtener los choferes disponibles")
             );
-        fetch(`${backendURL}/camiones`)
+        fetch(`${backendURL}/camiones`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "ngrok-skip-browser-warning": "true",
+            },
+        })
             .then((response) => response.json())
-            .then((p) => setPatentesCamiones(p))
+            .then((data) => {
+                setPatentesCamiones(data);
+            })
             .catch(() =>
-                console.error("Error al obtener los patentes disponibles")
+                console.error("Error al obtener las tiposAcoplados disponibles")
             );
-        fetch(`${backendURL}/acoplados`)
+        fetch(`${backendURL}/acoplados`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "ngrok-skip-browser-warning": "true",
+            },
+        })
             .then((response) => response.json())
-            .then((a) => setPatentesAcoplados(a))
+            .then((data) => {
+                setPatentesAcoplados(data);
+            })
             .catch(() =>
-                console.error("Error al obtener los patentes disponibles")
+                console.error("Error al obtener las tiposAcoplados disponibles")
             );
     }, []);
 
@@ -100,6 +130,12 @@ export default function CreadorTurno(props: CreadorProps) {
                     throw new Error("Error al crear la turno");
                 }
                 response.json();
+            })
+            .then(() => {
+                setTimeout(() => {
+                    handleCloseDialog();
+                }, 2000);
+                refreshCupos();
             })
             .catch(() => {});
     };
