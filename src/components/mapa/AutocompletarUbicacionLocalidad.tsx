@@ -6,12 +6,13 @@ interface AutocompletarProps {
     title: string;
     ubicaciones: any[];
     datosNuevaUbicacion: any;
+    error: any;
 }
 
 export default function AutocompletarUbicacionLocalidad(
     props: AutocompletarProps
 ) {
-    let { title, ubicaciones, datosNuevaUbicacion } = props;
+    let { title, ubicaciones, datosNuevaUbicacion, error } = props;
     let [ubicacionSeleccionada, setUbicacionSeleccionada] = useState<any>(
         datosNuevaUbicacion["nombreLocalidad"] || null
     );
@@ -35,16 +36,12 @@ export default function AutocompletarUbicacionLocalidad(
             options={ubicaciones.map((ubicacion) => {
                 return ` ${ubicacion.localidad}, ${ubicacion.provincia}`;
             })}
-            sx={{ width: 300 }}
+            sx={{ width: 350 }}
             value={ubicacionSeleccionada}
             defaultValue={ubicacionSeleccionada}
             onChange={seleccionarUbicacion}
             renderInput={(params) => (
-                <TextField
-                    {...params}
-                    error={!ubicacionSeleccionada}
-                    label={title}
-                />
+                <TextField {...params} error={error} label={title} />
             )}
         />
     );

@@ -22,6 +22,7 @@ import { ContextoGeneral } from "../Contexto";
 import AutocompletarUbicacionMapa from "../cargas/autocompletar/AutocompletarUbicacionMapa";
 import { AddLocationAltOutlined } from "@mui/icons-material";
 import { CreadorUbicacion } from "./CreadorUbicacion";
+import React from "react";
 
 const { BaseLayer, Overlay } = LayersControl;
 
@@ -72,6 +73,8 @@ export function MapaMain() {
     const [openDialog, setOpenDialog] = useState(false);
     const { backendURL, theme } = useContext(ContextoGeneral);
     const [ubicaciones, setUbicaciones] = useState<Ubicacion[]>([]);
+    const [ubicacionSeleccionada, setUbicacionSeleccionada] =
+        React.useState<any>(null);
     const [selectedLocation, setSelectedLocation] = useState<{
         lat: number;
         lng: number;
@@ -98,7 +101,10 @@ export function MapaMain() {
             );
     }, []);
 
-    const handleMarkerClick = () => {
+    const handleMarkerClick = (ubicacion: any) => {
+        if (ubicacion) {
+            setUbicacionSeleccionada(ubicacion);
+        }
         setOpenDialog(true);
     };
 
@@ -153,7 +159,7 @@ export function MapaMain() {
                             backgroundColor: theme.colores.azulOscuro,
                         },
                     }}
-                    onClick={() => handleMarkerClick()}
+                    onClick={() => handleMarkerClick(null)}
                 >
                     <AddLocationAltOutlined />
                 </IconButton>
@@ -213,7 +219,9 @@ export function MapaMain() {
                                     <Button
                                         variant="contained"
                                         size="small"
-                                        onClick={() => handleMarkerClick()}
+                                        onClick={() =>
+                                            handleMarkerClick(ubicacion)
+                                        }
                                     >
                                         Ver más
                                     </Button>
@@ -226,7 +234,12 @@ export function MapaMain() {
 
             <Dialog open={openDialog} onClose={handleClose}>
                 <DialogTitle>Detalles del Punto</DialogTitle>
-                <CreadorUbicacion />
+                <CreadorUbicacion
+                    handleClose={handleClose}
+                    ubicaciones={ubicaciones}
+                    setUbicaciones={setUbicaciones}
+                    ubicacionSeleccionada={ubicacionSeleccionada}
+                />
             </Dialog>
         </Box>
     );

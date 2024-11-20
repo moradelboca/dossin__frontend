@@ -273,8 +273,8 @@ export default function Choferes() {
                     <Dialog open={open} onClose={handleClose}>
                         <DialogTitle>
                             {choferSeleccionado
-                                ? "Editar camion"
-                                : "Crear camion"}
+                                ? "Editar chofer"
+                                : "Crear chofer"}
                         </DialogTitle>
                         <DialogContent>
                             <CreadorChoferes
