@@ -211,7 +211,8 @@ export function ContainerTarjetasCargas() {
                                                 cargas.map(
                                                     (carga) =>
                                                         carga.ubicacionCarga
-                                                            .provincia
+                                                            .localidad.provincia
+                                                            .nombre
                                                 )
                                             ),
                                         ]}

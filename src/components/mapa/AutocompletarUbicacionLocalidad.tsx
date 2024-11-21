@@ -20,10 +20,13 @@ export default function AutocompletarUbicacionLocalidad(
     const seleccionarUbicacion = (_event: any, seleccionado: string | null) => {
         if (seleccionado) {
             const ubicacionesStrings = ubicaciones.map(
-                (ubicacion) => `${ubicacion.localidad}, ${ubicacion.provincia}`
+                (ubicacion) =>
+                    `${ubicacion.localidad.nombre}, ${ubicacion.localidad.provincia.nombre}`
             );
             const index = ubicacionesStrings.indexOf(seleccionado);
-            const ubicacionesIds = ubicaciones.map((ubicacion) => ubicacion.id);
+            const ubicacionesIds = ubicaciones.map(
+                (ubicacion) => ubicacion.localidad.id
+            );
             datosNuevaUbicacion["idLocalidad"] = ubicacionesIds[index];
             datosNuevaUbicacion["nombreLocalidad"] = seleccionado;
             setUbicacionSeleccionada(seleccionado);
@@ -34,7 +37,7 @@ export default function AutocompletarUbicacionLocalidad(
         <Autocomplete
             disablePortal
             options={ubicaciones.map((ubicacion) => {
-                return ` ${ubicacion.localidad}, ${ubicacion.provincia}`;
+                return `${ubicacion.localidad.nombre}, ${ubicacion.localidad.provincia.nombre}`;
             })}
             sx={{ width: 350 }}
             value={ubicacionSeleccionada}

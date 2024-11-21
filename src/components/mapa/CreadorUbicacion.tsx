@@ -2,6 +2,7 @@ import {
     Autocomplete,
     Box,
     Button,
+    Dialog,
     IconButton,
     TextField,
 } from "@mui/material";
@@ -10,20 +11,28 @@ import AutocompletarUbicacionLocalidad from "./AutocompletarUbicacionLocalidad";
 import { ContextoGeneral } from "../Contexto";
 import React from "react";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+import DeleteUbicacion from "./DeleteUbicaciones";
 
 interface Ubicacion {
     handleClose: any;
     ubicacionSeleccionada: any;
     ubicaciones: any[];
     setUbicaciones: any;
+    refreshUbicaciones: any;
 }
 
 export function CreadorUbicacion(props: Ubicacion) {
     const { backendURL } = useContext(ContextoGeneral);
     // const [ubicaciones, setUbicaciones] = useState<Ubicacion[]>([]);
-    let { handleClose, ubicacionSeleccionada, ubicaciones, setUbicaciones } =
-        props;
-    const [tipoUbicacion, setTipoUbicacion] = useState<Ubicacion[]>([]);
+    let {
+        handleClose,
+        ubicacionSeleccionada,
+        ubicaciones,
+        setUbicaciones,
+        refreshUbicaciones,
+    } = props;
+    const [tipoUbicacion, setTipoUbicacion] = useState<any[]>([]);
+    const [openDialogDelete, setOpenDialogDelete] = useState(false);
 
     useEffect(() => {
         fetch(`${backendURL}/ubicaciones`, {
@@ -42,7 +51,7 @@ export function CreadorUbicacion(props: Ubicacion) {
             );
     }, []);
     useEffect(() => {
-        fetch(`${backendURL}/ubicaciones/tipoUbicaciones`, {
+        fetch(`${backendURL}/ubicaciones/tiposUbicaciones`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -57,15 +66,19 @@ export function CreadorUbicacion(props: Ubicacion) {
                 console.error("Error al obtener las ubicaciones disponibles")
             );
     }, []);
+
     let [datosNuevaUbicacion, setDatosNuevaUbicacion] = React.useState<any>({
         urlMaps: ubicacionSeleccionada?.urlMaps,
         nombre: ubicacionSeleccionada?.nombre,
-        localidad: ubicacionSeleccionada?.localidad,
-        tipo: ubicacionSeleccionada?.tipo,
+        nombreLocalidad: ubicacionSeleccionada?.localidad.nombre,
+        idLocalidad: ubicacionSeleccionada?.localidad.id,
+        idTipoUbicacion: ubicacionSeleccionada?.tipoUbicacion.id,
+        nombreTipoUbicacion: ubicacionSeleccionada?.tipoUbicacion.nombre,
+        id: ubicacionSeleccionada?.id,
     });
-
     const seleccionarURLMaps = (e: any) => {
         datosNuevaUbicacion["urlMaps"] = e.target.value;
+        setDatosNuevaUbicacion({ ...datosNuevaUbicacion });
     };
     const setNombre = (e: React.ChangeEvent<HTMLInputElement>) => {
         datosNuevaUbicacion["nombre"] = e.target.value;
@@ -73,14 +86,10 @@ export function CreadorUbicacion(props: Ubicacion) {
     };
     const seleccionarTipo = (_event: any, seleccionado: any | null) => {
         if (seleccionado) {
-            const tipoUbicacionesStrings = tipoUbicacion.map(
-                (tipo) => `${tipo}`
-            );
-            const index = tipoUbicacionesStrings.indexOf(seleccionado);
-            const tipoUbicacionesIds = ubicaciones.map(
-                (ubicacion) => ubicacion.id
-            );
-            datosNuevaUbicacion["idTipoUbicacion"] = tipoUbicacionesIds[index];
+            const tiposStrings = tipoUbicacion.map((tipo) => tipo.nombre);
+            const index = tiposStrings.indexOf(seleccionado);
+            const tiposIds = tipoUbicacion.map((tipo) => tipo.id);
+            datosNuevaUbicacion["idTipoUbicacion"] = tiposIds[index];
             datosNuevaUbicacion["nombreTipoUbicacion"] = seleccionado;
         }
     };
@@ -93,7 +102,7 @@ export function CreadorUbicacion(props: Ubicacion) {
     const handleSave = () => {
         if (!datosNuevaUbicacion) return;
 
-        const validUrl = regexUrl.test(datosNuevaUbicacion["patente"]);
+        const validUrl = regexUrl.test(datosNuevaUbicacion["urlMaps"]);
         setErrorUrl(!validUrl);
 
         const validTipo = !datosNuevaUbicacion["tipo"];
@@ -113,7 +122,11 @@ export function CreadorUbicacion(props: Ubicacion) {
             body: JSON.stringify(datosNuevaUbicacion),
         })
             .then((response) => {
-                if (!response.ok) throw new Error("Error al crear la turno");
+                if (!response.ok) {
+                    return response.text().then((text) => {
+                        throw new Error(text);
+                    });
+                }
                 return response.json();
             })
             .then((data) => {
@@ -133,10 +146,18 @@ export function CreadorUbicacion(props: Ubicacion) {
                     }
                 }
             })
-            .catch(() => {});
+            .catch((e) => console.error(e));
 
         handleClose();
     };
+
+    const handleClickDeleteCarga = () => {
+        setOpenDialogDelete(true);
+    };
+    const handleCloseDialog = () => {
+        setOpenDialogDelete(false);
+    };
+
     return (
         <>
             <Box
@@ -155,6 +176,7 @@ export function CreadorUbicacion(props: Ubicacion) {
                     variant="outlined"
                     onChange={seleccionarURLMaps}
                     error={errorUrl}
+                    value={datosNuevaUbicacion["urlMaps"]}
                     slotProps={{
                         htmlInput: {
                             maxLength: 200,
@@ -167,6 +189,7 @@ export function CreadorUbicacion(props: Ubicacion) {
                     label="Nombre"
                     variant="outlined"
                     onChange={setNombre}
+                    value={datosNuevaUbicacion["nombre"]}
                     slotProps={{
                         htmlInput: {
                             maxLength: 50,
@@ -175,7 +198,9 @@ export function CreadorUbicacion(props: Ubicacion) {
                     sx={{ width: 350 }}
                 />
                 <Autocomplete
-                    options={tipoUbicacion}
+                    options={tipoUbicacion.map((tipo) => tipo.nombre)}
+                    value={datosNuevaUbicacion["nombreTipoUbicacion"]}
+                    defaultValue={datosNuevaUbicacion["nombreTipoUbicacion"]}
                     renderInput={(params) => (
                         <TextField
                             {...params}
@@ -208,12 +233,25 @@ export function CreadorUbicacion(props: Ubicacion) {
                 <Button onClick={handleSave} color="primary">
                     Guardar
                 </Button>
-                <IconButton>
+                <IconButton onClick={() => handleClickDeleteCarga()}>
                     <DeleteOutlineIcon
                         sx={{ fontSize: 20, color: "#d68384" }}
                     />
                 </IconButton>
             </Box>
+            <Dialog
+                open={openDialogDelete}
+                onClose={handleCloseDialog}
+                maxWidth="sm"
+                fullWidth
+            >
+                <DeleteUbicacion
+                    id={datosNuevaUbicacion["id"]}
+                    handleCloseDialog={handleCloseDialog}
+                    handleClose={handleClose}
+                    refreshUbicaciones={refreshUbicaciones}
+                />
+            </Dialog>
         </>
     );
 }
