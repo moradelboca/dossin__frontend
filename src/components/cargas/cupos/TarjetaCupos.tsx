@@ -4,6 +4,7 @@ import {
     Dialog,
     DialogContent,
     DialogTitle,
+    IconButton,
     TextField,
     Typography,
 } from "@mui/material";
@@ -15,6 +16,8 @@ import { useContext, useState } from "react";
 import CreadorTurno from "../creadores/CreadorTurno";
 import { ContextoGeneral } from "../../Contexto";
 import ClearSharpIcon from "@mui/icons-material/ClearSharp";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+import DeleteCupo from "./DeleteCupo";
 
 const StyledCaja = styled(Box)(() => ({
     minWidth: 180,
@@ -54,9 +57,10 @@ export function TarjetaCupos(props: TarjetaProps) {
 
     const [openDialog, setOpenDialog] = useState(false);
     const [openDialog2, setOpenDialog2] = useState(false);
+    const { backendURL } = useContext(ContextoGeneral);
 
     function handleClick() {
-        setCuposDisponiblesEstado(cuposDisponiblesEstado + 1);
+        setCuposDisponiblesEstado(cuposDisponiblesEstado);
         setOpenDialog2(true);
     }
 
@@ -67,7 +71,37 @@ export function TarjetaCupos(props: TarjetaProps) {
     function handleCloseDialog() {
         setOpenDialog(false);
         setOpenDialog2(false);
+        setOpenDialogDelete(false);
     }
+    function handleSave() {
+        const cupoDeCarga = {
+            cupos: cuposDisponiblesEstado,
+        };
+        fetch(`${backendURL}/cargas/${idCarga}/cupos/${fecha}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(cupoDeCarga),
+        })
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error("Error al crear la carga");
+                }
+                response.json();
+            })
+            .then(() => {
+                setTimeout(() => {
+                    handleCloseDialog();
+                }, 2000);
+                refreshCupos();
+            })
+            .catch(() => {});
+        refreshCupos();
+        handleCloseDialog();
+    }
+    const [openDialogDelete, setOpenDialogDelete] = useState(false);
+    const handleClickDeleteCarga = () => {
+        setOpenDialogDelete(true);
+    };
 
     return (
         <>
@@ -232,20 +266,44 @@ export function TarjetaCupos(props: TarjetaProps) {
                                 +
                             </Button>
                         </Box>
-                        <Button
-                            sx={{
-                                backgroundColor: theme.colores.azul,
-                                color: theme.colores.gris,
-                                "&:hover": {
-                                    backgroundColor: theme.colores.azulOscuro,
-                                },
-                            }}
-                            variant="contained"
-                        >
-                            Guardar
-                        </Button>
+                        <Box display="flex" justifyContent="center" gap={2}>
+                            <Button
+                                sx={{
+                                    backgroundColor: theme.colores.azul,
+                                    color: theme.colores.gris,
+                                    "&:hover": {
+                                        backgroundColor:
+                                            theme.colores.azulOscuro,
+                                    },
+                                }}
+                                variant="contained"
+                                onClick={handleSave}
+                            >
+                                Guardar
+                            </Button>
+                            <IconButton
+                                onClick={() => handleClickDeleteCarga()}
+                            >
+                                <DeleteOutlineIcon
+                                    sx={{ fontSize: 20, color: "#d68384" }}
+                                />
+                            </IconButton>
+                        </Box>
                     </Box>
                 </DialogContent>
+            </Dialog>
+            <Dialog
+                open={openDialogDelete}
+                onClose={handleCloseDialog}
+                maxWidth="sm"
+                fullWidth
+            >
+                <DeleteCupo
+                    idCarga={idCarga}
+                    handleCloseDialog={handleCloseDialog}
+                    fecha={fecha}
+                    refreshCupos={refreshCupos}
+                />
             </Dialog>
         </>
     );

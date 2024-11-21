@@ -64,6 +64,7 @@ export function ContainerCupos() {
             flexDirection={"column"}
             gap={"50px"}
             alignItems={"center"}
+            marginTop={2}
         >
             <BotonIcon
                 onClick={handleClickCrearCupo}

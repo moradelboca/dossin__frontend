@@ -9,7 +9,6 @@ export function TarjetaCarga(props: any) {
     const { onClick, datosCarga, isSelected } = props;
 
     const { theme } = useContext(ContextoGeneral);
-    console.log(datosCarga);
     return (
         <Box
             sx={{

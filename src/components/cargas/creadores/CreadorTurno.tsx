@@ -127,9 +127,11 @@ export default function CreadorTurno(props: CreadorProps) {
         })
             .then((response) => {
                 if (!response.ok) {
-                    throw new Error("Error al crear la turno");
+                    return response.text().then((text) => {
+                        throw new Error(text);
+                    });
                 }
-                response.json();
+                return response.json();
             })
             .then(() => {
                 setTimeout(() => {
@@ -137,7 +139,7 @@ export default function CreadorTurno(props: CreadorProps) {
                 }, 2000);
                 refreshCupos();
             })
-            .catch(() => {});
+            .catch((e) => console.error(e));
     };
     return (
         <React.Fragment>
