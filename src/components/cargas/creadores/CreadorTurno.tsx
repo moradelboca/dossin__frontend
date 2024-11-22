@@ -25,22 +25,22 @@ export default function CreadorTurno(props: CreadorProps) {
     const [empresasTransportistas, setEmpresasTransportistas] = useState<any[]>(
         []
     );
-    const [choferSeleccionado, setChoferSeleccionado] = useState<Number | null>(
+    const [choferSeleccionado, setChoferSeleccionado] = useState<any | null>(
         null
     );
     const [
         empresaTransportistaSeleccionada,
         setEmpresaTransportistaSeleccionada,
-    ] = useState<Number | null>(null);
+    ] = useState<any | null>(null);
     const [patenteCamionSeleccionada, setPatenteCamionSeleccionada] = useState<
         string | null
     >(null);
     const [patenteAcopladoSeleccionada, setPatenteAcopladoSeleccionada] =
-        useState<string | null>(null);
+        useState<any | null>(null);
     const [
         patenteAcopladoSeleccionadaExtra,
         setPatenteAcopladoSeleccionadaExtra,
-    ] = useState<string | null>(null);
+    ] = useState<any | null>(null);
     const [error, setError] = useState(false);
 
     useEffect(() => {
@@ -182,8 +182,9 @@ export default function CreadorTurno(props: CreadorProps) {
                         >
                             <Autocomplete
                                 disablePortal
-                                options={choferes.map((chofer) =>
-                                    chofer.cuil.toString()
+                                options={choferes.map(
+                                    (chofer) =>
+                                        `${chofer.nombre} ${chofer.apellido} - ${chofer.cuil}`
                                 )}
                                 onChange={(_e, v) => setChoferSeleccionado(v)}
                                 sx={{ width: 300 }}
@@ -197,8 +198,8 @@ export default function CreadorTurno(props: CreadorProps) {
                             />
                             <Autocomplete
                                 disablePortal
-                                options={patentesCamiones.map((patenteCamion) =>
-                                    patenteCamion.patente.toString()
+                                options={patentesCamiones.map(
+                                    (patenteCamion) => patenteCamion.patente
                                 )}
                                 onChange={(_e, v) =>
                                     setPatenteCamionSeleccionada(v)
@@ -226,8 +227,9 @@ export default function CreadorTurno(props: CreadorProps) {
                         >
                             <Autocomplete
                                 disablePortal
-                                options={empresasTransportistas.map((empresa) =>
-                                    empresa.cuit.toString()
+                                options={empresasTransportistas.map(
+                                    (empresa) =>
+                                        `${empresa.nombreFantasia} - ${empresa.cuit}`
                                 )}
                                 onChange={(_e, v) =>
                                     setEmpresaTransportistaSeleccionada(v)

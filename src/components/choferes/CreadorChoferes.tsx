@@ -183,6 +183,7 @@ export default function CreadorChoferes(props: Choferes) {
         empresaTransportistaSeleccionada,
         setEmpresaTransportistaSeleccionada,
     ] = useState<Number | null>(null);
+    const [estadoCarga, setEstadoCarga] = useState(true);
 
     useEffect(() => {
         fetch(`${backendURL}/empresastransportistas`, {
@@ -195,6 +196,7 @@ export default function CreadorChoferes(props: Choferes) {
             .then((response) => response.json())
             .then((data) => {
                 setEmpresasTransportistas(data);
+                setEstadoCarga(false);
             })
             .catch(() =>
                 console.error("Error al obtener los choferes disponibles")
@@ -413,6 +415,7 @@ export default function CreadorChoferes(props: Choferes) {
                         error={errorCuit}
                     />
                 )}
+                loading={estadoCarga}
             />
             <TextField
                 margin="dense"

@@ -42,7 +42,7 @@ function EditToolbar(props: EditToolbarProps) {
                     justifyContent: "flex-start",
                 }}
             >
-                <GridToolbarQuickFilter />
+                <GridToolbarQuickFilter placeholder="Buscar..." />
             </Box>
             <Box
                 sx={{
@@ -68,6 +68,7 @@ function EditToolbar(props: EditToolbarProps) {
                     }}
                 />
                 <GridToolbarExport
+                    localeText="Exportar"
                     slotProps={{
                         button: {
                             sx: {

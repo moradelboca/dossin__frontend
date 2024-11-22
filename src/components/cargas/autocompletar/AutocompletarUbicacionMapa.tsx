@@ -1,18 +1,26 @@
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
-import { useState } from "react";
 
 interface AutocompletarProps {
     title: string;
     ubicaciones: any[];
     filtro: string;
-    onSelectLocation: (location: { lat: number; lng: number }) => void;
     estadoCarga: boolean;
+    ubicacionSeleccionada: any;
+    setUbicacionSeleccionada: any;
+    handleMarkerClick: any;
 }
 
 export default function AutocompletarUbicacionMapa(props: AutocompletarProps) {
-    let { title, ubicaciones, filtro, onSelectLocation, estadoCarga } = props;
-    let [ubicacionSeleccionada, setUbicacionSeleccionada] = useState<any>(null);
+    let {
+        title,
+        ubicaciones,
+        filtro,
+        estadoCarga,
+        ubicacionSeleccionada,
+        setUbicacionSeleccionada,
+        handleMarkerClick,
+    } = props;
 
     const ubicacionesFiltradas = ubicaciones.filter(
         (ubicacion) => filtro === "Todas" || ubicacion.tipoUbicacion === filtro
@@ -21,18 +29,10 @@ export default function AutocompletarUbicacionMapa(props: AutocompletarProps) {
     const seleccionarUbicacion = (event: any, seleccionado: string | null) => {
         event.stopPropagation();
         if (seleccionado) {
-            const selectedLocation = ubicacionesFiltradas.find(
-                (ubicacion) =>
-                    `${ubicacion.nombre}, ${ubicacion.provincia}, ${ubicacion.pais}` ===
-                    seleccionado
-            );
-            if (selectedLocation) {
-                onSelectLocation({
-                    lat: selectedLocation.latitud,
-                    lng: selectedLocation.longitud,
-                });
-            }
             setUbicacionSeleccionada(seleccionado);
+            setTimeout(() => {
+                handleMarkerClick();
+            }, 1000);
         }
     };
 
@@ -41,7 +41,7 @@ export default function AutocompletarUbicacionMapa(props: AutocompletarProps) {
             options={ubicacionesFiltradas}
             groupBy={(ubicacion) => ubicacion.provincia}
             getOptionLabel={(ubicacion) =>
-                `${ubicacion.nombre}, ${ubicacion.provincia}, ${ubicacion.pais}`
+                `${ubicacion.nombre}, ${ubicacion.localidad.provincia.nombre}, ${ubicacion.localidad.provincia.pais.nombre}`
             }
             value={ubicacionSeleccionada}
             defaultValue={ubicacionSeleccionada}

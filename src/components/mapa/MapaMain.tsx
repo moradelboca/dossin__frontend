@@ -39,6 +39,12 @@ const pinIcon = L.icon({
     iconAnchor: [22, 51],
     popupAnchor: [0, -28],
 });
+const okIcon = L.icon({
+    iconUrl: "https://i.imgur.com/GaUWXH5.png",
+    iconSize: [45, 51],
+    iconAnchor: [22, 51],
+    popupAnchor: [0, -28],
+});
 
 // Componente para manejar el zoom
 function ZoomToLocation({
@@ -55,7 +61,6 @@ function ZoomToLocation({
             map.flyTo([lat, lng], 15);
         }
     }, [lat, lng, map]);
-
     return null;
 }
 
@@ -65,10 +70,7 @@ export function MapaMain() {
     const [ubicaciones, setUbicaciones] = useState<any[]>([]);
     const [ubicacionSeleccionada, setUbicacionSeleccionada] =
         React.useState<any>(null);
-    const [selectedLocation, setSelectedLocation] = useState<{
-        lat: number;
-        lng: number;
-    } | null>(null);
+
     const [tipoUbicacionSeleccionado, setTipoUbicacionSeleccionado] =
         useState<string>("Todas");
     const [estadoCarga, setEstadoCarga] = useState(true);
@@ -124,8 +126,10 @@ export function MapaMain() {
                     ubicaciones={ubicaciones}
                     title="Ubicación de Carga"
                     filtro={tipoUbicacionSeleccionado}
-                    onSelectLocation={setSelectedLocation}
                     estadoCarga={estadoCarga}
+                    setUbicacionSeleccionada={setUbicacionSeleccionada}
+                    ubicacionSeleccionada={ubicacionSeleccionada}
+                    handleMarkerClick={handleMarkerClick}
                 />
                 <Autocomplete
                     options={tipoUbicacionOptions}
@@ -166,8 +170,8 @@ export function MapaMain() {
                 style={{ height: "91vh" }}
             >
                 <ZoomToLocation
-                    lat={selectedLocation?.lat}
-                    lng={selectedLocation?.lng}
+                    lat={ubicacionSeleccionada?.latitud}
+                    lng={ubicacionSeleccionada?.longitud}
                 />
 
                 <LayersControl position="topright">
@@ -196,7 +200,10 @@ export function MapaMain() {
                                 icon={
                                     ubi.tipoUbicacion.nombre === "Balanza"
                                         ? balanzaIcon
-                                        : pinIcon
+                                        : ubi.tipoUbicacion.nombre ===
+                                            "Descarga"
+                                          ? okIcon
+                                          : pinIcon
                                 }
                             >
                                 <Popup>
@@ -209,7 +216,6 @@ export function MapaMain() {
                                     Tipo: {ubi.tipoUbicacion.nombre}
                                     <br />
                                     <Button
-                                        variant="contained"
                                         size="small"
                                         onClick={() => handleMarkerClick(ubi)}
                                     >

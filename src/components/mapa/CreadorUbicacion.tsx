@@ -33,6 +33,7 @@ export function CreadorUbicacion(props: Ubicacion) {
     } = props;
     const [tipoUbicacion, setTipoUbicacion] = useState<any[]>([]);
     const [openDialogDelete, setOpenDialogDelete] = useState(false);
+    const [estadoCarga, setEstadoCarga] = useState(true);
 
     useEffect(() => {
         fetch(`${backendURL}/ubicaciones`, {
@@ -45,6 +46,7 @@ export function CreadorUbicacion(props: Ubicacion) {
             .then((response) => response.json())
             .then((ubicaciones) => {
                 setUbicaciones(ubicaciones);
+                setEstadoCarga(false);
             })
             .catch(() =>
                 console.error("Error al obtener las ubicaciones disponibles")
@@ -61,6 +63,7 @@ export function CreadorUbicacion(props: Ubicacion) {
             .then((response) => response.json())
             .then((tipoUbicacion) => {
                 setTipoUbicacion(tipoUbicacion);
+                setEstadoCarga(false);
             })
             .catch(() =>
                 console.error("Error al obtener las ubicaciones disponibles")
@@ -215,12 +218,14 @@ export function CreadorUbicacion(props: Ubicacion) {
                         borderRadius: "6px",
                     }}
                     onChange={seleccionarTipo}
+                    loading={estadoCarga}
                 />
                 <AutocompletarUbicacionLocalidad
                     ubicaciones={ubicaciones}
                     title="Ubicación"
                     datosNuevaUbicacion={datosNuevaUbicacion}
                     error={erroLocalidad}
+                    estadoCarga={estadoCarga}
                 />
             </Box>
             <Box
