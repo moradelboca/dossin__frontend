@@ -119,8 +119,9 @@ export default function CreadorTurno(props: CreadorProps) {
             cuitEmpresa: empresaTransportistaSeleccionada,
             patenteAcoplado: patenteAcopladoSeleccionada,
             patenteAcopladoExtra: patenteAcopladoSeleccionadaExtra,
+            idEstado: 1,
         };
-        fetch(`${backendURL}/cargas/${idCarga}/cupos/${fecha}/turnos`, {
+        fetch(`${backendURL}/cargas/${idCarga}/cupos/${fecha}`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(turno),
@@ -134,9 +135,7 @@ export default function CreadorTurno(props: CreadorProps) {
                 return response.json();
             })
             .then(() => {
-                setTimeout(() => {
-                    handleCloseDialog();
-                }, 2000);
+                handleCloseDialog();
                 refreshCupos();
             })
             .catch((e) => console.error(e));
@@ -186,7 +185,9 @@ export default function CreadorTurno(props: CreadorProps) {
                                     (chofer) =>
                                         `${chofer.nombre} ${chofer.apellido} - ${chofer.cuil}`
                                 )}
-                                onChange={(_e, v) => setChoferSeleccionado(v)}
+                                onChange={(_e, v: any) =>
+                                    setChoferSeleccionado(v.split(" - ")[1])
+                                }
                                 sx={{ width: 300 }}
                                 renderInput={(params) => (
                                     <TextField
@@ -231,8 +232,10 @@ export default function CreadorTurno(props: CreadorProps) {
                                     (empresa) =>
                                         `${empresa.nombreFantasia} - ${empresa.cuit}`
                                 )}
-                                onChange={(_e, v) =>
-                                    setEmpresaTransportistaSeleccionada(v)
+                                onChange={(_e, v: any) =>
+                                    setEmpresaTransportistaSeleccionada(
+                                        v.split(" - ")[1]
+                                    )
                                 }
                                 sx={{ width: 300 }}
                                 renderInput={(params) => (

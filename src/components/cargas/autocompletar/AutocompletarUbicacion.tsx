@@ -21,7 +21,7 @@ export default function AutocompletarUbicacion(props: AutocompletarProps) {
         if (seleccionado) {
             const ubicacionesStrings = ubicaciones.map(
                 (ubicacion) =>
-                    `${ubicacion.nombre}, ${ubicacion.localidad}, ${ubicacion.provincia}`
+                    `${ubicacion.nombre}, ${ubicacion.localidad.nombre}, ${ubicacion.localidad.provincia.nombre}`
             );
             const index = ubicacionesStrings.indexOf(seleccionado);
             const ubicacionesIds = ubicaciones.map((ubicacion) => ubicacion.id);
@@ -35,9 +35,11 @@ export default function AutocompletarUbicacion(props: AutocompletarProps) {
         <Autocomplete
             disablePortal
             options={ubicaciones
-                .filter((ubicacion) => ubicacion.tipoUbicacion === filtro)
+                .filter(
+                    (ubicacion) => ubicacion.tipoUbicacion.nombre === filtro
+                )
                 .map((ubicacion) => {
-                    return `${ubicacion.nombre}, ${ubicacion.localidad}, ${ubicacion.provincia}`;
+                    return `${ubicacion.nombre}, ${ubicacion.localidad.nombre}, ${ubicacion.localidad.provincia.nombre}`;
                 })}
             sx={{ width: 300 }}
             value={ubicacionSeleccionada}

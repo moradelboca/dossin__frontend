@@ -17,12 +17,14 @@ import { useParams } from "react-router-dom";
 import { CreadorCupos } from "./CreadorCupos";
 import CancelIcon from "@mui/icons-material/Cancel";
 import ClearSharpIcon from "@mui/icons-material/ClearSharp";
+import React from "react";
 
 export function ContainerCupos() {
     const { idCarga } = useParams();
     const { backendURL, theme } = useContext(ContextoGeneral);
     const [cupos, setCupos] = useState<any[]>([]);
     const [estadoCarga, setEstadoCarga] = useState("Cargando");
+    const [choferes, setChoferes] = React.useState<any[]>([]);
 
     const refreshCupos = () => {
         fetch(`${backendURL}/cargas/${idCarga}/cupos`, {
@@ -40,6 +42,20 @@ export function ContainerCupos() {
             .catch(() => {
                 console.error("Error al obtener las cupos disponibles");
             });
+        fetch(`${backendURL}/choferes`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "ngrok-skip-browser-warning": "true",
+            },
+        })
+            .then((response) => response.json())
+            .then((data) => {
+                setChoferes(data);
+            })
+            .catch(() =>
+                console.error("Error al obtener los choferes disponibles")
+            );
     };
     const [openDialog, setOpenDialog] = useState(false);
 
@@ -80,6 +96,8 @@ export function ContainerCupos() {
                     justifyContent={"center"}
                     alignItems={"center"}
                     gap={3}
+                    margin={"auto"}
+                    maxHeight={"100%"}
                 >
                     <CircularProgress
                         sx={{
@@ -126,22 +144,27 @@ export function ContainerCupos() {
                                 alignItems={"center"}
                                 padding={"35px"}
                             >
-                                {cupo.turnos.map((turno: any) => (
-                                    <TarjetaChoferesCarga
-                                        titleNombre={turno.nombre}
-                                        titleApellido=""
-                                        textCuil={turno.cuilChofer}
-                                        textCelular={turno.celular}
-                                        textCuitEmpresa={turno.cuitEmpresa}
-                                        textPatenteCamion={turno.patenteCamion}
-                                        textPatenteSemi1={turno.patenteAcoplado}
-                                        textPatenteSemi2={
-                                            turno.patenteAcopladoExtra
-                                        }
-                                        imagen=""
-                                        key={turno.id}
-                                    />
-                                ))}
+                                {cupo.turnos.map((turno: any) => {
+                                    const chofer = choferes.find(
+                                        (chofer) => chofer.cuil === turno.chofer
+                                    );
+                                    return (
+                                        <TarjetaChoferesCarga
+                                            titleNombre={chofer.nombre}
+                                            titleApellido={chofer.apellido}
+                                            textCuil={turno.chofer}
+                                            textCelular={chofer.numeroCel}
+                                            textCuitEmpresa={turno.empresa}
+                                            textPatenteCamion={turno.camion}
+                                            textPatenteSemi1={turno.acoplado}
+                                            textPatenteSemi2={
+                                                turno.acopladoExtra
+                                            }
+                                            imagen=""
+                                            key={turno.id}
+                                        />
+                                    );
+                                })}
                             </Grid>
                         </Grid>
                     ))}

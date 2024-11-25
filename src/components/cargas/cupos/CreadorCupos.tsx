@@ -106,9 +106,7 @@ export function CreadorCupos(props: any) {
                     response.json();
                 })
                 .then(() => {
-                    setTimeout(() => {
-                        handleCloseDialog();
-                    }, 2000);
+                    handleCloseDialog();
                     refreshCupos();
                 })
                 .catch(() => {});
