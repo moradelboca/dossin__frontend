@@ -14,7 +14,7 @@ import { TarjetaChoferesCarga } from "./CardGradientVerde";
 import { useEffect, useContext, useState } from "react";
 import { ContextoGeneral } from "../../Contexto";
 import { useParams } from "react-router-dom";
-import { CreadorCupos } from "./CreadorCupos";
+import { CreadorCupos } from "../creadores/CreadorCupos";
 import CancelIcon from "@mui/icons-material/Cancel";
 import ClearSharpIcon from "@mui/icons-material/ClearSharp";
 import React from "react";
@@ -63,12 +63,10 @@ export function ContainerCupos() {
         refreshCupos();
     }, []);
 
-    // Función para abrir el Dialog
     const handleClickCrearCupo = () => {
         setOpenDialog(true);
     };
 
-    // Función para cerrar el Dialog
     const handleCloseDialog = () => {
         setOpenDialog(false);
     };
@@ -162,6 +160,10 @@ export function ContainerCupos() {
                                             }
                                             imagen=""
                                             key={turno.id}
+                                            idCarga={idCarga}
+                                            fecha={cupo.fecha}
+                                            refreshCupos={refreshCupos}
+                                            idTurno={turno.id}
                                         />
                                     );
                                 })}
@@ -199,7 +201,7 @@ export function ContainerCupos() {
                 open={openDialog}
                 onClose={handleCloseDialog}
                 fullWidth
-                maxWidth="sm" // Puedes ajustar el tamaño según lo necesites
+                maxWidth="sm"
             >
                 <ClearSharpIcon
                     onClick={handleCloseDialog}
@@ -218,11 +220,11 @@ export function ContainerCupos() {
                     <Box
                         sx={{
                             display: "flex",
-                            justifyContent: "center", // Centra horizontalmente
-                            alignItems: "center", // Centra verticalmente
-                            flexDirection: "column", // Asegura que los elementos se alineen en columna
-                            height: "100%", // Asegura que tome el 100% del alto disponible
-                            padding: "16px", // Espacio interno
+                            justifyContent: "center",
+                            alignItems: "center",
+                            flexDirection: "column",
+                            height: "100%",
+                            padding: "16px",
                         }}
                     >
                         <CreadorCupos
