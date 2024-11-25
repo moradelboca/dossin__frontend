@@ -17,7 +17,7 @@ import CreadorTurno from "../creadores/CreadorTurno";
 import { ContextoGeneral } from "../../Contexto";
 import ClearSharpIcon from "@mui/icons-material/ClearSharp";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
-import DeleteCupo from "./DeleteCupo";
+import DeleteCupo from "../creadores/DeleteCupo";
 
 const StyledCaja = styled(Box)(() => ({
     minWidth: 180,
@@ -157,39 +157,15 @@ export function TarjetaCupos(props: TarjetaProps) {
                 </Box>
             </StyledCaja>
 
-            <Dialog
-                open={openDialog}
-                onClose={handleCloseDialog}
-                fullWidth
-                maxWidth="md"
-            >
-                <ClearSharpIcon
-                    onClick={handleCloseDialog}
-                    sx={{
-                        position: "absolute",
-                        top: "10px",
-                        right: "10px",
-                        cursor: "pointer",
-                        color: theme.colores.azul,
-                    }}
-                />
-                <DialogTitle>Detalles del Cupo</DialogTitle>
-                <DialogContent>
-                    <Box
-                        display="flex"
-                        justifyContent="center"
-                        alignItems="center"
-                        minHeight="200px"
-                    >
-                        <CreadorTurno
-                            idCarga={idCarga}
-                            fecha={fecha}
-                            refreshCupos={refreshCupos}
-                            handleCloseDialog={handleCloseDialog}
-                        />
-                    </Box>
-                </DialogContent>
-            </Dialog>
+            <CreadorTurno
+                idCarga={idCarga}
+                fecha={fecha}
+                refreshCupos={refreshCupos}
+                handleCloseDialog={handleCloseDialog}
+                openDialog={openDialog}
+                seleccionado={false}
+            />
+
             <Dialog
                 open={openDialog2}
                 onClose={handleCloseDialog}

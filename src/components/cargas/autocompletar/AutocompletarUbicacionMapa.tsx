@@ -2,13 +2,14 @@ import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
 
 interface AutocompletarProps {
-    title: string;
+    title?: string;
     ubicaciones: any[];
-    filtro: string;
-    estadoCarga: boolean;
-    ubicacionSeleccionada: any;
-    setUbicacionSeleccionada: any;
-    handleMarkerClick: any;
+    filtro?: string;
+    estadoCarga?: boolean;
+    ubicacionSeleccionada?: any;
+    setUbicacionSeleccionada?: any;
+    handleMarkerClick?: any;
+    onSelectLocation?: any;
 }
 
 export default function AutocompletarUbicacionMapa(props: AutocompletarProps) {

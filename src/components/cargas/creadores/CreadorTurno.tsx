@@ -1,4 +1,3 @@
-import * as React from "react";
 import Box from "@mui/material/Box";
 import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
@@ -6,28 +5,40 @@ import Typography from "@mui/material/Typography";
 import { useState, useEffect, useContext } from "react";
 import { ContextoGeneral } from "../../Contexto";
 import Autocomplete from "@mui/material/Autocomplete";
-import { TextField } from "@mui/material";
+import { Dialog, DialogContent, DialogTitle, TextField } from "@mui/material";
 import { CustomButtom } from "../../botones/CustomButtom";
+import ClearSharpIcon from "@mui/icons-material/ClearSharp";
 
 interface CreadorProps {
     fecha?: string;
     idCarga?: any;
     refreshCupos?: any;
     handleCloseDialog?: any;
+    turno?: any;
+    openDialog: any;
+    seleccionado: any;
+    idTurno?: any;
 }
 
 export default function CreadorTurno(props: CreadorProps) {
-    const { idCarga, fecha, refreshCupos, handleCloseDialog } = props;
-    const { backendURL } = useContext(ContextoGeneral);
+    const {
+        idCarga,
+        fecha,
+        refreshCupos,
+        handleCloseDialog,
+        openDialog,
+        turno,
+        seleccionado,
+        idTurno,
+    } = props;
+    const { backendURL, theme } = useContext(ContextoGeneral);
     const [choferes, setChoferes] = useState<any[]>([]);
     const [patentesCamiones, setPatentesCamiones] = useState<any[]>([]);
     const [patentesAcoplados, setPatentesAcoplados] = useState<any[]>([]);
     const [empresasTransportistas, setEmpresasTransportistas] = useState<any[]>(
         []
     );
-    const [choferSeleccionado, setChoferSeleccionado] = useState<any | null>(
-        null
-    );
+    const [chofer, setChofer] = useState<any | null>(null);
     const [
         empresaTransportistaSeleccionada,
         setEmpresaTransportistaSeleccionada,
@@ -42,7 +53,6 @@ export default function CreadorTurno(props: CreadorProps) {
         setPatenteAcopladoSeleccionadaExtra,
     ] = useState<any | null>(null);
     const [error, setError] = useState(false);
-
     useEffect(() => {
         fetch(`${backendURL}/choferes`, {
             method: "GET",
@@ -101,30 +111,43 @@ export default function CreadorTurno(props: CreadorProps) {
                 console.error("Error al obtener las tiposAcoplados disponibles")
             );
     }, []);
+    const [nuevoTurno, setNuevoTurno] = useState({
+        cuilChofer: turno?.textCuil,
+        patenteCamion: turno?.textPatenteCamion,
+        cuitEmpresa: turno?.textCuitEmpresa,
+        patenteAcoplado: turno?.textPatenteSemi1,
+        patenteAcopladoExtra: turno?.textPatenteSemi2,
+        idEstado: 0,
+    });
 
     const handleClickGuardar = () => {
         setError(false);
-        if (
-            !choferSeleccionado ||
-            !patenteCamionSeleccionada ||
-            !patenteAcopladoSeleccionada ||
-            !empresaTransportistaSeleccionada
-        ) {
-            setError(true);
-            return;
-        }
-        const turno = {
-            cuilChofer: choferSeleccionado,
+        setNuevoTurno({
+            cuilChofer: chofer,
             patenteCamion: patenteCamionSeleccionada,
             cuitEmpresa: empresaTransportistaSeleccionada,
             patenteAcoplado: patenteAcopladoSeleccionada,
             patenteAcopladoExtra: patenteAcopladoSeleccionadaExtra,
             idEstado: 1,
-        };
-        fetch(`${backendURL}/cargas/${idCarga}/cupos/${fecha}`, {
-            method: "POST",
+        });
+        if (
+            !nuevoTurno["cuilChofer"] ||
+            !nuevoTurno["patenteCamion"] ||
+            !nuevoTurno["cuitEmpresa"] ||
+            !nuevoTurno["patenteAcoplado"]
+        ) {
+            setError(true);
+            return;
+        }
+        const metodo = seleccionado ? "PUT" : "POST";
+        const url = seleccionado
+            ? `${backendURL}/turnos/${idTurno}`
+            : `${backendURL}/cargas/${idCarga}/cupos/${fecha}`;
+
+        fetch(url, {
+            method: metodo,
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(turno),
+            body: JSON.stringify(nuevoTurno),
         })
             .then((response) => {
                 if (!response.ok) {
@@ -141,28 +164,31 @@ export default function CreadorTurno(props: CreadorProps) {
             .catch((e) => console.error(e));
     };
     return (
-        <React.Fragment>
-            <Box
+        <Dialog
+            open={openDialog}
+            onClose={handleCloseDialog}
+            fullWidth
+            maxWidth="md"
+        >
+            <ClearSharpIcon
+                onClick={handleCloseDialog}
                 sx={{
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    justifyContent: "center",
+                    position: "absolute",
+                    top: "10px",
+                    right: "10px",
+                    cursor: "pointer",
+                    color: theme.colores.azul,
                 }}
-            >
-                <CardContent>
-                    <Typography
-                        variant="h5"
-                        component="div"
-                        sx={{ color: "#163660" }} // Cambiar color a azul
-                    >
-                        Turno
-                    </Typography>
-                </CardContent>
-                <CardActions>
+            />
+            <DialogTitle>Detalles del Cupo</DialogTitle>
+            <DialogContent>
+                <Box
+                    display="flex"
+                    justifyContent="center"
+                    alignItems="center"
+                    minHeight="200px"
+                >
                     <Box
-                        gap={5}
-                        margin={3}
                         sx={{
                             display: "flex",
                             flexDirection: "column",
@@ -170,151 +196,195 @@ export default function CreadorTurno(props: CreadorProps) {
                             justifyContent: "center",
                         }}
                     >
-                        <Box
-                            gap={5}
-                            sx={{
-                                display: "flex",
-                                flexDirection: "row",
-                                alignItems: "center",
-                                justifyContent: "center",
-                            }}
-                        >
-                            <Autocomplete
-                                disablePortal
-                                options={choferes.map(
-                                    (chofer) =>
-                                        `${chofer.nombre} ${chofer.apellido} - ${chofer.cuil}`
-                                )}
-                                onChange={(_e, v: any) =>
-                                    setChoferSeleccionado(v.split(" - ")[1])
-                                }
-                                sx={{ width: 300 }}
-                                renderInput={(params) => (
-                                    <TextField
-                                        error={error && !choferSeleccionado}
-                                        {...params}
-                                        label="Cuil chofer"
-                                    />
-                                )}
-                            />
-                            <Autocomplete
-                                disablePortal
-                                options={patentesCamiones.map(
-                                    (patenteCamion) => patenteCamion.patente
-                                )}
-                                onChange={(_e, v) =>
-                                    setPatenteCamionSeleccionada(v)
-                                }
-                                sx={{ width: 300 }}
-                                renderInput={(params) => (
-                                    <TextField
-                                        error={
-                                            error && !patenteCamionSeleccionada
+                        <CardContent>
+                            <Typography
+                                variant="h5"
+                                component="div"
+                                sx={{ color: "#163660" }} // Cambiar color a azul
+                            >
+                                Turno
+                            </Typography>
+                        </CardContent>
+                        <CardActions>
+                            <Box
+                                gap={5}
+                                margin={3}
+                                sx={{
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                }}
+                            >
+                                <Box
+                                    gap={5}
+                                    sx={{
+                                        display: "flex",
+                                        flexDirection: "row",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                    }}
+                                >
+                                    <Autocomplete
+                                        disablePortal
+                                        options={choferes.map(
+                                            (chofer) =>
+                                                `${chofer.nombre} ${chofer.apellido} - ${chofer.cuil}`
+                                        )}
+                                        onChange={(_e, v: any) =>
+                                            setChofer(v.split(" - ")[1])
                                         }
-                                        {...params}
-                                        label="Patente camion"
+                                        sx={{ width: 300 }}
+                                        renderInput={(params) => (
+                                            <TextField
+                                                error={error && !chofer}
+                                                {...params}
+                                                label="Cuil chofer"
+                                            />
+                                        )}
+                                        value={nuevoTurno["cuilChofer"]}
+                                        defaultValue={nuevoTurno["cuilChofer"]}
                                     />
-                                )}
-                            />
-                        </Box>
-                        <Box
-                            gap={5}
-                            sx={{
-                                display: "flex",
-                                flexDirection: "row",
-                                alignItems: "center",
-                                justifyContent: "center",
-                            }}
-                        >
-                            <Autocomplete
-                                disablePortal
-                                options={empresasTransportistas.map(
-                                    (empresa) =>
-                                        `${empresa.nombreFantasia} - ${empresa.cuit}`
-                                )}
-                                onChange={(_e, v: any) =>
-                                    setEmpresaTransportistaSeleccionada(
-                                        v.split(" - ")[1]
-                                    )
-                                }
-                                sx={{ width: 300 }}
-                                renderInput={(params) => (
-                                    <TextField
-                                        error={
-                                            error &&
-                                            !empresaTransportistaSeleccionada
+                                    <Autocomplete
+                                        disablePortal
+                                        options={patentesCamiones.map(
+                                            (patenteCamion) =>
+                                                patenteCamion.patente
+                                        )}
+                                        onChange={(_e, v) =>
+                                            setPatenteCamionSeleccionada(v)
                                         }
-                                        {...params}
-                                        label="Cuit empresa"
-                                    />
-                                )}
-                            />
-                            <Autocomplete
-                                disablePortal
-                                options={patentesAcoplados.map(
-                                    (patenteAcoplado) =>
-                                        patenteAcoplado.patente.toString()
-                                )}
-                                onChange={(_e, v) =>
-                                    setPatenteAcopladoSeleccionada(v)
-                                }
-                                sx={{ width: 300 }}
-                                renderInput={(params) => (
-                                    <TextField
-                                        error={
-                                            error &&
-                                            !patenteAcopladoSeleccionada
+                                        sx={{ width: 300 }}
+                                        renderInput={(params) => (
+                                            <TextField
+                                                error={
+                                                    error &&
+                                                    !patenteCamionSeleccionada
+                                                }
+                                                {...params}
+                                                label="Patente camion"
+                                            />
+                                        )}
+                                        value={nuevoTurno["patenteCamion"]}
+                                        defaultValue={
+                                            nuevoTurno["patenteCamion"]
                                         }
-                                        {...params}
-                                        label="Patente semi"
                                     />
-                                )}
-                            />
-                        </Box>
-                        <Box
-                            gap={5}
-                            sx={{
-                                display: "flex",
-                                flexDirection: "row",
-                                alignItems: "center",
-                                justifyContent: "center",
-                            }}
-                        >
-                            <Autocomplete
-                                disablePortal
-                                options={patentesAcoplados.map(
-                                    (patenteAcoplado) =>
-                                        patenteAcoplado.patente.toString()
-                                )}
-                                onChange={(_e, v) =>
-                                    setPatenteAcopladoSeleccionadaExtra(v)
-                                }
-                                sx={{ width: 300 }}
-                                renderInput={(params) => (
-                                    <TextField
-                                        {...params}
-                                        label="Patente semi 2 (opcional)"
+                                </Box>
+                                <Box
+                                    gap={5}
+                                    sx={{
+                                        display: "flex",
+                                        flexDirection: "row",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                    }}
+                                >
+                                    <Autocomplete
+                                        disablePortal
+                                        options={empresasTransportistas.map(
+                                            (empresa) =>
+                                                `${empresa.nombreFantasia} - ${empresa.cuit}`
+                                        )}
+                                        onChange={(_e, v: any) =>
+                                            setEmpresaTransportistaSeleccionada(
+                                                v.split(" - ")[1]
+                                            )
+                                        }
+                                        sx={{ width: 300 }}
+                                        renderInput={(params) => (
+                                            <TextField
+                                                error={
+                                                    error &&
+                                                    !empresaTransportistaSeleccionada
+                                                }
+                                                {...params}
+                                                label="Cuit empresa"
+                                            />
+                                        )}
+                                        value={nuevoTurno["cuitEmpresa"]}
+                                        defaultValue={nuevoTurno["cuitEmpresa"]}
                                     />
-                                )}
-                            />
-                        </Box>
-                        <Box
-                            gap={5}
-                            sx={{
-                                display: "flex",
-                                flexDirection: "row",
-                                alignItems: "center",
-                                justifyContent: "center",
-                            }}
-                        >
-                            <CustomButtom
-                                onClick={handleClickGuardar}
-                                title="Confirmar"
-                            />
-                        </Box>
+                                    <Autocomplete
+                                        disablePortal
+                                        options={patentesAcoplados.map(
+                                            (patenteAcoplado) =>
+                                                patenteAcoplado.patente.toString()
+                                        )}
+                                        onChange={(_e, v) =>
+                                            setPatenteAcopladoSeleccionada(v)
+                                        }
+                                        sx={{ width: 300 }}
+                                        renderInput={(params) => (
+                                            <TextField
+                                                error={
+                                                    error &&
+                                                    !patenteAcopladoSeleccionada
+                                                }
+                                                {...params}
+                                                label="Patente semi"
+                                            />
+                                        )}
+                                        value={nuevoTurno["patenteAcoplado"]}
+                                        defaultValue={
+                                            nuevoTurno["patenteAcoplado"]
+                                        }
+                                    />
+                                </Box>
+                                <Box
+                                    gap={5}
+                                    sx={{
+                                        display: "flex",
+                                        flexDirection: "row",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                    }}
+                                >
+                                    <Autocomplete
+                                        disablePortal
+                                        options={patentesAcoplados.map(
+                                            (patenteAcoplado) =>
+                                                patenteAcoplado.patente.toString()
+                                        )}
+                                        onChange={(_e, v) =>
+                                            setPatenteAcopladoSeleccionadaExtra(
+                                                v
+                                            )
+                                        }
+                                        sx={{ width: 300 }}
+                                        renderInput={(params) => (
+                                            <TextField
+                                                {...params}
+                                                label="Patente semi 2 (opcional)"
+                                            />
+                                        )}
+                                        value={
+                                            nuevoTurno["patenteAcopladoExtra"]
+                                        }
+                                        defaultValue={
+                                            nuevoTurno["patenteAcopladoExtra"]
+                                        }
+                                    />
+                                </Box>
+                                <Box
+                                    gap={5}
+                                    sx={{
+                                        display: "flex",
+                                        flexDirection: "row",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                    }}
+                                >
+                                    <CustomButtom
+                                        onClick={handleClickGuardar}
+                                        title="Confirmar"
+                                    />
+                                </Box>
+                            </Box>
+                        </CardActions>
                     </Box>
-                </CardActions>
-            </Box>
-        </React.Fragment>
+                </Box>
+            </DialogContent>
+        </Dialog>
     );
 }

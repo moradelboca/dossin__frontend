@@ -8,6 +8,7 @@ import { styled } from "@mui/material/styles";
 import Color from "color"; // v3.2.1
 import { CustomButtom } from "../../botones/CustomButtom";
 import { useState } from "react";
+import CreadorTurno from "../creadores/CreadorTurno";
 
 const defaultColor = "#d9d9d9"; // Gris claro
 
@@ -122,13 +123,17 @@ interface TarjetaProps {
     textPatenteCamion?: string;
     textPatenteSemi1?: string;
     textPatenteSemi2?: string;
+    idCarga: any;
+    fecha: any;
+    refreshCupos: any;
+    idTurno: any;
 }
 
 export function TarjetaChoferesCarga(props: TarjetaProps) {
     const [confirmado, setConfirmado] = useState(false);
-    const handleClickConfirmar = () => {
-        setConfirmado(true);
-    };
+    const [openDialog, setOpenDialog] = useState(false);
+    const [seleccionado, setSeleccionado] = useState(false);
+
     const {
         titleNombre,
         titleApellido,
@@ -139,8 +144,21 @@ export function TarjetaChoferesCarga(props: TarjetaProps) {
         textPatenteSemi1,
         textPatenteSemi2,
         imagen,
+        idCarga,
+        fecha,
+        refreshCupos,
+        idTurno,
     } = props;
 
+    const handleClickConfirmar = () => {
+        setConfirmado(true);
+        setOpenDialog(true);
+        setSeleccionado(true);
+        refreshCupos();
+    };
+    function handleCloseDialog() {
+        setOpenDialog(false);
+    }
     return (
         <Box width="300px">
             <CardActionAreaActionArea>
@@ -206,7 +224,21 @@ export function TarjetaChoferesCarga(props: TarjetaProps) {
                                     {!confirmado ? (
                                         <CustomButtom
                                             onClick={handleClickConfirmar}
-                                            title="Confirmar"
+                                            title="Verificar"
+                                        />
+                                    ) : null}
+                                    {confirmado ? (
+                                        <CreadorTurno
+                                            idCarga={idCarga}
+                                            fecha={fecha}
+                                            refreshCupos={refreshCupos}
+                                            handleCloseDialog={
+                                                handleCloseDialog
+                                            }
+                                            openDialog={openDialog}
+                                            turno={props}
+                                            seleccionado={seleccionado}
+                                            idTurno={idTurno}
                                         />
                                     ) : null}
                                 </Box>
