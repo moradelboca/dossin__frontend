@@ -67,7 +67,7 @@ const cuposFromat = React.forwardRef<NumericFormatProps, CustomProps>(
 );
 
 export function CreadorCupos(props: any) {
-    let { idCarga } = props;
+    let { idCarga, handleCloseDialog, refreshCupos } = props;
     const { backendURL } = useContext(ContextoGeneral);
     const [selectedDates, setSelectedDates] = useState<Dayjs[]>([]);
     const [cupoSeleccionado, setCupoSeleccionado] = useState<number | null>(
@@ -104,6 +104,10 @@ export function CreadorCupos(props: any) {
                         throw new Error("Error al crear la carga");
                     }
                     response.json();
+                })
+                .then(() => {
+                    handleCloseDialog();
+                    refreshCupos();
                 })
                 .catch(() => {});
         }

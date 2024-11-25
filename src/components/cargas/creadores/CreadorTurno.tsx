@@ -12,10 +12,12 @@ import { CustomButtom } from "../../botones/CustomButtom";
 interface CreadorProps {
     fecha?: string;
     idCarga?: any;
+    refreshCupos?: any;
+    handleCloseDialog?: any;
 }
 
 export default function CreadorTurno(props: CreadorProps) {
-    const { idCarga, fecha } = props;
+    const { idCarga, fecha, refreshCupos, handleCloseDialog } = props;
     const { backendURL } = useContext(ContextoGeneral);
     const [choferes, setChoferes] = useState<any[]>([]);
     const [patentesCamiones, setPatentesCamiones] = useState<any[]>([]);
@@ -23,52 +25,80 @@ export default function CreadorTurno(props: CreadorProps) {
     const [empresasTransportistas, setEmpresasTransportistas] = useState<any[]>(
         []
     );
-    const [choferSeleccionado, setChoferSeleccionado] = useState<Number | null>(
+    const [choferSeleccionado, setChoferSeleccionado] = useState<any | null>(
         null
     );
     const [
         empresaTransportistaSeleccionada,
         setEmpresaTransportistaSeleccionada,
-    ] = useState<Number | null>(null);
+    ] = useState<any | null>(null);
     const [patenteCamionSeleccionada, setPatenteCamionSeleccionada] = useState<
         string | null
     >(null);
     const [patenteAcopladoSeleccionada, setPatenteAcopladoSeleccionada] =
-        useState<string | null>(null);
+        useState<any | null>(null);
     const [
         patenteAcopladoSeleccionadaExtra,
         setPatenteAcopladoSeleccionadaExtra,
-    ] = useState<string | null>(null);
+    ] = useState<any | null>(null);
     const [error, setError] = useState(false);
 
     useEffect(() => {
-        fetch(`${backendURL}/choferes`)
+        fetch(`${backendURL}/choferes`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "ngrok-skip-browser-warning": "true",
+            },
+        })
             .then((response) => response.json())
-            .then((car) => {
-                setChoferes(car);
+            .then((data) => {
+                setChoferes(data);
             })
             .catch(() =>
                 console.error("Error al obtener los choferes disponibles")
             );
-        fetch(`${backendURL}/empresasTransportistas`)
+        fetch(`${backendURL}/empresastransportistas`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "ngrok-skip-browser-warning": "true",
+            },
+        })
             .then((response) => response.json())
-            .then((e) => {
-                setEmpresasTransportistas(e);
+            .then((data) => {
+                setEmpresasTransportistas(data);
             })
             .catch(() =>
                 console.error("Error al obtener los choferes disponibles")
             );
-        fetch(`${backendURL}/camiones`)
+        fetch(`${backendURL}/camiones`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "ngrok-skip-browser-warning": "true",
+            },
+        })
             .then((response) => response.json())
-            .then((p) => setPatentesCamiones(p))
+            .then((data) => {
+                setPatentesCamiones(data);
+            })
             .catch(() =>
-                console.error("Error al obtener los patentes disponibles")
+                console.error("Error al obtener las tiposAcoplados disponibles")
             );
-        fetch(`${backendURL}/acoplados`)
+        fetch(`${backendURL}/acoplados`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "ngrok-skip-browser-warning": "true",
+            },
+        })
             .then((response) => response.json())
-            .then((a) => setPatentesAcoplados(a))
+            .then((data) => {
+                setPatentesAcoplados(data);
+            })
             .catch(() =>
-                console.error("Error al obtener los patentes disponibles")
+                console.error("Error al obtener las tiposAcoplados disponibles")
             );
     }, []);
 
@@ -89,19 +119,26 @@ export default function CreadorTurno(props: CreadorProps) {
             cuitEmpresa: empresaTransportistaSeleccionada,
             patenteAcoplado: patenteAcopladoSeleccionada,
             patenteAcopladoExtra: patenteAcopladoSeleccionadaExtra,
+            idEstado: 1,
         };
-        fetch(`${backendURL}/cargas/${idCarga}/cupos/${fecha}/turnos`, {
+        fetch(`${backendURL}/cargas/${idCarga}/cupos/${fecha}`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(turno),
         })
             .then((response) => {
                 if (!response.ok) {
-                    throw new Error("Error al crear la turno");
+                    return response.text().then((text) => {
+                        throw new Error(text);
+                    });
                 }
-                response.json();
+                return response.json();
             })
-            .catch(() => {});
+            .then(() => {
+                handleCloseDialog();
+                refreshCupos();
+            })
+            .catch((e) => console.error(e));
     };
     return (
         <React.Fragment>
@@ -144,10 +181,13 @@ export default function CreadorTurno(props: CreadorProps) {
                         >
                             <Autocomplete
                                 disablePortal
-                                options={choferes.map((chofer) =>
-                                    chofer.cuil.toString()
+                                options={choferes.map(
+                                    (chofer) =>
+                                        `${chofer.nombre} ${chofer.apellido} - ${chofer.cuil}`
                                 )}
-                                onChange={(_e, v) => setChoferSeleccionado(v)}
+                                onChange={(_e, v: any) =>
+                                    setChoferSeleccionado(v.split(" - ")[1])
+                                }
                                 sx={{ width: 300 }}
                                 renderInput={(params) => (
                                     <TextField
@@ -159,8 +199,8 @@ export default function CreadorTurno(props: CreadorProps) {
                             />
                             <Autocomplete
                                 disablePortal
-                                options={patentesCamiones.map((patenteCamion) =>
-                                    patenteCamion.patente.toString()
+                                options={patentesCamiones.map(
+                                    (patenteCamion) => patenteCamion.patente
                                 )}
                                 onChange={(_e, v) =>
                                     setPatenteCamionSeleccionada(v)
@@ -188,11 +228,14 @@ export default function CreadorTurno(props: CreadorProps) {
                         >
                             <Autocomplete
                                 disablePortal
-                                options={empresasTransportistas.map((empresa) =>
-                                    empresa.cuit.toString()
+                                options={empresasTransportistas.map(
+                                    (empresa) =>
+                                        `${empresa.nombreFantasia} - ${empresa.cuit}`
                                 )}
-                                onChange={(_e, v) =>
-                                    setEmpresaTransportistaSeleccionada(v)
+                                onChange={(_e, v: any) =>
+                                    setEmpresaTransportistaSeleccionada(
+                                        v.split(" - ")[1]
+                                    )
                                 }
                                 sx={{ width: 300 }}
                                 renderInput={(params) => (

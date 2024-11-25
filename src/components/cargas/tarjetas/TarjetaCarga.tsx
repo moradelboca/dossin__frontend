@@ -9,7 +9,6 @@ export function TarjetaCarga(props: any) {
     const { onClick, datosCarga, isSelected } = props;
 
     const { theme } = useContext(ContextoGeneral);
-
     return (
         <Box
             sx={{
@@ -121,9 +120,20 @@ export function TarjetaCarga(props: any) {
                                 {/* Lugar de carga */}
                                 <Box sx={{ marginBottom: 4 }}>
                                     <Typography>
-                                        {datosCarga.ubicacionCarga.localidad},{" "}
-                                        {datosCarga.ubicacionCarga.provincia},{" "}
-                                        {datosCarga.ubicacionCarga.pais}
+                                        {
+                                            datosCarga.ubicacionCarga.localidad
+                                                .nombre
+                                        }
+                                        ,{" "}
+                                        {
+                                            datosCarga.ubicacionCarga.localidad
+                                                .provincia.nombre
+                                        }
+                                        ,{" "}
+                                        {
+                                            datosCarga.ubicacionCarga.localidad
+                                                .provincia.pais.nombre
+                                        }
                                     </Typography>
                                     <Typography
                                         color={
@@ -137,10 +147,20 @@ export function TarjetaCarga(props: any) {
                                 {/* Lugar de descarga */}
                                 <Box>
                                     <Typography>
-                                        {datosCarga.ubicacionDescarga.localidad}
+                                        {
+                                            datosCarga.ubicacionDescarga
+                                                .localidad.nombre
+                                        }
                                         ,{" "}
-                                        {datosCarga.ubicacionDescarga.provincia}
-                                        , {datosCarga.ubicacionDescarga.pais}
+                                        {
+                                            datosCarga.ubicacionDescarga
+                                                .localidad.provincia.nombre
+                                        }
+                                        ,{" "}
+                                        {
+                                            datosCarga.ubicacionDescarga
+                                                .localidad.provincia.pais.nombre
+                                        }
                                     </Typography>
                                     <Typography
                                         color={

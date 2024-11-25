@@ -53,7 +53,7 @@ export default function Navbar(props: NavbarProps) {
                 transicion={transicion}
             >
                 <img
-                    src="/images/logo.png"
+                    src="https://i.imgur.com/nmMpZzl.png"
                     alt="Logo"
                     style={{ height: "40px" }}
                 />

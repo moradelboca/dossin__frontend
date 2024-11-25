@@ -3,23 +3,22 @@ import { useContext } from "react";
 import { ContextoGeneral } from "../Contexto";
 import ClearSharpIcon from "@mui/icons-material/ClearSharp";
 
-interface Empresas {
-    cuit: any;
+interface Camiones {
+    id: any;
     handleCloseDialog: any;
     handleClose: any;
-    empresas: any;
-    setEmpresas: any;
+    refreshUbicaciones: any;
 }
-export default function DeleteEmpresas(props: Empresas) {
-    let { handleCloseDialog, cuit, handleClose, empresas, setEmpresas } = props;
+export default function DeleteUbicacion(props: Camiones) {
+    let { handleCloseDialog, id, handleClose, refreshUbicaciones } = props;
     const { backendURL, theme } = useContext(ContextoGeneral);
 
     const handleNoClick = () => {
         handleCloseDialog();
     };
 
-    const borrarAcoplado = () => {
-        fetch(`${backendURL}/choferes/${cuit}`, {
+    const borrarCamion = () => {
+        fetch(`${backendURL}/ubicaciones/${id}`, {
             method: "DELETE",
             headers: {
                 "Content-Type": "application/json",
@@ -27,16 +26,12 @@ export default function DeleteEmpresas(props: Empresas) {
             },
         })
             .then((response) => response.json())
-            .then((_data) => {
-                const newEmpresa = empresas.filter(
-                    (empresa: { cuit: any }) => empresa.cuit !== cuit
-                );
-                setEmpresas(newEmpresa);
-            })
+
             .catch((error) => {
-                console.error("Error al borrar el acoplado", error);
+                console.error("Error al borrar el camion", error);
             });
         handleCloseDialog();
+        refreshUbicaciones();
         handleClose();
     };
 
@@ -57,7 +52,7 @@ export default function DeleteEmpresas(props: Empresas) {
                 }}
             >
                 <Typography variant="h6" color="textPrimary" align="center">
-                    ¿Está seguro de que quiere eliminar la Empresa?
+                    ¿Está seguro de que quiere eliminar la ubicacion?
                 </Typography>
                 <ClearSharpIcon
                     onClick={handleCloseDialog}
@@ -81,7 +76,7 @@ export default function DeleteEmpresas(props: Empresas) {
                 >
                     <Button
                         variant="text"
-                        onClick={borrarAcoplado}
+                        onClick={borrarCamion}
                         sx={{
                             color: "#d68384",
                             width: "100%",

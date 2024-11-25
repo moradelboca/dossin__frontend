@@ -109,7 +109,7 @@ const EdadFormat = React.forwardRef<any, CustomProps>(
 );
 export default function CreadorEmpresas(props: Empresas) {
     const { backendURL } = useContext(ContextoGeneral);
-
+    const [codigoSeleccionado, setCodigoSeleccionado] = React.useState("");
     let {
         handleClose,
         empresaSeleccionada,
@@ -156,7 +156,8 @@ export default function CreadorEmpresas(props: Empresas) {
     };
 
     const setCuit = (e: React.ChangeEvent<HTMLInputElement>) => {
-        datosNuevaEmpresa["cuit"] = e.target.value;
+        const cuit = parseInt(e.target.value, 10);
+        datosNuevaEmpresa["cuit"] = cuit;
         SetDatosNuevaEmpresa({ ...datosNuevaEmpresa });
     };
     const setNombreFantasia = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -164,7 +165,7 @@ export default function CreadorEmpresas(props: Empresas) {
         SetDatosNuevaEmpresa({ ...datosNuevaEmpresa });
     };
     const setNumeroCel = (e: React.ChangeEvent<HTMLInputElement>) => {
-        datosNuevaEmpresa["numeroCel"] = e.target.value;
+        datosNuevaEmpresa["numeroCel"] = codigoSeleccionado + e.target.value;
         SetDatosNuevaEmpresa({ ...datosNuevaEmpresa });
     };
     const setUbicacion = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -185,17 +186,39 @@ export default function CreadorEmpresas(props: Empresas) {
     };
 
     const [errorCuit, setErrorCuit] = React.useState(false);
+    const [errorRazonSocial, setErrorRazonSocial] = React.useState(false);
+    const [errorNombreFantasia, setErrorNombreFantasia] = React.useState(false);
+    const [errorNumeroCel, setErrorNumeroCel] = React.useState(false);
 
     const handleSave = () => {
+        let error = false;
+
         if (!datosNuevaEmpresa["cuit"]) {
             setErrorCuit(true);
+            error = true;
+        }
+        if (!datosNuevaEmpresa["razonSocial"]) {
+            setErrorRazonSocial(true);
+            error = true;
+        }
+        if (!datosNuevaEmpresa["nombreFantasia"]) {
+            setErrorNombreFantasia(true);
+            error = true;
+        }
+        if (!datosNuevaEmpresa["numeroCel"]) {
+            setErrorNumeroCel(true);
+            error = true;
+        }
+
+        if (error) {
             return;
         }
 
+        datosNuevaEmpresa["idUbicacion"] = 1;
         const metodo = empresaSeleccionada ? "PUT" : "POST";
         const url = empresaSeleccionada
-            ? `${backendURL}/empresas/${datosNuevaEmpresa["cuit"]}`
-            : `${backendURL}/empresas`;
+            ? `${backendURL}/empresastransportistas/${datosNuevaEmpresa["cuit"]}`
+            : `${backendURL}/empresastransportistas`;
 
         fetch(url, {
             method: metodo,
@@ -203,7 +226,11 @@ export default function CreadorEmpresas(props: Empresas) {
             body: JSON.stringify(datosNuevaEmpresa),
         })
             .then((response) => {
-                if (!response.ok) throw new Error("Error al crear el acoplado");
+                if (!response.ok) {
+                    return response.text().then((text) => {
+                        throw new Error(text);
+                    });
+                }
                 return response.json();
             })
             .then((data) => {
@@ -220,7 +247,7 @@ export default function CreadorEmpresas(props: Empresas) {
                     }
                 }
             })
-            .catch(() => {});
+            .catch((e) => console.error(e));
 
         handleClose();
     };
@@ -268,6 +295,7 @@ export default function CreadorEmpresas(props: Empresas) {
                     datosNuevaEmpresa["razonSocial"]
                 }
                 onChange={setRazonSocial}
+                error={errorRazonSocial}
             />
             <TextField
                 margin="dense"
@@ -281,6 +309,7 @@ export default function CreadorEmpresas(props: Empresas) {
                     datosNuevaEmpresa["nombreFantasia"]
                 }
                 onChange={setNombreFantasia}
+                error={errorNombreFantasia}
             />
             <Box
                 display="flex"
@@ -292,7 +321,10 @@ export default function CreadorEmpresas(props: Empresas) {
                 marginBottom={1}
             >
                 <Box width={"100px"}>
-                    <AutocompletarPais />
+                    <AutocompletarPais
+                        setCodigoSeleccionado={setCodigoSeleccionado}
+                        error={errorNumeroCel}
+                    />
                 </Box>
                 <>-</>
                 <Stack width="400px" direction="row" spacing={2}>
@@ -314,13 +346,14 @@ export default function CreadorEmpresas(props: Empresas) {
                             datosNuevaEmpresa["numeroCel"]
                         }
                         onChange={setNumeroCel}
+                        error={errorNumeroCel}
                     />
                 </Stack>
             </Box>
             <Stack direction="row" spacing={2}>
                 <TextField
                     margin="dense"
-                    label="Edad"
+                    label="Ubicacion"
                     name="numberformat"
                     id="formatted-numberformat-input"
                     fullWidth
@@ -371,7 +404,7 @@ export default function CreadorEmpresas(props: Empresas) {
             />
             <TextField
                 margin="dense"
-                label="Ubicacion"
+                label="Email"
                 type="text"
                 fullWidth
                 variant="outlined"

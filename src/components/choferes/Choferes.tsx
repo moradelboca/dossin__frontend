@@ -3,6 +3,7 @@ import { DataGrid, GridColDef, GridToolbarQuickFilter } from "@mui/x-data-grid";
 import {
     Box,
     Button,
+    CircularProgress,
     Dialog,
     DialogContent,
     DialogTitle,
@@ -17,7 +18,7 @@ import { GridToolbarColumnsButton } from "@mui/x-data-grid";
 import BorderColorIcon from "@mui/icons-material/BorderColor";
 import { ContextoGeneral } from "../Contexto";
 import { PersonAddAlt } from "@mui/icons-material";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import CreadorChoferes from "./CreadorChoferes";
 
 interface EditToolbarProps {
@@ -95,6 +96,7 @@ export default function Choferes() {
         React.useState<any>(null);
     const { backendURL, theme } = React.useContext(ContextoGeneral);
     const [choferes, setChoferes] = React.useState<any[]>([]);
+    const [estadoCarga, setEstadoCarga] = useState("Cargando");
 
     const refreshChoferes = () => {
         fetch(`${backendURL}/choferes`, {
@@ -107,6 +109,7 @@ export default function Choferes() {
             .then((response) => response.json())
             .then((data) => {
                 setChoferes(data);
+                setEstadoCarga("Cargado");
             })
             .catch(() =>
                 console.error("Error al obtener los choferes disponibles")
@@ -201,52 +204,77 @@ export default function Choferes() {
                     Choferes
                 </Typography>
                 <Box margin="10px" sx={{ height: "90%", width: "100%" }}>
-                    <DataGrid
-                        rows={choferes.map((chofer) => ({
-                            cuil: chofer.cuil,
-                            numeroCel: chofer.numeroCel || "No especificado",
-                            nombre: chofer.nombre || "No especificado",
-                            apellido: chofer.apellido || "No especificado",
-                            edad: chofer.edad || "No especificado",
-                            cuitEmpresa:
-                                chofer.cuitEmpresa || "No especificado",
-                            urlLINTI: chofer.urlLINTI || "No especificado",
-                            idUbicacion:
-                                chofer.idUbicacion || "No especificado",
-                        }))}
-                        columns={columns}
-                        getRowId={(row) => row.cuil}
-                        sx={{
-                            "& .MuiDataGrid-columnHeader": {
-                                backgroundColor: theme.colores.grisClaro,
-                                color: theme.colores.grisOscuro,
-                            },
-                            border: "none",
-                        }}
-                        slots={{
-                            toolbar: (props) => (
-                                <EditToolbar
-                                    setRows={function (): void {
-                                        throw new Error(
-                                            "Function not implemented."
-                                        );
-                                    }}
-                                    setRowModesModel={function (): void {
-                                        throw new Error(
-                                            "Function not implemented."
-                                        );
-                                    }}
-                                    {...props}
-                                    onAdd={() => handleOpen(null)}
-                                />
-                            ),
-                        }}
-                    />
+                    {estadoCarga === "Cargando" && (
+                        <Box
+                            display={"flex"}
+                            flexDirection={"row"}
+                            width={"100%"}
+                            height={"100%"}
+                            justifyContent={"center"}
+                            alignItems={"center"}
+                            gap={3}
+                        >
+                            <CircularProgress
+                                sx={{
+                                    padding: "5px",
+                                    width: "30px",
+                                    height: "30px",
+                                }}
+                            />
+                            <Typography variant="h5">
+                                <b>Cargando...</b>
+                            </Typography>
+                        </Box>
+                    )}
+                    {estadoCarga === "Cargado" && (
+                        <DataGrid
+                            rows={choferes.map((chofer) => ({
+                                cuil: chofer.cuil,
+                                numeroCel:
+                                    chofer.numeroCel || "No especificado",
+                                nombre: chofer.nombre || "No especificado",
+                                apellido: chofer.apellido || "No especificado",
+                                edad: chofer.edad || "No especificado",
+                                cuitEmpresa:
+                                    chofer.cuitEmpresa || "No especificado",
+                                urlLINTI: chofer.urlLINTI || "No especificado",
+                                idUbicacion:
+                                    chofer.idUbicacion || "No especificado",
+                            }))}
+                            columns={columns}
+                            getRowId={(row) => row.cuil}
+                            sx={{
+                                "& .MuiDataGrid-columnHeader": {
+                                    backgroundColor: theme.colores.grisClaro,
+                                    color: theme.colores.grisOscuro,
+                                },
+                                border: "none",
+                            }}
+                            slots={{
+                                toolbar: (props) => (
+                                    <EditToolbar
+                                        setRows={function (): void {
+                                            throw new Error(
+                                                "Function not implemented."
+                                            );
+                                        }}
+                                        setRowModesModel={function (): void {
+                                            throw new Error(
+                                                "Function not implemented."
+                                            );
+                                        }}
+                                        {...props}
+                                        onAdd={() => handleOpen(null)}
+                                    />
+                                ),
+                            }}
+                        />
+                    )}
                     <Dialog open={open} onClose={handleClose}>
                         <DialogTitle>
                             {choferSeleccionado
-                                ? "Editar camion"
-                                : "Crear camion"}
+                                ? "Editar chofer"
+                                : "Crear chofer"}
                         </DialogTitle>
                         <DialogContent>
                             <CreadorChoferes

@@ -1,17 +1,16 @@
 import { Box, Button, Typography } from "@mui/material";
 import { useContext } from "react";
-import { ContextoGeneral } from "../Contexto";
+import { ContextoGeneral } from "../../Contexto";
 import ClearSharpIcon from "@mui/icons-material/ClearSharp";
 
-interface Empresas {
-    cuit: any;
+interface Cupos {
+    idCarga: any;
     handleCloseDialog: any;
-    handleClose: any;
-    empresas: any;
-    setEmpresas: any;
+    fecha: any;
+    refreshCupos: any;
 }
-export default function DeleteEmpresas(props: Empresas) {
-    let { handleCloseDialog, cuit, handleClose, empresas, setEmpresas } = props;
+export default function DeleteCupo(props: Cupos) {
+    let { handleCloseDialog, idCarga, fecha, refreshCupos } = props;
     const { backendURL, theme } = useContext(ContextoGeneral);
 
     const handleNoClick = () => {
@@ -19,7 +18,7 @@ export default function DeleteEmpresas(props: Empresas) {
     };
 
     const borrarAcoplado = () => {
-        fetch(`${backendURL}/choferes/${cuit}`, {
+        fetch(`${backendURL}/cargas/${idCarga}/cupos/${fecha}`, {
             method: "DELETE",
             headers: {
                 "Content-Type": "application/json",
@@ -27,17 +26,12 @@ export default function DeleteEmpresas(props: Empresas) {
             },
         })
             .then((response) => response.json())
-            .then((_data) => {
-                const newEmpresa = empresas.filter(
-                    (empresa: { cuit: any }) => empresa.cuit !== cuit
-                );
-                setEmpresas(newEmpresa);
-            })
+
             .catch((error) => {
                 console.error("Error al borrar el acoplado", error);
             });
         handleCloseDialog();
-        handleClose();
+        refreshCupos();
     };
 
     return (

@@ -52,6 +52,7 @@ export default function SelectorProveedor() {
     const [valueCargamentos, setValueCargamentos] = useState<any>(
         datosNuevaCarga["nombreCargamento"] || null
     );
+    const [estadoCarga, setEstadoCarga] = useState(true);
 
     useEffect(() => {
         fetch(`${backendURL}/cargas/cargamentos`, {
@@ -64,6 +65,7 @@ export default function SelectorProveedor() {
             .then((response) => response.json())
             .then((car) => {
                 setCargamentos(car);
+                setEstadoCarga(false);
             })
             .catch(() =>
                 console.error("Error al obtener los Cargamentos disponibles")
@@ -77,7 +79,10 @@ export default function SelectorProveedor() {
             },
         })
             .then((response) => response.json())
-            .then((p) => setProveedores(p))
+            .then((p) => {
+                setProveedores(p);
+                setEstadoCarga(false);
+            })
             .catch(() =>
                 console.error("Error al obtener los Proveedores disponibles")
             );
@@ -132,6 +137,7 @@ export default function SelectorProveedor() {
                 defaultValue={valueProveedores}
                 onChange={seleccionarProveedor}
                 sx={{ width: 540 }}
+                loading={estadoCarga}
                 renderInput={(params) => (
                     <TextField
                         {...params}
@@ -180,6 +186,7 @@ export default function SelectorProveedor() {
                         defaultValue={valueCargamentos}
                         onChange={seleccionarCargamento}
                         sx={{ width: 300 }}
+                        loading={estadoCarga}
                         renderInput={(params) => (
                             <TextField
                                 {...params}

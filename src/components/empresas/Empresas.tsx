@@ -3,6 +3,7 @@ import { DataGrid, GridColDef, GridToolbarQuickFilter } from "@mui/x-data-grid";
 import {
     Box,
     Button,
+    CircularProgress,
     Dialog,
     DialogContent,
     DialogTitle,
@@ -17,7 +18,7 @@ import { GridToolbarExport } from "@mui/x-data-grid";
 import { GridToolbarColumnsButton } from "@mui/x-data-grid";
 import { ContextoGeneral } from "../Contexto";
 import BorderColorIcon from "@mui/icons-material/BorderColor";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import CreadorEmpresas from "./CreadorEmpresas";
 
 interface EditToolbarProps {
@@ -41,7 +42,7 @@ function EditToolbar(props: EditToolbarProps) {
                     justifyContent: "flex-start",
                 }}
             >
-                <GridToolbarQuickFilter />
+                <GridToolbarQuickFilter placeholder="Buscar..." />
             </Box>
             <Box
                 sx={{
@@ -67,6 +68,7 @@ function EditToolbar(props: EditToolbarProps) {
                     }}
                 />
                 <GridToolbarExport
+                    localeText="Exportar"
                     slotProps={{
                         button: {
                             sx: {
@@ -95,6 +97,7 @@ export default function Empresas() {
         React.useState<any>(null);
     const { backendURL, theme } = React.useContext(ContextoGeneral);
     const [empresas, setEmpresas] = React.useState<any[]>([]);
+    const [estadoCarga, setEstadoCarga] = useState("Cargando");
 
     const refreshEmpresas = () => {
         fetch(`${backendURL}/empresastransportistas`, {
@@ -107,6 +110,7 @@ export default function Empresas() {
             .then((response) => response.json())
             .then((data) => {
                 setEmpresas(data);
+                setEstadoCarga("Cargado");
             })
             .catch(() =>
                 console.error("Error al obtener los choferes disponibles")
@@ -201,50 +205,77 @@ export default function Empresas() {
                     Empresas
                 </Typography>
                 <Box margin="10px" sx={{ height: "90%", width: "100%" }}>
-                    <DataGrid
-                        rows={empresas.map((empresa) => ({
-                            cuit: empresa.cuit,
-                            razonSocial:
-                                empresa.razonSocial || "No especificado",
-                            nombreFantasia:
-                                empresa.nombreFantasia || "No especificado",
-                            numeroCel: empresa.numeroCel || "No especificado",
-                            idUbicacion:
-                                empresa.idUbicacion || "No especificado",
-                            urlConstanciaAfip:
-                                empresa.urlConstanciaAfip || "No especificado",
-                            urlConstanciaCbu:
-                                empresa.urlConstanciaCbu || "No especificado",
-                            email: empresa.email || "No especificado",
-                        }))}
-                        columns={columns}
-                        getRowId={(row) => row.cuit}
-                        sx={{
-                            "& .MuiDataGrid-columnHeader": {
-                                backgroundColor: theme.colores.grisClaro,
-                                color: theme.colores.grisOscuro,
-                            },
-                            border: "none",
-                        }}
-                        slots={{
-                            toolbar: (props) => (
-                                <EditToolbar
-                                    setRows={function (): void {
-                                        throw new Error(
-                                            "Function not implemented."
-                                        );
-                                    }}
-                                    setRowModesModel={function (): void {
-                                        throw new Error(
-                                            "Function not implemented."
-                                        );
-                                    }}
-                                    {...props}
-                                    onAdd={() => handleOpen(null)}
-                                />
-                            ),
-                        }}
-                    />
+                    {estadoCarga === "Cargando" && (
+                        <Box
+                            display={"flex"}
+                            flexDirection={"row"}
+                            width={"100%"}
+                            height={"100%"}
+                            justifyContent={"center"}
+                            alignItems={"center"}
+                            gap={3}
+                        >
+                            <CircularProgress
+                                sx={{
+                                    padding: "5px",
+                                    width: "30px",
+                                    height: "30px",
+                                }}
+                            />
+                            <Typography variant="h5">
+                                <b>Cargando...</b>
+                            </Typography>
+                        </Box>
+                    )}
+                    {estadoCarga === "Cargado" && (
+                        <DataGrid
+                            rows={empresas.map((empresa) => ({
+                                cuit: empresa.cuit,
+                                razonSocial:
+                                    empresa.razonSocial || "No especificado",
+                                nombreFantasia:
+                                    empresa.nombreFantasia || "No especificado",
+                                numeroCel:
+                                    empresa.numeroCel || "No especificado",
+                                idUbicacion:
+                                    empresa.idUbicacion || "No especificado",
+                                urlConstanciaAfip:
+                                    empresa.urlConstanciaAfip ||
+                                    "No especificado",
+                                urlConstanciaCbu:
+                                    empresa.urlConstanciaCbu ||
+                                    "No especificado",
+                                email: empresa.email || "No especificado",
+                            }))}
+                            columns={columns}
+                            getRowId={(row) => row.cuit}
+                            sx={{
+                                "& .MuiDataGrid-columnHeader": {
+                                    backgroundColor: theme.colores.grisClaro,
+                                    color: theme.colores.grisOscuro,
+                                },
+                                border: "none",
+                            }}
+                            slots={{
+                                toolbar: (props) => (
+                                    <EditToolbar
+                                        setRows={function (): void {
+                                            throw new Error(
+                                                "Function not implemented."
+                                            );
+                                        }}
+                                        setRowModesModel={function (): void {
+                                            throw new Error(
+                                                "Function not implemented."
+                                            );
+                                        }}
+                                        {...props}
+                                        onAdd={() => handleOpen(null)}
+                                    />
+                                ),
+                            }}
+                        />
+                    )}
                     <Dialog open={open} onClose={handleClose}>
                         <DialogTitle>
                             {empresaSeleccionada

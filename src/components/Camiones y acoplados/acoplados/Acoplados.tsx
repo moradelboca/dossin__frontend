@@ -5,7 +5,15 @@ import {
     GridRowsProp,
     GridToolbarQuickFilter,
 } from "@mui/x-data-grid";
-import { Box, Button, Dialog, DialogContent, DialogTitle } from "@mui/material";
+import {
+    Box,
+    Button,
+    CircularProgress,
+    Dialog,
+    DialogContent,
+    DialogTitle,
+    Typography,
+} from "@mui/material";
 import { GridRowModesModel } from "@mui/x-data-grid";
 import {
     GridToolbarContainer,
@@ -93,6 +101,7 @@ export default function Acoplados() {
         React.useState<any>(null);
     const { backendURL, theme } = React.useContext(ContextoGeneral);
     const [acoplados, setAcoplados] = useState<any[]>([]);
+    const [estadoCarga, setEstadoCarga] = useState("Cargando");
 
     const refreshAcoplados = () => {
         fetch(`${backendURL}/acoplados`, {
@@ -105,6 +114,7 @@ export default function Acoplados() {
             .then((response) => response.json())
             .then((data) => {
                 setAcoplados(data);
+                setEstadoCarga("Cargado");
             })
             .catch(() =>
                 console.error("Error al obtener las tiposAcoplados disponibles")
@@ -180,43 +190,68 @@ export default function Acoplados() {
                 }}
             >
                 <Box margin="10px" sx={{ height: "90%", width: "100%" }}>
-                    <DataGrid
-                        rows={acoplados.map((acoplado) => ({
-                            patente: acoplado.patente,
-                            tipoAcoplado: acoplado.tipoAcoplado,
-                            urlRTO: acoplado.urlRTO || "No especificado",
-                            urlPolizaSeguro:
-                                acoplado.urlPolizaSeguro || "No especificado",
-                            urlRuta: acoplado.urlRuta || "No especificado",
-                        }))}
-                        columns={columns}
-                        getRowId={(row) => row.patente}
-                        sx={{
-                            "& .MuiDataGrid-columnHeader": {
-                                backgroundColor: theme.colores.grisClaro,
-                                color: theme.colores.grisOscuro,
-                            },
-                            border: "none",
-                        }}
-                        slots={{
-                            toolbar: (props) => (
-                                <EditToolbar
-                                    setRows={function (): void {
-                                        throw new Error(
-                                            "Function not implemented."
-                                        );
-                                    }}
-                                    setRowModesModel={function (): void {
-                                        throw new Error(
-                                            "Function not implemented."
-                                        );
-                                    }}
-                                    {...props}
-                                    onAdd={() => handleOpen(null)}
-                                />
-                            ),
-                        }}
-                    />
+                    {estadoCarga === "Cargando" && (
+                        <Box
+                            display={"flex"}
+                            flexDirection={"row"}
+                            width={"100%"}
+                            height={"100%"}
+                            justifyContent={"center"}
+                            alignItems={"center"}
+                            gap={3}
+                        >
+                            <CircularProgress
+                                sx={{
+                                    padding: "5px",
+                                    width: "30px",
+                                    height: "30px",
+                                }}
+                            />
+                            <Typography variant="h5">
+                                <b>Cargando...</b>
+                            </Typography>
+                        </Box>
+                    )}
+                    {estadoCarga === "Cargado" && (
+                        <DataGrid
+                            rows={acoplados.map((acoplado) => ({
+                                patente: acoplado.patente,
+                                tipoAcoplado: acoplado.tipoAcoplado,
+                                urlRTO: acoplado.urlRTO || "No especificado",
+                                urlPolizaSeguro:
+                                    acoplado.urlPolizaSeguro ||
+                                    "No especificado",
+                                urlRuta: acoplado.urlRuta || "No especificado",
+                            }))}
+                            columns={columns}
+                            getRowId={(row) => row.patente}
+                            sx={{
+                                "& .MuiDataGrid-columnHeader": {
+                                    backgroundColor: theme.colores.grisClaro,
+                                    color: theme.colores.grisOscuro,
+                                },
+                                border: "none",
+                            }}
+                            slots={{
+                                toolbar: (props) => (
+                                    <EditToolbar
+                                        setRows={function (): void {
+                                            throw new Error(
+                                                "Function not implemented."
+                                            );
+                                        }}
+                                        setRowModesModel={function (): void {
+                                            throw new Error(
+                                                "Function not implemented."
+                                            );
+                                        }}
+                                        {...props}
+                                        onAdd={() => handleOpen(null)}
+                                    />
+                                ),
+                            }}
+                        />
+                    )}
                     <Dialog open={open} onClose={handleClose}>
                         <DialogTitle>
                             {acopladoSeleccionado

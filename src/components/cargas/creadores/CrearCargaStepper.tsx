@@ -30,7 +30,13 @@ export const ContextoStepper = createContext<{
 });
 
 export default function CrearCargaStepper(props: any) {
-    let { pasoSeleccionado, datosCarga, handleCloseDialog, creando } = props;
+    let {
+        pasoSeleccionado,
+        datosCarga,
+        handleCloseDialog,
+        creando,
+        refreshCargas,
+    } = props;
     if (creando) {
         datosCarga = null;
     }
@@ -187,6 +193,7 @@ export default function CrearCargaStepper(props: any) {
                     setTimeout(() => {
                         handleCloseDialog();
                     }, 2000);
+                    refreshCargas();
                 })
                 .catch(() => {
                     setEstadoCarga("Error");

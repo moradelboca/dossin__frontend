@@ -18,38 +18,33 @@ import {
     useMap,
 } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
-import pin from "../../../images/pinbox.png";
-import cargamos from "../../../images/pinBALA2.png";
 import { ContextoGeneral } from "../Contexto";
 import AutocompletarUbicacionMapa from "../cargas/autocompletar/AutocompletarUbicacionMapa";
 import { AddLocationAltOutlined } from "@mui/icons-material";
 import { CreadorUbicacion } from "./CreadorUbicacion";
+import React from "react";
 
 const { BaseLayer, Overlay } = LayersControl;
 
 const balanzaIcon = L.icon({
-    iconUrl: cargamos,
+    iconUrl: "https://i.imgur.com/yFbV2Nx.png",
     iconSize: [45, 51],
     iconAnchor: [22, 51],
     popupAnchor: [0, -28],
 });
 
 const pinIcon = L.icon({
-    iconUrl: pin,
+    iconUrl: "https://i.imgur.com/9Try738.png",
     iconSize: [45, 51],
     iconAnchor: [22, 51],
     popupAnchor: [0, -28],
 });
-
-interface Ubicacion {
-    nombre: string;
-    provincia: string;
-    pais: string;
-    latitud: number;
-    longitud: number;
-    tipoUbicacion: string;
-    id: number;
-}
+const okIcon = L.icon({
+    iconUrl: "https://i.imgur.com/GaUWXH5.png",
+    iconSize: [45, 51],
+    iconAnchor: [22, 51],
+    popupAnchor: [0, -28],
+});
 
 // Componente para manejar el zoom
 function ZoomToLocation({
@@ -66,22 +61,21 @@ function ZoomToLocation({
             map.flyTo([lat, lng], 15);
         }
     }, [lat, lng, map]);
-
     return null;
 }
 
 export function MapaMain() {
     const [openDialog, setOpenDialog] = useState(false);
     const { backendURL, theme } = useContext(ContextoGeneral);
-    const [ubicaciones, setUbicaciones] = useState<Ubicacion[]>([]);
-    const [selectedLocation, setSelectedLocation] = useState<{
-        lat: number;
-        lng: number;
-    } | null>(null);
+    const [ubicaciones, setUbicaciones] = useState<any[]>([]);
+    const [ubicacionSeleccionada, setUbicacionSeleccionada] =
+        React.useState<any>(null);
+
     const [tipoUbicacionSeleccionado, setTipoUbicacionSeleccionado] =
         useState<string>("Todas");
+    const [estadoCarga, setEstadoCarga] = useState(true);
 
-    useEffect(() => {
+    const refreshUbicaciones = () => {
         fetch(`${backendURL}/ubicaciones`, {
             method: "GET",
             headers: {
@@ -92,13 +86,20 @@ export function MapaMain() {
             .then((response) => response.json())
             .then((ubicaciones) => {
                 setUbicaciones(ubicaciones);
+                setEstadoCarga(false);
             })
             .catch(() =>
                 console.error("Error al obtener las ubicaciones disponibles")
             );
+    };
+    useEffect(() => {
+        refreshUbicaciones();
     }, []);
 
-    const handleMarkerClick = () => {
+    const handleMarkerClick = (ubicacion: any) => {
+        if (ubicacion) {
+            setUbicacionSeleccionada(ubicacion);
+        }
         setOpenDialog(true);
     };
 
@@ -107,7 +108,6 @@ export function MapaMain() {
     };
 
     const tipoUbicacionOptions = ["Todas", "Carga", "Descarga", "Balanza"];
-
     return (
         <Box position={"relative"}>
             <Box
@@ -126,7 +126,10 @@ export function MapaMain() {
                     ubicaciones={ubicaciones}
                     title="Ubicación de Carga"
                     filtro={tipoUbicacionSeleccionado}
-                    onSelectLocation={setSelectedLocation}
+                    estadoCarga={estadoCarga}
+                    setUbicacionSeleccionada={setUbicacionSeleccionada}
+                    ubicacionSeleccionada={ubicacionSeleccionada}
+                    handleMarkerClick={handleMarkerClick}
                 />
                 <Autocomplete
                     options={tipoUbicacionOptions}
@@ -152,7 +155,10 @@ export function MapaMain() {
                             backgroundColor: theme.colores.azulOscuro,
                         },
                     }}
-                    onClick={() => handleMarkerClick()}
+                    onClick={() => {
+                        setUbicacionSeleccionada(null);
+                        handleMarkerClick(null);
+                    }}
                 >
                     <AddLocationAltOutlined />
                 </IconButton>
@@ -164,8 +170,8 @@ export function MapaMain() {
                 style={{ height: "91vh" }}
             >
                 <ZoomToLocation
-                    lat={selectedLocation?.lat}
-                    lng={selectedLocation?.lng}
+                    lat={ubicacionSeleccionada?.latitud}
+                    lng={ubicacionSeleccionada?.longitud}
                 />
 
                 <LayersControl position="topright">
@@ -183,36 +189,35 @@ export function MapaMain() {
                         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
                     </BaseLayer>
 
-                    {ubicaciones.map((ubicacion, index) => (
+                    {ubicaciones.map((ubi, index) => (
                         <Overlay
                             key={index}
                             checked
-                            name={`Ubicación ${ubicacion.id}`}
+                            name={`Ubicación ${ubi.id}`}
                         >
                             <Marker
-                                position={[
-                                    ubicacion.latitud,
-                                    ubicacion.longitud,
-                                ]}
+                                position={[ubi.latitud, ubi.longitud]}
                                 icon={
-                                    ubicacion.tipoUbicacion === "Balanza"
+                                    ubi.tipoUbicacion.nombre === "Balanza"
                                         ? balanzaIcon
-                                        : pinIcon
+                                        : ubi.tipoUbicacion.nombre ===
+                                            "Descarga"
+                                          ? okIcon
+                                          : pinIcon
                                 }
                             >
                                 <Popup>
-                                    <strong>{ubicacion.nombre}</strong>
+                                    <strong>{ubi.nombre}</strong>
                                     <br />
-                                    Provincia: {ubicacion.provincia}
+                                    Provincia: {ubi.localidad.provincia.nombre}
                                     <br />
-                                    País: {ubicacion.pais}
+                                    País: {ubi.localidad.provincia.pais.nombre}
                                     <br />
-                                    Tipo: {ubicacion.tipoUbicacion}
+                                    Tipo: {ubi.tipoUbicacion.nombre}
                                     <br />
                                     <Button
-                                        variant="contained"
                                         size="small"
-                                        onClick={() => handleMarkerClick()}
+                                        onClick={() => handleMarkerClick(ubi)}
                                     >
                                         Ver más
                                     </Button>
@@ -225,7 +230,13 @@ export function MapaMain() {
 
             <Dialog open={openDialog} onClose={handleClose}>
                 <DialogTitle>Detalles del Punto</DialogTitle>
-                <CreadorUbicacion />
+                <CreadorUbicacion
+                    handleClose={handleClose}
+                    ubicaciones={ubicaciones}
+                    setUbicaciones={setUbicaciones}
+                    ubicacionSeleccionada={ubicacionSeleccionada}
+                    refreshUbicaciones={refreshUbicaciones}
+                />
             </Dialog>
         </Box>
     );

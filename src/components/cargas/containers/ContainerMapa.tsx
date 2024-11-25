@@ -2,7 +2,7 @@ import { Box, IconButton, Typography } from "@mui/material";
 import { useContext } from "react";
 import { ContextoCargas } from "./ContainerTajetasCargas";
 import BorderColorIcon from "@mui/icons-material/BorderColor";
-import { Mapa2 } from "../Mapa2";
+import { Mapa2 } from "../tarjetas/Mapa2";
 
 export default function ContainerMapa() {
     const { cargaSeleccionada, handleClickAbrirDialog } =

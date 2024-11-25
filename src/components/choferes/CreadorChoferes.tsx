@@ -8,13 +8,14 @@ import {
 } from "@mui/material";
 import * as React from "react";
 import { ContextoGeneral } from "../Contexto";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { PatternFormat } from "react-number-format";
 import AutocompletarPais from "../cargas/autocompletar/AutocompletarPais";
 import DeleteChoferes from "./DeleteChoferes";
+import Autocomplete from "@mui/material/Autocomplete";
 
-interface Acoplados {
+interface Choferes {
     handleClose: any;
     choferSeleccionado: any;
     choferes: any;
@@ -107,9 +108,9 @@ const EdadFormat = React.forwardRef<any, CustomProps>(
         );
     }
 );
-export default function CreadorChoferes(props: Acoplados) {
+export default function CreadorChoferes(props: Choferes) {
     const { backendURL } = useContext(ContextoGeneral);
-
+    const [codigoSeleccionado, setCodigoSeleccionado] = React.useState("");
     let { handleClose, choferSeleccionado, choferes, setChoferes } = props;
 
     let [datosNuevoChofer, setDatosNuevoChofer] = React.useState<any>({
@@ -146,12 +147,13 @@ export default function CreadorChoferes(props: Acoplados) {
     const [openDialogDelete, setOpenDialogDelete] = useState(false);
 
     const setNumeroCel = (e: React.ChangeEvent<HTMLInputElement>) => {
-        datosNuevoChofer["numeroCel"] = e.target.value;
+        datosNuevoChofer["numeroCel"] = codigoSeleccionado + e.target.value;
         setDatosNuevoChofer({ ...datosNuevoChofer });
     };
 
     const setCuil = (e: React.ChangeEvent<HTMLInputElement>) => {
-        datosNuevoChofer["cuil"] = e.target.value;
+        const cuil = parseInt(e.target.value, 10);
+        datosNuevoChofer["cuil"] = cuil;
         setDatosNuevoChofer({ ...datosNuevoChofer });
     };
     const setNombre = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -166,10 +168,6 @@ export default function CreadorChoferes(props: Acoplados) {
         datosNuevoChofer["edad"] = e.target.value;
         setDatosNuevoChofer({ ...datosNuevoChofer });
     };
-    const setCuitEmpresa = (e: React.ChangeEvent<HTMLInputElement>) => {
-        datosNuevoChofer["cuitEmpresa"] = e.target.value;
-        setDatosNuevoChofer({ ...datosNuevoChofer });
-    };
     const setUrlLinti = (e: React.ChangeEvent<HTMLInputElement>) => {
         datosNuevoChofer["urlLINTI"] = e.target.value;
         setDatosNuevoChofer({ ...datosNuevoChofer });
@@ -178,15 +176,73 @@ export default function CreadorChoferes(props: Acoplados) {
         datosNuevoChofer["idUbicacion"] = e.target.value;
         setDatosNuevoChofer({ ...datosNuevoChofer });
     };
+    const [empresasTransportistas, setEmpresasTransportistas] = useState<any[]>(
+        []
+    );
+    const [
+        empresaTransportistaSeleccionada,
+        setEmpresaTransportistaSeleccionada,
+    ] = useState<Number | null>(null);
+    const [estadoCarga, setEstadoCarga] = useState(true);
+
+    useEffect(() => {
+        fetch(`${backendURL}/empresastransportistas`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "ngrok-skip-browser-warning": "true",
+            },
+        })
+            .then((response) => response.json())
+            .then((data) => {
+                setEmpresasTransportistas(data);
+                setEstadoCarga(false);
+            })
+            .catch(() =>
+                console.error("Error al obtener los choferes disponibles")
+            );
+    }, []);
 
     const [errorCuil, setErrorCuil] = React.useState(false);
+    const [errorNumeroCel, setErrorNumeroCel] = React.useState(false);
+    const [errorNombre, setErrorNombre] = React.useState(false);
+    const [errorApellido, setErrorApellido] = React.useState(false);
+    const [errorCuit, setErrorCuit] = React.useState(false);
 
     const handleSave = () => {
+        let error = false;
+
         if (!datosNuevoChofer["cuil"]) {
             setErrorCuil(true);
+            error = true;
+        }
+        if (!datosNuevoChofer["numeroCel"]) {
+            setErrorNumeroCel(true);
+            error = true;
+        }
+        if (!datosNuevoChofer["nombre"]) {
+            setErrorNombre(true);
+            error = true;
+        }
+        if (!datosNuevoChofer["apellido"]) {
+            setErrorApellido(true);
+            error = true;
+        }
+        if (!datosNuevoChofer["cuitEmpresa"]) {
+            setErrorNumeroCel(true);
+            error = true;
+        }
+        if (!datosNuevoChofer["cuit"]) {
+            setErrorCuit(true);
+            error = true;
+        }
+
+        if (error) {
             return;
         }
 
+        datosNuevoChofer["idUbicacion"] = 1;
+        datosNuevoChofer["cuitEmpresa"] = empresaTransportistaSeleccionada;
         const metodo = choferSeleccionado ? "PUT" : "POST";
         const url = choferSeleccionado
             ? `${backendURL}/choferes/${datosNuevoChofer["cuil"]}`
@@ -198,7 +254,11 @@ export default function CreadorChoferes(props: Acoplados) {
             body: JSON.stringify(datosNuevoChofer),
         })
             .then((response) => {
-                if (!response.ok) throw new Error("Error al crear el acoplado");
+                if (!response.ok) {
+                    return response.text().then((text) => {
+                        throw new Error(text);
+                    });
+                }
                 return response.json();
             })
             .then((data) => {
@@ -215,7 +275,7 @@ export default function CreadorChoferes(props: Acoplados) {
                     }
                 }
             })
-            .catch(() => {});
+            .catch((e) => console.error(e));
 
         handleClose();
     };
@@ -259,7 +319,10 @@ export default function CreadorChoferes(props: Acoplados) {
                 marginBottom={1}
             >
                 <Box width={"100px"}>
-                    <AutocompletarPais />
+                    <AutocompletarPais
+                        setCodigoSeleccionado={setCodigoSeleccionado}
+                        error={errorNumeroCel}
+                    />
                 </Box>
                 <>-</>
                 <Stack width="400px" direction="row" spacing={2}>
@@ -281,6 +344,7 @@ export default function CreadorChoferes(props: Acoplados) {
                             datosNuevoChofer["numeroCel"]
                         }
                         onChange={setNumeroCel}
+                        error={errorNumeroCel}
                     />
                 </Stack>
             </Box>
@@ -296,6 +360,7 @@ export default function CreadorChoferes(props: Acoplados) {
                     datosNuevoChofer["nombre"]
                 }
                 onChange={setNombre}
+                error={errorNombre}
             />
             <TextField
                 margin="dense"
@@ -309,6 +374,7 @@ export default function CreadorChoferes(props: Acoplados) {
                     datosNuevoChofer["apellido"]
                 }
                 onChange={setApellido}
+                error={errorApellido}
             />
             <Stack direction="row" spacing={2}>
                 <TextField
@@ -331,23 +397,25 @@ export default function CreadorChoferes(props: Acoplados) {
                     onChange={setEdad}
                 />
             </Stack>
-            <TextField
-                margin="dense"
-                label="Cuit Empresa"
-                type="text"
-                fullWidth
-                variant="outlined"
-                slotProps={{
-                    input: {
-                        inputComponent: CuilFormat as any,
-                    },
-                }}
-                value={
-                    choferSeleccionado &&
-                    choferSeleccionado["cuitEmpresa"] &&
-                    datosNuevoChofer["cuitEmpresa"]
+            <Autocomplete
+                disablePortal
+                options={empresasTransportistas.map((empresa) => ({
+                    label: `${empresa.nombreFantasia} - ${empresa.cuit}`,
+                    value: empresa.cuit,
+                }))}
+                onChange={(_e, v) =>
+                    setEmpresaTransportistaSeleccionada(
+                        v?.value ? parseInt(v?.value) : null
+                    )
                 }
-                onChange={setCuitEmpresa}
+                renderInput={(params: any) => (
+                    <TextField
+                        {...params}
+                        label="Cuit empresa"
+                        error={errorCuit}
+                    />
+                )}
+                loading={estadoCarga}
             />
             <TextField
                 margin="dense"
