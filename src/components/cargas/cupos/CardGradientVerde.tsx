@@ -2,7 +2,6 @@ import Avatar from "@mui/material/Avatar";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import { CardActions } from "@mui/material";
-import CardActionArea from "@mui/material/CardActionArea";
 import Divider from "@mui/material/Divider";
 import { styled } from "@mui/material/styles";
 import Color from "color"; // v3.2.1
@@ -28,14 +27,9 @@ const StyledRoot = styled("div")<{ color?: string }>(() => ({
         zIndex: 0,
         bottom: 0,
     },
+    transition: "0.2s",
     "&:hover": {
-        "&:before": {
-            bottom: -6,
-        },
-        "& .MuiAvatar-root": {
-            transform: "scale(1.1)",
-            boxShadow: "0 6px 20px 0 rgba(0,0,0,0.38)",
-        },
+        transform: "scale(1.1)",
     },
 }));
 
@@ -68,14 +62,6 @@ const AvatarLogo = styled(Avatar)(() => ({
     height: 56,
     backgroundColor: "rgba(0, 0, 0, 0.08)", // Fondo
     borderRadius: "4rem",
-}));
-
-const CardActionAreaActionArea = styled(CardActionArea)(() => ({
-    borderRadius: 16,
-    transition: "0.2s",
-    "&:hover": {
-        transform: "scale(1.1)",
-    },
 }));
 
 const TypographyTitle = styled(Typography)(() => ({
@@ -127,6 +113,7 @@ interface TarjetaProps {
     fecha: any;
     refreshCupos: any;
     idTurno: any;
+    idEstado: any;
 }
 
 export function TarjetaChoferesCarga(props: TarjetaProps) {
@@ -148,86 +135,90 @@ export function TarjetaChoferesCarga(props: TarjetaProps) {
         fecha,
         refreshCupos,
         idTurno,
+        idEstado,
     } = props;
 
     const handleClickConfirmar = () => {
-        setConfirmado(true);
-        setOpenDialog(true);
         setSeleccionado(true);
+        setOpenDialog(true);
         refreshCupos();
     };
     function handleCloseDialog() {
         setOpenDialog(false);
     }
+    function ActualizarTurno() {
+        if (idEstado === 1) {
+            setConfirmado(true);
+        }
+    }
+
     return (
         <Box width="300px">
-            <CardActionAreaActionArea>
-                <StyledRoot>
-                    <StyledContent
-                        gradientColor={confirmado ? "#76D766" : "#A5A5A5"}
-                    >
-                        <Box position={"relative"} zIndex={1}>
-                            <ContentBox>
-                                <NameBox>
-                                    <TypographyTitle variant={"h1"}>
-                                        {titleNombre}
-                                    </TypographyTitle>
-                                    <TypographyTitle variant={"h2"}>
-                                        {titleApellido}
-                                    </TypographyTitle>
-                                </NameBox>
-                                <AvatarBox>
-                                    <AvatarLogo src={imagen} />
-                                </AvatarBox>
-                            </ContentBox>
-                            <DividerBox>
-                                <Divider sx={{ my: 1, bgcolor: "#163660" }} />
-                            </DividerBox>
-                            <TypographySubtitle>
-                                Cuil: {textCuil}
-                            </TypographySubtitle>
-                            <TypographySubtitle>
-                                Celular: {textCelular}
-                            </TypographySubtitle>
-                            <TypographySubtitle>
-                                Cuit Empresa: {textCuitEmpresa}
-                            </TypographySubtitle>
-                            <TypographySubtitle>
-                                Patente Camion: {textPatenteCamion}
-                            </TypographySubtitle>
-                            <TypographySubtitle>
-                                Patente Semi 1: {textPatenteSemi1}
-                            </TypographySubtitle>
-                            <TypographySubtitle>
-                                Patente Semi 2: {textPatenteSemi2}
-                            </TypographySubtitle>
-                            <CardActions>
-                                <Box
-                                    sx={{
-                                        display: "flex",
-                                        justifyContent: "space-evenly",
-                                        width: "100%",
-                                    }}
-                                >
-                                    {/* Botón "Contactar" */}
-                                    <CustomButtom
-                                        title="Contactar"
-                                        onClick={() =>
-                                            window.open(
-                                                `https://wa.me/${textCelular}`,
-                                                "_blank"
-                                            )
-                                        }
-                                    />
+            <StyledRoot>
+                <StyledContent
+                    gradientColor={confirmado ? "#76D766" : "#A5A5A5"}
+                >
+                    <Box position={"relative"} zIndex={1}>
+                        <ContentBox>
+                            <NameBox>
+                                <TypographyTitle variant={"h1"}>
+                                    {titleNombre}
+                                </TypographyTitle>
+                                <TypographyTitle variant={"h2"}>
+                                    {titleApellido}
+                                </TypographyTitle>
+                            </NameBox>
+                            <AvatarBox>
+                                <AvatarLogo src={imagen} />
+                            </AvatarBox>
+                        </ContentBox>
+                        <DividerBox>
+                            <Divider sx={{ my: 1, bgcolor: "#163660" }} />
+                        </DividerBox>
+                        <TypographySubtitle>
+                            Cuil: {textCuil}
+                        </TypographySubtitle>
+                        <TypographySubtitle>
+                            Celular: {textCelular}
+                        </TypographySubtitle>
+                        <TypographySubtitle>
+                            Cuit Empresa: {textCuitEmpresa}
+                        </TypographySubtitle>
+                        <TypographySubtitle>
+                            Patente Camion: {textPatenteCamion}
+                        </TypographySubtitle>
+                        <TypographySubtitle>
+                            Patente Semi 1: {textPatenteSemi1}
+                        </TypographySubtitle>
+                        <TypographySubtitle>
+                            Patente Semi 2: {textPatenteSemi2}
+                        </TypographySubtitle>
+                        <CardActions>
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    justifyContent: "space-evenly",
+                                    width: "100%",
+                                }}
+                            >
+                                {/* Botón "Contactar" */}
+                                <CustomButtom
+                                    title="Contactar"
+                                    onClick={() =>
+                                        window.open(
+                                            `https://wa.me/${textCelular}`,
+                                            "_blank"
+                                        )
+                                    }
+                                />
 
-                                    {/* Botón "Confirmar", solo si no está confirmado */}
-                                    {!confirmado ? (
+                                {/* Botón "Confirmar", solo si no está confirmado */}
+                                {!confirmado ? (
+                                    <>
                                         <CustomButtom
                                             onClick={handleClickConfirmar}
                                             title="Verificar"
                                         />
-                                    ) : null}
-                                    {confirmado ? (
                                         <CreadorTurno
                                             idCarga={idCarga}
                                             fecha={fecha}
@@ -239,14 +230,15 @@ export function TarjetaChoferesCarga(props: TarjetaProps) {
                                             turno={props}
                                             seleccionado={seleccionado}
                                             idTurno={idTurno}
+                                            actualizarTurno={ActualizarTurno}
                                         />
-                                    ) : null}
-                                </Box>
-                            </CardActions>
-                        </Box>
-                    </StyledContent>
-                </StyledRoot>
-            </CardActionAreaActionArea>
+                                    </>
+                                ) : null}
+                            </Box>
+                        </CardActions>
+                    </Box>
+                </StyledContent>
+            </StyledRoot>
         </Box>
     );
 }

@@ -112,64 +112,87 @@ export function ContainerCupos() {
 
             {estadoCarga === "Cargado" && (
                 <>
-                    {cupos.map((cupo) => (
-                        <Grid
-                            container
-                            direction="row"
-                            width={"100%"}
-                            spacing={5}
-                            flexWrap={"nowrap"}
-                            marginLeft={"50px"}
-                            alignItems={"center"}
-                            justifyContent={"center"}
-                            key={cupo.id}
-                        >
-                            <TarjetaCupos
-                                fecha={cupo.fecha}
-                                cuposDisponibles={cupo.cupos}
-                                cuposConfirmados={cupo.turnos.length}
-                                idCarga={idCarga}
-                                refreshCupos={refreshCupos}
-                            />
-
+                    {cupos &&
+                        cupos.map((cupo, index) => (
                             <Grid
                                 container
+                                direction="row"
+                                key={index}
+                                width={"100%"}
                                 spacing={5}
                                 flexWrap={"nowrap"}
-                                sx={{ overflowX: "scroll" }}
-                                width={"80%"}
-                                minHeight={"380px"}
+                                marginLeft={"50px"}
                                 alignItems={"center"}
-                                padding={"35px"}
+                                justifyContent={"center"}
                             >
-                                {cupo.turnos.map((turno: any) => {
-                                    const chofer = choferes.find(
-                                        (chofer) => chofer.cuil === turno.chofer
-                                    );
-                                    return (
-                                        <TarjetaChoferesCarga
-                                            titleNombre={chofer.nombre}
-                                            titleApellido={chofer.apellido}
-                                            textCuil={turno.chofer}
-                                            textCelular={chofer.numeroCel}
-                                            textCuitEmpresa={turno.empresa}
-                                            textPatenteCamion={turno.camion}
-                                            textPatenteSemi1={turno.acoplado}
-                                            textPatenteSemi2={
-                                                turno.acopladoExtra
+                                <TarjetaCupos
+                                    fecha={cupo.fecha}
+                                    cuposDisponibles={cupo.cupos}
+                                    cuposConfirmados={cupo.turnos.length}
+                                    idCarga={idCarga}
+                                    refreshCupos={refreshCupos}
+                                />
+
+                                <Grid
+                                    container
+                                    spacing={5}
+                                    flexWrap={"nowrap"}
+                                    sx={{ overflowX: "scroll" }}
+                                    width={"80%"}
+                                    minHeight={"380px"}
+                                    alignItems={"center"}
+                                    padding={"35px"}
+                                >
+                                    {choferes &&
+                                        cupo.turnos.map(
+                                            (turno: any, index: any) => {
+                                                const chofer = choferes.find(
+                                                    (chofer) =>
+                                                        chofer.cuil ===
+                                                        turno.chofer
+                                                );
+                                                return (
+                                                    <TarjetaChoferesCarga
+                                                        key={index}
+                                                        titleNombre={
+                                                            chofer.nombre
+                                                        }
+                                                        titleApellido={
+                                                            chofer.apellido
+                                                        }
+                                                        textCuil={turno.chofer}
+                                                        textCelular={
+                                                            chofer.numeroCel
+                                                        }
+                                                        textCuitEmpresa={
+                                                            turno.empresa
+                                                        }
+                                                        textPatenteCamion={
+                                                            turno.camion
+                                                        }
+                                                        textPatenteSemi1={
+                                                            turno.acoplado
+                                                        }
+                                                        textPatenteSemi2={
+                                                            turno.acopladoExtra
+                                                        }
+                                                        imagen=""
+                                                        idCarga={idCarga}
+                                                        fecha={cupo.fecha}
+                                                        refreshCupos={
+                                                            refreshCupos
+                                                        }
+                                                        idTurno={turno.id}
+                                                        idEstado={
+                                                            turno.idEstado
+                                                        }
+                                                    />
+                                                );
                                             }
-                                            imagen=""
-                                            key={turno.id}
-                                            idCarga={idCarga}
-                                            fecha={cupo.fecha}
-                                            refreshCupos={refreshCupos}
-                                            idTurno={turno.id}
-                                        />
-                                    );
-                                })}
+                                        )}
+                                </Grid>
                             </Grid>
-                        </Grid>
-                    ))}
+                        ))}
 
                     {cupos.length === 0 && (
                         <Box

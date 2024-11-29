@@ -4,7 +4,7 @@ import { useState } from "react";
 
 interface AutocompletarProps {
     title: string;
-    ubicaciones: any[];
+    localidades: any[];
     datosNuevaUbicacion: any;
     error: any;
     estadoCarga: any;
@@ -13,22 +13,20 @@ interface AutocompletarProps {
 export default function AutocompletarUbicacionLocalidad(
     props: AutocompletarProps
 ) {
-    let { title, ubicaciones, datosNuevaUbicacion, error, estadoCarga } = props;
+    let { title, localidades, datosNuevaUbicacion, error, estadoCarga } = props;
     let [ubicacionSeleccionada, setUbicacionSeleccionada] = useState<any>(
         datosNuevaUbicacion["nombreLocalidad"] || null
     );
 
     const seleccionarUbicacion = (_event: any, seleccionado: string | null) => {
         if (seleccionado) {
-            const ubicacionesStrings = ubicaciones.map(
-                (ubicacion) =>
-                    `${ubicacion.localidad.nombre}, ${ubicacion.localidad.provincia.nombre}`
+            const localidadesStrings = localidades.map(
+                (localidad) =>
+                    `${localidad.nombre}, ${localidad.provincia.nombre}`
             );
-            const index = ubicacionesStrings.indexOf(seleccionado);
-            const ubicacionesIds = ubicaciones.map(
-                (ubicacion) => ubicacion.localidad.id
-            );
-            datosNuevaUbicacion["idLocalidad"] = ubicacionesIds[index];
+            const index = localidadesStrings.indexOf(seleccionado);
+            const localidadesIds = localidades.map((localidad) => localidad.id);
+            datosNuevaUbicacion["idLocalidad"] = localidadesIds[index];
             datosNuevaUbicacion["nombreLocalidad"] = seleccionado;
             setUbicacionSeleccionada(seleccionado);
         }
@@ -37,8 +35,8 @@ export default function AutocompletarUbicacionLocalidad(
     return (
         <Autocomplete
             disablePortal
-            options={ubicaciones.map((ubicacion) => {
-                return `${ubicacion.localidad.nombre}, ${ubicacion.localidad.provincia.nombre}`;
+            options={localidades.map((localidad) => {
+                return `${localidad.nombre}, ${localidad.provincia.nombre}`;
             })}
             sx={{ width: 350 }}
             value={ubicacionSeleccionada}
