@@ -189,11 +189,11 @@ export default function CrearCargaStepper(props: any) {
                     response.json();
                 })
                 .then(() => {
+                    refreshCargas();
                     setEstadoCarga("Creado");
                     setTimeout(() => {
                         handleCloseDialog();
-                    }, 2000);
-                    refreshCargas();
+                    }, 1000);
                 })
                 .catch(() => {
                     setEstadoCarga("Error");

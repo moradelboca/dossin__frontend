@@ -17,14 +17,12 @@ import { useParams } from "react-router-dom";
 import { CreadorCupos } from "../creadores/CreadorCupos";
 import CancelIcon from "@mui/icons-material/Cancel";
 import ClearSharpIcon from "@mui/icons-material/ClearSharp";
-import React from "react";
 
 export function ContainerCupos() {
     const { idCarga } = useParams();
     const { backendURL, theme } = useContext(ContextoGeneral);
     const [cupos, setCupos] = useState<any[]>([]);
     const [estadoCarga, setEstadoCarga] = useState("Cargando");
-    const [choferes, setChoferes] = React.useState<any[]>([]);
 
     const refreshCupos = () => {
         fetch(`${backendURL}/cargas/${idCarga}/cupos`, {
@@ -42,20 +40,6 @@ export function ContainerCupos() {
             .catch(() => {
                 console.error("Error al obtener las cupos disponibles");
             });
-        fetch(`${backendURL}/choferes`, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-                "ngrok-skip-browser-warning": "true",
-            },
-        })
-            .then((response) => response.json())
-            .then((data) => {
-                setChoferes(data);
-            })
-            .catch(() =>
-                console.error("Error al obtener los choferes disponibles")
-            );
     };
     const [openDialog, setOpenDialog] = useState(false);
 
@@ -143,53 +127,44 @@ export function ContainerCupos() {
                                     alignItems={"center"}
                                     padding={"35px"}
                                 >
-                                    {choferes &&
-                                        cupo.turnos.map(
-                                            (turno: any, index: any) => {
-                                                const chofer = choferes.find(
-                                                    (chofer) =>
-                                                        chofer.cuil ===
-                                                        turno.chofer
-                                                );
-                                                return (
-                                                    <TarjetaChoferesCarga
-                                                        key={index}
-                                                        titleNombre={
-                                                            chofer.nombre
-                                                        }
-                                                        titleApellido={
-                                                            chofer.apellido
-                                                        }
-                                                        textCuil={turno.chofer}
-                                                        textCelular={
-                                                            chofer.numeroCel
-                                                        }
-                                                        textCuitEmpresa={
-                                                            turno.empresa
-                                                        }
-                                                        textPatenteCamion={
-                                                            turno.camion
-                                                        }
-                                                        textPatenteSemi1={
-                                                            turno.acoplado
-                                                        }
-                                                        textPatenteSemi2={
-                                                            turno.acopladoExtra
-                                                        }
-                                                        imagen=""
-                                                        idCarga={idCarga}
-                                                        fecha={cupo.fecha}
-                                                        refreshCupos={
-                                                            refreshCupos
-                                                        }
-                                                        idTurno={turno.id}
-                                                        idEstado={
-                                                            turno.idEstado
-                                                        }
-                                                    />
-                                                );
-                                            }
-                                        )}
+                                    {cupo.turnos.map(
+                                        (turno: any, index: number) => {
+                                            return (
+                                                <TarjetaChoferesCarga
+                                                    key={index}
+                                                    titleNombre={
+                                                        turno.chofer.nombre
+                                                    }
+                                                    titleApellido={
+                                                        turno.chofer.apellido
+                                                    }
+                                                    textCuil={turno.chofer.cuil}
+                                                    textCelular={
+                                                        turno.chofer.numeroCel
+                                                    }
+                                                    textCuitEmpresa={
+                                                        turno.empresa.cuit
+                                                    }
+                                                    textPatenteCamion={
+                                                        turno.camion.patente
+                                                    }
+                                                    textPatenteSemi1={
+                                                        turno.acoplado.patente
+                                                    }
+                                                    textPatenteSemi2={
+                                                        turno.acopladoExtra
+                                                            ?.patente
+                                                    }
+                                                    imagen=""
+                                                    idCarga={idCarga}
+                                                    fecha={cupo.fecha}
+                                                    refreshCupos={refreshCupos}
+                                                    idTurno={turno.id}
+                                                    idEstado={turno.estado.id}
+                                                />
+                                            );
+                                        }
+                                    )}
                                 </Grid>
                             </Grid>
                         ))}

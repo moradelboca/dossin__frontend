@@ -91,7 +91,16 @@ export function ContainerTarjetasCargas() {
                 });
         }
     }, [cargaSeleccionada]);
-
+    useEffect(() => {
+        if (cargas.length > 0 && cargaSeleccionada?.id) {
+            const cargaActualizada = cargas.find(
+                (carga) => carga.id === cargaSeleccionada.id
+            );
+            if (cargaActualizada) {
+                setCargaSeleccionada(cargaActualizada);
+            }
+        }
+    }, [cargas]);
     useEffect(() => {
         refreshCargas();
     }, []);

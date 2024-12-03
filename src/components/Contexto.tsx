@@ -1,7 +1,7 @@
 import { createContext } from "react";
 
 export const ValoresContexto = {
-    backendURL: "https://dev.dossin.com.ar/api",
+    backendURL: import.meta.env.VITE_BACKEND_URL,
     theme: {
         colores: {
             texto: "#000",

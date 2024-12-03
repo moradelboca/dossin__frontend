@@ -6,7 +6,7 @@ import Divider from "@mui/material/Divider";
 import { styled } from "@mui/material/styles";
 import Color from "color"; // v3.2.1
 import { CustomButtom } from "../../botones/CustomButtom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import CreadorTurno from "../creadores/CreadorTurno";
 
 const defaultColor = "#d9d9d9"; // Gris claro
@@ -117,9 +117,9 @@ interface TarjetaProps {
 }
 
 export function TarjetaChoferesCarga(props: TarjetaProps) {
-    const [confirmado, setConfirmado] = useState(false);
     const [openDialog, setOpenDialog] = useState(false);
     const [seleccionado, setSeleccionado] = useState(false);
+    const [estadoTurno, setEstadoTurno] = useState("");
 
     const {
         titleNombre,
@@ -146,9 +146,20 @@ export function TarjetaChoferesCarga(props: TarjetaProps) {
     function handleCloseDialog() {
         setOpenDialog(false);
     }
+    useEffect(() => {
+        ActualizarTurno();
+    }, [idEstado]);
+
     function ActualizarTurno() {
         if (idEstado === 1) {
-            setConfirmado(true);
+            setEstadoTurno("ConErrores");
+        }
+        if (idEstado === 2) {
+            setEstadoTurno("Pendiente");
+        } else if (idEstado === 3) {
+            setEstadoTurno("Aceptado");
+        } else if (idEstado === 4) {
+            setEstadoTurno("Rechazado");
         }
     }
 
@@ -156,7 +167,17 @@ export function TarjetaChoferesCarga(props: TarjetaProps) {
         <Box width="300px">
             <StyledRoot>
                 <StyledContent
-                    gradientColor={confirmado ? "#76D766" : "#A5A5A5"}
+                    gradientColor={
+                        estadoTurno === "Confirmado"
+                            ? "#76D766"
+                            : estadoTurno === "Rechazado"
+                              ? "#FF0000"
+                              : estadoTurno === "ConErrores"
+                                ? "#FFA07A"
+                                : estadoTurno === "Pendiente"
+                                  ? "#fafa8c"
+                                  : "#A5A5A5"
+                    }
                 >
                     <Box position={"relative"} zIndex={1}>
                         <ContentBox>
@@ -211,9 +232,8 @@ export function TarjetaChoferesCarga(props: TarjetaProps) {
                                         )
                                     }
                                 />
-
                                 {/* Botón "Confirmar", solo si no está confirmado */}
-                                {!confirmado ? (
+                                {estadoTurno !== "confirmado" && (
                                     <>
                                         <CustomButtom
                                             onClick={handleClickConfirmar}
@@ -233,7 +253,7 @@ export function TarjetaChoferesCarga(props: TarjetaProps) {
                                             actualizarTurno={ActualizarTurno}
                                         />
                                     </>
-                                ) : null}
+                                )}
                             </Box>
                         </CardActions>
                     </Box>

@@ -156,6 +156,9 @@ export default function CreadorTurno(props: CreadorProps) {
     ]);
 
     const handleClickGuardar = () => {
+        if (seleccionado) {
+            nuevoTurno["idEstado"] = 3;
+        }
         setError(false);
         if (
             !nuevoTurno["cuilChofer"] ||
@@ -237,7 +240,7 @@ export default function CreadorTurno(props: CreadorProps) {
                             <Typography
                                 variant="h5"
                                 component="div"
-                                sx={{ color: "#163660" }} // Cambiar color a azul
+                                sx={{ color: "#163660" }}
                             >
                                 Turno
                             </Typography>
@@ -332,24 +335,22 @@ export default function CreadorTurno(props: CreadorProps) {
                                             setEmpresaTransportistaSeleccionada(
                                                 v.split(" - ")[1]
                                             );
+
                                             actualizarNuevoTurno();
                                         }}
                                         sx={{ width: 300 }}
                                         renderInput={(params) => (
                                             <TextField
-                                                error={
-                                                    error &&
-                                                    !empresaTransportistaSeleccionada
-                                                }
+                                                error={error && !chofer}
                                                 {...params}
-                                                label="Cuit empresa"
+                                                label="Cuit Empresa"
                                             />
                                         )}
                                         value={nuevoTurno["cuitEmpresa"]}
-                                        defaultValue={nuevoTurno["cuitEmpresa"]}
                                         getOptionLabel={(option) =>
                                             option.toString()
                                         }
+                                        defaultValue={nuevoTurno["cuitEmpresa"]}
                                     />
                                     <Autocomplete
                                         disablePortal
