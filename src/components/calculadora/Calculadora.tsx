@@ -245,11 +245,11 @@ const TarifaApp = () => {
 
             // Calculamos tarifa por tonelada con contra-flete
             const tarifaToneladaConDescContra =
-                tarifaPorToneladaValue -
-                (tarifaPorToneladaValue * descuento) / 100 +
-                (contraFlete || 0) * tn;
+                (tarifaPorToneladaValue -
+                    (tarifaPorToneladaValue * descuento) / 100 +
+                    (contraFlete || 0)) *
+                tn;
             setTarifaPorToneladaConDescuentoContra(tarifaToneladaConDescContra);
-
             // Si hay km, calculamos tarifas por kilómetro
             if (km !== null) {
                 setTarifaPorKm(tarifaBruta / km);

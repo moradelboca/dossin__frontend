@@ -80,33 +80,6 @@ const NumeroFormat = React.forwardRef<any, CustomProps>(
     }
 );
 
-const EdadFormat = React.forwardRef<any, CustomProps>(
-    function EdadFortmat(props, ref) {
-        const { onChange, ...other } = props;
-
-        return (
-            <PatternFormat
-                {...other}
-                getInputRef={ref}
-                format="###"
-                mask="_" // Puedes personalizar la máscara que desees
-                onValueChange={(values) => {
-                    // Verifica si el valor es negativo
-                    if (Number(values.value) < 0) {
-                        return; // No hacer nada si el valor es negativo
-                    }
-
-                    onChange({
-                        target: {
-                            name: props.name,
-                            value: values.value,
-                        },
-                    });
-                }}
-            />
-        );
-    }
-);
 export default function CreadorEmpresas(props: Empresas) {
     const { backendURL } = useContext(ContextoGeneral);
     const [codigoSeleccionado, setCodigoSeleccionado] = React.useState("");
@@ -168,10 +141,7 @@ export default function CreadorEmpresas(props: Empresas) {
         datosNuevaEmpresa["numeroCel"] = codigoSeleccionado + e.target.value;
         SetDatosNuevaEmpresa({ ...datosNuevaEmpresa });
     };
-    const setUbicacion = (e: React.ChangeEvent<HTMLInputElement>) => {
-        datosNuevaEmpresa["idUbicacion"] = e.target.value;
-        SetDatosNuevaEmpresa({ ...datosNuevaEmpresa });
-    };
+
     const setUrlConstanciaAfip = (e: React.ChangeEvent<HTMLInputElement>) => {
         datosNuevaEmpresa["urlConstanciaAfip"] = e.target.value;
         SetDatosNuevaEmpresa({ ...datosNuevaEmpresa });
@@ -214,7 +184,7 @@ export default function CreadorEmpresas(props: Empresas) {
             return;
         }
 
-        datosNuevaEmpresa["idUbicacion"] = 1;
+        datosNuevaEmpresa["idUbicacion"] = 3;
         const metodo = empresaSeleccionada ? "PUT" : "POST";
         const url = empresaSeleccionada
             ? `${backendURL}/empresastransportistas/${datosNuevaEmpresa["cuit"]}`
@@ -350,30 +320,10 @@ export default function CreadorEmpresas(props: Empresas) {
                     />
                 </Stack>
             </Box>
-            <Stack direction="row" spacing={2}>
-                <TextField
-                    margin="dense"
-                    label="Ubicacion"
-                    name="numberformat"
-                    id="formatted-numberformat-input"
-                    fullWidth
-                    variant="outlined"
-                    slotProps={{
-                        input: {
-                            inputComponent: EdadFormat as any,
-                        },
-                    }}
-                    value={
-                        empresaSeleccionada &&
-                        empresaSeleccionada["idUbicacion"] &&
-                        datosNuevaEmpresa["idUbicacion"]
-                    }
-                    onChange={setUbicacion}
-                />
-            </Stack>
+
             <TextField
                 margin="dense"
-                label="Cuit Empresa"
+                label="URL Constancia Afip"
                 type="text"
                 fullWidth
                 variant="outlined"

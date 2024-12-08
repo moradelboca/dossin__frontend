@@ -5,9 +5,17 @@ import Typography from "@mui/material/Typography";
 import { useState, useEffect, useContext } from "react";
 import { ContextoGeneral } from "../../Contexto";
 import Autocomplete from "@mui/material/Autocomplete";
-import { Dialog, DialogContent, DialogTitle, TextField } from "@mui/material";
+import {
+    Dialog,
+    DialogContent,
+    DialogTitle,
+    IconButton,
+    TextField,
+} from "@mui/material";
 import { CustomButtom } from "../../botones/CustomButtom";
 import ClearSharpIcon from "@mui/icons-material/ClearSharp";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+import DeleteTurno from "./DeleteTurno";
 
 interface CreadorProps {
     fecha?: string;
@@ -18,6 +26,7 @@ interface CreadorProps {
     openDialog: any;
     seleccionado: any;
     idTurno?: any;
+    actualizarTurno?: any;
 }
 
 export default function CreadorTurno(props: CreadorProps) {
@@ -30,6 +39,7 @@ export default function CreadorTurno(props: CreadorProps) {
         turno,
         seleccionado,
         idTurno,
+        actualizarTurno,
     } = props;
     const { backendURL, theme } = useContext(ContextoGeneral);
     const [choferes, setChoferes] = useState<any[]>([]);
@@ -53,6 +63,14 @@ export default function CreadorTurno(props: CreadorProps) {
         setPatenteAcopladoSeleccionadaExtra,
     ] = useState<any | null>(null);
     const [error, setError] = useState(false);
+    const [nuevoTurno, setNuevoTurno] = useState({
+        cuilChofer: turno?.textCuil,
+        patenteCamion: turno?.textPatenteCamion,
+        cuitEmpresa: turno?.textCuitEmpresa,
+        patenteAcoplado: turno?.textPatenteSemi1,
+        patenteAcopladoExtra: turno?.textPatenteSemi2,
+        idEstado: 0,
+    });
     useEffect(() => {
         fetch(`${backendURL}/choferes`, {
             method: "GET",
@@ -111,25 +129,37 @@ export default function CreadorTurno(props: CreadorProps) {
                 console.error("Error al obtener las tiposAcoplados disponibles")
             );
     }, []);
-    const [nuevoTurno, setNuevoTurno] = useState({
-        cuilChofer: turno?.textCuil,
-        patenteCamion: turno?.textPatenteCamion,
-        cuitEmpresa: turno?.textCuitEmpresa,
-        patenteAcoplado: turno?.textPatenteSemi1,
-        patenteAcopladoExtra: turno?.textPatenteSemi2,
-        idEstado: 0,
-    });
-
-    const handleClickGuardar = () => {
-        setError(false);
+    const actualizarNuevoTurno = () => {
         setNuevoTurno({
-            cuilChofer: chofer,
-            patenteCamion: patenteCamionSeleccionada,
-            cuitEmpresa: empresaTransportistaSeleccionada,
-            patenteAcoplado: patenteAcopladoSeleccionada,
-            patenteAcopladoExtra: patenteAcopladoSeleccionadaExtra,
+            cuilChofer: chofer ?? nuevoTurno.cuilChofer,
+            patenteCamion:
+                patenteCamionSeleccionada ?? nuevoTurno.patenteCamion,
+            cuitEmpresa:
+                empresaTransportistaSeleccionada ?? nuevoTurno.cuitEmpresa,
+            patenteAcoplado:
+                patenteAcopladoSeleccionada ?? nuevoTurno.patenteAcoplado,
+            patenteAcopladoExtra:
+                patenteAcopladoSeleccionadaExtra ??
+                nuevoTurno.patenteAcopladoExtra,
             idEstado: 1,
         });
+    };
+
+    useEffect(() => {
+        actualizarNuevoTurno();
+    }, [
+        chofer,
+        patenteCamionSeleccionada,
+        empresaTransportistaSeleccionada,
+        patenteAcopladoSeleccionada,
+        patenteAcopladoSeleccionadaExtra,
+    ]);
+
+    const handleClickGuardar = () => {
+        if (seleccionado) {
+            nuevoTurno["idEstado"] = 3;
+        }
+        setError(false);
         if (
             !nuevoTurno["cuilChofer"] ||
             !nuevoTurno["patenteCamion"] ||
@@ -160,9 +190,19 @@ export default function CreadorTurno(props: CreadorProps) {
             .then(() => {
                 handleCloseDialog();
                 refreshCupos();
+                actualizarTurno();
             })
             .catch((e) => console.error(e));
     };
+    const [openDialogDelete, setOpenDialogDelete] = useState(false);
+
+    const handleClickDeleteCupo = () => {
+        setOpenDialogDelete(true);
+    };
+    const handleClose = () => {
+        setOpenDialogDelete(false);
+    };
+
     return (
         <Dialog
             open={openDialog}
@@ -200,7 +240,7 @@ export default function CreadorTurno(props: CreadorProps) {
                             <Typography
                                 variant="h5"
                                 component="div"
-                                sx={{ color: "#163660" }} // Cambiar color a azul
+                                sx={{ color: "#163660" }}
                             >
                                 Turno
                             </Typography>
@@ -231,9 +271,10 @@ export default function CreadorTurno(props: CreadorProps) {
                                             (chofer) =>
                                                 `${chofer.nombre} ${chofer.apellido} - ${chofer.cuil}`
                                         )}
-                                        onChange={(_e, v: any) =>
-                                            setChofer(v.split(" - ")[1])
-                                        }
+                                        onChange={(_e, v: any) => {
+                                            setChofer(v.split(" - ")[1]);
+                                            actualizarNuevoTurno();
+                                        }}
                                         sx={{ width: 300 }}
                                         renderInput={(params) => (
                                             <TextField
@@ -243,6 +284,9 @@ export default function CreadorTurno(props: CreadorProps) {
                                             />
                                         )}
                                         value={nuevoTurno["cuilChofer"]}
+                                        getOptionLabel={(option) =>
+                                            option.toString()
+                                        }
                                         defaultValue={nuevoTurno["cuilChofer"]}
                                     />
                                     <Autocomplete
@@ -251,9 +295,10 @@ export default function CreadorTurno(props: CreadorProps) {
                                             (patenteCamion) =>
                                                 patenteCamion.patente
                                         )}
-                                        onChange={(_e, v) =>
-                                            setPatenteCamionSeleccionada(v)
-                                        }
+                                        onChange={(_e, v) => {
+                                            setPatenteCamionSeleccionada(v);
+                                            actualizarNuevoTurno();
+                                        }}
                                         sx={{ width: 300 }}
                                         renderInput={(params) => (
                                             <TextField
@@ -286,23 +331,25 @@ export default function CreadorTurno(props: CreadorProps) {
                                             (empresa) =>
                                                 `${empresa.nombreFantasia} - ${empresa.cuit}`
                                         )}
-                                        onChange={(_e, v: any) =>
+                                        onChange={(_e, v: any) => {
                                             setEmpresaTransportistaSeleccionada(
                                                 v.split(" - ")[1]
-                                            )
-                                        }
+                                            );
+
+                                            actualizarNuevoTurno();
+                                        }}
                                         sx={{ width: 300 }}
                                         renderInput={(params) => (
                                             <TextField
-                                                error={
-                                                    error &&
-                                                    !empresaTransportistaSeleccionada
-                                                }
+                                                error={error && !chofer}
                                                 {...params}
-                                                label="Cuit empresa"
+                                                label="Cuit Empresa"
                                             />
                                         )}
                                         value={nuevoTurno["cuitEmpresa"]}
+                                        getOptionLabel={(option) =>
+                                            option.toString()
+                                        }
                                         defaultValue={nuevoTurno["cuitEmpresa"]}
                                     />
                                     <Autocomplete
@@ -311,9 +358,10 @@ export default function CreadorTurno(props: CreadorProps) {
                                             (patenteAcoplado) =>
                                                 patenteAcoplado.patente.toString()
                                         )}
-                                        onChange={(_e, v) =>
-                                            setPatenteAcopladoSeleccionada(v)
-                                        }
+                                        onChange={(_e, v) => {
+                                            setPatenteAcopladoSeleccionada(v);
+                                            actualizarNuevoTurno();
+                                        }}
                                         sx={{ width: 300 }}
                                         renderInput={(params) => (
                                             <TextField
@@ -346,11 +394,12 @@ export default function CreadorTurno(props: CreadorProps) {
                                             (patenteAcoplado) =>
                                                 patenteAcoplado.patente.toString()
                                         )}
-                                        onChange={(_e, v) =>
+                                        onChange={(_e, v) => {
                                             setPatenteAcopladoSeleccionadaExtra(
                                                 v
-                                            )
-                                        }
+                                            );
+                                            actualizarNuevoTurno();
+                                        }}
                                         sx={{ width: 300 }}
                                         renderInput={(params) => (
                                             <TextField
@@ -379,7 +428,30 @@ export default function CreadorTurno(props: CreadorProps) {
                                         onClick={handleClickGuardar}
                                         title="Confirmar"
                                     />
+                                    <IconButton
+                                        onClick={() => handleClickDeleteCupo()}
+                                    >
+                                        <DeleteOutlineIcon
+                                            sx={{
+                                                fontSize: 20,
+                                                color: "#d68384",
+                                            }}
+                                        />
+                                    </IconButton>
                                 </Box>
+                                <Dialog
+                                    open={openDialogDelete}
+                                    onClose={handleCloseDialog}
+                                    maxWidth="sm"
+                                    fullWidth
+                                >
+                                    <DeleteTurno
+                                        idTurno={idTurno}
+                                        handleCloseDialog={handleCloseDialog}
+                                        handleClose={handleClose}
+                                        refreshCupos={refreshCupos}
+                                    />
+                                </Dialog>
                             </Box>
                         </CardActions>
                     </Box>

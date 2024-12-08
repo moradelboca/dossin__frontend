@@ -4,11 +4,12 @@ import { useState, useContext } from "react";
 import { ContextoStepper } from "../creadores/CrearCargaStepper";
 
 export default function SelectorMasInfo() {
-    const { datosNuevaCarga } = useContext(ContextoStepper);
+    const { datosNuevaCarga, setDatosNuevaCarga } = useContext(ContextoStepper);
     const [focused, setFocused] = useState(false);
 
     const seleccionarDescripcion = (e: any) => {
         datosNuevaCarga["descripcion"] = e.target.value;
+        setDatosNuevaCarga({ ...datosNuevaCarga });
     };
 
     return (
