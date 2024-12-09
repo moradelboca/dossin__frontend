@@ -22,11 +22,10 @@ const KmFormat = React.forwardRef<any, CustomProps>(
                 {...other}
                 getInputRef={ref}
                 format="####"
-                mask="" // Puedes personalizar la máscara que desees
+                mask=""
                 onValueChange={(values) => {
-                    // Verifica si el valor es negativo
                     if (Number(values.value) < 0) {
-                        return; // No hacer nada si el valor es negativo
+                        return;
                     }
 
                     onChange({

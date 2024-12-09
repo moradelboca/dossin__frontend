@@ -34,6 +34,7 @@ export function CreadorUbicacion(props: Ubicacion) {
     const [tipoUbicacion, setTipoUbicacion] = useState<any[]>([]);
     const [openDialogDelete, setOpenDialogDelete] = useState(false);
     const [estadoCarga, setEstadoCarga] = useState(true);
+    const [localidades, setLocalidades] = useState<any[]>([]);
 
     useEffect(() => {
         fetch(`${backendURL}/ubicaciones`, {
@@ -63,6 +64,23 @@ export function CreadorUbicacion(props: Ubicacion) {
             .then((response) => response.json())
             .then((tipoUbicacion) => {
                 setTipoUbicacion(tipoUbicacion);
+                setEstadoCarga(false);
+            })
+            .catch(() =>
+                console.error("Error al obtener las ubicaciones disponibles")
+            );
+    }, []);
+    useEffect(() => {
+        fetch(`${backendURL}/ubicaciones/localidades`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "ngrok-skip-browser-warning": "true",
+            },
+        })
+            .then((response) => response.json())
+            .then((localidades) => {
+                setLocalidades(localidades);
                 setEstadoCarga(false);
             })
             .catch(() =>
@@ -221,8 +239,8 @@ export function CreadorUbicacion(props: Ubicacion) {
                     loading={estadoCarga}
                 />
                 <AutocompletarUbicacionLocalidad
-                    ubicaciones={ubicaciones}
-                    title="Ubicación"
+                    localidades={localidades}
+                    title="Localidad"
                     datosNuevaUbicacion={datosNuevaUbicacion}
                     error={erroLocalidad}
                     estadoCarga={estadoCarga}

@@ -1,0 +1,27 @@
+import React, { useEffect } from "react";
+import { useAuth } from "./ContextoAuth";
+
+interface ProtectedRouteProps {
+    children: React.ReactNode;
+}
+const RutasProtegidas = ({ children }: ProtectedRouteProps) => {
+    const { autenticado, setAutenticado } = useAuth();
+
+    useEffect(() => {
+        const cookies = document.cookie.split(";");
+        const accessToken = cookies.find((cookie) =>
+            cookie.includes("accessToken")
+        );
+        if (accessToken) {
+            setAutenticado(true);
+        }
+    }, []);
+    if (!autenticado) {
+        window.location.href = import.meta.env.VITE_AUTH_URL + "/google";
+        return null;
+    }
+
+    return <>{children}</>;
+};
+
+export default RutasProtegidas;

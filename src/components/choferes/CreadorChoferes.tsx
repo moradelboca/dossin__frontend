@@ -176,13 +176,14 @@ export default function CreadorChoferes(props: Choferes) {
         datosNuevoChofer["idUbicacion"] = e.target.value;
         setDatosNuevoChofer({ ...datosNuevoChofer });
     };
+    const setEmpresa = (value: any) => {
+        datosNuevoChofer["cuitEmpresa"] = value.value;
+        setDatosNuevoChofer({ ...datosNuevoChofer });
+    };
     const [empresasTransportistas, setEmpresasTransportistas] = useState<any[]>(
         []
     );
-    const [
-        empresaTransportistaSeleccionada,
-        setEmpresaTransportistaSeleccionada,
-    ] = useState<Number | null>(null);
+
     const [estadoCarga, setEstadoCarga] = useState(true);
 
     useEffect(() => {
@@ -208,7 +209,6 @@ export default function CreadorChoferes(props: Choferes) {
     const [errorNombre, setErrorNombre] = React.useState(false);
     const [errorApellido, setErrorApellido] = React.useState(false);
     const [errorCuit, setErrorCuit] = React.useState(false);
-
     const handleSave = () => {
         let error = false;
 
@@ -229,10 +229,6 @@ export default function CreadorChoferes(props: Choferes) {
             error = true;
         }
         if (!datosNuevoChofer["cuitEmpresa"]) {
-            setErrorNumeroCel(true);
-            error = true;
-        }
-        if (!datosNuevoChofer["cuit"]) {
             setErrorCuit(true);
             error = true;
         }
@@ -241,8 +237,7 @@ export default function CreadorChoferes(props: Choferes) {
             return;
         }
 
-        datosNuevoChofer["idUbicacion"] = 1;
-        datosNuevoChofer["cuitEmpresa"] = empresaTransportistaSeleccionada;
+        datosNuevoChofer["idUbicacion"] = 3;
         const metodo = choferSeleccionado ? "PUT" : "POST";
         const url = choferSeleccionado
             ? `${backendURL}/choferes/${datosNuevoChofer["cuil"]}`
@@ -403,11 +398,7 @@ export default function CreadorChoferes(props: Choferes) {
                     label: `${empresa.nombreFantasia} - ${empresa.cuit}`,
                     value: empresa.cuit,
                 }))}
-                onChange={(_e, v) =>
-                    setEmpresaTransportistaSeleccionada(
-                        v?.value ? parseInt(v?.value) : null
-                    )
-                }
+                onChange={(_e, value: any) => setEmpresa(value)}
                 renderInput={(params: any) => (
                     <TextField
                         {...params}
