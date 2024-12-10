@@ -13,7 +13,6 @@ import { MapaMain } from "./components/mapa/MapaMain";
 import Clima from "./components/clima/Clima";
 import TarifaApp from "./components/calculadora/Calculadora";
 import PaginaNoDisponible from "./components/inconvenientes/PaginaNoDisponible";
-//import RutasProtegidas from "./components/autenticacion/RutasProtegidas";
 import { AuthProvider } from "./components/autenticacion/ContextoAuth";
 import TablaUser from "./components/admin/TablaUser";
 import RutasProtegidas from "./components/autenticacion/RutasProtegidas";
@@ -107,7 +106,11 @@ function App() {
                                     />
                                     <Route
                                         path="/admin"
-                                        element={<TablaUser />}
+                                        element={
+                                            <RutasProtegidas>
+                                                <TablaUser />
+                                            </RutasProtegidas>
+                                            }
                                     />
                                     <Route
                                         path="*"

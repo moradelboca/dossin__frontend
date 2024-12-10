@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Button, FormControlLabel, Switch, TextField } from "@mui/material";
 import * as React from "react";
 import { ContextoGeneral } from "../Contexto";
@@ -14,8 +15,8 @@ interface Choferes {
 
 export default function CreadorUser(props: Choferes) {
     const { pruebas } = useContext(ContextoGeneral);
-    let { handleClose, userSeleccionado, refreshUsers } = props;
-    let [datosNuevoUser, setDatosNuevoUser] = React.useState<any>({
+    const { handleClose, userSeleccionado, refreshUsers } = props;
+    const [ datosNuevoUser, setDatosNuevoUser ] = React.useState<any>({
         id: userSeleccionado?.id,
         email: userSeleccionado?.email,
         nombre:
