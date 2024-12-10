@@ -168,7 +168,7 @@ export function TarjetaChoferesCarga(props: TarjetaProps) {
             <StyledRoot>
                 <StyledContent
                     gradientColor={
-                        estadoTurno === "Confirmado"
+                        estadoTurno === "Aceptado"
                             ? "#76D766"
                             : estadoTurno === "Rechazado"
                               ? "#FF0000"
@@ -233,7 +233,7 @@ export function TarjetaChoferesCarga(props: TarjetaProps) {
                                     }
                                 />
                                 {/* Botón "Confirmar", solo si no está confirmado */}
-                                {estadoTurno !== "confirmado" && (
+                                {estadoTurno !== "Aceptado" && (
                                     <>
                                         <CustomButtom
                                             onClick={handleClickConfirmar}

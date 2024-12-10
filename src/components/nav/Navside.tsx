@@ -22,6 +22,7 @@ import { Link } from "react-router-dom";
 import { ListItemButton } from "@mui/material";
 import ThunderstormOutlinedIcon from "@mui/icons-material/ThunderstormOutlined";
 import CalculateOutlinedIcon from "@mui/icons-material/CalculateOutlined";
+import AdminPanelSettingsOutlinedIcon from "@mui/icons-material/AdminPanelSettingsOutlined";
 
 const CustomMuiDrawer = styled(MuiDrawer)<{
     ancho?: number;
@@ -67,6 +68,7 @@ export default function Navside(navSideProps: NavsideProps) {
             "Inconvenientes",
             "Clima",
             "Calculadora",
+            "Admin",
         ],
     ];
     const listasDeIconos = [
@@ -80,6 +82,7 @@ export default function Navside(navSideProps: NavsideProps) {
             <ErrorOutline />,
             <ThunderstormOutlinedIcon />,
             <CalculateOutlinedIcon />,
+            <AdminPanelSettingsOutlinedIcon />,
         ],
     ];
     const listasDeRutas = [
@@ -93,6 +96,7 @@ export default function Navside(navSideProps: NavsideProps) {
             "/inconvenientes",
             "/clima",
             "/calculadora",
+            "/admin",
         ],
     ];
 
