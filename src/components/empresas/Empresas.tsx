@@ -1,95 +1,12 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import * as React from "react";
-import { DataGrid, GridColDef, GridToolbarQuickFilter } from "@mui/x-data-grid";
-import {
-    Box,
-    Button,
-    CircularProgress,
-    Dialog,
-    DialogContent,
-    DialogTitle,
-    Typography,
-} from "@mui/material";
-import { GridRowsProp } from "@mui/x-data-grid";
-import { GridRowModesModel } from "@mui/x-data-grid";
-import { GridToolbarContainer } from "@mui/x-data-grid";
-import { DomainAdd } from "@mui/icons-material";
-import { GridToolbarFilterButton } from "@mui/x-data-grid";
-import { GridToolbarExport } from "@mui/x-data-grid";
-import { GridToolbarColumnsButton } from "@mui/x-data-grid";
+import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import { Box, CircularProgress, Dialog, DialogContent, DialogTitle, Typography } from "@mui/material";
 import { ContextoGeneral } from "../Contexto";
 import BorderColorIcon from "@mui/icons-material/BorderColor";
 import { useEffect, useState } from "react";
 import CreadorEmpresas from "./CreadorEmpresas";
-
-interface EditToolbarProps {
-    setRows: (newRows: (oldRows: GridRowsProp) => GridRowsProp) => void;
-    setRowModesModel: (
-        newModel: (oldModel: GridRowModesModel) => GridRowModesModel
-    ) => void;
-    onAdd: () => void;
-}
-
-function EditToolbar(props: EditToolbarProps) {
-    const { theme } = React.useContext(ContextoGeneral);
-    const { onAdd } = props;
-
-    return (
-        <GridToolbarContainer sx={{ marginBottom: 1 }}>
-            <Box
-                sx={{
-                    flexGrow: 1,
-                    display: "flex",
-                    justifyContent: "flex-start",
-                }}
-            >
-                <GridToolbarQuickFilter placeholder="Buscar..." />
-            </Box>
-            <Box
-                sx={{
-                    display: "flex",
-                    justifyContent: "flex-end",
-                    marginRight: 3,
-                }}
-            >
-                <Button
-                    startIcon={<DomainAdd />}
-                    onClick={onAdd}
-                    sx={{ color: theme.colores.azul }}
-                >
-                    Agregar Empresa
-                </Button>
-                <GridToolbarFilterButton
-                    slotProps={{
-                        button: {
-                            sx: {
-                                color: theme.colores.azul,
-                            },
-                        },
-                    }}
-                />
-                <GridToolbarExport
-                    localeText="Exportar"
-                    slotProps={{
-                        button: {
-                            sx: {
-                                color: theme.colores.azul,
-                            },
-                        },
-                    }}
-                />
-                <GridToolbarColumnsButton
-                    slotProps={{
-                        button: {
-                            sx: {
-                                color: theme.colores.azul,
-                            },
-                        },
-                    }}
-                />
-            </Box>
-        </GridToolbarContainer>
-    );
-}
+import { EditToolbar } from "../botones/EditToolbar";
 
 export default function Empresas() {
     const [open, setOpen] = React.useState(false);
@@ -271,6 +188,7 @@ export default function Empresas() {
                                         }}
                                         {...props}
                                         onAdd={() => handleOpen(null)}
+                                        name="Empresa"
                                     />
                                 ),
                             }}

@@ -1,108 +1,18 @@
-import * as React from "react";
-import {
-    DataGrid,
-    GridColDef,
-    GridRowsProp,
-    GridToolbarQuickFilter,
-} from "@mui/x-data-grid";
-import {
-    Box,
-    Button,
-    CircularProgress,
-    Dialog,
-    DialogContent,
-    DialogTitle,
-    Typography,
-} from "@mui/material";
-import { GridRowModesModel } from "@mui/x-data-grid";
-import {
-    GridToolbarContainer,
-    GridToolbarExport,
-    GridToolbarColumnsButton,
-    GridToolbarFilterButton,
-} from "@mui/x-data-grid";
-import { Add } from "@mui/icons-material";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import { Box, CircularProgress, Dialog, DialogContent, DialogTitle, Typography } from "@mui/material";
 import BorderColorIcon from "@mui/icons-material/BorderColor";
 import { ContextoGeneral } from "../../Contexto";
 import CreadorCamiones from "./CreadorCamiones";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
+import { EditToolbar } from "../../botones/EditToolbar";
 
-interface EditToolbarProps {
-    setRows: (newRows: (oldRows: GridRowsProp) => GridRowsProp) => void;
-    setRowModesModel: (
-        newModel: (oldModel: GridRowModesModel) => GridRowModesModel
-    ) => void;
-    onAdd: () => void; // Nueva prop para manejar el diálogo de agregar
-}
-
-function EditToolbar(props: EditToolbarProps) {
-    const { onAdd } = props;
-    const { theme } = React.useContext(ContextoGeneral);
-
-    return (
-        <GridToolbarContainer sx={{ marginBottom: 1 }}>
-            <Box
-                sx={{
-                    flexGrow: 1,
-                    display: "flex",
-                    justifyContent: "flex-start",
-                }}
-            >
-                <GridToolbarQuickFilter />
-            </Box>
-            <Box
-                sx={{
-                    display: "flex",
-                    justifyContent: "flex-end",
-                    marginRight: 3,
-                }}
-            >
-                <Button
-                    color="primary"
-                    startIcon={<Add />}
-                    onClick={onAdd}
-                    sx={{ color: theme.colores.azul }}
-                >
-                    Agregar camión
-                </Button>
-                <GridToolbarFilterButton
-                    slotProps={{
-                        button: {
-                            sx: {
-                                color: theme.colores.azul,
-                            },
-                        },
-                    }}
-                />
-                <GridToolbarExport
-                    slotProps={{
-                        button: {
-                            sx: {
-                                color: theme.colores.azul,
-                            },
-                        },
-                    }}
-                />
-                <GridToolbarColumnsButton
-                    slotProps={{
-                        button: {
-                            sx: {
-                                color: theme.colores.azul,
-                            },
-                        },
-                    }}
-                />
-            </Box>
-        </GridToolbarContainer>
-    );
-}
 export default function Camiones() {
-    const [open, setOpen] = React.useState(false);
-    const [camionSeleccionado, setCamionSeleccionado] =
-        React.useState<any>(null);
-    const { backendURL, theme } = React.useContext(ContextoGeneral);
-    const [camiones, setCamiones] = React.useState<any[]>([]);
-    const [estadoCarga, setEstadoCarga] = useState("Cargando");
+    const [ open, setOpen ] = useState(false);
+    const [ camionSeleccionado, setCamionSeleccionado ] = useState<any>(null);
+    const { backendURL, theme } = useContext(ContextoGeneral);
+    const [ camiones, setCamiones ] = useState<any[]>([]);
+    const [ estadoCarga, setEstadoCarga ] = useState("Cargando");
 
     const refreshCamiones = () => {
         fetch(`${backendURL}/camiones`, {
@@ -238,6 +148,7 @@ export default function Camiones() {
                                         }}
                                         {...props}
                                         onAdd={() => handleOpen(null)}
+                                        name = "Camion"
                                     />
                                 ),
                             }}

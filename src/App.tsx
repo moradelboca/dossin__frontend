@@ -13,7 +13,7 @@ import { MapaMain } from "./components/mapa/MapaMain";
 import Clima from "./components/clima/Clima";
 import TarifaApp from "./components/calculadora/Calculadora";
 import PaginaNoDisponible from "./components/inconvenientes/PaginaNoDisponible";
-import RutasProtegidas from "./components/autenticacion/RutasProtegidas";
+//import RutasProtegidas from "./components/autenticacion/RutasProtegidas";
 import { AuthProvider } from "./components/autenticacion/ContextoAuth";
 
 function App() {
@@ -54,49 +54,49 @@ function App() {
                                     <Route
                                         path="/choferes"
                                         element={
-                                            <RutasProtegidas>
+                                            //<RutasProtegidas>
                                                 <Choferes />
-                                            </RutasProtegidas>
+                                            //</RutasProtegidas>
                                         }
                                     />
                                     <Route
                                         path="/ubicaciones"
                                         element={
-                                            <RutasProtegidas>
+                                            //<RutasProtegidas>
                                                 <MapaMain />
-                                            </RutasProtegidas>
+                                            //</RutasProtegidas>
                                         }
                                     />
                                     <Route
                                         path="/empresas"
                                         element={
-                                            <RutasProtegidas>
+                                            //<RutasProtegidas>
                                                 <Empresas />
-                                            </RutasProtegidas>
+                                            //</RutasProtegidas>
                                         }
                                     />
                                     <Route
                                         path="/camiones"
                                         element={
-                                            <RutasProtegidas>
+                                            //<RutasProtegidas>
                                                 <TabCamiones />
-                                            </RutasProtegidas>
+                                            //</RutasProtegidas>
                                         }
                                     />
                                     <Route
                                         path="/inconvenientes"
                                         element={
-                                            <RutasProtegidas>
+                                            //<RutasProtegidas>
                                                 <ContainerInconvenientes />
-                                            </RutasProtegidas>
+                                            //</RutasProtegidas>
                                         }
                                     />
                                     <Route
                                         path="/clima"
                                         element={
-                                            <RutasProtegidas>
+                                            //<RutasProtegidas>
                                                 <Clima />
-                                            </RutasProtegidas>
+                                            //</RutasProtegidas>
                                         }
                                     />
                                     <Route

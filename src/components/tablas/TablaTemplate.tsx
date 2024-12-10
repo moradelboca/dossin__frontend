@@ -1,0 +1,208 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { Dialog, DialogTitle, DialogContent, Box, Typography, CircularProgress } from "@mui/material";
+import { GridColDef, DataGrid } from "@mui/x-data-grid";
+import { useContext, useEffect, useState } from "react";
+import { EditToolbar } from "../botones/EditToolbar";
+import { ContextoGeneral } from "../Contexto";
+import BorderColorIcon from "@mui/icons-material/BorderColor";
+export default function TablaTemplate({
+    titulo,
+    entidad,
+    endpoint,
+    fields,
+    headerNames,
+    DialogoCreador,
+}: {
+    titulo: string;
+    entidad: string;
+    endpoint: string;
+    fields: string[];
+    headerNames: string[];
+    DialogoCreador: React.ComponentType<any>;
+}) {
+    const [open, setOpen] = useState(false);
+    const [seleccionado, setSeleccionado] = useState<any>(null);
+    const { backendURL, theme } = useContext(ContextoGeneral);
+    const [datos, setDatos] = useState<any[]>([]);
+    const [estadoCarga, setEstadoCarga] = useState("Cargando");
+
+    // Hay que pasar el endpoint en los props
+    // Hacerlo despues con axios
+    const refreshDatos = () => {
+        fetch(`${backendURL}/${endpoint}`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "ngrok-skip-browser-warning": "true",
+            },
+        })
+            .then((response) => response.json())
+            .then((data) => {
+                setDatos(data);
+                setEstadoCarga("Cargado");
+                for (const elemento in data) {
+                    console.log(`${elemento}: ${JSON.stringify(data[elemento])}`);
+                }
+                
+            })
+            .catch(() => console.error(`Error al obtener ${entidad}`));
+    };
+    useEffect(() => {
+        refreshDatos();
+    }, []);
+
+    const handleOpen = (item: any) => {
+        if (item) {
+            setSeleccionado(item);
+        }
+        setOpen(true);
+    };
+
+    const handleClose = () => {
+        setSeleccionado(null);
+        setOpen(false);
+    };
+
+
+    // VER DESPUES PARA LA PARTE DE "No especificado" si es null
+    /*
+    const normalizeData = (data: any[]) => {
+        return data.map((item) =>
+            Object.fromEntries(
+                Object.entries(item).map(([key, value]) => [
+                    key,
+                    value === null || value === undefined || value === ""
+                        ? "No especificado"
+                        : value,
+                ])
+            )
+        );
+    };
+    */
+    
+    // Genera las columnas con los arrays de los props
+    const columns: GridColDef[] = fields.map((field, index) => ({
+        field: field,
+        headerName: headerNames[index],
+        flex: 1,
+        renderHeader: () => (
+            <strong style={{ color: theme.colores.grisOscuro }}>
+                {headerNames[index]}
+            </strong>
+        ),
+    }));
+
+    columns.push({
+        field: "edit",
+        headerName: "Edit",
+        width: 100,
+        renderHeader: () => (
+            <strong style={{ color: theme.colores.grisOscuro }}>Editar</strong>
+        ),
+        renderCell: (params) => (
+            <BorderColorIcon
+                onClick={() => handleOpen(params.row)}
+                fontSize="small"
+                style={{ cursor: "pointer", color: theme.colores.azul }}
+            />
+        ),
+    });
+
+    return (
+        <>
+            <Box
+                sx={{
+                    backgroundColor: theme.colores.grisClaro,
+                    height: "91vh",
+                    width: "100%",
+                    padding: 3,
+                }}
+            >
+                <Typography
+                    variant="h5"
+                    component="div"
+                    sx={{
+                        color: theme.colores.azul,
+                        fontWeight: "bold",
+                        mb: 2,
+                        fontSize: "2rem",
+                        pb: 1,
+                        marginLeft: 1,
+                    }}
+                >
+                    {titulo}
+                </Typography>
+                <Box margin="10px" sx={{ height: "90%", width: "100%" }}>
+                    {estadoCarga === "Cargando" && (
+                        <Box
+                            display="flex"
+                            flexDirection="row"
+                            width="100%"
+                            height="100%"
+                            justifyContent="center"
+                            alignItems="center"
+                            gap={3}
+                        >
+                            <CircularProgress
+                                sx={{
+                                    padding: "5px",
+                                    width: "30px",
+                                    height: "30px",
+                                }}
+                            />
+                            <Typography variant="h5">
+                                <b>Cargando...</b>
+                            </Typography>
+                        </Box>
+                    )}
+                    {estadoCarga === "Cargado" && (
+                        <DataGrid
+                        rows={datos}
+                        columns={columns}
+                        getRowId={(row) => row[fields[0]]}
+                        sx={{
+                            "& .MuiDataGrid-columnHeader": {
+                                backgroundColor: theme.colores.grisClaro,
+                                color: theme.colores.grisOscuro,
+                            },
+                            border: "none",
+                            }}
+                            slots={{
+                                toolbar: (props) => (
+                                    <EditToolbar
+                                    setRows={function (): void {
+                                        throw new Error(
+                                            "Function not implemented."
+                                        );
+                                    }}
+                                    setRowModesModel={function (): void {
+                                        throw new Error(
+                                            "Function not implemented."
+                                        );
+                                    }}
+                                    {...props}
+                                    onAdd={() => handleOpen(null)}
+                                    name= {entidad}                                    
+                                    />
+                                ),
+                            }}
+                        />
+                    )}
+                    <Dialog open={open} onClose={handleClose}>
+                        <DialogTitle>
+                            {seleccionado ? `Editar ${entidad}` : `Crear ${entidad}`}
+                        </DialogTitle>
+                        <DialogContent>
+                            <DialogoCreador
+                                choferSeleccionado={seleccionado}
+                                handleClose={handleClose}
+                                choferes={datos}
+                                setChoferes={setDatos}
+                            />
+                        </DialogContent>
+                    </Dialog>
+                </Box>
+            </Box>
+        </>
+    );
+}

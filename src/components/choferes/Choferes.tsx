@@ -1,103 +1,21 @@
-import * as React from "react";
-import { DataGrid, GridColDef, GridToolbarQuickFilter } from "@mui/x-data-grid";
-import {
-    Box,
-    Button,
-    CircularProgress,
-    Dialog,
-    DialogContent,
-    DialogTitle,
-    Typography,
-} from "@mui/material";
-import { GridRowsProp } from "@mui/x-data-grid";
-import { GridRowModesModel } from "@mui/x-data-grid";
-import { GridToolbarContainer } from "@mui/x-data-grid";
-import { GridToolbarFilterButton } from "@mui/x-data-grid";
-import { GridToolbarExport } from "@mui/x-data-grid";
-import { GridToolbarColumnsButton } from "@mui/x-data-grid";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/*
+import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import { Box, CircularProgress, Dialog, DialogContent, DialogTitle, Typography } from "@mui/material";
 import BorderColorIcon from "@mui/icons-material/BorderColor";
 import { ContextoGeneral } from "../Contexto";
-import { PersonAddAlt } from "@mui/icons-material";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import CreadorChoferes from "./CreadorChoferes";
-
-interface EditToolbarProps {
-    setRows: (newRows: (oldRows: GridRowsProp) => GridRowsProp) => void;
-    setRowModesModel: (
-        newModel: (oldModel: GridRowModesModel) => GridRowModesModel
-    ) => void;
-    onAdd: () => void; // Nueva prop para manejar el diálogo de agregar
-}
-
-function EditToolbar(props: EditToolbarProps) {
-    const { onAdd } = props;
-    const { theme } = React.useContext(ContextoGeneral);
-
-    return (
-        <GridToolbarContainer sx={{ marginBottom: 1 }}>
-            <Box
-                sx={{
-                    flexGrow: 1,
-                    display: "flex",
-                    justifyContent: "flex-start",
-                }}
-            >
-                <GridToolbarQuickFilter />
-            </Box>
-            <Box
-                sx={{
-                    display: "flex",
-                    justifyContent: "flex-end",
-                    marginRight: 3,
-                }}
-            >
-                <Button
-                    startIcon={<PersonAddAlt />}
-                    onClick={onAdd}
-                    sx={{ color: theme.colores.azul }}
-                >
-                    Agregar chofer
-                </Button>
-                <GridToolbarFilterButton
-                    slotProps={{
-                        button: {
-                            sx: {
-                                color: theme.colores.azul,
-                            },
-                        },
-                    }}
-                />
-                <GridToolbarExport
-                    slotProps={{
-                        button: {
-                            sx: {
-                                color: theme.colores.azul,
-                            },
-                        },
-                    }}
-                />
-                <GridToolbarColumnsButton
-                    slotProps={{
-                        button: {
-                            sx: {
-                                color: theme.colores.azul,
-                            },
-                        },
-                    }}
-                />
-            </Box>
-        </GridToolbarContainer>
-    );
-}
+import { EditToolbar } from "../botones/EditToolbar";
 
 export default function Choferes() {
-    const [open, setOpen] = React.useState(false);
-    const [choferSeleccionado, setChoferSeleccionado] =
-        React.useState<any>(null);
-    const { backendURL, theme } = React.useContext(ContextoGeneral);
-    const [choferes, setChoferes] = React.useState<any[]>([]);
-    const [estadoCarga, setEstadoCarga] = useState("Cargando");
+    const [ open, setOpen ] = useState(false);
+    const [ choferSeleccionado, setChoferSeleccionado ] = useState<any>(null);
+    const { backendURL, theme } = useContext(ContextoGeneral);
+    const [ choferes, setChoferes ] = useState<any[]>([]);
+    const [ estadoCarga, setEstadoCarga ] = useState("Cargando");
 
+    // Ver despues esto con axios
     const refreshChoferes = () => {
         fetch(`${backendURL}/choferes`, {
             method: "GET",
@@ -188,7 +106,7 @@ export default function Choferes() {
                     width: "100%",
                     padding: 3,
                 }}
-            >
+                >
                 <Typography
                     variant="h5"
                     component="div"
@@ -265,6 +183,7 @@ export default function Choferes() {
                                         }}
                                         {...props}
                                         onAdd={() => handleOpen(null)}
+                                        name="Chofer"
                                     />
                                 ),
                             }}
@@ -288,5 +207,50 @@ export default function Choferes() {
                 </Box>
             </Box>
         </>
+    );
+}
+    */
+
+
+//import { GridColDef } from "@mui/x-data-grid";
+//import { useContext } from "react";
+import TablaTemplate from "../tablas/TablaTemplate";
+//import { ContextoGeneral } from "../Contexto";
+import CreadorChoferes from "./CreadorChoferes";
+
+export default function Choferes() {
+    //const { backendURL } = useContext(ContextoGeneral);
+
+    // Aca definis los fields del json que mandan del back y abajo los nombres de las columnas
+    const fields = [
+        "cuil",
+        "numeroCel",
+        "nombre",
+        "apellido",
+        "edad",
+        "empresa",
+        "urlLINTI",
+        "ubicacion",
+    ];
+    const headerNames = [
+        "Cuil",
+        "Numero Celular",
+        "Nombre",
+        "Apellido",
+        "Edad",
+        "Cuit Empresa",
+        "URL Linti",
+        "Ubicacion",
+    ];
+
+    return (
+        <TablaTemplate
+            titulo="Choferes"
+            entidad="chofer"
+            endpoint="choferes"
+            fields={fields}
+            headerNames={headerNames}
+            DialogoCreador={CreadorChoferes}
+        />
     );
 }
