@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Box, Button, Typography } from "@mui/material";
 import { useContext } from "react";
 import { ContextoGeneral } from "../Contexto";
@@ -11,7 +12,7 @@ interface Acoplados {
     setChoferes: any;
 }
 export default function DeleteChoferes(props: Acoplados) {
-    let { handleCloseDialog, cuil, handleClose, choferes, setChoferes } = props;
+    const { handleCloseDialog, cuil, handleClose, choferes, setChoferes } = props;
     const { backendURL, theme } = useContext(ContextoGeneral);
 
     const handleNoClick = () => {

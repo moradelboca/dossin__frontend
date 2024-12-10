@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState } from "react";
 import { TextField, Box, Typography } from "@mui/material";
 import Papa from "papaparse";
