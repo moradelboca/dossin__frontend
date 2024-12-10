@@ -19,7 +19,7 @@ export default function DeleteTurno(props: Turnos) {
 
     const borrarTurno = () => {
         fetch(`${backendURL}/turnos/${idTurno}`, {
-            method: "DELETE",
+            method: "PUT",
             headers: {
                 "Content-Type": "application/json",
                 "ngrok-skip-browser-warning": "true",

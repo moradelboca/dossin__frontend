@@ -15,6 +15,7 @@ import TarifaApp from "./components/calculadora/Calculadora";
 import PaginaNoDisponible from "./components/inconvenientes/PaginaNoDisponible";
 import RutasProtegidas from "./components/autenticacion/RutasProtegidas";
 import { AuthProvider } from "./components/autenticacion/ContextoAuth";
+import TablaUser from "./components/admin/TablaUser";
 
 function App() {
     return (
@@ -62,46 +63,50 @@ function App() {
                                     <Route
                                         path="/ubicaciones"
                                         element={
-                                            <RutasProtegidas>
-                                                <MapaMain />
-                                            </RutasProtegidas>
+                                            //<RutasProtegidas>
+                                            <MapaMain />
+                                            //</RutasProtegidas>
                                         }
                                     />
                                     <Route
                                         path="/empresas"
                                         element={
-                                            <RutasProtegidas>
-                                                <Empresas />
-                                            </RutasProtegidas>
+                                            //<RutasProtegidas>
+                                            <Empresas />
+                                            //</RutasProtegidas>
                                         }
                                     />
                                     <Route
                                         path="/camiones"
                                         element={
-                                            <RutasProtegidas>
-                                                <TabCamiones />
-                                            </RutasProtegidas>
+                                            //<RutasProtegidas>
+                                            <TabCamiones />
+                                            //</RutasProtegidas>
                                         }
                                     />
                                     <Route
                                         path="/inconvenientes"
                                         element={
-                                            <RutasProtegidas>
-                                                <ContainerInconvenientes />
-                                            </RutasProtegidas>
+                                            // <RutasProtegidas>
+                                            <ContainerInconvenientes />
+                                            //</RutasProtegidas>
                                         }
                                     />
                                     <Route
                                         path="/clima"
                                         element={
-                                            <RutasProtegidas>
-                                                <Clima />
-                                            </RutasProtegidas>
+                                            // <RutasProtegidas>
+                                            <Clima />
+                                            // </RutasProtegidas>
                                         }
                                     />
                                     <Route
                                         path="/calculadora"
                                         element={<TarifaApp />}
+                                    />
+                                    <Route
+                                        path="/admin"
+                                        element={<TablaUser />}
                                     />
                                     <Route
                                         path="*"
