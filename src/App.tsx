@@ -40,24 +40,37 @@ function App() {
                             >
                                 <Routes>
                                     <Route path="/" />
+                                    {/* Son rutas protegidas ahora*/}
                                     <Route
                                         path="/cargas"
-                                        element={<ContainerCargas />}
+                                        element={
+                                            <RutasProtegidas>
+                                                <ContainerCargas />
+                                            </RutasProtegidas>
+                                        }
                                     />
                                     <Route
                                         path="/cargas/:idCarga"
-                                        element={<ContainerCargas />}
+                                        element={
+                                            <RutasProtegidas>
+                                                <ContainerCargas />
+                                            </RutasProtegidas>
+                                    }
                                     />
                                     <Route
                                         path="cargas/:idCarga/cupos"
-                                        element={<ContainerCupos />}
+                                        element={
+                                            <RutasProtegidas>
+                                                <ContainerCupos />
+                                            </RutasProtegidas>
+                                    }
                                     />
                                     <Route
                                         path="/choferes"
                                         element={
-                                            //<RutasProtegidas>
+                                            <RutasProtegidas>
                                                 <Choferes />
-                                            //</RutasProtegidas>
+                                            </RutasProtegidas>
                                         }
                                     />
                                     <Route
@@ -102,7 +115,11 @@ function App() {
                                     />
                                     <Route
                                         path="/calculadora"
-                                        element={<TarifaApp />}
+                                        element={
+                                            <RutasProtegidas>
+                                                <TarifaApp />
+                                            </RutasProtegidas>
+                                    }
                                     />
                                     <Route
                                         path="/admin"
@@ -114,7 +131,11 @@ function App() {
                                     />
                                     <Route
                                         path="*"
-                                        element={<PaginaNoDisponible />}
+                                        element={
+                                            <RutasProtegidas>
+                                                <PaginaNoDisponible />
+                                            </RutasProtegidas>
+                                    }
                                     />
                                 </Routes>
                             </Box>
