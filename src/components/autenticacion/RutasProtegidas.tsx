@@ -17,7 +17,8 @@ const RutasProtegidas = ({ children }: ProtectedRouteProps) => {
         }
     }, []);
     if (!autenticado) {
-        window.location.href = import.meta.env.VITE_AUTH_URL + "/auth/google";
+        window.location.href = "https://auth.dossin.com.ar" + "/auth/google";
+        window.open("https://auth.dossin.com.ar" + "/auth/google", "_self");
 
         return null;
     }
