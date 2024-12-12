@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
     Box,
     Button,
@@ -83,14 +84,14 @@ const NumeroFormat = React.forwardRef<any, CustomProps>(
 export default function CreadorEmpresas(props: Empresas) {
     const { backendURL } = useContext(ContextoGeneral);
     const [codigoSeleccionado, setCodigoSeleccionado] = React.useState("");
-    let {
+    const {
         handleClose,
         empresaSeleccionada,
         empresas: empresas,
         setEmpresas: setEmpresas,
     } = props;
 
-    let [datosNuevaEmpresa, SetDatosNuevaEmpresa] = React.useState<any>({
+    const [datosNuevaEmpresa, SetDatosNuevaEmpresa] = React.useState<any>({
         cuit: empresaSeleccionada?.cuit,
         razonSocial:
             empresaSeleccionada?.razonSocial == "No especificado"

@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { createContext, useState, useContext, ReactNode } from "react";
 
 interface AuthContextProps {

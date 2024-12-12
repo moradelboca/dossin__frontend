@@ -13,8 +13,10 @@ import { MapaMain } from "./components/mapa/MapaMain";
 import Clima from "./components/clima/Clima";
 import TarifaApp from "./components/calculadora/Calculadora";
 import PaginaNoDisponible from "./components/inconvenientes/PaginaNoDisponible";
-import RutasProtegidas from "./components/autenticacion/RutasProtegidas";
 import { AuthProvider } from "./components/autenticacion/ContextoAuth";
+import TablaUser from "./components/admin/TablaUser";
+import RutasProtegidas from "./components/autenticacion/RutasProtegidas";
+
 
 function App() {
     return (
@@ -39,17 +41,31 @@ function App() {
                             >
                                 <Routes>
                                     <Route path="/" />
+                                    {/* Son rutas protegidas ahora*/}
                                     <Route
                                         path="/cargas"
-                                        element={<ContainerCargas />}
+                                        element={
+                                            <RutasProtegidas>
+                                                <ContainerCargas />
+                                            </RutasProtegidas>
+                                        }
                                     />
                                     <Route
                                         path="/cargas/:idCarga"
-                                        element={<ContainerCargas />}
+                                        element={
+                                            <RutasProtegidas>
+                                                <ContainerCargas />
+                                            </RutasProtegidas>
+                                    }
                                     />
                                     <Route
                                         path="cargas/:idCarga/cupos"
-                                        element={<ContainerCupos />}
+                                        element={
+                                            <RutasProtegidas>
+                                                <ContainerCupos />
+                                            </RutasProtegidas>
+                                    }
+
                                     />
                                     <Route
                                         path="/choferes"
@@ -101,11 +117,28 @@ function App() {
                                     />
                                     <Route
                                         path="/calculadora"
-                                        element={<TarifaApp />}
+                                        element={
+                                            <RutasProtegidas>
+                                                <TarifaApp />
+                                            </RutasProtegidas>
+                                    }
+                                    />
+                                    <Route
+                                        path="/admin"
+                                        element={
+                                            <RutasProtegidas>
+                                                <TablaUser />
+                                            </RutasProtegidas>
+                                            }
                                     />
                                     <Route
                                         path="*"
-                                        element={<PaginaNoDisponible />}
+                                        element={
+                                            <RutasProtegidas>
+                                                <PaginaNoDisponible />
+                                            </RutasProtegidas>
+                                    }
+
                                     />
                                 </Routes>
                             </Box>

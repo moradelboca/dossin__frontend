@@ -6,10 +6,11 @@ import { useState, useEffect, useContext } from "react";
 import { ContextoGeneral } from "../../Contexto";
 import Autocomplete from "@mui/material/Autocomplete";
 import {
+    Button,
     Dialog,
     DialogContent,
     DialogTitle,
-    IconButton,
+
     TextField,
 } from "@mui/material";
 import { CustomButtom } from "../../botones/CustomButtom";
@@ -155,11 +156,14 @@ export default function CreadorTurno(props: CreadorProps) {
         patenteAcopladoSeleccionadaExtra,
     ]);
 
-    const handleClickGuardar = () => {
-        if (seleccionado) {
-            nuevoTurno["idEstado"] = 3;
-        }
+    const handleClick = (accion: any) => {
+        // Asigna el idEstado basado en la acción
+        nuevoTurno["idEstado"] = accion === "confirmar" ? 3 : 4;
+
         setError(false);
+
+        // Validaciones comunes
+
         if (
             !nuevoTurno["cuilChofer"] ||
             !nuevoTurno["patenteCamion"] ||
@@ -169,6 +173,7 @@ export default function CreadorTurno(props: CreadorProps) {
             setError(true);
             return;
         }
+
         const metodo = seleccionado ? "PUT" : "POST";
         const url = seleccionado
             ? `${backendURL}/turnos/${idTurno}`
@@ -194,15 +199,6 @@ export default function CreadorTurno(props: CreadorProps) {
             })
             .catch((e) => console.error(e));
     };
-    const [openDialogDelete, setOpenDialogDelete] = useState(false);
-
-    const handleClickDeleteCupo = () => {
-        setOpenDialogDelete(true);
-    };
-    const handleClose = () => {
-        setOpenDialogDelete(false);
-    };
-
     return (
         <Dialog
             open={openDialog}
@@ -272,8 +268,11 @@ export default function CreadorTurno(props: CreadorProps) {
                                                 `${chofer.nombre} ${chofer.apellido} - ${chofer.cuil}`
                                         )}
                                         onChange={(_e, v: any) => {
-                                            setChofer(v.split(" - ")[1]);
-                                            actualizarNuevoTurno();
+                                            if (v && typeof v === "string") {
+                                                setChofer(v.split(" - ")[1]);
+                                                actualizarNuevoTurno();
+                                            }
+
                                         }}
                                         sx={{ width: 300 }}
                                         renderInput={(params) => (
@@ -332,11 +331,15 @@ export default function CreadorTurno(props: CreadorProps) {
                                                 `${empresa.nombreFantasia} - ${empresa.cuit}`
                                         )}
                                         onChange={(_e, v: any) => {
-                                            setEmpresaTransportistaSeleccionada(
-                                                v.split(" - ")[1]
-                                            );
+                                            if (v && typeof v === "string") {
+                                                const [_, empresa] =
+                                                    v.split(" - ");
+                                                setEmpresaTransportistaSeleccionada(
+                                                    empresa
+                                                );
+                                                actualizarNuevoTurno();
+                                            }
 
-                                            actualizarNuevoTurno();
                                         }}
                                         sx={{ width: 300 }}
                                         renderInput={(params) => (
@@ -425,19 +428,16 @@ export default function CreadorTurno(props: CreadorProps) {
                                     }}
                                 >
                                     <CustomButtom
-                                        onClick={handleClickGuardar}
+                                        onClick={() => handleClick("confirmar")}
                                         title="Confirmar"
                                     />
-                                    <IconButton
-                                        onClick={() => handleClickDeleteCupo()}
+                                    <Button
+                                        onClick={() => handleClick("rechazar")}
+                                        color="error"
                                     >
-                                        <DeleteOutlineIcon
-                                            sx={{
-                                                fontSize: 20,
-                                                color: "#d68384",
-                                            }}
-                                        />
-                                    </IconButton>
+                                        Rechazar
+                                    </Button>
+
                                 </Box>
                                 <Dialog
                                     open={openDialogDelete}

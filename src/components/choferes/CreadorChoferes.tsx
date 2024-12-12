@@ -1,11 +1,5 @@
-import {
-    Box,
-    Button,
-    Dialog,
-    IconButton,
-    Stack,
-    TextField,
-} from "@mui/material";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { Box, Button, Dialog, IconButton, Stack, TextField } from "@mui/material";
 import * as React from "react";
 import { ContextoGeneral } from "../Contexto";
 import { useContext, useEffect, useState } from "react";
@@ -15,17 +9,21 @@ import AutocompletarPais from "../cargas/autocompletar/AutocompletarPais";
 import DeleteChoferes from "./DeleteChoferes";
 import Autocomplete from "@mui/material/Autocomplete";
 
+// Otro archivo para hacer Interfaz
 interface Choferes {
     handleClose: any;
     choferSeleccionado: any;
     choferes: any;
     setChoferes: any;
 }
+
+// Otro archivo para hacer Interfaz
 interface CustomProps {
     onChange: (event: { target: { name: string; value: string } }) => void;
     name: string;
 }
 
+// Formatos, capaz lo podemos hacer en otro componente o pasarselo como props
 const CuilFormat = React.forwardRef<any, CustomProps>(
     function CuilFormat(props, ref) {
         const { onChange, ...other } = props;
@@ -80,7 +78,6 @@ const NumeroFormat = React.forwardRef<any, CustomProps>(
         );
     }
 );
-
 const EdadFormat = React.forwardRef<any, CustomProps>(
     function EdadFortmat(props, ref) {
         const { onChange, ...other } = props;
@@ -108,12 +105,15 @@ const EdadFormat = React.forwardRef<any, CustomProps>(
         );
     }
 );
+
+
+// Hay que dividirla en otros componente o que se pasen varios datos como props
 export default function CreadorChoferes(props: Choferes) {
     const { backendURL } = useContext(ContextoGeneral);
     const [codigoSeleccionado, setCodigoSeleccionado] = React.useState("");
-    let { handleClose, choferSeleccionado, choferes, setChoferes } = props;
+    const { handleClose, choferSeleccionado, choferes, setChoferes } = props;
 
-    let [datosNuevoChofer, setDatosNuevoChofer] = React.useState<any>({
+    const [datosNuevoChofer, setDatosNuevoChofer] = React.useState<any>({
         cuil: choferSeleccionado?.cuil,
         numeroCel:
             choferSeleccionado?.numeroCel == "No especificado"
@@ -144,8 +144,10 @@ export default function CreadorChoferes(props: Choferes) {
                 ? null
                 : choferSeleccionado?.idUbicacion,
     });
+
     const [openDialogDelete, setOpenDialogDelete] = useState(false);
 
+    // Todos estos sets hacerlos en otro componente tal vez o que se hereden/pasen como prop
     const setNumeroCel = (e: React.ChangeEvent<HTMLInputElement>) => {
         datosNuevoChofer["numeroCel"] = codigoSeleccionado + e.target.value;
         setDatosNuevoChofer({ ...datosNuevoChofer });
@@ -186,6 +188,7 @@ export default function CreadorChoferes(props: Choferes) {
 
     const [estadoCarga, setEstadoCarga] = useState(true);
 
+    // Se puede hacer generico el endpoint
     useEffect(() => {
         fetch(`${backendURL}/empresastransportistas`, {
             method: "GET",
@@ -204,6 +207,7 @@ export default function CreadorChoferes(props: Choferes) {
             );
     }, []);
 
+    // Ver de hacerlo generico, la cosa es que varia y no son todos los que se puede tener error, pero parece más un "no se cargo x dato"
     const [errorCuil, setErrorCuil] = React.useState(false);
     const [errorNumeroCel, setErrorNumeroCel] = React.useState(false);
     const [errorNombre, setErrorNombre] = React.useState(false);
@@ -237,11 +241,15 @@ export default function CreadorChoferes(props: Choferes) {
             return;
         }
 
+        // Porque es asignado el valor de 3 al idUbicacion?
         datosNuevoChofer["idUbicacion"] = 3;
+        // Tambien se lo puede hacer generico a este junto con el fetch
+
         const metodo = choferSeleccionado ? "PUT" : "POST";
         const url = choferSeleccionado
             ? `${backendURL}/choferes/${datosNuevoChofer["cuil"]}`
             : `${backendURL}/choferes`;
+
 
         fetch(url, {
             method: metodo,
@@ -275,6 +283,7 @@ export default function CreadorChoferes(props: Choferes) {
         handleClose();
     };
 
+    // Funciones genericas
     const handleClickDeleteCarga = () => {
         setOpenDialogDelete(true);
     };
@@ -282,6 +291,7 @@ export default function CreadorChoferes(props: Choferes) {
         setOpenDialogDelete(false);
     };
 
+    // Hacerlo a esto como un form/componente que se le puede pasar a este componente para que lo ponga aqui
     return (
         <>
             <Stack direction="row" spacing={2}>
