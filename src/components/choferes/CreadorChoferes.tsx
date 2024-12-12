@@ -244,6 +244,7 @@ export default function CreadorChoferes(props: Choferes) {
         // Porque es asignado el valor de 3 al idUbicacion?
         datosNuevoChofer["idUbicacion"] = 3;
         // Tambien se lo puede hacer generico a este junto con el fetch
+
         const metodo = choferSeleccionado ? "PUT" : "POST";
         const url = choferSeleccionado
             ? `${backendURL}/choferes/${datosNuevoChofer["cuil"]}`

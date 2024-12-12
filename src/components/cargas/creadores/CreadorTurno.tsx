@@ -10,10 +10,13 @@ import {
     Dialog,
     DialogContent,
     DialogTitle,
+
     TextField,
 } from "@mui/material";
 import { CustomButtom } from "../../botones/CustomButtom";
 import ClearSharpIcon from "@mui/icons-material/ClearSharp";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+import DeleteTurno from "./DeleteTurno";
 
 interface CreadorProps {
     fecha?: string;
@@ -160,6 +163,7 @@ export default function CreadorTurno(props: CreadorProps) {
         setError(false);
 
         // Validaciones comunes
+
         if (
             !nuevoTurno["cuilChofer"] ||
             !nuevoTurno["patenteCamion"] ||
@@ -195,7 +199,6 @@ export default function CreadorTurno(props: CreadorProps) {
             })
             .catch((e) => console.error(e));
     };
-
     return (
         <Dialog
             open={openDialog}
@@ -269,6 +272,7 @@ export default function CreadorTurno(props: CreadorProps) {
                                                 setChofer(v.split(" - ")[1]);
                                                 actualizarNuevoTurno();
                                             }
+
                                         }}
                                         sx={{ width: 300 }}
                                         renderInput={(params) => (
@@ -335,6 +339,7 @@ export default function CreadorTurno(props: CreadorProps) {
                                                 );
                                                 actualizarNuevoTurno();
                                             }
+
                                         }}
                                         sx={{ width: 300 }}
                                         renderInput={(params) => (
@@ -432,7 +437,21 @@ export default function CreadorTurno(props: CreadorProps) {
                                     >
                                         Rechazar
                                     </Button>
+
                                 </Box>
+                                <Dialog
+                                    open={openDialogDelete}
+                                    onClose={handleCloseDialog}
+                                    maxWidth="sm"
+                                    fullWidth
+                                >
+                                    <DeleteTurno
+                                        idTurno={idTurno}
+                                        handleCloseDialog={handleCloseDialog}
+                                        handleClose={handleClose}
+                                        refreshCupos={refreshCupos}
+                                    />
+                                </Dialog>
                             </Box>
                         </CardActions>
                     </Box>

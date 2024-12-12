@@ -18,6 +18,7 @@ const RutasProtegidas = ({ children }: ProtectedRouteProps) => {
     }, []);
     if (!autenticado) {
         window.location.href = import.meta.env.VITE_AUTH_URL + "/auth/google";
+
         return null;
     }
 

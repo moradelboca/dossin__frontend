@@ -17,6 +17,7 @@ import { AuthProvider } from "./components/autenticacion/ContextoAuth";
 import TablaUser from "./components/admin/TablaUser";
 import RutasProtegidas from "./components/autenticacion/RutasProtegidas";
 
+
 function App() {
     return (
         <BrowserRouter>
@@ -64,6 +65,7 @@ function App() {
                                                 <ContainerCupos />
                                             </RutasProtegidas>
                                     }
+
                                     />
                                     <Route
                                         path="/choferes"
@@ -136,6 +138,7 @@ function App() {
                                                 <PaginaNoDisponible />
                                             </RutasProtegidas>
                                     }
+
                                     />
                                 </Routes>
                             </Box>
