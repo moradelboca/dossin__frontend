@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
     Autocomplete,
     Button,
@@ -21,8 +22,8 @@ interface Acoplados {
 export default function CreadorAcoplados(props: Acoplados) {
     const { backendURL } = useContext(ContextoGeneral);
 
-    let { handleClose, acopladoSeleccionado, acoplados, setAcoplados } = props;
-    let [datosNuevoAcoplado, setDatosNuevoAcoplado] = React.useState<any>({
+    const { handleClose, acopladoSeleccionado, acoplados, setAcoplados } = props;
+    const [datosNuevoAcoplado, setDatosNuevoAcoplado] = React.useState<any>({
         patente: acopladoSeleccionado?.patente,
         idTipoAcoplado: acopladoSeleccionado?.idTipoAcoplado,
         nombreTipoAcoplado: acopladoSeleccionado?.tipoAcoplado,

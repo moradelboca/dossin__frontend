@@ -1,14 +1,19 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Box, Button, Dialog, IconButton, Stack, TextField } from "@mui/material";
-import * as React from "react";
-import { ContextoGeneral } from "../Contexto";
-import { useContext, useEffect, useState } from "react";
-import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
-import { PatternFormat } from "react-number-format";
-import AutocompletarPais from "../cargas/autocompletar/AutocompletarPais";
-import DeleteChoferes from "./DeleteChoferes";
-import Autocomplete from "@mui/material/Autocomplete";
+import { Button, Dialog, IconButton } from "@mui/material";
+//import * as React from "react";
+//import { ContextoGeneral } from "../Contexto";
+//import { useContext, useEffect, useState } from "react";
+//import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+//import { PatternFormat } from "react-number-format";
+//import AutocompletarPais from "../cargas/autocompletar/AutocompletarPais";
+//import DeleteChoferes from "./DeleteChoferes";
+//import Autocomplete from "@mui/material/Autocomplete";
+//import CuilFormat from "../forms/Choferes/formatos/CuilFormat";
+//import EdadFormat from "../forms/Choferes/formatos/EdadFormat";
+//import NumeroFormat from "../forms/Choferes/formatos/NumeroFormat";
+import ChoferForm from "../forms/Choferes/ChoferForm";
 
+/*
 // Otro archivo para hacer Interfaz
 interface Choferes {
     handleClose: any;
@@ -16,96 +21,6 @@ interface Choferes {
     choferes: any;
     setChoferes: any;
 }
-
-// Otro archivo para hacer Interfaz
-interface CustomProps {
-    onChange: (event: { target: { name: string; value: string } }) => void;
-    name: string;
-}
-
-// Formatos, capaz lo podemos hacer en otro componente o pasarselo como props
-const CuilFormat = React.forwardRef<any, CustomProps>(
-    function CuilFormat(props, ref) {
-        const { onChange, ...other } = props;
-
-        return (
-            <PatternFormat
-                {...other}
-                getInputRef={ref}
-                format="##-########-#"
-                mask="_" // Puedes personalizar la máscara que desees
-                onValueChange={(values) => {
-                    // Verifica si el valor es negativo
-                    if (Number(values.value) < 0) {
-                        return; // No hacer nada si el valor es negativo
-                    }
-
-                    onChange({
-                        target: {
-                            name: props.name,
-                            value: values.value,
-                        },
-                    });
-                }}
-            />
-        );
-    }
-);
-const NumeroFormat = React.forwardRef<any, CustomProps>(
-    function NumeroFormat(props, ref) {
-        const { onChange, ...other } = props;
-
-        return (
-            <PatternFormat
-                {...other}
-                getInputRef={ref}
-                format="##########"
-                mask="_" // Puedes personalizar la máscara que desees
-                onValueChange={(values) => {
-                    // Verifica si el valor es negativo
-                    if (Number(values.value) < 0) {
-                        return; // No hacer nada si el valor es negativo
-                    }
-
-                    onChange({
-                        target: {
-                            name: props.name,
-                            value: values.value,
-                        },
-                    });
-                }}
-            />
-        );
-    }
-);
-const EdadFormat = React.forwardRef<any, CustomProps>(
-    function EdadFortmat(props, ref) {
-        const { onChange, ...other } = props;
-
-        return (
-            <PatternFormat
-                {...other}
-                getInputRef={ref}
-                format="###"
-                mask="_" // Puedes personalizar la máscara que desees
-                onValueChange={(values) => {
-                    // Verifica si el valor es negativo
-                    if (Number(values.value) < 0) {
-                        return; // No hacer nada si el valor es negativo
-                    }
-
-                    onChange({
-                        target: {
-                            name: props.name,
-                            value: values.value,
-                        },
-                    });
-                }}
-            />
-        );
-    }
-);
-
 
 // Hay que dividirla en otros componente o que se pasen varios datos como props
 export default function CreadorChoferes(props: Choferes) {
@@ -353,6 +268,12 @@ export default function CreadorChoferes(props: Choferes) {
                     />
                 </Stack>
             </Box>
+            <Box display="flex" flexDirection="row" gap={2}
+                alignContent={"center"}
+                alignItems={"center"}
+                marginTop={2}
+                marginBottom={1}
+            >
             <TextField
                 margin="dense"
                 label="Nombre"
@@ -381,6 +302,7 @@ export default function CreadorChoferes(props: Choferes) {
                 onChange={setApellido}
                 error={errorApellido}
             />
+            </Box>
             <Stack direction="row" spacing={2}>
                 <TextField
                     margin="dense"
@@ -468,5 +390,43 @@ export default function CreadorChoferes(props: Choferes) {
                 />
             </Dialog>
         </>
+    );
+}
+*/
+
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+import { useState } from "react";
+//import { Dialog, Button, IconButton } from "@mui/material";
+import React from "react";
+
+export default function CreadorChoferes({
+    onSubmit,
+    children,
+    seleccionado, // Datos iniciales para el formulario
+    handleClose,  // Función para cerrar el diálogo desde el componente padre
+}: {
+    onSubmit: (data: any) => void; // Función a ejecutar al enviar el formulario
+    children: React.ReactNode;     // Componente de formulario a renderizar
+    seleccionado?: any;            // Datos iniciales
+    handleClose: () => void;       // Método para cerrar el diálogo
+}) {
+    const [openDialogDelete, setOpenDialogDelete] = useState(false);
+    const handleClickDeleteCarga = () => {
+        setOpenDialogDelete(true);
+    };
+    const handleCloseDialog = () => {
+        setOpenDialogDelete(false);
+    };
+    return (
+        <Dialog open onClose={handleCloseDialog}>
+            <ChoferForm onSubmit={onSubmit}/>
+            <Button onClick={handleCloseDialog} color="primary">
+                Cancelar
+            </Button>
+            <IconButton onClick={() => handleClickDeleteCarga()}>
+                <DeleteOutlineIcon sx={{ fontSize: 20, color: "#d68384" }} />
+            </IconButton>
+        </Dialog>
+        
     );
 }
