@@ -1,12 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
-import { Box, CircularProgress, Dialog, DialogContent, DialogTitle, Typography } from "@mui/material";
-import BorderColorIcon from "@mui/icons-material/BorderColor";
-import { ContextoGeneral } from "../../Contexto";
-import CreadorCamiones from "./CreadorCamiones";
-import { useContext, useEffect, useState } from "react";
-import { EditToolbar } from "../../botones/EditToolbar";
-
+//import { DataGrid, GridColDef } from "@mui/x-data-grid";
+//import { Box, CircularProgress, Dialog, DialogContent, DialogTitle, Typography } from "@mui/material";
+//import BorderColorIcon from "@mui/icons-material/BorderColor";
+//import { ContextoGeneral } from "../../Contexto";
+//import { useContext, useEffect, useState } from "react";
+//import { EditToolbar } from "../../botones/EditToolbar";
+/*
 export default function Camiones() {
     const [ open, setOpen ] = useState(false);
     const [ camionSeleccionado, setCamionSeleccionado ] = useState<any>(null);
@@ -26,6 +25,7 @@ export default function Camiones() {
             .then((data) => {
                 setCamiones(data);
                 setEstadoCarga("Cargado");
+                console.log(data);
             })
             .catch(() =>
                 console.error("Error al obtener las tiposAcoplados disponibles")
@@ -172,5 +172,33 @@ export default function Camiones() {
                 </Box>
             </Box>
         </>
+    );
+}
+*/
+import TablaTemplate from "../../tablas/TablaTemplate";
+//import { ContextoGeneral } from "../Contexto";
+import CreadorCamiones from "./CreadorCamiones";
+
+export default function Choferes() {
+    //const { backendURL } = useContext(ContextoGeneral);
+
+    // Aca definis los fields del json que mandan del back y abajo los nombres de las columnas
+    const fields = ["patente", "urlRTO", "urlPolizaSeguro", "urlRuta"];
+    const headerNames = [
+        "Patente",
+        "URL RTO",
+        "URL Póliza de Seguro",
+        "URL Ruta",
+    ];
+
+    return (
+        <TablaTemplate
+            titulo="Camiones"
+            entidad="camion"
+            endpoint="camiones"
+            fields={fields}
+            headerNames={headerNames}
+            DialogoCreador={CreadorCamiones}
+        />
     );
 }

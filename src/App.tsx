@@ -68,7 +68,7 @@ function App() {
 
                                     />
                                     <Route
-                                        path="/choferes"
+                                        path="/colaboradores"
                                         element={
                                             //<RutasProtegidas>
                                                 <Choferes />

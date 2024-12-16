@@ -71,7 +71,7 @@ export default function CreadorTurno(props: CreadorProps) {
         idEstado: 0,
     });
     useEffect(() => {
-        fetch(`${backendURL}/choferes`, {
+        fetch(`${backendURL}/colaboradores`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",

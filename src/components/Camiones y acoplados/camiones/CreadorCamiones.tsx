@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/*
 import { Button, Dialog, IconButton, TextField } from "@mui/material";
 import * as React from "react";
 import { ContextoGeneral } from "../../Contexto";
@@ -14,8 +16,8 @@ interface Camiones {
 
 export default function CreadorCamiones(props: Camiones) {
     const { backendURL } = useContext(ContextoGeneral);
-    let { handleClose, camionSeleccionado, camiones, setCamiones } = props;
-    let [datosNuevoCamion, setDatosNuevoCamion] = React.useState<any>({
+    const { handleClose, camionSeleccionado, camiones, setCamiones } = props;
+    const [datosNuevoCamion, setDatosNuevoCamion] = React.useState<any>({
         patente: camionSeleccionado?.patente,
         urlRTO:
             camionSeleccionado?.urlRTO == "No especificado"
@@ -204,3 +206,28 @@ export default function CreadorCamiones(props: Camiones) {
         </>
     );
 }
+
+*/
+
+//import React, { useState } from 'react';
+import { Dialog, DialogTitle, DialogContent } from '@mui/material';
+import CamionForm from '../../forms/camiones/CamionForm';
+
+const CreadorCamiones = ({ seleccionado, handleClose, datos, setDatos }) => {
+
+  return (
+    <Dialog open onClose={handleClose} maxWidth="sm" fullWidth>
+      <DialogTitle>{seleccionado ? 'Editar Camión' : 'Crear Camión'}</DialogTitle>
+      <DialogContent>
+        <CamionForm
+          seleccionado={seleccionado}
+          datos={datos}
+          setDatos={setDatos}
+          handleClose={handleClose}
+        />
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+export default CreadorCamiones;
