@@ -117,6 +117,10 @@ export default function CreadorAcoplados(props: Acoplados) {
             ? `${backendURL}/acoplados/${datosNuevoAcoplado["patente"]}`
             : `${backendURL}/acoplados`;
 
+            //console.log(acopladoSeleccionado);
+            //for (const elemento in acopladoSeleccionado) {
+            //    console.log(`${elemento}: ${JSON.stringify(acopladoSeleccionado[elemento])}`);
+            //}
         fetch(url, {
             method: metodo,
             headers: { "Content-Type": "application/json" },
@@ -129,11 +133,19 @@ export default function CreadorAcoplados(props: Acoplados) {
             .then((data) => {
                 if (metodo === "POST") {
                     setAcoplados((acoplados: any) => [...acoplados, data]);
+                    console.log("aaaaaaaaaaaaaaaaaaaa");
+                    for (const elemento in data) {
+                        console.log(`${elemento}: ${JSON.stringify(data[elemento])}`);
+                    }
                 } else {
                     const index = acoplados.findIndex(
                         (acoplado: { patente: any }) =>
                             acoplado.patente === datosNuevoAcoplado.patente
                     );
+                    console.log("aaaaaaaaaaaedit");
+                    for (const elemento in data) {
+                        console.log(`${elemento}: ${JSON.stringify(data[elemento])}`);
+                    }
                     if (index !== -1) {
                         acoplados[index] = data;
                         setAcoplados([...acoplados]);

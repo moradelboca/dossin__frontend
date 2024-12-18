@@ -213,7 +213,7 @@ export default function CreadorCamiones(props: Camiones) {
 import { Dialog, DialogTitle, DialogContent } from '@mui/material';
 import CamionForm from '../../forms/camiones/CamionForm';
 
-const CreadorCamiones = ({ seleccionado, handleClose, datos, setDatos }) => {
+const CreadorCamiones = ({ seleccionado, handleClose:, datos, setDatos }) => {
 
   return (
     <Dialog open onClose={handleClose} maxWidth="sm" fullWidth>

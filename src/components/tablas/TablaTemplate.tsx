@@ -5,20 +5,22 @@ import { useContext, useEffect, useState } from "react";
 import { EditToolbar } from "../botones/EditToolbar";
 import { ContextoGeneral } from "../Contexto";
 import BorderColorIcon from "@mui/icons-material/BorderColor";
+import CreadorEntidad from "../dialogs/CreadorEntidad";
+
 export default function TablaTemplate({
     titulo,
     entidad,
     endpoint,
     fields,
     headerNames,
-    DialogoCreador,
+    FormularioCreador,
 }: {
     titulo: string;
     entidad: string;
     endpoint: string;
     fields: string[];
     headerNames: string[];
-    DialogoCreador: React.ComponentType<any>;
+    FormularioCreador: React.ComponentType<any>;
 }) {
     const [open, setOpen] = useState(false);
     const [seleccionado, setSeleccionado] = useState<any>(null);
@@ -40,10 +42,11 @@ export default function TablaTemplate({
             .then((data) => {
                 setDatos(data);
                 setEstadoCarga("Cargado");
+                /*
                 for (const elemento in data) {
                     console.log(`${elemento}: ${JSON.stringify(data[elemento])}`);
                 }
-                
+                    */
             })
             .catch(() => console.error(`Error al obtener ${entidad}`));
     };
@@ -184,13 +187,16 @@ export default function TablaTemplate({
                         <DialogTitle>
                             {seleccionado ? `Editar ${entidad}` : `Crear ${entidad}`}
                         </DialogTitle>
+                        
                         <DialogContent>
-                            <DialogoCreador
+                            <CreadorEntidad
                                 seleccionado={seleccionado}
                                 handleClose={handleClose}
                                 datos={datos}
-                                setCamiones={setDatos}
-                            />
+                                setDatos={setDatos}
+                                nombreEntidad= {entidad}
+                                Formulario={FormularioCreador}
+                            ></CreadorEntidad>
                         </DialogContent>
                     </Dialog>
                 </Box>

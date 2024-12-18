@@ -1,26 +1,28 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useContext, useState } from "react";
-import { Button, Dialog, IconButton, TextField, Box } from "@mui/material";
+import React, { useContext, useEffect, useState } from "react";
+import { Button, Dialog, IconButton, TextField, Box, Autocomplete } from "@mui/material";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
-//import DeleteCamion from "../../Camiones y acoplados/camiones/DeleteCamion";
 import DeleteEntidad from "../../dialogs/DeleteEntidad";
 import useValidation from "../../hooks/useValidation";
 import { ContextoGeneral } from "../../Contexto";
 import { FormularioProps } from "../../../interfaces/FormularioProps";
 
-const CamionForm: React.FC<FormularioProps> = ({
+const AcopladoForm: React.FC<FormularioProps> = ({
     seleccionado = {},
-    datos, 
+    datos,
     setDatos,
     handleClose,
 }) => {
     const { backendURL } = useContext(ContextoGeneral);
     const [openDialogDelete, setOpenDialogDelete] = useState(false);
 
-    // Validaciones y datos iniciales
+    const [tiposAcoplados, setTiposAcoplados] = useState<any[]>([]);
+    const [tipoSeleccionado, setTipoSeleccionado] = useState<string | null>(seleccionado?.nombreTipoAcoplado || null);
+
     const { data, errors, handleChange, validateAll } = useValidation(
         {
             patente: "",
+            tipoAcoplado: "",
             urlRTO: "",
             urlPolizaSeguro: "",
             urlRuta: "",
@@ -31,6 +33,7 @@ const CamionForm: React.FC<FormularioProps> = ({
                 !/^([A-Za-z]{3}\d{3}|[A-Za-z]{2}\d{3}[A-Za-z]{2})$/.test(value)
                     ? "La patente debe ser válida (LLLNNN o LLNNNLL)"
                     : null,
+            tipoAcoplado: () => (!tipoSeleccionado ? "Debe seleccionar un tipo de acoplado" : null),
             urlRTO: (value) =>
                 value && !/^https?:\/\//.test(value)
                     ? "Debe ser una URL válida"
@@ -46,23 +49,53 @@ const CamionForm: React.FC<FormularioProps> = ({
         }
     );
 
+    useEffect(() => {
+        fetch(`${backendURL}/acoplados/tiposacoplados`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "ngrok-skip-browser-warning": "true",
+            },
+        })
+            .then((response) => response.json())
+            .then((data) => setTiposAcoplados(data))
+            .catch(() => console.error("Error al obtener los tipos de acoplados disponibles"));
+    }, [backendURL]);
+
+
     const handleSubmit = () => {
         if (validateAll()) {
             const metodo = seleccionado?.patente ? "PUT" : "POST";
             const url = seleccionado?.patente
-                ? `${backendURL}/camiones/${data.patente}`
-                : `${backendURL}/camiones`;
-
+                ? `${backendURL}/acoplados/${data.patente}`
+                : `${backendURL}/acoplados`;
+    
+            const idTipoAcoplado = tiposAcoplados.find(
+                (tipo) => tipo.nombre === tipoSeleccionado
+            )?.id;
+    
+            if (!idTipoAcoplado) {
+                console.error("Error: Tipo de acoplado no válido o no encontrado.");
+                return;
+            }
+    
+            const payload = {
+                patente: data.patente,
+                urlRTO: data.urlRTO,
+                urlPolizaSeguro: data.urlPolizaSeguro,
+                urlRuta: data.urlRuta,
+                idTipoAcoplado,
+            };
+    
             fetch(url, {
                 method: metodo,
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(data),
+                body: JSON.stringify(payload),
             })
-                .then((response) => {
+                .then(async (response) => {
                     if (!response.ok) {
-                        return response.text().then((text) => {
-                            throw new Error(`Error ${response.status}: ${text}`);
-                        });
+                        const errorMessage = await response.text();
+                        throw new Error(`Error del servidor: ${errorMessage}`);
                     }
                     return response.json();
                 })
@@ -70,23 +103,24 @@ const CamionForm: React.FC<FormularioProps> = ({
                     if (metodo === "POST") {
                         setDatos([...datos, newData]);
                     } else {
-                        const datosActualizados = datos.map((camion: { patente: string }) =>
-                            camion.patente === data.patente ? newData : camion
+                        setDatos(
+                            datos.map((acoplado: { patente: any; }) =>
+                                acoplado.patente === data.patente ? newData : acoplado
+                            )
                         );
-                        setDatos(datosActualizados);
                     }
+                    handleClose();
                 })
-                .catch((error) => console.error(`Error al guardar el camión: ${error.message}`));
-            handleClose();
+                .catch((error) => console.error(`Error: ${error.message}`));
         }
     };
+    
 
     const handleClickDeleteCarga = () => setOpenDialogDelete(true);
     const handleCloseDialog = () => setOpenDialogDelete(false);
 
     return (
         <>
-            
             <TextField
                 margin="dense"
                 label="Patente"
@@ -98,6 +132,22 @@ const CamionForm: React.FC<FormularioProps> = ({
                 error={!!errors.patente}
                 helperText={errors.patente}
                 disabled={!!seleccionado?.patente}
+            />
+
+            <Autocomplete
+                disablePortal
+                options={tiposAcoplados.map((tipo) => tipo.nombre)}
+                value={tipoSeleccionado}
+                onChange={(_, newValue) => setTipoSeleccionado(newValue)}
+                renderInput={(params) => (
+                    <TextField
+                        {...params}
+                        label="Tipo de Acoplado"
+                        variant="outlined"
+                        error={!!errors.tipoAcoplado}
+                        helperText={!tipoSeleccionado ? "Seleccione un tipo de acoplado" : ""}
+                    />
+                )}
             />
 
             <TextField
@@ -144,7 +194,6 @@ const CamionForm: React.FC<FormularioProps> = ({
                     </IconButton>
                 )}
             </Box>
-            
 
             <Dialog
                 open={openDialogDelete}
@@ -154,7 +203,7 @@ const CamionForm: React.FC<FormularioProps> = ({
             >
                 <DeleteEntidad
                     idEntidad={data.patente}
-                    endpointEntidad="camiones"
+                    endpointEntidad="acoplados"
                     handleCloseDialog={handleCloseDialog}
                     handleClose={handleClose}
                     datos={datos}
@@ -165,4 +214,4 @@ const CamionForm: React.FC<FormularioProps> = ({
     );
 };
 
-export default CamionForm;
+export default AcopladoForm;
