@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+/*
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { Box, CircularProgress, Dialog, DialogContent, DialogTitle, Typography } from "@mui/material";
 import { ContextoGeneral } from "../../Contexto";
@@ -182,5 +183,39 @@ export default function Acoplados() {
                 </Box>
             </Box>
         </>
+    );
+}
+
+*/
+
+
+import TablaTemplate from "../../tablas/TablaTemplate";
+import AcopladoForm from "../../forms/acoplados/AcopladoForm";
+
+export default function Acoplados() {
+    const fields = [
+        "patente",
+        "tipoAcoplado",
+        "urlRTO",
+        "urlPolizaSeguro",
+        "urlRuta",
+    ];
+    const headerNames = [
+        "Patente",
+        "Tipo Acoplado",
+        "URL RTO",
+        "URL Póliza de Seguro",
+        "URL Ruta",
+    ];
+
+    return (
+        <TablaTemplate
+            titulo="Acoplados"
+            entidad="acoplado"
+            endpoint="acoplados"
+            fields={fields}
+            headerNames={headerNames}
+            FormularioCreador={AcopladoForm}
+        />
     );
 }

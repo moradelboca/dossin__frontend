@@ -89,7 +89,7 @@ export default function Navside(navSideProps: NavsideProps) {
         ["/"],
         [
             "/cargas",
-            "/choferes",
+            "/colaboradores",
             "/ubicaciones",
             "/empresas",
             "/camiones",

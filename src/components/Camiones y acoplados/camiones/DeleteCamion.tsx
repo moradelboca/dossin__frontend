@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Box, Button, Typography } from "@mui/material";
 import { useContext } from "react";
 import { ContextoGeneral } from "../../Contexto";
@@ -11,7 +12,7 @@ interface Camiones {
     setCamiones: any;
 }
 export default function DeleteCamion(props: Camiones) {
-    let { handleCloseDialog, patente, handleClose, camiones, setCamiones } =
+    const { handleCloseDialog, patente, handleClose, camiones, setCamiones } =
         props;
     const { backendURL, theme } = useContext(ContextoGeneral);
 

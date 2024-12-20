@@ -5,20 +5,22 @@ import { useContext, useEffect, useState } from "react";
 import { EditToolbar } from "../botones/EditToolbar";
 import { ContextoGeneral } from "../Contexto";
 import BorderColorIcon from "@mui/icons-material/BorderColor";
+import CreadorEntidad from "../dialogs/CreadorEntidad";
+
 export default function TablaTemplate({
     titulo,
     entidad,
     endpoint,
     fields,
     headerNames,
-    DialogoCreador,
+    FormularioCreador,
 }: {
     titulo: string;
     entidad: string;
     endpoint: string;
     fields: string[];
     headerNames: string[];
-    DialogoCreador: React.ComponentType<any>;
+    FormularioCreador: React.ComponentType<any>;
 }) {
     const [open, setOpen] = useState(false);
     const [seleccionado, setSeleccionado] = useState<any>(null);
@@ -40,13 +42,15 @@ export default function TablaTemplate({
             .then((data) => {
                 setDatos(data);
                 setEstadoCarga("Cargado");
+                /*
                 for (const elemento in data) {
                     console.log(`${elemento}: ${JSON.stringify(data[elemento])}`);
                 }
-                
+                    */
             })
             .catch(() => console.error(`Error al obtener ${entidad}`));
     };
+    
     useEffect(() => {
         refreshDatos();
     }, []);
@@ -62,23 +66,6 @@ export default function TablaTemplate({
         setSeleccionado(null);
         setOpen(false);
     };
-
-
-    // VER DESPUES PARA LA PARTE DE "No especificado" si es null
-    /*
-    const normalizeData = (data: any[]) => {
-        return data.map((item) =>
-            Object.fromEntries(
-                Object.entries(item).map(([key, value]) => [
-                    key,
-                    value === null || value === undefined || value === ""
-                        ? "No especificado"
-                        : value,
-                ])
-            )
-        );
-    };
-    */
     
     // Genera las columnas con los arrays de los props
     const columns: GridColDef[] = fields.map((field, index) => ({
@@ -157,7 +144,15 @@ export default function TablaTemplate({
                     )}
                     {estadoCarga === "Cargado" && (
                         <DataGrid
-                        rows={datos}
+                        rows={datos.map((item) => {
+                            const datosNormalizado = { ...item };
+                            fields.forEach((field) => {
+                                if (!datosNormalizado[field]) {
+                                    datosNormalizado[field] = "No especificado";
+                                }
+                            });
+                            return datosNormalizado;
+                        })}
                         columns={columns}
                         getRowId={(row) => row[fields[0]]}
                         sx={{
@@ -192,13 +187,16 @@ export default function TablaTemplate({
                         <DialogTitle>
                             {seleccionado ? `Editar ${entidad}` : `Crear ${entidad}`}
                         </DialogTitle>
+                        
                         <DialogContent>
-                            <DialogoCreador
-                                choferSeleccionado={seleccionado}
+                            <CreadorEntidad
+                                seleccionado={seleccionado}
                                 handleClose={handleClose}
-                                choferes={datos}
-                                setChoferes={setDatos}
-                            />
+                                datos={datos}
+                                setDatos={setDatos}
+                                nombreEntidad= {entidad}
+                                Formulario={FormularioCreador}
+                            ></CreadorEntidad>
                         </DialogContent>
                     </Dialog>
                 </Box>
