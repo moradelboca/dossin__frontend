@@ -1,16 +1,18 @@
 import React from "react";
 import { PatternFormat } from "react-number-format";
-import { CustomProps } from "../../../../interfaces/CustomProps";
+import { CustomProps } from "../../../interfaces/CustomProps";
+
+
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const NumeroFormat = React.forwardRef<any, CustomProps>((props, ref) => {
+const EdadFormat = React.forwardRef<any, CustomProps>((props, ref) => {
     const { onChange, ...other } = props;
 
     return (
         <PatternFormat
             {...other}
             getInputRef={ref}
-            format="##########"
+            format="##"
             mask="_" // Puedes personalizar la máscara que desees
             onValueChange={(values) => {
                 // Verifica si el valor es negativo
@@ -29,4 +31,4 @@ const NumeroFormat = React.forwardRef<any, CustomProps>((props, ref) => {
     );
 });
 
-export default NumeroFormat;
+export default EdadFormat;

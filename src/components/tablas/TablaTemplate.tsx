@@ -30,6 +30,7 @@ export default function TablaTemplate({
 
     // Hay que pasar el endpoint en los props
     // Hacerlo despues con axios
+    
     const refreshDatos = () => {
         fetch(`${backendURL}/${endpoint}`, {
             method: "GET",
@@ -42,11 +43,11 @@ export default function TablaTemplate({
             .then((data) => {
                 setDatos(data);
                 setEstadoCarga("Cargado");
-                /*
-                for (const elemento in data) {
-                    console.log(`${elemento}: ${JSON.stringify(data[elemento])}`);
-                }
-                    */
+                
+                //for (const elemento in data) {
+                //    console.log(`${elemento}: ${JSON.stringify(data[elemento])}`);
+                //}
+                
             })
             .catch(() => console.error(`Error al obtener ${entidad}`));
     };
@@ -54,6 +55,48 @@ export default function TablaTemplate({
     useEffect(() => {
         refreshDatos();
     }, []);
+    
+   /*
+    useEffect(() => {
+        // Simula la obtención de los datos (reemplaza esto con la lógica real de carga)
+        let fetchedDatos = [
+            {
+                "cuit": 30567890123,
+                "razonSocial": "Transporte SRL",
+                "nombreFantasia": "Transporte",
+                "localidad": null,
+                "numeroCel": "3511234567",
+                "urlConstanciaAfip": null,
+                "urlConstanciaCBU": null,
+                "email": "test@test.com"
+            },
+            {
+                "cuit": 30567890126,
+                "razonSocial": "Movimiento SRL",
+                "nombreFantasia": "JUJAS",
+                "localidad": {
+                    "nombre": "CABA",
+                    "id": 1,
+                    "provincia": {
+                        "nombre": "Buenos Aires",
+                        "id": 1,
+                        "pais": {
+                            "nombre": "Argentina",
+                            "id": 1
+                        }
+                    }
+                },
+                "numeroCel": "3511234567",
+                "urlConstanciaAfip": "https://youtube/",
+                "urlConstanciaCBU": "https://www.twitch.tv/",
+                "email": "jujassrl@gmail.com"
+            }
+        ];
+
+        setDatos(fetchedDatos);  // Usa setDatos para actualizar el estado
+        setEstadoCarga("Cargado");
+    }, []);
+    */
 
     const handleOpen = (item: any) => {
         if (item) {
@@ -94,6 +137,13 @@ export default function TablaTemplate({
             />
         ),
     });
+
+    const transformarCampo = (field: string, value: any) => {
+        if (field === "localidad" && value) {
+            return `${value.nombre} / ${value.provincia?.nombre || "Sin provincia"}`;
+        }
+        return value || "No especificado";
+    };
 
     return (
         <>
@@ -147,9 +197,7 @@ export default function TablaTemplate({
                         rows={datos.map((item) => {
                             const datosNormalizado = { ...item };
                             fields.forEach((field) => {
-                                if (!datosNormalizado[field]) {
-                                    datosNormalizado[field] = "No especificado";
-                                }
+                                datosNormalizado[field] = transformarCampo(field, item[field]);
                             });
                             return datosNormalizado;
                         })}
@@ -161,6 +209,8 @@ export default function TablaTemplate({
                                 color: theme.colores.grisOscuro,
                             },
                             border: "none",
+                            whiteSpace: "normal",
+                            wordBreak: "break-word",
                             }}
                             slots={{
                                 toolbar: (props) => (

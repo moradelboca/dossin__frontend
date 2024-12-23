@@ -1,17 +1,16 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Box, Button, Dialog, IconButton, Stack, TextField } from "@mui/material";
-import * as React from "react";
-import { ContextoGeneral } from "../Contexto";
-import { useContext, useEffect, useState } from "react";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
-import { PatternFormat } from "react-number-format";
-import AutocompletarPais from "../cargas/autocompletar/AutocompletarPais";
-import DeleteChoferes from "./DeleteChoferes";
+import { Box, Button, Dialog, IconButton, Stack, TextField } from "@mui/material";
 import Autocomplete from "@mui/material/Autocomplete";
-import CuilFormat from "../forms/Choferes/formatos/CuilFormat";
-import EdadFormat from "../forms/Choferes/formatos/EdadFormat";
-import NumeroFormat from "../forms/Choferes/formatos/NumeroFormat";
+import * as React from "react";
+import { useContext, useEffect, useState } from "react";
+import AutocompletarPais from "../cargas/autocompletar/AutocompletarPais";
+import { ContextoGeneral } from "../Contexto";
 import ChoferForm from "../forms/Choferes/ChoferForm";
+import EdadFormat from "../forms/formatos/EdadFormat";
+import NumeroFormat from "../forms/formatos/NumeroFormat";
+import CuilFormat from "../forms/formatos/CuilFormat";
+import DeleteChoferes from "./DeleteChoferes";
 
 
 // Otro archivo para hacer Interfaz

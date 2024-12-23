@@ -45,98 +45,98 @@ function App() {
                                     <Route
                                         path="/cargas"
                                         element={
-                                            <RutasProtegidas>
+                                            //<RutasProtegidas>
                                                 <ContainerCargas />
-                                            </RutasProtegidas>
+                                            //</RutasProtegidas>
                                         }
                                     />
                                     <Route
                                         path="/cargas/:idCarga"
                                         element={
-                                            <RutasProtegidas>
+                                            //<RutasProtegidas>
                                                 <ContainerCargas />
-                                            </RutasProtegidas>
+                                            //</RutasProtegidas>
                                     }
                                     />
                                     <Route
                                         path="cargas/:idCarga/cupos"
                                         element={
-                                            <RutasProtegidas>
+                                            //<RutasProtegidas>
                                                 <ContainerCupos />
-                                            </RutasProtegidas>
+                                            //</RutasProtegidas>
                                     }
 
                                     />
                                     <Route
                                         path="/colaboradores"
                                         element={
-                                            <RutasProtegidas>
+                                            //<RutasProtegidas>
                                                 <Choferes />
-                                            </RutasProtegidas>
+                                            //</RutasProtegidas>
                                         }
                                     />
                                     <Route
                                         path="/ubicaciones"
                                         element={
-                                            <RutasProtegidas>
+                                            //<RutasProtegidas>
                                                 <MapaMain />
-                                            </RutasProtegidas>
+                                            //</RutasProtegidas>
                                         }
                                     />
                                     <Route
                                         path="/empresas"
                                         element={
-                                            <RutasProtegidas>
+                                            //<RutasProtegidas>
                                                 <Empresas />
-                                            </RutasProtegidas>
+                                            //</RutasProtegidas>
                                         }
                                     />
                                     <Route
                                         path="/camiones"
                                         element={
-                                            <RutasProtegidas>
+                                            //<RutasProtegidas>
                                                 <TabCamiones />
-                                            </RutasProtegidas>
+                                            //</RutasProtegidas>
                                         }
                                     />
                                     <Route
                                         path="/inconvenientes"
                                         element={
-                                            <RutasProtegidas>
+                                            //<RutasProtegidas>
                                                 <ContainerInconvenientes />
-                                            </RutasProtegidas>
+                                            //</RutasProtegidas>
                                         }
                                     />
                                     <Route
                                         path="/clima"
                                         element={
-                                            <RutasProtegidas>
+                                            //<RutasProtegidas>
                                                 <Clima />
-                                            </RutasProtegidas>
+                                            //</RutasProtegidas>
                                         }
                                     />
                                     <Route
                                         path="/calculadora"
                                         element={
-                                            <RutasProtegidas>
+                                            //<RutasProtegidas>
                                                 <TarifaApp />
-                                            </RutasProtegidas>
+                                            //</RutasProtegidas>
                                     }
                                     />
                                     <Route
                                         path="/admin"
                                         element={
-                                            <RutasProtegidas>
+                                            //<RutasProtegidas>
                                                 <TablaUser />
-                                            </RutasProtegidas>
+                                            //</RutasProtegidas>
                                             }
                                     />
                                     <Route
                                         path="*"
                                         element={
-                                            <RutasProtegidas>
+                                            //<RutasProtegidas>
                                                 <PaginaNoDisponible />
-                                            </RutasProtegidas>
+                                            //</RutasProtegidas>
                                     }
 
                                     />
@@ -147,12 +147,12 @@ function App() {
                 </ContextoGeneral.Provider>
                 <link
                     rel="stylesheet"
-                    href="https:unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+                    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
                     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
                     crossOrigin="anonymous"
                 />
                 <script
-                    src="https:unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+                    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
                     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
                     crossOrigin="anonymous"
                 ></script>

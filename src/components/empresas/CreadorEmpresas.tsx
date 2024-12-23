@@ -11,9 +11,10 @@ import * as React from "react";
 import { ContextoGeneral } from "../Contexto";
 import { useContext, useState } from "react";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
-import { PatternFormat } from "react-number-format";
 import AutocompletarPais from "../cargas/autocompletar/AutocompletarPais";
 import DeleteEmpresas from "./DeleteEmpresas";
+import CuilFormat from "../forms/formatos/CuilFormat";
+import NumeroFormat from "../forms/formatos/NumeroFormat";
 
 interface Empresas {
     handleClose: any;
@@ -21,65 +22,6 @@ interface Empresas {
     empresas: any;
     setEmpresas: any;
 }
-interface CustomProps {
-    onChange: (event: { target: { name: string; value: string } }) => void;
-    name: string;
-}
-
-const CuilFormat = React.forwardRef<any, CustomProps>(
-    function CuilFormat(props, ref) {
-        const { onChange, ...other } = props;
-
-        return (
-            <PatternFormat
-                {...other}
-                getInputRef={ref}
-                format="##-########-#"
-                mask="_" // Puedes personalizar la máscara que desees
-                onValueChange={(values) => {
-                    // Verifica si el valor es negativo
-                    if (Number(values.value) < 0) {
-                        return; // No hacer nada si el valor es negativo
-                    }
-
-                    onChange({
-                        target: {
-                            name: props.name,
-                            value: values.value,
-                        },
-                    });
-                }}
-            />
-        );
-    }
-);
-const NumeroFormat = React.forwardRef<any, CustomProps>(
-    function NumeroFormat(props, ref) {
-        const { onChange, ...other } = props;
-
-        return (
-            <PatternFormat
-                {...other}
-                getInputRef={ref}
-                format="##########"
-                mask="_" // Puedes personalizar la máscara que desees
-                onValueChange={(values) => {
-                    // Verifica si el valor es negativo
-                    if (Number(values.value) < 0) {
-                        return; // No hacer nada si el valor es negativo
-                    }
-
-                    onChange({
-                        target: {
-                            name: props.name,
-                            value: values.value,
-                        },
-                    });
-                }}
-            />
-        );
-    }
-);
 
 export default function CreadorEmpresas(props: Empresas) {
     const { backendURL } = useContext(ContextoGeneral);

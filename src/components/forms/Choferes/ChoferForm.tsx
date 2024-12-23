@@ -2,11 +2,11 @@
 import { Autocomplete, Box, Button, Stack, TextField } from "@mui/material";
 import React, { useContext, useEffect, useState } from "react";
 import AutocompletarPais from "../../cargas/autocompletar/AutocompletarPais";
-import CuilFormat from "./formatos/CuilFormat";
-import EdadFormat from "./formatos/EdadFormat";
-import NumeroFormat from "./formatos/NumeroFormat";
-import useValidation from "../../hooks/useValidation";
 import { ContextoGeneral } from "../../Contexto";
+import useValidation from "../../hooks/useValidation";
+import CuilFormat from "../formatos/CuilFormat";
+import EdadFormat from "../formatos/EdadFormat";
+import NumeroFormat from "../formatos/NumeroFormat";
 
 interface ChoferFormProps {
     onSubmit: (data: any) => void; // Acción al guardar
