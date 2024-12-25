@@ -14,6 +14,7 @@ export default function TablaTemplate({
     fields,
     headerNames,
     FormularioCreador,
+    usarPruebas = false
 }: {
     titulo: string;
     entidad: string;
@@ -21,17 +22,20 @@ export default function TablaTemplate({
     fields: string[];
     headerNames: string[];
     FormularioCreador: React.ComponentType<any>;
+    usarPruebas?: boolean;
 }) {
     const [open, setOpen] = useState(false);
     const [seleccionado, setSeleccionado] = useState<any>(null);
-    const { backendURL, theme } = useContext(ContextoGeneral);
+    const { backendURL, pruebas, theme } = useContext(ContextoGeneral);
     const [datos, setDatos] = useState<any[]>([]);
     const [estadoCarga, setEstadoCarga] = useState("Cargando");
 
-    // Hay que pasar el endpoint en los props
+    // Hay usamos el url del backend o el de pruebas
+    const apiURL = usarPruebas ? pruebas : backendURL;
+
     // Hacerlo despues con axios
     const refreshDatos = () => {
-        fetch(`${backendURL}/${endpoint}`, {
+        fetch(`${apiURL}/${endpoint}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -42,18 +46,13 @@ export default function TablaTemplate({
             .then((data) => {
                 setDatos(data);
                 setEstadoCarga("Cargado");
-                /*
-                for (const elemento in data) {
-                    console.log(`${elemento}: ${JSON.stringify(data[elemento])}`);
-                }
-                    */
             })
             .catch(() => console.error(`Error al obtener ${entidad}`));
     };
-    
+
     useEffect(() => {
         refreshDatos();
-    }, []);
+    }, [apiURL, endpoint]);
 
     const handleOpen = (item: any) => {
         if (item) {
@@ -144,40 +143,40 @@ export default function TablaTemplate({
                     )}
                     {estadoCarga === "Cargado" && (
                         <DataGrid
-                        rows={datos.map((item) => {
-                            const datosNormalizado = { ...item };
-                            fields.forEach((field) => {
-                                if (!datosNormalizado[field]) {
-                                    datosNormalizado[field] = "No especificado";
-                                }
-                            });
-                            return datosNormalizado;
-                        })}
-                        columns={columns}
-                        getRowId={(row) => row[fields[0]]}
-                        sx={{
-                            "& .MuiDataGrid-columnHeader": {
-                                backgroundColor: theme.colores.grisClaro,
-                                color: theme.colores.grisOscuro,
-                            },
-                            border: "none",
+                            rows={datos.map((item) => {
+                                const datosNormalizado = { ...item };
+                                fields.forEach((field) => {
+                                    if (!datosNormalizado[field]) {
+                                        datosNormalizado[field] = "No especificado";
+                                    }
+                                });
+                                return datosNormalizado;
+                            })}
+                            columns={columns}
+                            getRowId={(row) => row[fields[0]]}
+                            sx={{
+                                "& .MuiDataGrid-columnHeader": {
+                                    backgroundColor: theme.colores.grisClaro,
+                                    color: theme.colores.grisOscuro,
+                                },
+                                border: "none",
                             }}
                             slots={{
                                 toolbar: (props) => (
                                     <EditToolbar
-                                    setRows={function (): void {
-                                        throw new Error(
-                                            "Function not implemented."
-                                        );
-                                    }}
-                                    setRowModesModel={function (): void {
-                                        throw new Error(
-                                            "Function not implemented."
-                                        );
-                                    }}
-                                    {...props}
-                                    onAdd={() => handleOpen(null)}
-                                    name= {entidad}                                    
+                                        setRows={function (): void {
+                                            throw new Error(
+                                                "Function not implemented."
+                                            );
+                                        }}
+                                        setRowModesModel={function (): void {
+                                            throw new Error(
+                                                "Function not implemented."
+                                            );
+                                        }}
+                                        {...props}
+                                        onAdd={() => handleOpen(null)}
+                                        name={entidad}
                                     />
                                 ),
                             }}
@@ -194,7 +193,7 @@ export default function TablaTemplate({
                                 handleClose={handleClose}
                                 datos={datos}
                                 setDatos={setDatos}
-                                nombreEntidad= {entidad}
+                                nombreEntidad={entidad}
                                 Formulario={FormularioCreador}
                             ></CreadorEntidad>
                         </DialogContent>
