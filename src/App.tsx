@@ -41,7 +41,7 @@ function App() {
                             >
                                 <Routes>
                                     <Route path="/" />
-                                    {/* Son rutas protegidas ahora*/}
+                                    {/* Son rutas protegidas ahora*/}                                    
                                     <Route
                                         path="/cargas"
                                         element={
