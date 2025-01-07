@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+/*
 import * as React from "react";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { Box, CircularProgress, Dialog, DialogContent, DialogTitle, Typography } from "@mui/material";
@@ -54,8 +55,8 @@ export default function Empresas() {
         "cuit",
         "razonSocial",
         "nombreFantasia",
+        "localidad",
         "numeroCel",
-        "idUbicacion",
         "urlConstanciaAfip",
         "urlConstanciaCbu",
         "email",
@@ -64,8 +65,8 @@ export default function Empresas() {
         "Cuit",
         "Razon Social",
         "Nombre Fantasia",
+        "Localidad",
         "Numero Cel",
-        "Ubicacion",
         "URL Constancia Afip ",
         "URL Constancia Cbu",
         "Email",
@@ -212,5 +213,43 @@ export default function Empresas() {
                 </Box>
             </Box>
         </>
+    );
+}
+*/
+
+import TablaTemplate from "../tablas/TablaTemplate";
+import EmpresaForm from "../forms/empresas/EmpresaForm";
+
+export default function Empresas() {
+    const fields = [
+        "cuit",
+        "razonSocial",
+        "nombreFantasia",
+        "localidad",
+        "numeroCel",
+        "urlConstanciaAfip",
+        "urlConstanciaCbu",
+        "email",
+    ];
+    const headerNames = [
+        "Cuit",
+        "Razón Social",
+        "Nombre Fantasía",
+        "Localidad/Provincia",
+        "Número Celular",
+        "URL Constancia Afip",
+        "URL Constancia CBU",
+        "Email",
+    ];
+
+    return (
+        <TablaTemplate
+            titulo="Empresas"
+            entidad="empresa"
+            endpoint="empresastransportistas"
+            fields={fields}
+            headerNames={headerNames}
+            FormularioCreador={EmpresaForm}
+        />
     );
 }

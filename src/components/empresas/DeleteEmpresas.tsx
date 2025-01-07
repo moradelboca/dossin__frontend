@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Box, Button, Typography } from "@mui/material";
 import { useContext } from "react";
 import { ContextoGeneral } from "../Contexto";
@@ -11,7 +12,7 @@ interface Empresas {
     setEmpresas: any;
 }
 export default function DeleteEmpresas(props: Empresas) {
-    let { handleCloseDialog, cuit, handleClose, empresas, setEmpresas } = props;
+    const { handleCloseDialog, cuit, handleClose, empresas, setEmpresas } = props;
     const { backendURL, theme } = useContext(ContextoGeneral);
 
     const handleNoClick = () => {
@@ -27,6 +28,7 @@ export default function DeleteEmpresas(props: Empresas) {
             },
         })
             .then((response) => response.json())
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
             .then((_data) => {
                 const newEmpresa = empresas.filter(
                     (empresa: { cuit: any }) => empresa.cuit !== cuit
