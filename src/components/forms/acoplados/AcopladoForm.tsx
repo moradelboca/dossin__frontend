@@ -17,8 +17,8 @@ const AcopladoForm: React.FC<FormularioProps> = ({
     const [openDialogDelete, setOpenDialogDelete] = useState(false);
 
     const [tiposAcoplados, setTiposAcoplados] = useState<any[]>([]);
-    const [tipoSeleccionado, setTipoSeleccionado] = useState<string | null>(seleccionado?.nombreTipoAcoplado || null);
-
+    const [tipoSeleccionado, setTipoSeleccionado] = useState<string | null>(seleccionado?.tipoAcoplado  || null);
+    
     const { data, errors, handleChange, validateAll } = useValidation(
         {
             patente: "",
@@ -73,12 +73,8 @@ const AcopladoForm: React.FC<FormularioProps> = ({
             const idTipoAcoplado = tiposAcoplados.find(
                 (tipo) => tipo.nombre === tipoSeleccionado
             )?.id;
-    
-            if (!idTipoAcoplado) {
-                console.error("Error: Tipo de acoplado no válido o no encontrado.");
-                return;
-            }
-    
+            
+            console.log(seleccionado?.patente);
             const payload = {
                 patente: data.patente,
                 urlRTO: data.urlRTO,
@@ -134,7 +130,7 @@ const AcopladoForm: React.FC<FormularioProps> = ({
                 disabled={!!seleccionado?.patente}
             />
 
-            <Autocomplete
+        <Autocomplete
                 disablePortal
                 options={tiposAcoplados.map((tipo) => tipo.nombre)}
                 value={tipoSeleccionado}

@@ -8,7 +8,7 @@ interface Telefono {
 }
 
 export default function AutocompletarPa(props: Telefono) {
-    let { setCodigoSeleccionado, error } = props;
+    const { setCodigoSeleccionado, error } = props;
     const handleChange = (_event: any, value: any) => {
         if (value) {
             setCodigoSeleccionado(value.phone);

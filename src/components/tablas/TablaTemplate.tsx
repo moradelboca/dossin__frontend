@@ -44,9 +44,9 @@ export default function TablaTemplate({
                 setDatos(data);
                 setEstadoCarga("Cargado");
                 
-                //for (const elemento in data) {
-                //    console.log(`${elemento}: ${JSON.stringify(data[elemento])}`);
-                //}
+                for (const elemento in data) {
+                    console.log(`${elemento}: ${JSON.stringify(data[elemento])}`);
+                }
                 
             })
             .catch(() => console.error(`Error al obtener ${entidad}`));
@@ -56,48 +56,6 @@ export default function TablaTemplate({
         refreshDatos();
     }, []);
     
-   /*
-    useEffect(() => {
-        // Simula la obtención de los datos (reemplaza esto con la lógica real de carga)
-        let fetchedDatos = [
-            {
-                "cuit": 30567890123,
-                "razonSocial": "Transporte SRL",
-                "nombreFantasia": "Transporte",
-                "localidad": null,
-                "numeroCel": "3511234567",
-                "urlConstanciaAfip": null,
-                "urlConstanciaCBU": null,
-                "email": "test@test.com"
-            },
-            {
-                "cuit": 30567890126,
-                "razonSocial": "Movimiento SRL",
-                "nombreFantasia": "JUJAS",
-                "localidad": {
-                    "nombre": "CABA",
-                    "id": 1,
-                    "provincia": {
-                        "nombre": "Buenos Aires",
-                        "id": 1,
-                        "pais": {
-                            "nombre": "Argentina",
-                            "id": 1
-                        }
-                    }
-                },
-                "numeroCel": "3511234567",
-                "urlConstanciaAfip": "https://youtube/",
-                "urlConstanciaCBU": "https://www.twitch.tv/",
-                "email": "jujassrl@gmail.com"
-            }
-        ];
-
-        setDatos(fetchedDatos);  // Usa setDatos para actualizar el estado
-        setEstadoCarga("Cargado");
-    }, []);
-    */
-
     const handleOpen = (item: any) => {
         if (item) {
             setSeleccionado(item);
@@ -139,10 +97,28 @@ export default function TablaTemplate({
     });
 
     const transformarCampo = (field: string, value: any) => {
-        if (field === "localidad" && value) {
-            return `${value.nombre} / ${value.provincia?.nombre || "Sin provincia"}`;
+        switch (field) {
+            case "localidad":
+                if (value) {
+                    return `${value.nombre} / ${value.provincia?.nombre || "Sin provincia"}`;
+                }
+                return "No especificado";
+    
+            case "empresas":
+                if (Array.isArray(value)) {
+                    return value.map((empresa: any) => `${empresa.nombreFantasia} - ${empresa.cuit}`).join(", ");
+                }
+                return "No especificado";
+
+            case "rol":
+                if (value) {
+                    return `${value.nombre}` || "Sin rol";
+                }
+                return "No especificado";
+
+            default:
+                return value || "No especificado";
         }
-        return value || "No especificado";
     };
 
     return (

@@ -8,6 +8,7 @@ import { ContextoGeneral } from "../../Contexto";
 import { FormularioProps } from "../../../interfaces/FormularioProps";
 import AutocompletarPais from "../../cargas/autocompletar/AutocompletarPais";
 import NumeroFormat from "../formatos/NumeroFormat";
+import CuilFormat from "../formatos/CuilFormat";
 
 const EmpresaForm: React.FC<FormularioProps> = ({
     seleccionado = {},
@@ -46,7 +47,7 @@ const EmpresaForm: React.FC<FormularioProps> = ({
                 value && !/^https?:\/\//.test(value)
                     ? "Debe ser una URL válida"
                     : null,
-            urlConstanciaCbu: (value) =>
+            urlConstanciaCBU: (value) =>
                 value && !/^https?:\/\//.test(value)
                     ? "Debe ser una URL válida"
                     : null,
@@ -85,10 +86,20 @@ const EmpresaForm: React.FC<FormularioProps> = ({
                 : `${backendURL}/empresastransportistas`;
     
             const localidadObjeto = localidades.find((loc) => loc.id === localidadSeleccionada);
-    
+            
+            console.log("localidades")
+            console.log(localidadSeleccionada);
+            console.log(localidadObjeto);
+            console.log("xddd")
             const payload = {
-                ...data,
-                idLocalidad: localidadObjeto.id, 
+                cuit: data.cuit,
+                razonSocial: data.razonSocial,
+                nombreFantasia: data.nombreFantasia,
+                idLocalidad: localidadObjeto?.id,
+                numeroCel: data.numeroCel,
+                urlConstanciaAfip: data.urlConstanciaAfip,
+                urlConstanciaCBU: data.urlConstanciaCBU,
+                email: data.email,
             };
             console.log("Localidades: \n",localidades)
             console.log("Objeto para enviar:", JSON.stringify(payload, null, 2));
@@ -101,6 +112,7 @@ const EmpresaForm: React.FC<FormularioProps> = ({
                 .then(async (response) => {
                     if (!response.ok) {
                         const errorMessage = await response.text();
+                        console.log(response);
                         throw new Error(`Error del servidor: ${errorMessage}`);
                     }
                     console.log(response);
@@ -141,6 +153,11 @@ const EmpresaForm: React.FC<FormularioProps> = ({
                 label="CUIT"
                 name="cuit"
                 variant="outlined"
+                slotProps={{
+                    input: {
+                        inputComponent: CuilFormat as any,
+                    },
+                }}
                 fullWidth
                 value={data.cuit}
                 onChange={handleChange("cuit")}
@@ -191,6 +208,11 @@ const EmpresaForm: React.FC<FormularioProps> = ({
                 label="Número de Celular"
                 name="numeroCel"
                 variant="outlined"
+                slotProps={{
+                    input: {
+                        inputComponent: NumeroFormat as any,
+                    },
+                }}
                 fullWidth
                 value={data.numeroCel}
                 onChange={handleChange("numeroCel")}
@@ -213,10 +235,10 @@ const EmpresaForm: React.FC<FormularioProps> = ({
                 label="URL Constancia CBU"
                 variant="outlined"
                 fullWidth
-                value={data.urlConstanciaCbu}
-                onChange={handleChange("urlConstanciaCbu")}
-                error={!!errors.urlConstanciaCbu}
-                helperText={errors.urlConstanciaCbu}
+                value={data.urlConstanciaCBU}
+                onChange={handleChange("urlConstanciaCBU")}
+                error={!!errors.urlConstanciaCBU}
+                helperText={errors.urlConstanciaCBU}
             />
                         
             <TextField
