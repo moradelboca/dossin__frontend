@@ -34,7 +34,6 @@ const ChoferForm: React.FC<FormularioProps> = ({
     const [loadingEmpresas, setLoadingEmpresas] = useState(false);
     const [loadingLocalidades, setLoadingLocalidades] = useState(false);
     
-    
     const { data, errors, handleChange, validateAll } = useValidation(
         {
             cuil: "",
@@ -133,14 +132,19 @@ const ChoferForm: React.FC<FormularioProps> = ({
             .finally(() => setLoadingLocalidades(false));
     }, [backendURL]);
 
-    
+    useEffect(() => {
+        if (seleccionado?.numeroCel) {
+            const [codigo, numero] = seleccionado.numeroCel.split("-");
+            setCodigoSeleccionado(codigo || "");
+            setNumeroCel(numero || "");
+        }
+    }, [seleccionado?.numeroCel]);
 
 
     const handleNumeroCelularChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const newNumeroCel = event.target.value;
-        console.log(newNumeroCel);
-        setNumeroCel(newNumeroCel);
-        handleChange("numeroCel")(event); // Actualiza también `data.numeroCel`
+        const numeroNuevo = event.target.value;
+        setNumeroCel(numeroNuevo);
+        handleChange("numeroCel")(event);
     };
 
     const handleSubmit = () => {
@@ -196,10 +200,6 @@ const ChoferForm: React.FC<FormularioProps> = ({
         }
     };
 
-    //const handleNumeroCelularChange = (event: React.ChangeEvent<HTMLInputElement>) //=> {
-    //    setNumeroCel(event.target.value);
-    //};
-
     const handleClickDelete = () => setOpenDialogDelete(true);
     const handleCloseDialog = () => setOpenDialogDelete(false);
 
@@ -233,6 +233,7 @@ const ChoferForm: React.FC<FormularioProps> = ({
                     <AutocompletarPais
                         setCodigoSeleccionado={setCodigoSeleccionado}
                         error={!!errors.numeroCel}
+                        defaultPhone={codigoSeleccionado}
                     />
                 </Box>
                 <>-</>
@@ -247,7 +248,7 @@ const ChoferForm: React.FC<FormularioProps> = ({
                                 inputComponent: NumeroFormat as any,
                             },
                         }}
-                        value={data.numeroCel}
+                        value={numeroCel}
                         onChange={handleNumeroCelularChange}
                         error={!!errors.numeroCel}
                         helperText={errors.numeroCel}

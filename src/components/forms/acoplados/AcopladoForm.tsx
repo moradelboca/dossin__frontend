@@ -74,7 +74,6 @@ const AcopladoForm: React.FC<FormularioProps> = ({
                 (tipo) => tipo.nombre === tipoSeleccionado
             )?.id;
             
-            console.log(seleccionado?.patente);
             const payload = {
                 patente: data.patente,
                 urlRTO: data.urlRTO,

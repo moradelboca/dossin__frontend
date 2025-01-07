@@ -1,14 +1,22 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
 
 interface Telefono {
-    setCodigoSeleccionado: any;
-    error: any;
+    setCodigoSeleccionado: (value: string) => void;
+    error: boolean;
+    defaultPhone?: string;
 }
 
 export default function AutocompletarPa(props: Telefono) {
-    const { setCodigoSeleccionado, error } = props;
+    const { setCodigoSeleccionado, error, defaultPhone } = props;
+
+    console.log("defaultPhone: ", defaultPhone);
+    const defaultCountry = countries.find(country => country.phone === defaultPhone) || null;
+    console.log("defaultCountry: ",defaultCountry);
+    console.log(countries.find(country => country.phone === defaultPhone) || "aaaa trolleado");
+
     const handleChange = (_event: any, value: any) => {
         if (value) {
             setCodigoSeleccionado(value.phone);
@@ -24,6 +32,7 @@ export default function AutocompletarPa(props: Telefono) {
             autoHighlight
             sx={{ width: "120px" }}
             getOptionLabel={(option) => option.phone}
+            value={defaultCountry}
             componentsProps={{ popper: { style: { width: "300px" } } }}
             renderOption={(props, option) => {
                 const { key, ...optionProps } = props;
@@ -63,13 +72,15 @@ export default function AutocompletarPa(props: Telefono) {
         />
     );
 }
+
 interface CountryType {
     code: string;
     label: string;
     phone: string;
     suggested?: boolean;
 }
-// From https://bitbucket.org/atlassian/atlaskit-mk-2/raw/4ad0e56649c3e6c973e226b7efaeb28cb240ccb0/packages/core/select/src/data/countries.js
+
+// Lista de países con prefijos telefónicos
 const countries: readonly CountryType[] = [
     { code: "AR", label: "Argentina", phone: "+549" },
     { code: "BO", label: "Bolivia", phone: "+591" },
