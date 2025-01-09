@@ -16,6 +16,8 @@ import PaginaNoDisponible from "./components/inconvenientes/PaginaNoDisponible";
 import { AuthProvider } from "./components/autenticacion/ContextoAuth";
 import TablaUser from "./components/admin/TablaUser";
 import RutasProtegidas from "./components/autenticacion/RutasProtegidas";
+import Usuarios from "./components/admin/Usuarios";
+import Dashboard from "./components/dashboard/Dashboard";
 
 
 function App() {
@@ -40,8 +42,13 @@ function App() {
                                 }}
                             >
                                 <Routes>
-                                    <Route path="/" />
-                                    {/* Son rutas protegidas ahora*/}                                    
+
+                                    <Route
+                                        path="/"
+                                        element={<Dashboard />}
+                                    />
+                                    {/* Son rutas protegidas ahora*/}
+
                                     <Route
                                         path="/cargas"
                                         element={
@@ -128,6 +135,7 @@ function App() {
                                         element={
                                             <RutasProtegidas>
                                                 <TablaUser />
+                                                <Usuarios/>
                                             </RutasProtegidas>
                                             }
                                     />

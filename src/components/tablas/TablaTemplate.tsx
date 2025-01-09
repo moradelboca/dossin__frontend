@@ -14,6 +14,7 @@ export default function TablaTemplate({
     fields,
     headerNames,
     FormularioCreador,
+    usarPruebas = false
 }: {
     titulo: string;
     entidad: string;
@@ -21,18 +22,21 @@ export default function TablaTemplate({
     fields: string[];
     headerNames: string[];
     FormularioCreador: React.ComponentType<any>;
+    usarPruebas?: boolean;
 }) {
     const [open, setOpen] = useState(false);
     const [seleccionado, setSeleccionado] = useState<any>(null);
-    const { backendURL, theme } = useContext(ContextoGeneral);
+    const { backendURL, pruebas, theme } = useContext(ContextoGeneral);
     const [datos, setDatos] = useState<any[]>([]);
     const [estadoCarga, setEstadoCarga] = useState("Cargando");
 
-    // Hay que pasar el endpoint en los props
+    // Hay usamos el url del backend o el de pruebas
+    const apiURL = usarPruebas ? pruebas : backendURL;
+
     // Hacerlo despues con axios
     
     const refreshDatos = () => {
-        fetch(`${backendURL}/${endpoint}`, {
+        fetch(${apiURL}/${endpoint}, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -43,15 +47,10 @@ export default function TablaTemplate({
             .then((data) => {
                 setDatos(data);
                 setEstadoCarga("Cargado");
-                
-                for (const elemento in data) {
-                    console.log(`${elemento}: ${JSON.stringify(data[elemento])}`);
-                }
-                
             })
-            .catch(() => console.error(`Error al obtener ${entidad}`));
+            .catch(() => console.error(Error al obtener ${entidad}));
     };
-    
+
     useEffect(() => {
         refreshDatos();
     }, []);
@@ -100,19 +99,19 @@ export default function TablaTemplate({
         switch (field) {
             case "localidad":
                 if (value) {
-                    return `${value.nombre} / ${value.provincia?.nombre || "Sin provincia"}`;
+                    return ${value.nombre} / ${value.provincia?.nombre || "Sin provincia"};
                 }
                 return "No especificado";
     
             case "empresas":
                 if (Array.isArray(value)) {
-                    return value.map((empresa: any) => `${empresa.nombreFantasia} - ${empresa.cuit}`).join(", ");
+                    return value.map((empresa: any) => ${empresa.nombreFantasia} - ${empresa.cuit}).join(", ");
                 }
                 return "No especificado";
 
             case "rol":
                 if (value) {
-                    return `${value.nombre}` || "Sin rol";
+                    return ${value.nombre} || "Sin rol";
                 }
                 return "No especificado";
 
@@ -191,19 +190,19 @@ export default function TablaTemplate({
                             slots={{
                                 toolbar: (props) => (
                                     <EditToolbar
-                                    setRows={function (): void {
-                                        throw new Error(
-                                            "Function not implemented."
-                                        );
-                                    }}
-                                    setRowModesModel={function (): void {
-                                        throw new Error(
-                                            "Function not implemented."
-                                        );
-                                    }}
-                                    {...props}
-                                    onAdd={() => handleOpen(null)}
-                                    name= {entidad}                                    
+                                        setRows={function (): void {
+                                            throw new Error(
+                                                "Function not implemented."
+                                            );
+                                        }}
+                                        setRowModesModel={function (): void {
+                                            throw new Error(
+                                                "Function not implemented."
+                                            );
+                                        }}
+                                        {...props}
+                                        onAdd={() => handleOpen(null)}
+                                        name={entidad}
                                     />
                                 ),
                             }}
@@ -211,7 +210,7 @@ export default function TablaTemplate({
                     )}
                     <Dialog open={open} onClose={handleClose}>
                         <DialogTitle>
-                            {seleccionado ? `Editar ${entidad}` : `Crear ${entidad}`}
+                            {seleccionado ? Editar ${entidad} : Crear ${entidad}}
                         </DialogTitle>
                         
                         <DialogContent>
@@ -220,13 +219,13 @@ export default function TablaTemplate({
                                 handleClose={handleClose}
                                 datos={datos}
                                 setDatos={setDatos}
-                                nombreEntidad= {entidad}
+                                nombreEntidad={entidad}
                                 Formulario={FormularioCreador}
                             ></CreadorEntidad>
                         </DialogContent>
                     </Dialog>
                 </Box>
             </Box>
-        </>
-    );
+        </>
+    );
 }
