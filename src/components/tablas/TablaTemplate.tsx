@@ -226,6 +226,6 @@ export default function TablaTemplate({
                     </Dialog>
                 </Box>
             </Box>
-        </>
-    );
+    </>
+);
 }
