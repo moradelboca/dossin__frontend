@@ -214,10 +214,9 @@ export default function Choferes() {
 
 //import { GridColDef } from "@mui/x-data-grid";
 //import { useContext } from "react";
-import { useState } from "react";
 import TablaTemplate from "../tablas/TablaTemplate";
 //import { ContextoGeneral } from "../Contexto";
-import CreadorChoferes from "./CreadorChoferes";
+import ChoferForm from "../forms/Choferes/ChoferForm";
 
 export default function Choferes() {
     //const { backendURL } = useContext(ContextoGeneral);
@@ -228,70 +227,21 @@ export default function Choferes() {
         "nombre",
         "numeroCel",
         "apellido",
-        "fechaNacimiento",
         "urlLINTI",
         "localidad",
         "empresas",
-        "roles",
+        "rol",
     ];
     const headerNames = [
         "Cuil",
         "Nombre",
         "Numero Celular",
         "Apellido",
-        "Edad",
         "URL Linti",
         "Localidad",
         "Cuit Empresas",
         "Roles"
     ];
-
-    const [datos, setDatos] = useState<any[]>([]);
-    const bandera = false;
-    if (bandera) {
-
-        const datosNuevoChofer = {
-            "cuil": 20345378915,
-            "numeroCel": "5493512362166",
-            "nombre": "Jorge",
-            "apellido": "Manzana",
-            "fechaNacimiento": "1973-10-23",
-            "empresas": [20422436805],
-            "urlLINTI": "https://github.com/",
-            "idLocalidad": 2,
-            "roles": [2]
-        }
-
-        //const metodo = choferSeleccionado ? "PUT" : "POST";
-        //const url = choferSeleccionado
-        //    ? `${backendURL}/colaboradores/${datosNuevoChofer["cuil"]}`
-        //    : `${backendURL}/colaboradores`;
-        const metodo = "POST";
-        const url = `https://dev.dossin.com.ar/api/colaboradores`;
-            
-        
-
-        console.log(JSON.stringify(datosNuevoChofer))
-        fetch(url, {
-            method: metodo,
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(datosNuevoChofer),
-        })
-            .then((response) => {
-                if (!response.ok) {
-                    return response.text().then((text) => {
-                        throw new Error(text);
-                    });
-                }
-                return response.json();
-            })
-            .then((newData) => {
-                if (metodo === "POST") {
-                    setDatos([...datos, newData]);
-                }
-            })
-            .catch((e) => console.error(e));
-    }
 
     return (
         <TablaTemplate
@@ -300,7 +250,7 @@ export default function Choferes() {
             endpoint="colaboradores"
             fields={fields}
             headerNames={headerNames}
-            DialogoCreador={CreadorChoferes}
+            FormularioCreador={ChoferForm}
         />
     );
 }

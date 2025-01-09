@@ -42,11 +42,13 @@ function App() {
                                 }}
                             >
                                 <Routes>
+
                                     <Route
                                         path="/"
                                         element={<Dashboard />}
                                     />
                                     {/* Son rutas protegidas ahora*/}
+
                                     <Route
                                         path="/cargas"
                                         element={

@@ -34,8 +34,9 @@ export default function TablaTemplate({
     const apiURL = usarPruebas ? pruebas : backendURL;
 
     // Hacerlo despues con axios
+    
     const refreshDatos = () => {
-        fetch(`${apiURL}/${endpoint}`, {
+        fetch(${apiURL}/${endpoint}, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -47,13 +48,13 @@ export default function TablaTemplate({
                 setDatos(data);
                 setEstadoCarga("Cargado");
             })
-            .catch(() => console.error(`Error al obtener ${entidad}`));
+            .catch(() => console.error(Error al obtener ${entidad}));
     };
 
     useEffect(() => {
         refreshDatos();
-    }, [apiURL, endpoint]);
-
+    }, []);
+    
     const handleOpen = (item: any) => {
         if (item) {
             setSeleccionado(item);
@@ -93,6 +94,31 @@ export default function TablaTemplate({
             />
         ),
     });
+
+    const transformarCampo = (field: string, value: any) => {
+        switch (field) {
+            case "localidad":
+                if (value) {
+                    return ${value.nombre} / ${value.provincia?.nombre || "Sin provincia"};
+                }
+                return "No especificado";
+    
+            case "empresas":
+                if (Array.isArray(value)) {
+                    return value.map((empresa: any) => ${empresa.nombreFantasia} - ${empresa.cuit}).join(", ");
+                }
+                return "No especificado";
+
+            case "rol":
+                if (value) {
+                    return ${value.nombre} || "Sin rol";
+                }
+                return "No especificado";
+
+            default:
+                return value || "No especificado";
+        }
+    };
 
     return (
         <>
@@ -143,23 +169,23 @@ export default function TablaTemplate({
                     )}
                     {estadoCarga === "Cargado" && (
                         <DataGrid
-                            rows={datos.map((item) => {
-                                const datosNormalizado = { ...item };
-                                fields.forEach((field) => {
-                                    if (!datosNormalizado[field]) {
-                                        datosNormalizado[field] = "No especificado";
-                                    }
-                                });
-                                return datosNormalizado;
-                            })}
-                            columns={columns}
-                            getRowId={(row) => row[fields[0]]}
-                            sx={{
-                                "& .MuiDataGrid-columnHeader": {
-                                    backgroundColor: theme.colores.grisClaro,
-                                    color: theme.colores.grisOscuro,
-                                },
-                                border: "none",
+                        rows={datos.map((item) => {
+                            const datosNormalizado = { ...item };
+                            fields.forEach((field) => {
+                                datosNormalizado[field] = transformarCampo(field, item[field]);
+                            });
+                            return datosNormalizado;
+                        })}
+                        columns={columns}
+                        getRowId={(row) => row[fields[0]]}
+                        sx={{
+                            "& .MuiDataGrid-columnHeader": {
+                                backgroundColor: theme.colores.grisClaro,
+                                color: theme.colores.grisOscuro,
+                            },
+                            border: "none",
+                            whiteSpace: "normal",
+                            wordBreak: "break-word",
                             }}
                             slots={{
                                 toolbar: (props) => (
@@ -184,7 +210,7 @@ export default function TablaTemplate({
                     )}
                     <Dialog open={open} onClose={handleClose}>
                         <DialogTitle>
-                            {seleccionado ? `Editar ${entidad}` : `Crear ${entidad}`}
+                            {seleccionado ? Editar ${entidad} : Crear ${entidad}}
                         </DialogTitle>
                         
                         <DialogContent>
@@ -200,6 +226,6 @@ export default function TablaTemplate({
                     </Dialog>
                 </Box>
             </Box>
-        </>
-    );
+        </>
+    );
 }
