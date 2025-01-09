@@ -1,26 +1,102 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Autocomplete, Box, Button, Stack, TextField } from "@mui/material";
+import { Autocomplete, Box, Button, CircularProgress, Dialog, IconButton, Stack, TextField } from "@mui/material";
 import React, { useContext, useEffect, useState } from "react";
-import AutocompletarPais from "../../cargas/autocompletar/AutocompletarPais";
-import CuilFormat from "./formatos/CuilFormat";
-import EdadFormat from "./formatos/EdadFormat";
-import NumeroFormat from "./formatos/NumeroFormat";
-import useValidation from "../../hooks/useValidation";
 import { ContextoGeneral } from "../../Contexto";
+import useValidation from "../../hooks/useValidation";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+import DeleteEntidad from "../../dialogs/DeleteEntidad";
+import { FormularioProps } from "../../../interfaces/FormularioProps";
+import NumeroFormat from "../formatos/NumeroFormat";
+import AutocompletarPais from "../../cargas/autocompletar/AutocompletarPais";
+//import CuilFormat from "../forms/formatos/CuilFormat";
 
-interface ChoferFormProps {
-    onSubmit: (data: any) => void; // Acción al guardar
-}
-
-
-const ChoferForm: React.FC<ChoferFormProps & { dataInicial?: any }> = ({ onSubmit, dataInicial = {} }) => {
+const ChoferForm: React.FC<FormularioProps> = ({ 
+    seleccionado = {}, 
+    datos, 
+    setDatos, 
+    handleClose 
+}) => {
     const { backendURL } = useContext(ContextoGeneral);
-    const [empresasTransportistas, setEmpresasTransportistas] = useState<any[]>(
-        []
+    const [openDialogDelete, setOpenDialogDelete] = useState(false);
+    const [empresas, setEmpresas] = useState<any[]>([]);
+    const [empresasSeleccionadas, setEmpresasSeleccionadas] = useState<any[]>([]);  
+    const [codigoSeleccionado, setCodigoSeleccionado] = useState<string>("");
+    const [numeroCel, setNumeroCel] = useState<string>("");
+    const roles = [
+      { id: 1, nombre: "Camionero" },
+      { id: 2, nombre: "Encargado" },
+    ];
+    const [rolSeleccionado, setRolSeleccionado] = useState<{ id: number; nombre: string } | null>(
+        roles.find((rol) => rol.nombre === seleccionado?.rol) || null
     );
-    const [estadoCarga, setEstadoCarga] = useState(true);
+
+    // Estados para que se carguen las empresas y localidades
+    const [loadingEmpresas, setLoadingEmpresas] = useState(false);
+    const [loadingLocalidades, setLoadingLocalidades] = useState(false);
+    
+    const { data, errors, handleChange, validateAll } = useValidation(
+        {
+            cuil: "",
+            numeroCel: "",
+            nombre: "",
+            apellido: "",
+            fechaNacimiento: "",
+            empresas: [],
+            urlLINTI: "",
+            idLocalidad: "",
+            idRol: "",
+            ...seleccionado,
+        },
+        {
+            cuil: (value) => (!value ? "El CUIL es obligatorio" : null),
+            numeroCel: (value) =>
+                !value || !/^\+\d{1,4}-\d{10}$/.test(`${codigoSeleccionado}-${value}`)
+                    ? "Número de celular inválido (Ej: +54-1234567890)"
+                    : null,
+            nombre: (value) => (!value ? "El nombre es obligatorio" : null),
+            apellido: (value) => (!value ? "El apellido es obligatorio" : null),
+            fechaNacimiento: (value) => (!value ? "La fecha de nacimiento es obligatoria" : null),
+            empresas: () => {
+                const empresasValidas = empresasSeleccionadas.length > 0 || (seleccionado?.empresas.length > 0 && empresasSeleccionadas.length > 0);
+                if (!empresasValidas) {
+                    return "Debe seleccionar al menos una empresa";
+                }
+                return null;
+            },
+            idLocalidad: () => (!localidadSeleccionada ? "Debe seleccionar una localidad" : null),
+            idRol: () => (!rolSeleccionado ? "El rol es obligatorio" : null),
+        }
+    );
     
     useEffect(() => {
+        if (typeof seleccionado?.empresas === "string") {
+            const iniciales = seleccionado.empresas.split(",")
+                .map((empresa: string) => {
+                    const cuit = empresa.split(" - ").pop();
+                    return cuit ? Number(cuit) : null;
+                })
+            setEmpresasSeleccionadas(iniciales);
+        }
+    }, [seleccionado?.empresas]);
+
+    const [localidades, setLocalidades] = useState<any[]>([]);
+    const [localidadSeleccionada, setlocalidadSeleccionada] = useState<string | null>(
+        seleccionado?.localidad || null
+    );
+
+    useEffect(() => {
+        if (seleccionado?.localidad && localidades.length > 0) {
+            const localidad = localidades.find(
+                (loc) => loc.displayName === seleccionado.localidad
+            );
+            if (localidad) {
+                setlocalidadSeleccionada(localidad.id);
+            }
+        }
+    }, [seleccionado?.localidad]);
+    
+    useEffect(() => {
+        setLoadingEmpresas(true);
         fetch(`${backendURL}/empresastransportistas`, {
             method: "GET",
             headers: {
@@ -29,69 +105,119 @@ const ChoferForm: React.FC<ChoferFormProps & { dataInicial?: any }> = ({ onSubmi
             },
         })
             .then((response) => response.json())
-            .then((data) => {
-                setEmpresasTransportistas(data);
-                setEstadoCarga(false);
-            })
-            .catch(() =>
-                console.error("Error al obtener los choferes disponibles")
-            );
-    }, []);
+            .then((data) => setEmpresas(data))
+            .catch(() => console.error("Error al obtener las empresas"))
+            .finally(() => setLoadingEmpresas(false));
+    }, [backendURL]);
 
-    // Definimos las condiciones para que este correcto el formulario y condiciones de error
-    const { data, errors, handleChange, validateAll } = useValidation(
-        {
-            cuil: "",
-            numeroCel: "",
-            nombre: "",
-            apellido: "",
-            edad: "",
-            cuitEmpresa: "",
-            urlLINTI: "",
-            localidad: "",
-            ...dataInicial,
-        },
-        {
-            cuil: (value) => (!value ? "El CUIL es obligatorio" : null),
-            numeroCel: (value) => !value ? "El número de celular es obligatorio" : null,
-            nombre: (value) => (!value ? "El nombre es obligatorio" : null),
-            apellido: (value) => (!value ? "El apellido es obligatorio" : null),
-            edad: (value) => !value || isNaN(+value) || +value <= 0
-                    ? "Debe ingresar una edad válida"
-                    : null,
-            cuitEmpresa: (value) => !value ? "El CUIT de la empresa es obligatorio" : null,
-            urlLINTI: (value) => !value ? "El url LINTI es obligatorio" : null,
-            localidad: (value) => !value ? "La localidad es obligatoria" : null,
-        }
-    );
+    
+    useEffect(() => {
+        setLoadingLocalidades(true);
+        fetch(`${backendURL}/ubicaciones/localidades`, {
+            method: "GET",
+            headers: { "Content-Type": "application/json" },
+        })
+            .then((response) => response.json())
+            .then((data) =>
+                setLocalidades(
+                    data.map((ubicacion: any) => ({
+                        id: ubicacion.id,
+                        displayName: `${ubicacion.nombre} / ${ubicacion.provincia?.nombre || "Sin provincia"}`,
+                        nombre: ubicacion.nombre,
+                        provincia: ubicacion.provincia?.nombre || "Sin provincia",
+                    }))
+                )
+            )
+            .catch(() => console.error("Error al obtener localidades"))
+            .finally(() => setLoadingLocalidades(false));
+    }, [backendURL]);
 
     useEffect(() => {
-        setData((prev) => ({ ...prev, ...dataInicial })); // Sincroniza con datos iniciales
-    }, [dataInicial]);
+        if (seleccionado?.numeroCel) {
+            const [codigo, numero] = seleccionado.numeroCel.split("-");
+            setCodigoSeleccionado(codigo || "");
+            setNumeroCel(numero || "");
+        }
+    }, [seleccionado?.numeroCel]);
+
+
+    const handleNumeroCelularChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const numeroNuevo = event.target.value;
+        setNumeroCel(numeroNuevo);
+        handleChange("numeroCel")(event);
+    };
 
     const handleSubmit = () => {
         if (validateAll()) {
-            onSubmit(data);
+            const metodo = seleccionado?.cuil ? "PUT" : "POST";
+            const url = seleccionado?.cuil
+                ? `${backendURL}/colaboradores/${data.cuil}`
+                : `${backendURL}/colaboradores`;
+
+            const numeroCompleto = `${codigoSeleccionado}-${numeroCel}`;
+            data.numeroCel = numeroCompleto;
+
+            const localidadObjeto = localidades.find((loc) => loc.id === localidadSeleccionada);
+            const rolObjeto = roles.find((rol) => rol.nombre === rolSeleccionado?.nombre);
+
+            const payload: any = {
+                cuil: data.cuil,
+                numeroCel: data.numeroCel,
+                nombre: data.nombre,
+                apellido: data.apellido,
+                fechaNacimiento: data.fechaNacimiento,
+                empresas: empresasSeleccionadas,
+                urlLINTI: data.urlLINTI,
+                idLocalidad: localidadObjeto?.id,
+                idRol: rolObjeto?.id,
+            };
+            
+            fetch(url, {
+                method: metodo,
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload),
+            })
+                .then(async (response) => {
+                    if (!response.ok) {
+                        const errorMessage = await response.text();
+                        throw new Error(`Error del servidor: ${errorMessage}`);
+                    }
+                    return response.json();
+                })
+                .then((newData) => {
+                    if (metodo === "POST") {
+                        setDatos([...datos, newData]);
+                    } else {
+                        setDatos(
+                            datos.map((colaborador: { cuil: any }) =>
+                                colaborador.cuil === data.cuil ? newData : colaborador
+                            )
+                        );
+                    }
+                    handleClose();
+                })
+                .catch((error) => console.error(`Error: ${error.message}`));
         }
     };
 
+    const handleClickDelete = () => setOpenDialogDelete(true);
+    const handleCloseDialog = () => setOpenDialogDelete(false);
+
+
     return (
         <>
-            <Stack direction="row" spacing={2}>
-                <TextField
-                    margin="dense"
-                    label="Cuil"
-                    variant="outlined"
-                    fullWidth
-                    slotProps={{
-                        input: { inputComponent: CuilFormat as any },
-                    }}
-                    value={data.cuil}
-                    onChange={handleChange("cuil")}
-                    error={!!errors.cuil}
-                    helperText={errors.cuil}
-                />
-            </Stack>
+            <TextField
+                margin="dense"
+                label="CUIL"
+                name="cuil"
+                variant="outlined"
+                fullWidth
+                value={data.cuil}
+                onChange={handleChange("cuil")}
+                error={!!errors.cuil}
+                helperText={errors.cuil}
+                disabled={!!seleccionado?.cuil}
+            />
 
             <Box
                 display="flex"
@@ -102,115 +228,178 @@ const ChoferForm: React.FC<ChoferFormProps & { dataInicial?: any }> = ({ onSubmi
                 marginTop={2}
                 marginBottom={1}
             >
-                <Box width="100px">
-                    <AutocompletarPais 
-                        setCodigoSeleccionado={(value: any) => handleChange("codigoPais")(value)} 
-                        error={errors.codigoPais}
+                {/**/}
+                <Box width={"100px"}>
+                    <AutocompletarPais
+                        setCodigoSeleccionado={setCodigoSeleccionado}
+                        error={!!errors.numeroCel}
+                        defaultPhone={codigoSeleccionado}
                     />
                 </Box>
-                <TextField
-                    label="Número"
-                    fullWidth
-                    variant="outlined"
-                    slotProps={{
-                        input: { inputComponent: NumeroFormat as any },
-                    }}
-                    value={data.numeroCel}
-                    onChange={handleChange("numeroCel")}
-                    error={!!errors.numeroCel}
-                    helperText={errors.numeroCel}
-                />
-            </Box>
-
-            <Box
-                display="flex"
-                flexDirection="row"
-                gap={2}
-                alignContent={"center"}
-                alignItems={"center"}
-                marginTop={2}
-                marginBottom={1}
-            >
-                <TextField
-                    label="Nombre"
-                    fullWidth
-                    variant="outlined"
-                    value={data.nombre}
-                    onChange={handleChange("nombre")}
-                    error={!!errors.nombre}
-                    helperText={errors.nombre}
-                />
-                <TextField
-                    label="Apellido"
-                    fullWidth
-                    variant="outlined"
-                    value={data.apellido}
-                    onChange={handleChange("apellido")}
-                    error={!!errors.apellido}
-                    helperText={errors.apellido}
-                />
+                <>-</>
+                <Stack width="400px" direction="row" spacing={2}>
+                    <TextField
+                        margin="dense"
+                        label="Número de Celular"
+                        variant="outlined"
+                        fullWidth
+                        slotProps={{
+                            input: {
+                                inputComponent: NumeroFormat as any,
+                            },
+                        }}
+                        value={numeroCel}
+                        onChange={handleNumeroCelularChange}
+                        error={!!errors.numeroCel}
+                        helperText={errors.numeroCel}
+                    />
+                </Stack>
             </Box>
 
             <TextField
-                label="Edad"
-                fullWidth
+                margin="dense"
+                label="Nombre"
                 variant="outlined"
-                slotProps={{
-                    input: { inputComponent: EdadFormat as any },
-                }}
-                value={data.edad}
-                onChange={handleChange("edad")}
-                error={!!errors.edad}
-                helperText={errors.edad}
+                fullWidth
+                value={data.nombre}
+                onChange={handleChange("nombre")}
+                error={!!errors.nombre}
+                helperText={errors.nombre}
+            />
+
+            <TextField
+                margin="dense"
+                label="Apellido"
+                variant="outlined"
+                fullWidth
+                value={data.apellido}
+                onChange={handleChange("apellido")}
+                error={!!errors.apellido}
+                helperText={errors.apellido}
+            />
+
+            <TextField
+                margin="dense"
+                label="Fecha de Nacimiento"
+                type="date"
+                fullWidth
+                InputLabelProps={{ shrink: true }}
+                value={data.fechaNacimiento}
+                onChange={handleChange("fechaNacimiento")}
+                error={!!errors.fechaNacimiento}
+                helperText={errors.fechaNacimiento}
             />
 
             <Autocomplete
-                options={empresasTransportistas.map((empresa) => ({
-                    label: `${empresa.nombreFantasia} - ${empresa.cuit}`,
-                    value: empresa.cuit,
-                }))}
-                onChange={(_, value) =>
-                    handleChange("cuitEmpresa")(value?.value || "")
-                }
+                multiple
+                limitTags={2}
+                id="empresas-autocomplete"
+                options={empresas}
+                getOptionLabel={(option) => option.nombreFantasia}
+                value={empresas.filter((empresa) => empresasSeleccionadas.includes(empresa.cuit))}
+                onChange={(_, newValue) => setEmpresasSeleccionadas(newValue.map((empresa) => empresa.cuit))}
+                loading={loadingEmpresas}
                 renderInput={(params) => (
                     <TextField
                         {...params}
-                        label="Cuit empresa"
-                        error={!!errors.cuitEmpresa}
-                        helperText={errors.cuitEmpresa}
+                        label="Empresas"
+                        placeholder="Selecciona empresas"
+                        error={!!errors.empresas}
+                        helperText={errors.empresas}
+                        InputProps={{
+                            ...params.InputProps,
+                            endAdornment: (
+                                <>
+                                    {loadingEmpresas ? <CircularProgress size={20} /> : null}
+                                    {params.InputProps.endAdornment}
+                                </>
+                            ),
+                        }}
                     />
                 )}
-                loading={estadoCarga}
             />
+
+
 
             <TextField
                 margin="dense"
-                label="URL Linti"
-                type="text"
-                fullWidth
+                label="URL LINTI"
                 variant="outlined"
+                fullWidth
                 value={data.urlLINTI}
                 onChange={handleChange("urlLINTI")}
+                error={!!errors.urlLINTI}
+                helperText={errors.urlLINTI}
             />
 
-            <TextField
-                margin="dense"
-                label="Localidad"
-                type="text"
+            <Autocomplete
+                disablePortal
+                options={localidades}
+                getOptionLabel={(option) => option.displayName}
+                value={localidades.find((loc) => loc.displayName === localidadSeleccionada) || null}
+                onChange={(_, newValue) => setlocalidadSeleccionada(newValue ? newValue.id : null)}
+                loading={loadingLocalidades}
+                renderInput={(params) => (
+                    <TextField
+                        {...params}
+                        label="Localidad"
+                        variant="outlined"
+                        error={!!errors.idLocalidad}
+                        helperText={errors.idLocalidad}
+                        InputProps={{
+                            ...params.InputProps,
+                            endAdornment: (
+                                <>
+                                    {loadingLocalidades ? <CircularProgress size={20} /> : null}
+                                    {params.InputProps.endAdornment}
+                                </>
+                            ),
+                        }}
+                    />
+                )}
+            />
+
+
+            <Autocomplete
+                value={rolSeleccionado}
+                onChange={(_, newValue) => setRolSeleccionado(newValue)}
+                options={roles}
+                getOptionLabel={(option) => option.nombre}
+                isOptionEqualToValue={(option, value) => option.id === value?.id} // Comparación personalizada
+                renderInput={(params) => (
+                    <TextField {...params} label="Rol" variant="outlined" fullWidth />
+                )}
+            />
+
+            <Box display="flex" justifyContent="space-between" mt={2}>
+                <Button onClick={handleClose} color="primary">
+                    Cancelar
+                </Button>
+                <Button onClick={handleSubmit} color="primary">
+                    Guardar
+                </Button>
+                {seleccionado && (
+                    <IconButton onClick={handleClickDelete}>
+                        <DeleteOutlineIcon sx={{ fontSize: 20, color: "#d68384" }} />
+                    </IconButton>
+                )}
+            </Box>
+
+            <Dialog 
+                open={openDialogDelete} 
+                onClose={handleCloseDialog} 
+                maxWidth="sm" 
                 fullWidth
-                variant="outlined"
-                value={data.localidad}
-                onChange={handleChange("localidad")}
-            />
-
-            <Button
-                variant="contained"
-                color="primary"
-                onClick={handleSubmit}
-                style={{ marginTop: "20px" }}
             >
-                Guardar
-            </Button>
+                <DeleteEntidad
+                    idEntidad={data.cuil}
+                    endpointEntidad="colaboradores"
+                    handleCloseDialog={handleCloseDialog}
+                    handleClose={handleClose}
+                    datos={datos}
+                    setDatos={setDatos}
+                />
+            </Dialog>
         </>
     );
 };
