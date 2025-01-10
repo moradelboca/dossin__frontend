@@ -18,6 +18,7 @@ import TablaUser from "./components/admin/TablaUser";
 import RutasProtegidas from "./components/autenticacion/RutasProtegidas";
 import Usuarios from "./components/admin/Usuarios";
 import Dashboard from "./components/dashboard/Dashboard";
+import Inconvenientes from "./components/inconvenientes/Inconvenientes";
 
 
 function App() {
@@ -110,7 +111,8 @@ function App() {
                                         path="/inconvenientes"
                                         element={
                                             //<RutasProtegidas>
-                                                <ContainerInconvenientes />
+                                                //<ContainerInconvenientes />
+                                                <Inconvenientes/>
                                             //</RutasProtegidas>
                                         }
                                     />
@@ -133,13 +135,8 @@ function App() {
                                     <Route
                                         path="/admin"
                                         element={
-<<<<<<< HEAD
                                             //<RutasProtegidas>
                                                 //<TablaUser />
-=======
-                                            <RutasProtegidas>
-                                                <TablaUser />
->>>>>>> 0e2e2e5471fbc9b852a4e500397eafcdded7b333
                                                 <Usuarios/>
                                             //</RutasProtegidas>
                                             }
