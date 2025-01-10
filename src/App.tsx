@@ -133,13 +133,8 @@ function App() {
                                     <Route
                                         path="/admin"
                                         element={
-<<<<<<< HEAD
                                             //<RutasProtegidas>
                                                 //<TablaUser />
-=======
-                                            <RutasProtegidas>
-                                                <TablaUser />
->>>>>>> 0e2e2e5471fbc9b852a4e500397eafcdded7b333
                                                 <Usuarios/>
                                             //</RutasProtegidas>
                                             }
