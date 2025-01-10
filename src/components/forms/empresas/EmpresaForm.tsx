@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useContext, useEffect, useState } from "react";
-import { Button, Dialog, IconButton, TextField, Autocomplete, Box } from "@mui/material";
+import { Button, Dialog, IconButton, TextField, Autocomplete } from "@mui/material";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import DeleteEntidad from "../../dialogs/DeleteEntidad";
 import useValidation from "../../hooks/useValidation";
 import { ContextoGeneral } from "../../Contexto";
 import { FormularioProps } from "../../../interfaces/FormularioProps";
-import AutocompletarPais from "../../cargas/autocompletar/AutocompletarPais";
+//import AutocompletarPais from "../../cargas/autocompletar/AutocompletarPais";
 import NumeroFormat from "../formatos/NumeroFormat";
 import CuilFormat from "../formatos/CuilFormat";
 
@@ -129,7 +129,7 @@ const EmpresaForm: React.FC<FormularioProps> = ({
                         console.log("Metodo PUT:");
                         console.log(newData);
                         setDatos(
-                            datos.map((empresa) =>
+                            datos.map((empresa: { cuit: any; }) =>
                                 empresa.cuit === data.cuit ? newData : empresa
                             )
                         );

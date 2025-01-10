@@ -5,6 +5,29 @@ import BorderColorIcon from "@mui/icons-material/BorderColor";
 import { Radar, RadarChart, PolarGrid, Legend, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip } from "recharts";
 import DashboardFiltrosDialog from "../dialogs/dashboard/DashboardFiltrosDialog";
 
+// Definir tipos específicos para las cargas y los días
+type Cargas = {
+  provincia: string;
+  Maíz: number;
+  Soja: number;
+  Trigo: number;
+  Girasol: number;
+};
+
+type Dias = {
+  provincia: string;
+  Lunes: number;
+  Martes: number;
+  Miércoles: number;
+  Jueves: number;
+  Viernes: number;
+};
+
+type SimulacionData = {
+  cargas: Cargas[];
+  dias: Dias[];
+};
+
 interface DashboardGraficosProps {
   opcion: "cargas" | "dias";
 }
@@ -24,7 +47,7 @@ const DashboardGraficos: React.FC<DashboardGraficosProps> = ({ opcion }) => {
     provincias: ["Buenos Aires", "Córdoba", "Santa Fe", "Mendoza", "Salta"],
   };
 
-  const simulacionData = {
+  const simulacionData: SimulacionData = {
     cargas: [
       { provincia: "Buenos Aires", Maíz: 2000, Soja: 1200, Trigo: 1500, Girasol: 1500 },
       { provincia: "Córdoba", Maíz: 500, Soja: 300, Trigo: 200, Girasol: 150 },
@@ -41,11 +64,16 @@ const DashboardGraficos: React.FC<DashboardGraficosProps> = ({ opcion }) => {
     ],
   };
 
-  const filteredData = simulacionData[opcion]
+  const filteredData = simulacionData[opcion as keyof SimulacionData] 
     .filter((entry) => selections.provincias.includes(entry.provincia))
     .map((entry) => ({
       provincia: entry.provincia,
-      ...selections[opcion].reduce((acc, item) => ({ ...acc, [item]: entry[item] || 0 }), {}),
+      ...selections[opcion].reduce<Record<string, number>>((acc, item) => {
+        if (item in entry) {
+          acc[item] = Number(entry[item as keyof typeof entry]) || 0;
+        }
+        return acc;
+      }, {}),
     }));
 
   const handleClickAbrirDialog = (type: "cargas" | "dias" | "provincias") => {
@@ -81,7 +109,7 @@ const DashboardGraficos: React.FC<DashboardGraficosProps> = ({ opcion }) => {
   return (
     <Card>
       <CardContent>
-        {/*Provincias */}
+        {/* Provincias */}
         <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mb: 2 }}>
           <Typography sx={{ fontWeight: "bold", mr: 2 }}>Provincias:</Typography>
           {selections.provincias.map((provincia) => (
@@ -103,7 +131,7 @@ const DashboardGraficos: React.FC<DashboardGraficosProps> = ({ opcion }) => {
           </IconButton>
         </Box>
 
-        {/* Elegis si es cargas o días */}
+        {/* Elegir si es cargas o días */}
         <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mb: 2 }}>
           <Typography sx={{ fontWeight: "bold", mr: 2 }}>{opcion === "cargas" ? "Cargas:" : "Días:"}</Typography>
           {selections[opcion].map((item) => (
