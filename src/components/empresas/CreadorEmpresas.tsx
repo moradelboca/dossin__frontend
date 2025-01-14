@@ -130,8 +130,8 @@ export default function CreadorEmpresas(props: Empresas) {
         datosNuevaEmpresa["idUbicacion"] = 3;
         const metodo = empresaSeleccionada ? "PUT" : "POST";
         const url = empresaSeleccionada
-            ? `${backendURL}/empresastransportistas/${datosNuevaEmpresa["cuit"]}`
-            : `${backendURL}/empresastransportistas`;
+            ? `${backendURL}/empresas/${datosNuevaEmpresa["cuit"]}`
+            : `${backendURL}/empresas`;
 
         fetch(url, {
             method: metodo,

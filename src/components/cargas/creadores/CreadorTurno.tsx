@@ -85,7 +85,7 @@ export default function CreadorTurno(props: CreadorProps) {
             .catch(() =>
                 console.error("Error al obtener los choferes disponibles")
             );
-        fetch(`${backendURL}/empresastransportistas`, {
+        fetch(`${backendURL}/empresas`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",

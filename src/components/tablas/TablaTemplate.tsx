@@ -48,6 +48,7 @@ export default function TablaTemplate({
                 return response.json();
             })
             .then((data) => {
+                console.log(data)
                 setDatos(data);
                 setEstadoCarga("Cargado");
             })
@@ -115,11 +116,27 @@ export default function TablaTemplate({
                 }
                 return "No especificado";
 
+            case "roles":
+                if (Array.isArray(value)) {
+                    return value.map((rol: any) => `${rol.nombre}`).join(", ");
+                }
+                return "No especificado";
+
             case "rol":
                 if (value) {
                     return `${value.nombre}` || "Sin rol";
                 }
                 return "No especificado";
+            case "numeroCel":
+                if (value) {
+                    const numero = value.toString();
+                    if (numero.length >= 10) {
+                        const codigo = numero.slice(0, numero.length - 10);
+                        const celular = numero.slice(-10);
+                        return `+${codigo}-${celular}`;
+                    }
+                }
+                return value || "No especificado";
 
             default:
                 return value || "No especificado";

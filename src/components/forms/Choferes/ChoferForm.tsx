@@ -9,7 +9,6 @@ import { FormularioProps } from "../../../interfaces/FormularioProps";
 import NumeroFormat from "../formatos/NumeroFormat";
 import AutocompletarPais from "../../cargas/autocompletar/AutocompletarPais";
 import CuilFormat from "../formatos/CuilFormat";
-//import CuilFormat from "../forms/formatos/CuilFormat";
 
 const ChoferForm: React.FC<FormularioProps> = ({ 
     seleccionado = {}, 
@@ -17,12 +16,16 @@ const ChoferForm: React.FC<FormularioProps> = ({
     setDatos, 
     handleClose 
 }) => {
+    console.log("Seleccionado:\n",seleccionado)
     const { backendURL } = useContext(ContextoGeneral);
     const [openDialogDelete, setOpenDialogDelete] = useState(false);
+
     const [empresas, setEmpresas] = useState<any[]>([]);
-    const [empresasSeleccionadas, setEmpresasSeleccionadas] = useState<any[]>([]);  
+    const [empresasSeleccionadas, setEmpresasSeleccionadas] = useState<any[]>([]); 
+
     const [codigoSeleccionado, setCodigoSeleccionado] = useState<string>("");
     const [numeroCel, setNumeroCel] = useState<string>("");
+
     const roles = [
       { id: 1, nombre: "Camionero" },
       { id: 2, nombre: "Encargado" },
@@ -37,7 +40,7 @@ const ChoferForm: React.FC<FormularioProps> = ({
     
     const { data, errors, handleChange, validateAll } = useValidation(
         {
-            cuil: "",
+            cuil: null,
             numeroCel: "",
             nombre: "",
             apellido: "",
@@ -104,7 +107,7 @@ const ChoferForm: React.FC<FormularioProps> = ({
     
     useEffect(() => {
         setLoadingEmpresas(true);
-        fetch(`${backendURL}/empresastransportistas`, {
+        fetch(`${backendURL}/empresas`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -164,7 +167,7 @@ const ChoferForm: React.FC<FormularioProps> = ({
                 ? `${backendURL}/colaboradores/${data.cuil}`
                 : `${backendURL}/colaboradores`;
 
-            const numeroCompleto = `${codigoSeleccionado}-${numeroCel}`;
+            const numeroCompleto = `${codigoSeleccionado}-${numeroCel}`.replace(/[^0-9]/g, '');
             data.numeroCel = numeroCompleto;
 
             const localidadObjeto = localidades.find((loc) => loc.displayName === localidadSeleccionada);
@@ -380,7 +383,7 @@ const ChoferForm: React.FC<FormularioProps> = ({
                 onChange={(_, newValue) => setRolSeleccionado(newValue)}
                 options={roles}
                 getOptionLabel={(option) => option.nombre}
-                isOptionEqualToValue={(option, value) => option.id === value?.id} // Comparación personalizada
+                isOptionEqualToValue={(option, value) => option.id === value?.id}
                 renderInput={(params) => (
                     <TextField {...params} label="Rol" variant="outlined" fullWidth />
                 )}

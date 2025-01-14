@@ -1,15 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useContext, useEffect, useState } from "react";
-import { Button, Dialog, IconButton, TextField, Autocomplete, Box, Stack, CircularProgress } from "@mui/material";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+import { Autocomplete, Box, Button, CircularProgress, Dialog, IconButton, Stack, TextField } from "@mui/material";
+import React, { useContext, useEffect, useState } from "react";
+import { FormularioProps } from "../../../interfaces/FormularioProps";
+import { ContextoGeneral } from "../../Contexto";
 import DeleteEntidad from "../../dialogs/DeleteEntidad";
 import useValidation from "../../hooks/useValidation";
-import { ContextoGeneral } from "../../Contexto";
-import { FormularioProps } from "../../../interfaces/FormularioProps";
 //import AutocompletarPais from "../../cargas/autocompletar/AutocompletarPais";
-import NumeroFormat from "../formatos/NumeroFormat";
-import CuilFormat from "../formatos/CuilFormat";
 import AutocompletarPais from "../../cargas/autocompletar/AutocompletarPais";
+import CuilFormat from "../formatos/CuilFormat";
+import NumeroFormat from "../formatos/NumeroFormat";
 
 const EmpresaForm: React.FC<FormularioProps> = ({
     seleccionado = {},
@@ -22,26 +22,40 @@ const EmpresaForm: React.FC<FormularioProps> = ({
 
     const [localidades, setLocalidades] = useState<any[]>([]);
     const [localidadSeleccionada, setlocalidadSeleccionada] = useState<string | null>(seleccionado?.localidad || null);
+
     const [codigoSeleccionado, setCodigoSeleccionado] = useState<string>("");
     const [numeroCel, setNumeroCel] = useState<string>("");
 
+    const [roles, setRoles] = useState<any[]>([]);
+    const [rolesSeleccionados, setRolesSeleccionados] = useState<any[]>([]);  
+
     // Estados para que se carguen las localidades'
     const [loadingLocalidades, setLoadingLocalidades] = useState(false);
+        const [loadingRoles, setLoadingRoles] = useState(false);
 
     const { data, errors, handleChange, validateAll } = useValidation(
         {
-            cuit: "",
+            cuit: null,
             razonSocial: "",
             nombreFantasia: "",
             idLocalidad: "",
             numeroCel: "",
+            roles: [],
             urlConstanciaAfip: "",
             urlConstanciaCBU: "",
             email: "",
             ...seleccionado,
         },
         {
-            cuit: (value) => (!value ? "El CUIT es obligatorio" : null),
+            cuit: (value) => {
+                if (!value) {
+                    return "El CUIT es obligatorio";
+                }
+                if (value.length !== 11 && !seleccionado?.cuit) {
+                    return "El CUIT está incompleto";
+                }
+                return null;
+            },
             razonSocial: (value) => (!value ? "La razón social es obligatoria" : null),
             nombreFantasia: (value) => (!value ? "El nombre de fantasía es obligatorio" : null),
             numeroCel: (value) => {
@@ -51,6 +65,13 @@ const EmpresaForm: React.FC<FormularioProps> = ({
                     : null;
             },
             idLocalidad: () => (!localidadSeleccionada ? "Debe seleccionar una localidad" : null),
+            roles: () => {
+                const rolesValidos = rolesSeleccionados.length > 0 || (seleccionado?.roles.length > 0 && rolesSeleccionados.length > 0);
+                if (!rolesValidos) {
+                    return "Debe seleccionar al menos una empresa";
+                }
+                return null;
+            },
             urlConstanciaAfip: (value) =>
                 value && !/^https?:\/\//.test(value)
                     ? "Debe ser una URL válida o dejarlo vacio"
@@ -65,6 +86,13 @@ const EmpresaForm: React.FC<FormularioProps> = ({
                     : null,
         }
     );
+
+    useEffect(() => {
+            if (typeof seleccionado?.roles === "string") {
+                const rolesIniciales = seleccionado.roles.split(",")
+                setRolesSeleccionados(rolesIniciales);
+            }
+        }, [seleccionado?.roles]);
 
     useEffect(() => {
             setLoadingLocalidades(true);
@@ -89,6 +117,22 @@ const EmpresaForm: React.FC<FormularioProps> = ({
                 .catch(() => console.error("Error al obtener localidades"))
                 .finally(() => setLoadingLocalidades(false));
         }, [backendURL]);
+
+    useEffect(() => {
+        setLoadingRoles(true);
+        fetch(`${backendURL}/empresas/roles`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "ngrok-skip-browser-warning": "true",
+            },
+        })
+            .then((response) => response.json())
+            .then((data) => setRoles(data))
+            .catch(() => console.error("Error al obtener las empresas"))
+            .finally(() => setLoadingRoles(false));
+    }, [backendURL]);
+    
     
     useEffect(() => {
         if (seleccionado?.localidad && localidades.length > 0) {
@@ -120,24 +164,37 @@ const EmpresaForm: React.FC<FormularioProps> = ({
         if (validateAll()) {
             const metodo = seleccionado?.cuit ? "PUT" : "POST";
             const url = seleccionado?.cuit
-                ? `${backendURL}/empresastransportistas/${data.cuit}`
-                : `${backendURL}/empresastransportistas`;
+                ? `${backendURL}/empresas/${data.cuit}`
+                : `${backendURL}/empresas`;
     
-            const numeroCompleto = `${codigoSeleccionado}-${numeroCel}`;
+            if (isNaN(data.cuit)) {
+                const cuitLimpio = data.cuit.replace(/[^0-9]/g, '');
+                data.cuit = Number(cuitLimpio);
+            }
+            
+            const numeroCompleto = `${codigoSeleccionado}-${numeroCel}`.replace(/[^0-9]/g, '');
             data.numeroCel = numeroCompleto;
 
             const localidadObjeto = localidades.find((loc) => loc.displayName === localidadSeleccionada);
+
+            // Paso 1: Obtener los id de los roles seleccionados
+            const rolesLista = rolesSeleccionados.map((rolNombre) => {
+                const rol = roles.find((r) => r.nombre === rolNombre);
+                return rol ? rol.id : null;
+            }).filter((id) => id !== null);
+
             const payload = {
                 cuit: data.cuit,
                 razonSocial: data.razonSocial,
                 nombreFantasia: data.nombreFantasia,
                 idLocalidad: localidadObjeto?.id,
                 numeroCel: data.numeroCel,
+                idsRoles: rolesLista,
                 urlConstanciaAfip: data.urlConstanciaAfip,
                 urlConstanciaCBU: data.urlConstanciaCBU,
                 email: data.email,
             };
-            console.log(payload)
+
             fetch(url, {
                 method: metodo,
                 headers: { "Content-Type": "application/json" },
@@ -211,31 +268,31 @@ const EmpresaForm: React.FC<FormularioProps> = ({
                 helperText={errors.nombreFantasia}
             />
             <Autocomplete
-                            disablePortal
-                            options={localidades}
-                            getOptionLabel={(option) => option.displayName}
-                            value={localidades.find((loc) => loc.displayName === localidadSeleccionada) || null}
-                            onChange={(_, newValue) => setlocalidadSeleccionada(newValue ? newValue.displayName : null)}
-                            loading={loadingLocalidades}
-                            renderInput={(params) => (
-                                <TextField
-                                    {...params}
-                                    label="Localidad"
-                                    variant="outlined"
-                                    error={!!errors.idLocalidad}
-                                    helperText={errors.idLocalidad}
-                                    InputProps={{
-                                        ...params.InputProps,
-                                        endAdornment: (
-                                            <>
-                                                {loadingLocalidades ? <CircularProgress size={20} /> : null}
-                                                {params.InputProps.endAdornment}
-                                            </>
-                                        ),
-                                    }}
-                                />
-                            )}
-                        />
+                disablePortal
+                options={localidades}
+                getOptionLabel={(option) => option.displayName}
+                value={localidades.find((loc) => loc.displayName === localidadSeleccionada) || null}
+                onChange={(_, newValue) => setlocalidadSeleccionada(newValue ? newValue.displayName : null)}
+                loading={loadingLocalidades}
+                renderInput={(params) => (
+                    <TextField
+                        {...params}
+                        label="Localidad"
+                        variant="outlined"
+                        error={!!errors.idLocalidad}
+                        helperText={errors.idLocalidad}
+                        InputProps={{
+                            ...params.InputProps,
+                            endAdornment: (
+                                <>
+                                    {loadingLocalidades ? <CircularProgress size={20} /> : null}
+                                    {params.InputProps.endAdornment}
+                                </>
+                            ),
+                        }}
+                    />
+                )}
+            />
             <Box
                 display="flex"
                 flexDirection="row"
@@ -272,6 +329,36 @@ const EmpresaForm: React.FC<FormularioProps> = ({
                     />
                 </Stack>
             </Box>
+
+            <Autocomplete
+                multiple
+                limitTags={2}
+                id="roles-autocomplete"
+                options={roles}
+                getOptionLabel={(option) => option.nombre}
+                value={roles.filter((roles) => rolesSeleccionados.includes(roles.nombre))}
+                onChange={(_, newValue) => setRolesSeleccionados(newValue.map((rol) => rol.nombre))}
+                loading={loadingRoles}
+                renderInput={(params) => (
+                    <TextField
+                        {...params}
+                        label="Roles"
+                        placeholder="Selecciona roles"
+                        error={!!errors.roles}
+                        helperText={errors.roles}
+                        InputProps={{
+                            ...params.InputProps,
+                            endAdornment: (
+                                <>
+                                    {loadingRoles ? <CircularProgress size={20} /> : null}
+                                    {params.InputProps.endAdornment}
+                                </>
+                            ),
+                        }}
+                    />
+                )}
+            />
+
             <TextField
                 margin="dense"
                 label="URL Constancia Afip"

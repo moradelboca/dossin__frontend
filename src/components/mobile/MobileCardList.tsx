@@ -41,8 +41,23 @@ const transformarCampo = (field: string, value: any) => {
             .map((empresa: any) => `${empresa.nombreFantasia} - ${empresa.cuit}`)
             .join(", ")
         : "No especificado";
+    case "roles":
+      if (Array.isArray(value)) {
+          return value.map((rol: any) => `${rol.nombre}`).join(", ");
+      }
+      return "No especificado";
     case "rol":
       return value ? `${value.nombre}` : "Sin rol";
+    case "numeroCel":
+      if (value) {
+          const numero = value.toString();
+          if (numero.length >= 10) {
+              const codigo = numero.slice(0, numero.length - 10);
+              const celular = numero.slice(-10);
+              return `+${codigo}-${celular}`;
+          }
+      }
+      return value || "No especificado";
     default:
       return value || "No especificado";
   }
@@ -80,6 +95,7 @@ const MobileCardList: React.FC<MobileCardListProps> = ({
         return response.json();
       })
       .then((data) => {
+        console.log("Data:\n",data)
         setDatos(data);
         setEstadoCarga("Cargado");
       })
@@ -98,6 +114,7 @@ const MobileCardList: React.FC<MobileCardListProps> = ({
   };
 
   const handleOpenDialog = (item: any) => {
+    console.log("Datos seleccionados para editar:", item);
     setSeleccionado(item);
     setOpenDialog(true);
   };
@@ -105,7 +122,6 @@ const MobileCardList: React.FC<MobileCardListProps> = ({
   const handleCloseDialog = () => {
     setSeleccionado(null);
     setOpenDialog(false);
-    refreshDatos(); // Recargar los datos después de cerrar el diálogo
   };
 
   const renderCards = (datos: any[]) =>

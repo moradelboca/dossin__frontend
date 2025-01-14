@@ -90,7 +90,7 @@ const countries: readonly CountryType[] = [
     { code: "EC", label: "Ecuador", phone: "+593" },
     { code: "GT", label: "Guatemala", phone: "+502" },
     { code: "HN", label: "Honduras", phone: "+504" },
-    { code: "JM", label: "Jamaica", phone: "+1-876" },
+    { code: "JM", label: "Jamaica", phone: "+1876" },
     { code: "MX", label: "Mexico", phone: "+52" },
     { code: "NI", label: "Nicaragua", phone: "+505" },
     { code: "PA", label: "Panama", phone: "+507" },
