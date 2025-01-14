@@ -8,11 +8,12 @@ import DeleteEntidad from "../../dialogs/DeleteEntidad";
 import { FormularioProps } from "../../../interfaces/FormularioProps";
 import NumeroFormat from "../formatos/NumeroFormat";
 import AutocompletarPais from "../../cargas/autocompletar/AutocompletarPais";
+import CuilFormat from "../formatos/CuilFormat";
 //import CuilFormat from "../forms/formatos/CuilFormat";
 
 const ChoferForm: React.FC<FormularioProps> = ({ 
     seleccionado = {}, 
-    datos, 
+    datos = [], 
     setDatos, 
     handleClose 
 }) => {
@@ -49,10 +50,12 @@ const ChoferForm: React.FC<FormularioProps> = ({
         },
         {
             cuil: (value) => (!value ? "El CUIL es obligatorio" : null),
-            numeroCel: (value) =>
-                !value || !/^\+\d{1,4}-\d{10}$/.test(`${codigoSeleccionado}-${value}`)
+            numeroCel: (value) => {
+                const numeroCompleto = `${codigoSeleccionado}-${value}`;
+                return !value || !/^\+\d{1,4}-\d{10}$/.test(numeroCompleto)
                     ? "Número de celular inválido (Ej: +54-1234567890)"
-                    : null,
+                    : null;
+            },
             nombre: (value) => (!value ? "El nombre es obligatorio" : null),
             apellido: (value) => (!value ? "El apellido es obligatorio" : null),
             fechaNacimiento: (value) => (!value ? "La fecha de nacimiento es obligatoria" : null),
@@ -63,6 +66,10 @@ const ChoferForm: React.FC<FormularioProps> = ({
                 }
                 return null;
             },
+            urlLINTI: (value) =>
+                value && !/^https?:\/\//.test(value)
+                    ? "Debe ser una URL válida o dejarlo vacio"
+                    : null,
             idLocalidad: () => (!localidadSeleccionada ? "Debe seleccionar una localidad" : null),
             idRol: () => (!rolSeleccionado ? "El rol es obligatorio" : null),
         }
@@ -115,7 +122,10 @@ const ChoferForm: React.FC<FormularioProps> = ({
         setLoadingLocalidades(true);
         fetch(`${backendURL}/ubicaciones/localidades`, {
             method: "GET",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+                "Content-Type": "application/json",
+                "ngrok-skip-browser-warning": "true",
+            },
         })
             .then((response) => response.json())
             .then((data) =>
@@ -157,7 +167,8 @@ const ChoferForm: React.FC<FormularioProps> = ({
             const numeroCompleto = `${codigoSeleccionado}-${numeroCel}`;
             data.numeroCel = numeroCompleto;
 
-            const localidadObjeto = localidades.find((loc) => loc.id === localidadSeleccionada);
+            const localidadObjeto = localidades.find((loc) => loc.displayName === localidadSeleccionada);
+
             const rolObjeto = roles.find((rol) => rol.nombre === rolSeleccionado?.nombre);
 
             const payload: any = {
@@ -203,7 +214,6 @@ const ChoferForm: React.FC<FormularioProps> = ({
     const handleClickDelete = () => setOpenDialogDelete(true);
     const handleCloseDialog = () => setOpenDialogDelete(false);
 
-
     return (
         <>
             <TextField
@@ -211,6 +221,11 @@ const ChoferForm: React.FC<FormularioProps> = ({
                 label="CUIL"
                 name="cuil"
                 variant="outlined"
+                slotProps={{
+                    input: {
+                        inputComponent: CuilFormat as any,
+                    },
+                }}
                 fullWidth
                 value={data.cuil}
                 onChange={handleChange("cuil")}
@@ -337,7 +352,7 @@ const ChoferForm: React.FC<FormularioProps> = ({
                 options={localidades}
                 getOptionLabel={(option) => option.displayName}
                 value={localidades.find((loc) => loc.displayName === localidadSeleccionada) || null}
-                onChange={(_, newValue) => setlocalidadSeleccionada(newValue ? newValue.id : null)}
+                onChange={(_, newValue) => setlocalidadSeleccionada(newValue ? newValue.displayName : null)}
                 loading={loadingLocalidades}
                 renderInput={(params) => (
                     <TextField

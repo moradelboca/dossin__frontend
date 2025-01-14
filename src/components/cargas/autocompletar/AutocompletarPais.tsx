@@ -12,10 +12,8 @@ interface Telefono {
 export default function AutocompletarPa(props: Telefono) {
     const { setCodigoSeleccionado, error, defaultPhone } = props;
 
-    console.log("defaultPhone: ", defaultPhone);
+    
     const defaultCountry = countries.find(country => country.phone === defaultPhone) || null;
-    console.log("defaultCountry: ",defaultCountry);
-    console.log(countries.find(country => country.phone === defaultPhone) || "aaaa trolleado");
 
     const handleChange = (_event: any, value: any) => {
         if (value) {

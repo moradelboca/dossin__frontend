@@ -43,12 +43,17 @@ export default function TablaTemplate({
                 "ngrok-skip-browser-warning": "true",
             },
         })
-            .then((response) => response.json())
+            .then((response) => {
+                if (!response.ok) throw new Error("Error en el servidor");
+                return response.json();
+            })
             .then((data) => {
                 setDatos(data);
                 setEstadoCarga("Cargado");
             })
-            .catch(() => console.error(`Error al obtener ${entidad}`));
+            .catch((error) => {
+                console.error(`Error al cargar datos para ${entidad}:`, error);
+                setEstadoCarga("Error"); });
     };
 
     useEffect(() => {
@@ -56,6 +61,7 @@ export default function TablaTemplate({
     }, []);
     
     const handleOpen = (item: any) => {
+        console.log("Datos seleccionados para editar:", item);
         if (item) {
             setSeleccionado(item);
         }

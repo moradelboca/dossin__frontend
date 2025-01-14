@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useContext, useEffect, useState } from "react";
-import { Button, Dialog, IconButton, TextField, Autocomplete } from "@mui/material";
+import { Button, Dialog, IconButton, TextField, Autocomplete, Box, Stack, CircularProgress } from "@mui/material";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import DeleteEntidad from "../../dialogs/DeleteEntidad";
 import useValidation from "../../hooks/useValidation";
@@ -9,6 +9,7 @@ import { FormularioProps } from "../../../interfaces/FormularioProps";
 //import AutocompletarPais from "../../cargas/autocompletar/AutocompletarPais";
 import NumeroFormat from "../formatos/NumeroFormat";
 import CuilFormat from "../formatos/CuilFormat";
+import AutocompletarPais from "../../cargas/autocompletar/AutocompletarPais";
 
 const EmpresaForm: React.FC<FormularioProps> = ({
     seleccionado = {},
@@ -20,7 +21,12 @@ const EmpresaForm: React.FC<FormularioProps> = ({
     const [openDialogDelete, setOpenDialogDelete] = useState(false);
 
     const [localidades, setLocalidades] = useState<any[]>([]);
-    const [localidadSeleccionada, setlocalidadSeleccionada] = useState<string | null>(seleccionado?.idLocalidad || null);
+    const [localidadSeleccionada, setlocalidadSeleccionada] = useState<string | null>(seleccionado?.localidad || null);
+    const [codigoSeleccionado, setCodigoSeleccionado] = useState<string>("");
+    const [numeroCel, setNumeroCel] = useState<string>("");
+
+    // Estados para que se carguen las localidades'
+    const [loadingLocalidades, setLoadingLocalidades] = useState(false);
 
     const { data, errors, handleChange, validateAll } = useValidation(
         {
@@ -38,18 +44,20 @@ const EmpresaForm: React.FC<FormularioProps> = ({
             cuit: (value) => (!value ? "El CUIT es obligatorio" : null),
             razonSocial: (value) => (!value ? "La razón social es obligatoria" : null),
             nombreFantasia: (value) => (!value ? "El nombre de fantasía es obligatorio" : null),
-            numeroCel: (value) =>
-                value && !/^\+?[0-9]{7,15}$/.test(value)
-                    ? "El número de celular debe ser válido"
-                    : null,
+            numeroCel: (value) => {
+                const numeroCompleto = `${codigoSeleccionado}-${value}`;
+                return !value || !/^\+\d{1,4}-\d{10}$/.test(numeroCompleto)
+                    ? "Número de celular inválido (Ej: +54-1234567890)"
+                    : null;
+            },
             idLocalidad: () => (!localidadSeleccionada ? "Debe seleccionar una localidad" : null),
             urlConstanciaAfip: (value) =>
                 value && !/^https?:\/\//.test(value)
-                    ? "Debe ser una URL válida"
+                    ? "Debe ser una URL válida o dejarlo vacio"
                     : null,
             urlConstanciaCBU: (value) =>
                 value && !/^https?:\/\//.test(value)
-                    ? "Debe ser una URL válida"
+                    ? "Debe ser una URL válida o dejarlo vacio"
                     : null,
             email: (value) =>
                 value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
@@ -59,24 +67,54 @@ const EmpresaForm: React.FC<FormularioProps> = ({
     );
 
     useEffect(() => {
-        fetch(`${backendURL}/ubicaciones/localidades`, {
-            method: "GET",
-            headers: { "Content-Type": "application/json" },
-        })
-            .then((response) => response.json())
-            .then((data) =>
-                setLocalidades(
-                    data.map((ubicacion: any) => ({
-                        id: ubicacion.id,
-                        displayName: `${ubicacion.nombre} / ${ubicacion.provincia?.nombre || "Sin provincia"}`,
-                        nombre: ubicacion.nombre,
-                        provincia: ubicacion.provincia?.nombre || "Sin provincia",
-                    }))
+            setLoadingLocalidades(true);
+            fetch(`${backendURL}/ubicaciones/localidades`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "ngrok-skip-browser-warning": "true",
+                },
+            })
+                .then((response) => response.json())
+                .then((data) =>
+                    setLocalidades(
+                        data.map((ubicacion: any) => ({
+                            id: ubicacion.id,
+                            displayName: `${ubicacion.nombre} / ${ubicacion.provincia?.nombre || "Sin provincia"}`,
+                            nombre: ubicacion.nombre,
+                            provincia: ubicacion.provincia?.nombre || "Sin provincia",
+                        }))
+                    )
                 )
-            )
-            .catch(() => console.error("Error al obtener localidades"));
-    }, [backendURL]);
+                .catch(() => console.error("Error al obtener localidades"))
+                .finally(() => setLoadingLocalidades(false));
+        }, [backendURL]);
     
+    useEffect(() => {
+        if (seleccionado?.localidad && localidades.length > 0) {
+            const localidad = localidades.find(
+                (loc) => loc.displayName === seleccionado.localidad
+            );
+            if (localidad) {
+                setlocalidadSeleccionada(localidad.id);
+            }
+        }
+    }, [seleccionado?.localidad]);
+
+    useEffect(() => {
+            if (seleccionado?.numeroCel) {
+                const [codigo, numero] = seleccionado.numeroCel.split("-");
+                setCodigoSeleccionado(codigo || "");
+                setNumeroCel(numero || "");
+            }
+        }, [seleccionado?.numeroCel]);
+    
+    
+    const handleNumeroCelularChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const numeroNuevo = event.target.value;
+        setNumeroCel(numeroNuevo);
+        handleChange("numeroCel")(event);
+    };
 
     const handleSubmit = () => {
         if (validateAll()) {
@@ -85,12 +123,10 @@ const EmpresaForm: React.FC<FormularioProps> = ({
                 ? `${backendURL}/empresastransportistas/${data.cuit}`
                 : `${backendURL}/empresastransportistas`;
     
-            const localidadObjeto = localidades.find((loc) => loc.id === localidadSeleccionada);
-            
-            console.log("localidades")
-            console.log(localidadSeleccionada);
-            console.log(localidadObjeto);
-            console.log("xddd")
+            const numeroCompleto = `${codigoSeleccionado}-${numeroCel}`;
+            data.numeroCel = numeroCompleto;
+
+            const localidadObjeto = localidades.find((loc) => loc.displayName === localidadSeleccionada);
             const payload = {
                 cuit: data.cuit,
                 razonSocial: data.razonSocial,
@@ -101,9 +137,7 @@ const EmpresaForm: React.FC<FormularioProps> = ({
                 urlConstanciaCBU: data.urlConstanciaCBU,
                 email: data.email,
             };
-            console.log("Localidades: \n",localidades)
-            console.log("Objeto para enviar:", JSON.stringify(payload, null, 2));
-
+            console.log(payload)
             fetch(url, {
                 method: metodo,
                 headers: { "Content-Type": "application/json" },
@@ -112,22 +146,14 @@ const EmpresaForm: React.FC<FormularioProps> = ({
                 .then(async (response) => {
                     if (!response.ok) {
                         const errorMessage = await response.text();
-                        console.log(response);
                         throw new Error(`Error del servidor: ${errorMessage}`);
                     }
-                    console.log(response);
                     return response.json();
                 })
                 .then((newData) => {
-                    console.log("Objeto que se va a guardar:");
-                    console.log(newData);
                     if (metodo === "POST") {
-                        console.log("Metodo POST:");
-                        console.log(newData);
                         setDatos([...datos, newData]);
                     } else {
-                        console.log("Metodo PUT:");
-                        console.log(newData);
                         setDatos(
                             datos.map((empresa: { cuit: any; }) =>
                                 empresa.cuit === data.cuit ? newData : empresa
@@ -140,9 +166,6 @@ const EmpresaForm: React.FC<FormularioProps> = ({
         }
     };
     
-    
-    
-
     const handleClickDeleteCarga = () => setOpenDialogDelete(true);
     const handleCloseDialog = () => setOpenDialogDelete(false);
 
@@ -188,37 +211,67 @@ const EmpresaForm: React.FC<FormularioProps> = ({
                 helperText={errors.nombreFantasia}
             />
             <Autocomplete
-                disablePortal
-                options={localidades}
-                getOptionLabel={(option) => option.displayName}
-                value={localidades.find((loc) => loc.id === localidadSeleccionada) || null}
-                onChange={(_, newValue) => setlocalidadSeleccionada(newValue ? newValue.id : null)}
-                renderInput={(params) => (
-                    <TextField
-                        {...params}
-                        label="Localidad"
-                        variant="outlined"
-                        error={!!errors.idLocalidad}
-                        helperText={errors.idLocalidad}
+                            disablePortal
+                            options={localidades}
+                            getOptionLabel={(option) => option.displayName}
+                            value={localidades.find((loc) => loc.displayName === localidadSeleccionada) || null}
+                            onChange={(_, newValue) => setlocalidadSeleccionada(newValue ? newValue.displayName : null)}
+                            loading={loadingLocalidades}
+                            renderInput={(params) => (
+                                <TextField
+                                    {...params}
+                                    label="Localidad"
+                                    variant="outlined"
+                                    error={!!errors.idLocalidad}
+                                    helperText={errors.idLocalidad}
+                                    InputProps={{
+                                        ...params.InputProps,
+                                        endAdornment: (
+                                            <>
+                                                {loadingLocalidades ? <CircularProgress size={20} /> : null}
+                                                {params.InputProps.endAdornment}
+                                            </>
+                                        ),
+                                    }}
+                                />
+                            )}
+                        />
+            <Box
+                display="flex"
+                flexDirection="row"
+                gap={2}
+                alignContent={"center"}
+                alignItems={"center"}
+                marginTop={2}
+                marginBottom={1}
+            >
+                {/**/}
+                <Box width={"100px"}>
+                    <AutocompletarPais
+                        setCodigoSeleccionado={setCodigoSeleccionado}
+                        error={!!errors.numeroCel}
+                        defaultPhone={codigoSeleccionado}
                     />
-                )}
-            />
-            <TextField
-                margin="dense"
-                label="Número de Celular"
-                name="numeroCel"
-                variant="outlined"
-                slotProps={{
-                    input: {
-                        inputComponent: NumeroFormat as any,
-                    },
-                }}
-                fullWidth
-                value={data.numeroCel}
-                onChange={handleChange("numeroCel")}
-                error={!!errors.numeroCel}
-                helperText={errors.numeroCel}
-            />
+                </Box>
+                <>-</>
+                <Stack width="400px" direction="row" spacing={2}>
+                    <TextField
+                        margin="dense"
+                        label="Número de Celular"
+                        variant="outlined"
+                        fullWidth
+                        slotProps={{
+                            input: {
+                                inputComponent: NumeroFormat as any,
+                            },
+                        }}
+                        value={numeroCel}
+                        onChange={handleNumeroCelularChange}
+                        error={!!errors.numeroCel}
+                        helperText={errors.numeroCel}
+                    />
+                </Stack>
+            </Box>
             <TextField
                 margin="dense"
                 label="URL Constancia Afip"

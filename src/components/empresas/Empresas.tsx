@@ -219,6 +219,8 @@ export default function Empresas() {
 
 import TablaTemplate from "../tablas/TablaTemplate";
 import EmpresaForm from "../forms/empresas/EmpresaForm";
+import MobileCardList from "../mobile/MobileCardList";
+import { useMediaQuery } from "@mui/material";
 
 export default function Empresas() {
     const fields = [
@@ -242,7 +244,20 @@ export default function Empresas() {
         "Email",
     ];
 
-    return (
+    const isMobile = useMediaQuery("(max-width:768px)");
+
+    return isMobile ? (
+        <MobileCardList
+            titulo="Empresas"
+            entidad="empresa"
+            endpoint="empresastransportistas"
+            fields={fields}
+            headerNames={headerNames}
+            FormularioCreador={EmpresaForm}
+            tituloField="razonSocial"
+            subtituloField="cuit"
+        />
+    ) : (
         <TablaTemplate
             titulo="Empresas"
             entidad="empresa"
