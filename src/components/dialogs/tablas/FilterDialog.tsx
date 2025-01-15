@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   Box,
   Button,
@@ -14,7 +14,15 @@ import {
 } from "@mui/material";
 import RefreshIcon from "@mui/icons-material/Refresh"; // Ícono de flecha en espiral
 
-const FilterDialog = ({
+interface FilterDialogProps {
+  open: boolean;
+  onClose: () => void;
+  onApplyFilter: (filter: { column: string; operator: string; value: string }) => void;
+  columns: string[];
+  onUndoFilter: () => void;
+}
+
+const FilterDialog: React.FC<FilterDialogProps> = ({
   open,
   onClose,
   onApplyFilter,

@@ -18,6 +18,7 @@ import CreadorEntidad from "../dialogs/CreadorEntidad";
 import FilterDialog from "../dialogs/tablas/FilterDialog";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
+import autoTable from "jspdf-autotable";
 
 interface MobileCardListProps {
   titulo: string;
@@ -172,7 +173,13 @@ const MobileCardList: React.FC<MobileCardListProps> = ({
     }
   };
 
-  const handleFilterApply = (filter) => {
+  interface Filter {
+    column: string;
+    operator: string;
+    value: string;
+  }
+
+  const handleFilterApply = (filter: Filter) => {
     const { column, operator, value } = filter;
     const filtered = datos.filter((item) => {
       const fieldValue = item[column];
@@ -250,10 +257,10 @@ const MobileCardList: React.FC<MobileCardListProps> = ({
     const tableHeaders = headerNames;
   
     // Crear la tabla
-    doc.autoTable({
+    autoTable(doc, {
       head: [tableHeaders],
       body: tableData,
-      startY: 30, // Posición inicial
+      startY: 30,
       styles: { fontSize: 6 },
     });
   
