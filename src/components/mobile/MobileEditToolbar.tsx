@@ -1,12 +1,12 @@
-import React, { useContext } from "react";
-import { Box, Button, TextField } from "@mui/material";
+import React, { useContext, useState } from "react";
+import { Box, Button, Menu, MenuItem, TextField } from "@mui/material";
 import { Add, FilterList, SaveAlt, Search } from "@mui/icons-material";
 import { ContextoGeneral } from "../Contexto";
 
 interface MobileEditToolbarProps {
   onAdd?: () => void;
   onFilter?: () => void;
-  onExport?: () => void;
+  onExport?: (formato: "csv" | "pdf") => void;
   onSearch?: (query: string) => void;
   name?: string;
 }
@@ -18,11 +18,27 @@ const MobileEditToolbar: React.FC<MobileEditToolbarProps> = ({
   onSearch,
   name = "Elemento",
 }) => {
-  
   const { theme } = useContext(ContextoGeneral);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (onSearch) onSearch(event.target.value);
+    const query = event.target.value;
+    setSearchQuery(query);
+    if (onSearch) onSearch(query.toLowerCase());
+  };
+
+  const handleExportClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleExportClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleExportSelect = (formato: "csv" | "pdf") => {
+    if (onExport) onExport(formato);
+    handleExportClose();
   };
 
   return (
@@ -30,9 +46,8 @@ const MobileEditToolbar: React.FC<MobileEditToolbarProps> = ({
       sx={{
         display: "flex",
         flexDirection: "column",
-        paddingBottom: 2,
-        paddingTop: 2,
         gap: 1,
+        paddingY: 2,
         backgroundColor: "#FFFFFF",
         color: theme.colores.azul,
       }}
@@ -42,6 +57,8 @@ const MobileEditToolbar: React.FC<MobileEditToolbarProps> = ({
         variant="outlined"
         size="small"
         placeholder="Buscar..."
+        value={searchQuery}
+        onChange={handleSearchChange}
         InputProps={{
           startAdornment: <Search sx={{ marginRight: 1 }} />,
         }}
@@ -49,87 +66,80 @@ const MobileEditToolbar: React.FC<MobileEditToolbarProps> = ({
       />
 
       {/* Botón Agregar */}
-      <Button
-        startIcon={<Add />}
-        onClick={onAdd}
-        variant="contained"
-        sx={{
-          borderRadius: "8px",
-          padding: "6px",
-          fontSize: "12px",
-          backgroundColor:"#FFFFFF",
-          color: theme.colores.azul,
-          border: "0.1px solid #ccc",
-          textTransform: "none",
-        }}
-        fullWidth
-      >
-        Agregar {name}
-      </Button>
+      {onAdd && (
+        <Button
+          startIcon={<Add />}
+          onClick={onAdd}
+          variant="contained"
+          sx={{
+            borderRadius: "8px",
+            padding: "6px",
+            fontSize: "12px",
+            backgroundColor: "#FFFFFF",
+            color: theme.colores.azul,
+            border: "0.1px solid #ccc",
+            textTransform: "none",
+          }}
+          fullWidth
+        >
+          Agregar {name}
+        </Button>
+      )}
 
       {/* Botones Filtros y Exportar */}
       <Box
         sx={{
           display: "flex",
           gap: 1,
-          justifyContent: "space-between",
         }}
       >
-        {onFilter && onExport ? (
-          <>
-            <Button
-              startIcon={<FilterList />}
-              onClick={onFilter}
-              variant="contained"
-              sx={{
-                borderRadius: "8px",
-                padding: "6px",
-                fontSize: "12px",
-                flex: 1,
-                backgroundColor:"#FFFFFF",
-                color: theme.colores.azul,
-                border: "0.1px solid #ccc",
-                textTransform: "none",
-              }}
-            >
-              FILTERS
-            </Button>
-            <Button
-              startIcon={<SaveAlt />}
-              onClick={onExport}
-              variant="contained"
-              sx={{
-                borderRadius: "8px",
-                padding: "6px",
-                fontSize: "12px",
-                flex: 1,
-                backgroundColor:"#FFFFFF",
-                color: theme.colores.azul,
-                border: "0.1px solid #ccc",
-                textTransform: "none",
-              }}
-            >
-              EXPORT
-            </Button>
-          </>
-        ) : (
+        {onFilter && (
           <Button
-            startIcon={onFilter ? <FilterList /> : <SaveAlt />}
-            onClick={onFilter || onExport}
+            startIcon={<FilterList />}
+            onClick={onFilter}
             variant="contained"
-            color="primary"
             sx={{
               borderRadius: "8px",
               padding: "6px",
-              fontWeight: "bold",
               fontSize: "12px",
               flex: 1,
+              backgroundColor: "#FFFFFF",
+              color: theme.colores.azul,
+              border: "0.1px solid #ccc",
+              textTransform: "none",
             }}
-            fullWidth
           >
-            {onFilter ? "Filtrar" : "Exportar"}
+            Filtros
           </Button>
         )}
+
+        <Button
+          startIcon={<SaveAlt />}
+          onClick={handleExportClick}
+          variant="contained"
+          sx={{
+            borderRadius: "8px",
+            padding: "6px",
+            fontSize: "12px",
+            flex: 1,
+            backgroundColor: "#FFFFFF",
+            color: theme.colores.azul,
+            border: "0.1px solid #ccc",
+            textTransform: "none",
+          }}
+        >
+          Exportar
+        </Button>
+
+        <Menu
+          anchorEl={anchorEl}
+          open={Boolean(anchorEl)}
+          onClose={handleExportClose}
+          
+        >
+          <MenuItem onClick={() => handleExportSelect("pdf")}>PDF</MenuItem>
+          <MenuItem onClick={() => handleExportSelect("csv")}>CSV</MenuItem>
+        </Menu>
       </Box>
     </Box>
   );

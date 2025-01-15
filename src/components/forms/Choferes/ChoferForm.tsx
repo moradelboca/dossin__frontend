@@ -9,6 +9,7 @@ import { FormularioProps } from "../../../interfaces/FormularioProps";
 import NumeroFormat from "../formatos/NumeroFormat";
 import AutocompletarPais from "../../cargas/autocompletar/AutocompletarPais";
 import CuilFormat from "../formatos/CuilFormat";
+import { useMemo } from 'react';
 
 const ChoferForm: React.FC<FormularioProps> = ({ 
     seleccionado = {}, 
@@ -16,7 +17,6 @@ const ChoferForm: React.FC<FormularioProps> = ({
     setDatos, 
     handleClose 
 }) => {
-    console.log("Seleccionado:\n",seleccionado)
     const { backendURL } = useContext(ContextoGeneral);
     const [openDialogDelete, setOpenDialogDelete] = useState(false);
 
@@ -26,10 +26,11 @@ const ChoferForm: React.FC<FormularioProps> = ({
     const [codigoSeleccionado, setCodigoSeleccionado] = useState<string>("");
     const [numeroCel, setNumeroCel] = useState<string>("");
 
-    const roles = [
+    const roles = useMemo(() => [
       { id: 1, nombre: "Camionero" },
       { id: 2, nombre: "Encargado" },
-    ];
+    ], []);
+    
     const [rolSeleccionado, setRolSeleccionado] = useState<{ id: number; nombre: string } | null>(
         roles.find((rol) => rol.nombre === seleccionado?.rol) || null
     );
@@ -79,12 +80,16 @@ const ChoferForm: React.FC<FormularioProps> = ({
     );
     
     useEffect(() => {
-        if (typeof seleccionado?.empresas === "string") {
+        if (Array.isArray(seleccionado?.empresas)) {
+            const iniciales = seleccionado.empresas.map((empresa: { cuit: number }) => empresa.cuit);
+            setEmpresasSeleccionadas(iniciales);
+        } else if (typeof seleccionado?.empresas === "string") {
             const iniciales = seleccionado.empresas.split(",")
                 .map((empresa: string) => {
                     const cuit = empresa.split(" - ").pop();
                     return cuit ? Number(cuit) : null;
                 })
+                .filter((cuit: null) => cuit !== null);
             setEmpresasSeleccionadas(iniciales);
         }
     }, [seleccionado?.empresas]);
@@ -95,15 +100,21 @@ const ChoferForm: React.FC<FormularioProps> = ({
     );
 
     useEffect(() => {
-        if (seleccionado?.localidad && localidades.length > 0) {
-            const localidad = localidades.find(
-                (loc) => loc.displayName === seleccionado.localidad
+        if (typeof seleccionado?.localidad === "string") {
+            const [nombreLocalidad, nombreProvincia] = seleccionado.localidad.split(" / ").map((str: string) => str.trim());
+            const localidadEncontrada = localidades.find(
+                (loc) => loc.nombre === nombreLocalidad && loc.provincia === nombreProvincia
             );
-            if (localidad) {
-                setlocalidadSeleccionada(localidad.id);
+    
+            if (localidadEncontrada) {
+                setlocalidadSeleccionada(localidadEncontrada.displayName);
             }
+        } else if (seleccionado?.localidad && typeof seleccionado.localidad === "object") {
+            const displayName = `${seleccionado.localidad.nombre} / ${seleccionado.localidad.provincia.nombre}`;
+            setlocalidadSeleccionada(displayName);
         }
-    }, [seleccionado?.localidad]);
+    }, [seleccionado?.localidad, localidades]);
+    
     
     useEffect(() => {
         setLoadingEmpresas(true);
@@ -146,8 +157,29 @@ const ChoferForm: React.FC<FormularioProps> = ({
     }, [backendURL]);
 
     useEffect(() => {
+        if (typeof seleccionado?.rol === "string") {
+            const rolEncontrado = roles.find((rol) => rol.nombre === seleccionado.rol);
+            setRolSeleccionado(rolEncontrado || null);
+        } else if (seleccionado?.rol && typeof seleccionado.rol === "object") {
+            setRolSeleccionado(seleccionado.rol);
+        }
+    }, [seleccionado?.rol, roles]);
+
+
+    useEffect(() => {
         if (seleccionado?.numeroCel) {
-            const [codigo, numero] = seleccionado.numeroCel.split("-");
+            let codigo = "";
+            let numero = "";
+
+            if (/^\+\d{1,4}-\d{10}$/.test(seleccionado.numeroCel)) {
+                [codigo, numero] = seleccionado.numeroCel.split("-");
+            }
+            
+            else if (/^\d{12,15}$/.test(seleccionado.numeroCel)) {
+                codigo = `+${seleccionado.numeroCel.slice(0, 3)}`;
+                numero = seleccionado.numeroCel.slice(3);
+            }
+    
             setCodigoSeleccionado(codigo || "");
             setNumeroCel(numero || "");
         }
@@ -172,7 +204,7 @@ const ChoferForm: React.FC<FormularioProps> = ({
 
             const localidadObjeto = localidades.find((loc) => loc.displayName === localidadSeleccionada);
 
-            const rolObjeto = roles.find((rol) => rol.nombre === rolSeleccionado?.nombre);
+            const rolObjeto = roles.find((rol) => rol.id === rolSeleccionado?.id);
 
             const payload: any = {
                 cuil: data.cuil,

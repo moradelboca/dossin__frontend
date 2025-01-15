@@ -48,7 +48,6 @@ export default function TablaTemplate({
                 return response.json();
             })
             .then((data) => {
-                console.log(data)
                 setDatos(data);
                 setEstadoCarga("Cargado");
             })
@@ -62,7 +61,6 @@ export default function TablaTemplate({
     }, []);
     
     const handleOpen = (item: any) => {
-        console.log("Datos seleccionados para editar:", item);
         if (item) {
             setSeleccionado(item);
         }

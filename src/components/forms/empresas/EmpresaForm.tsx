@@ -6,7 +6,6 @@ import { FormularioProps } from "../../../interfaces/FormularioProps";
 import { ContextoGeneral } from "../../Contexto";
 import DeleteEntidad from "../../dialogs/DeleteEntidad";
 import useValidation from "../../hooks/useValidation";
-//import AutocompletarPais from "../../cargas/autocompletar/AutocompletarPais";
 import AutocompletarPais from "../../cargas/autocompletar/AutocompletarPais";
 import CuilFormat from "../formatos/CuilFormat";
 import NumeroFormat from "../formatos/NumeroFormat";
@@ -29,9 +28,9 @@ const EmpresaForm: React.FC<FormularioProps> = ({
     const [roles, setRoles] = useState<any[]>([]);
     const [rolesSeleccionados, setRolesSeleccionados] = useState<any[]>([]);  
 
-    // Estados para que se carguen las localidades'
+    // Estados para que se carguen las localidades
     const [loadingLocalidades, setLoadingLocalidades] = useState(false);
-        const [loadingRoles, setLoadingRoles] = useState(false);
+    const [loadingRoles, setLoadingRoles] = useState(false);
 
     const { data, errors, handleChange, validateAll } = useValidation(
         {
@@ -88,11 +87,14 @@ const EmpresaForm: React.FC<FormularioProps> = ({
     );
 
     useEffect(() => {
-            if (typeof seleccionado?.roles === "string") {
-                const rolesIniciales = seleccionado.roles.split(",")
-                setRolesSeleccionados(rolesIniciales);
-            }
-        }, [seleccionado?.roles]);
+        if (Array.isArray(seleccionado?.roles)) {
+            const rolesIniciales = seleccionado.roles.map((rol: { nombre: any; }) => rol.nombre);
+            setRolesSeleccionados(rolesIniciales);
+        } else if (typeof seleccionado?.roles === "string") {
+            const rolesIniciales = seleccionado.roles.split(",");
+            setRolesSeleccionados(rolesIniciales);
+        }
+    }, [seleccionado?.roles]);
 
     useEffect(() => {
             setLoadingLocalidades(true);
@@ -135,23 +137,39 @@ const EmpresaForm: React.FC<FormularioProps> = ({
     
     
     useEffect(() => {
-        if (seleccionado?.localidad && localidades.length > 0) {
-            const localidad = localidades.find(
-                (loc) => loc.displayName === seleccionado.localidad
+        if (typeof seleccionado?.localidad === "string") {
+            const [nombreLocalidad, nombreProvincia] = seleccionado.localidad.split(" / ").map((str: string) => str.trim());
+            const localidadEncontrada = localidades.find(
+                (loc) => loc.nombre === nombreLocalidad && loc.provincia === nombreProvincia
             );
-            if (localidad) {
-                setlocalidadSeleccionada(localidad.id);
+    
+            if (localidadEncontrada) {
+                setlocalidadSeleccionada(localidadEncontrada.displayName);
             }
+        } else if (seleccionado?.localidad && typeof seleccionado.localidad === "object") {
+            const displayName = `${seleccionado.localidad.nombre} / ${seleccionado.localidad.provincia.nombre}`;
+            setlocalidadSeleccionada(displayName);
         }
-    }, [seleccionado?.localidad]);
+    }, [seleccionado?.localidad, localidades]);
 
     useEffect(() => {
-            if (seleccionado?.numeroCel) {
-                const [codigo, numero] = seleccionado.numeroCel.split("-");
-                setCodigoSeleccionado(codigo || "");
-                setNumeroCel(numero || "");
+        if (seleccionado?.numeroCel) {
+            let codigo = "";
+            let numero = "";
+
+            if (/^\+\d{1,4}-\d{10}$/.test(seleccionado.numeroCel)) {
+                [codigo, numero] = seleccionado.numeroCel.split("-");
             }
-        }, [seleccionado?.numeroCel]);
+            
+            else if (/^\d{12,15}$/.test(seleccionado.numeroCel)) {
+                codigo = `+${seleccionado.numeroCel.slice(0, 3)}`;
+                numero = seleccionado.numeroCel.slice(3);
+            }
+    
+            setCodigoSeleccionado(codigo || "");
+            setNumeroCel(numero || "");
+        }
+    }, [seleccionado?.numeroCel]);
     
     
     const handleNumeroCelularChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -177,7 +195,6 @@ const EmpresaForm: React.FC<FormularioProps> = ({
 
             const localidadObjeto = localidades.find((loc) => loc.displayName === localidadSeleccionada);
 
-            // Paso 1: Obtener los id de los roles seleccionados
             const rolesLista = rolesSeleccionados.map((rolNombre) => {
                 const rol = roles.find((r) => r.nombre === rolNombre);
                 return rol ? rol.id : null;
@@ -189,9 +206,9 @@ const EmpresaForm: React.FC<FormularioProps> = ({
                 nombreFantasia: data.nombreFantasia,
                 idLocalidad: localidadObjeto?.id,
                 numeroCel: data.numeroCel,
-                idsRoles: rolesLista,
                 urlConstanciaAfip: data.urlConstanciaAfip,
                 urlConstanciaCBU: data.urlConstanciaCBU,
+                idsRoles: rolesLista,
                 email: data.email,
             };
 
@@ -403,8 +420,8 @@ const EmpresaForm: React.FC<FormularioProps> = ({
             </IconButton>
             <Dialog open={openDialogDelete} onClose={handleCloseDialog}>
                 <DeleteEntidad
-                    idEntidad={data.cuit}
-                    endpointEntidad="empresastransportistas"
+                    idEntidad={Number(data.cuit)}
+                    endpointEntidad="empresas"
                     handleCloseDialog={handleCloseDialog}
                     handleClose={handleClose}
                     datos={datos}
