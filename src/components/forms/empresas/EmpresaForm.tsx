@@ -1,14 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useContext, useEffect, useState } from "react";
-import { Button, Dialog, IconButton, TextField, Autocomplete } from "@mui/material";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+import { Autocomplete, Box, Button, CircularProgress, Dialog, IconButton, Stack, TextField } from "@mui/material";
+import React, { useContext, useEffect, useState } from "react";
+import { FormularioProps } from "../../../interfaces/FormularioProps";
+import { ContextoGeneral } from "../../Contexto";
 import DeleteEntidad from "../../dialogs/DeleteEntidad";
 import useValidation from "../../hooks/useValidation";
-import { ContextoGeneral } from "../../Contexto";
-import { FormularioProps } from "../../../interfaces/FormularioProps";
-//import AutocompletarPais from "../../cargas/autocompletar/AutocompletarPais";
-import NumeroFormat from "../formatos/NumeroFormat";
+import AutocompletarPais from "../../cargas/autocompletar/AutocompletarPais";
 import CuilFormat from "../formatos/CuilFormat";
+import NumeroFormat from "../formatos/NumeroFormat";
 
 const EmpresaForm: React.FC<FormularioProps> = ({
     seleccionado = {},
@@ -20,36 +20,64 @@ const EmpresaForm: React.FC<FormularioProps> = ({
     const [openDialogDelete, setOpenDialogDelete] = useState(false);
 
     const [localidades, setLocalidades] = useState<any[]>([]);
-    const [localidadSeleccionada, setlocalidadSeleccionada] = useState<string | null>(seleccionado?.idLocalidad || null);
+    const [localidadSeleccionada, setlocalidadSeleccionada] = useState<string | null>(seleccionado?.localidad || null);
+
+    const [codigoSeleccionado, setCodigoSeleccionado] = useState<string>("");
+    const [numeroCel, setNumeroCel] = useState<string>("");
+
+    const [roles, setRoles] = useState<any[]>([]);
+    const [rolesSeleccionados, setRolesSeleccionados] = useState<any[]>([]);  
+
+    // Estados para que se carguen las localidades
+    const [loadingLocalidades, setLoadingLocalidades] = useState(false);
+    const [loadingRoles, setLoadingRoles] = useState(false);
 
     const { data, errors, handleChange, validateAll } = useValidation(
         {
-            cuit: "",
+            cuit: null,
             razonSocial: "",
             nombreFantasia: "",
             idLocalidad: "",
             numeroCel: "",
+            roles: [],
             urlConstanciaAfip: "",
             urlConstanciaCBU: "",
             email: "",
             ...seleccionado,
         },
         {
-            cuit: (value) => (!value ? "El CUIT es obligatorio" : null),
+            cuit: (value) => {
+                if (!value) {
+                    return "El CUIT es obligatorio";
+                }
+                if (value.length !== 11 && !seleccionado?.cuit) {
+                    return "El CUIT está incompleto";
+                }
+                return null;
+            },
             razonSocial: (value) => (!value ? "La razón social es obligatoria" : null),
             nombreFantasia: (value) => (!value ? "El nombre de fantasía es obligatorio" : null),
-            numeroCel: (value) =>
-                value && !/^\+?[0-9]{7,15}$/.test(value)
-                    ? "El número de celular debe ser válido"
-                    : null,
+            numeroCel: (value) => {
+                const numeroCompleto = `${codigoSeleccionado}-${value}`;
+                return !value || !/^\+\d{1,4}-\d{10}$/.test(numeroCompleto)
+                    ? "Número de celular inválido (Ej: +54-1234567890)"
+                    : null;
+            },
             idLocalidad: () => (!localidadSeleccionada ? "Debe seleccionar una localidad" : null),
+            roles: () => {
+                const rolesValidos = rolesSeleccionados.length > 0 || (seleccionado?.roles.length > 0 && rolesSeleccionados.length > 0);
+                if (!rolesValidos) {
+                    return "Debe seleccionar al menos una empresa";
+                }
+                return null;
+            },
             urlConstanciaAfip: (value) =>
                 value && !/^https?:\/\//.test(value)
-                    ? "Debe ser una URL válida"
+                    ? "Debe ser una URL válida o dejarlo vacio"
                     : null,
             urlConstanciaCBU: (value) =>
                 value && !/^https?:\/\//.test(value)
-                    ? "Debe ser una URL válida"
+                    ? "Debe ser una URL válida o dejarlo vacio"
                     : null,
             email: (value) =>
                 value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
@@ -59,38 +87,119 @@ const EmpresaForm: React.FC<FormularioProps> = ({
     );
 
     useEffect(() => {
-        fetch(`${backendURL}/ubicaciones/localidades`, {
+        if (Array.isArray(seleccionado?.roles)) {
+            const rolesIniciales = seleccionado.roles.map((rol: { nombre: any; }) => rol.nombre);
+            setRolesSeleccionados(rolesIniciales);
+        } else if (typeof seleccionado?.roles === "string") {
+            const rolesIniciales = seleccionado.roles.split(",");
+            setRolesSeleccionados(rolesIniciales);
+        }
+    }, [seleccionado?.roles]);
+
+    useEffect(() => {
+            setLoadingLocalidades(true);
+            fetch(`${backendURL}/ubicaciones/localidades`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "ngrok-skip-browser-warning": "true",
+                },
+            })
+                .then((response) => response.json())
+                .then((data) =>
+                    setLocalidades(
+                        data.map((ubicacion: any) => ({
+                            id: ubicacion.id,
+                            displayName: `${ubicacion.nombre} / ${ubicacion.provincia?.nombre || "Sin provincia"}`,
+                            nombre: ubicacion.nombre,
+                            provincia: ubicacion.provincia?.nombre || "Sin provincia",
+                        }))
+                    )
+                )
+                .catch(() => console.error("Error al obtener localidades"))
+                .finally(() => setLoadingLocalidades(false));
+        }, [backendURL]);
+
+    useEffect(() => {
+        setLoadingRoles(true);
+        fetch(`${backendURL}/empresas/roles`, {
             method: "GET",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+                "Content-Type": "application/json",
+                "ngrok-skip-browser-warning": "true",
+            },
         })
             .then((response) => response.json())
-            .then((data) =>
-                setLocalidades(
-                    data.map((ubicacion: any) => ({
-                        id: ubicacion.id,
-                        displayName: `${ubicacion.nombre} / ${ubicacion.provincia?.nombre || "Sin provincia"}`,
-                        nombre: ubicacion.nombre,
-                        provincia: ubicacion.provincia?.nombre || "Sin provincia",
-                    }))
-                )
-            )
-            .catch(() => console.error("Error al obtener localidades"));
+            .then((data) => setRoles(data))
+            .catch(() => console.error("Error al obtener las empresas"))
+            .finally(() => setLoadingRoles(false));
     }, [backendURL]);
     
+    
+    useEffect(() => {
+        if (typeof seleccionado?.localidad === "string") {
+            const [nombreLocalidad, nombreProvincia] = seleccionado.localidad.split(" / ").map((str: string) => str.trim());
+            const localidadEncontrada = localidades.find(
+                (loc) => loc.nombre === nombreLocalidad && loc.provincia === nombreProvincia
+            );
+    
+            if (localidadEncontrada) {
+                setlocalidadSeleccionada(localidadEncontrada.displayName);
+            }
+        } else if (seleccionado?.localidad && typeof seleccionado.localidad === "object") {
+            const displayName = `${seleccionado.localidad.nombre} / ${seleccionado.localidad.provincia.nombre}`;
+            setlocalidadSeleccionada(displayName);
+        }
+    }, [seleccionado?.localidad, localidades]);
+
+    useEffect(() => {
+        if (seleccionado?.numeroCel) {
+            let codigo = "";
+            let numero = "";
+
+            if (/^\+\d{1,4}-\d{10}$/.test(seleccionado.numeroCel)) {
+                [codigo, numero] = seleccionado.numeroCel.split("-");
+            }
+            
+            else if (/^\d{12,15}$/.test(seleccionado.numeroCel)) {
+                codigo = `+${seleccionado.numeroCel.slice(0, 3)}`;
+                numero = seleccionado.numeroCel.slice(3);
+            }
+    
+            setCodigoSeleccionado(codigo || "");
+            setNumeroCel(numero || "");
+        }
+    }, [seleccionado?.numeroCel]);
+    
+    
+    const handleNumeroCelularChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const numeroNuevo = event.target.value;
+        setNumeroCel(numeroNuevo);
+        handleChange("numeroCel")(event);
+    };
 
     const handleSubmit = () => {
         if (validateAll()) {
             const metodo = seleccionado?.cuit ? "PUT" : "POST";
             const url = seleccionado?.cuit
-                ? `${backendURL}/empresastransportistas/${data.cuit}`
-                : `${backendURL}/empresastransportistas`;
+                ? `${backendURL}/empresas/${data.cuit}`
+                : `${backendURL}/empresas`;
     
-            const localidadObjeto = localidades.find((loc) => loc.id === localidadSeleccionada);
+            if (isNaN(data.cuit)) {
+                const cuitLimpio = data.cuit.replace(/[^0-9]/g, '');
+                data.cuit = Number(cuitLimpio);
+            }
             
-            console.log("localidades")
-            console.log(localidadSeleccionada);
-            console.log(localidadObjeto);
-            console.log("xddd")
+            const numeroCompleto = `${codigoSeleccionado}-${numeroCel}`.replace(/[^0-9]/g, '');
+            data.numeroCel = numeroCompleto;
+
+            const localidadObjeto = localidades.find((loc) => loc.displayName === localidadSeleccionada);
+
+            const rolesLista = rolesSeleccionados.map((rolNombre) => {
+                const rol = roles.find((r) => r.nombre === rolNombre);
+                return rol ? rol.id : null;
+            }).filter((id) => id !== null);
+
             const payload = {
                 cuit: data.cuit,
                 razonSocial: data.razonSocial,
@@ -99,10 +208,9 @@ const EmpresaForm: React.FC<FormularioProps> = ({
                 numeroCel: data.numeroCel,
                 urlConstanciaAfip: data.urlConstanciaAfip,
                 urlConstanciaCBU: data.urlConstanciaCBU,
+                idsRoles: rolesLista,
                 email: data.email,
             };
-            console.log("Localidades: \n",localidades)
-            console.log("Objeto para enviar:", JSON.stringify(payload, null, 2));
 
             fetch(url, {
                 method: metodo,
@@ -112,22 +220,14 @@ const EmpresaForm: React.FC<FormularioProps> = ({
                 .then(async (response) => {
                     if (!response.ok) {
                         const errorMessage = await response.text();
-                        console.log(response);
                         throw new Error(`Error del servidor: ${errorMessage}`);
                     }
-                    console.log(response);
                     return response.json();
                 })
                 .then((newData) => {
-                    console.log("Objeto que se va a guardar:");
-                    console.log(newData);
                     if (metodo === "POST") {
-                        console.log("Metodo POST:");
-                        console.log(newData);
                         setDatos([...datos, newData]);
                     } else {
-                        console.log("Metodo PUT:");
-                        console.log(newData);
                         setDatos(
                             datos.map((empresa: { cuit: any; }) =>
                                 empresa.cuit === data.cuit ? newData : empresa
@@ -140,9 +240,6 @@ const EmpresaForm: React.FC<FormularioProps> = ({
         }
     };
     
-    
-    
-
     const handleClickDeleteCarga = () => setOpenDialogDelete(true);
     const handleCloseDialog = () => setOpenDialogDelete(false);
 
@@ -191,8 +288,9 @@ const EmpresaForm: React.FC<FormularioProps> = ({
                 disablePortal
                 options={localidades}
                 getOptionLabel={(option) => option.displayName}
-                value={localidades.find((loc) => loc.id === localidadSeleccionada) || null}
-                onChange={(_, newValue) => setlocalidadSeleccionada(newValue ? newValue.id : null)}
+                value={localidades.find((loc) => loc.displayName === localidadSeleccionada) || null}
+                onChange={(_, newValue) => setlocalidadSeleccionada(newValue ? newValue.displayName : null)}
+                loading={loadingLocalidades}
                 renderInput={(params) => (
                     <TextField
                         {...params}
@@ -200,25 +298,84 @@ const EmpresaForm: React.FC<FormularioProps> = ({
                         variant="outlined"
                         error={!!errors.idLocalidad}
                         helperText={errors.idLocalidad}
+                        InputProps={{
+                            ...params.InputProps,
+                            endAdornment: (
+                                <>
+                                    {loadingLocalidades ? <CircularProgress size={20} /> : null}
+                                    {params.InputProps.endAdornment}
+                                </>
+                            ),
+                        }}
                     />
                 )}
             />
-            <TextField
-                margin="dense"
-                label="Número de Celular"
-                name="numeroCel"
-                variant="outlined"
-                slotProps={{
-                    input: {
-                        inputComponent: NumeroFormat as any,
-                    },
-                }}
-                fullWidth
-                value={data.numeroCel}
-                onChange={handleChange("numeroCel")}
-                error={!!errors.numeroCel}
-                helperText={errors.numeroCel}
+            <Box
+                display="flex"
+                flexDirection="row"
+                gap={2}
+                alignContent={"center"}
+                alignItems={"center"}
+                marginTop={2}
+                marginBottom={1}
+            >
+                {/**/}
+                <Box width={"100px"}>
+                    <AutocompletarPais
+                        setCodigoSeleccionado={setCodigoSeleccionado}
+                        error={!!errors.numeroCel}
+                        defaultPhone={codigoSeleccionado}
+                    />
+                </Box>
+                <>-</>
+                <Stack width="400px" direction="row" spacing={2}>
+                    <TextField
+                        margin="dense"
+                        label="Número de Celular"
+                        variant="outlined"
+                        fullWidth
+                        slotProps={{
+                            input: {
+                                inputComponent: NumeroFormat as any,
+                            },
+                        }}
+                        value={numeroCel}
+                        onChange={handleNumeroCelularChange}
+                        error={!!errors.numeroCel}
+                        helperText={errors.numeroCel}
+                    />
+                </Stack>
+            </Box>
+
+            <Autocomplete
+                multiple
+                limitTags={2}
+                id="roles-autocomplete"
+                options={roles}
+                getOptionLabel={(option) => option.nombre}
+                value={roles.filter((roles) => rolesSeleccionados.includes(roles.nombre))}
+                onChange={(_, newValue) => setRolesSeleccionados(newValue.map((rol) => rol.nombre))}
+                loading={loadingRoles}
+                renderInput={(params) => (
+                    <TextField
+                        {...params}
+                        label="Roles"
+                        placeholder="Selecciona roles"
+                        error={!!errors.roles}
+                        helperText={errors.roles}
+                        InputProps={{
+                            ...params.InputProps,
+                            endAdornment: (
+                                <>
+                                    {loadingRoles ? <CircularProgress size={20} /> : null}
+                                    {params.InputProps.endAdornment}
+                                </>
+                            ),
+                        }}
+                    />
+                )}
             />
+
             <TextField
                 margin="dense"
                 label="URL Constancia Afip"
@@ -263,8 +420,8 @@ const EmpresaForm: React.FC<FormularioProps> = ({
             </IconButton>
             <Dialog open={openDialogDelete} onClose={handleCloseDialog}>
                 <DeleteEntidad
-                    idEntidad={data.cuit}
-                    endpointEntidad="empresastransportistas"
+                    idEntidad={Number(data.cuit)}
+                    endpointEntidad="empresas"
                     handleCloseDialog={handleCloseDialog}
                     handleClose={handleClose}
                     datos={datos}

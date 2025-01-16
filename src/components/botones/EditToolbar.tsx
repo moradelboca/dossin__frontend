@@ -31,7 +31,6 @@ export function EditToolbar(props: EditToolbarProps) {
                 }}
             >
                 <Button
-                    // Ver despues para hacer que se pueda usar opcionalmente el icono de agregar choferes (PersonAddAlt)
                     startIcon={<Add />}
                     onClick={onAdd}
                     sx={{ color: theme.colores.azul }}

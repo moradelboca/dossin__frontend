@@ -12,10 +12,8 @@ interface Telefono {
 export default function AutocompletarPa(props: Telefono) {
     const { setCodigoSeleccionado, error, defaultPhone } = props;
 
-    console.log("defaultPhone: ", defaultPhone);
+    
     const defaultCountry = countries.find(country => country.phone === defaultPhone) || null;
-    console.log("defaultCountry: ",defaultCountry);
-    console.log(countries.find(country => country.phone === defaultPhone) || "aaaa trolleado");
 
     const handleChange = (_event: any, value: any) => {
         if (value) {
@@ -92,7 +90,7 @@ const countries: readonly CountryType[] = [
     { code: "EC", label: "Ecuador", phone: "+593" },
     { code: "GT", label: "Guatemala", phone: "+502" },
     { code: "HN", label: "Honduras", phone: "+504" },
-    { code: "JM", label: "Jamaica", phone: "+1-876" },
+    { code: "JM", label: "Jamaica", phone: "+1876" },
     { code: "MX", label: "Mexico", phone: "+52" },
     { code: "NI", label: "Nicaragua", phone: "+505" },
     { code: "PA", label: "Panama", phone: "+507" },

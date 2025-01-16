@@ -215,42 +215,54 @@ export default function Choferes() {
 //import { GridColDef } from "@mui/x-data-grid";
 //import { useContext } from "react";
 import TablaTemplate from "../tablas/TablaTemplate";
-//import { ContextoGeneral } from "../Contexto";
+import MobileCardList from "../mobile/MobileCardList";
+import { useMediaQuery } from "@mui/material";
 import ChoferForm from "../forms/Choferes/ChoferForm";
 
 export default function Choferes() {
-    //const { backendURL } = useContext(ContextoGeneral);
+  const fields = [
+    "cuil",
+    "nombre",
+    "numeroCel",
+    "apellido",
+    "urlLINTI",
+    "localidad",
+    "empresas",
+    "rol",
+  ];
+  const headerNames = [
+    "Cuil",
+    "Nombre",
+    "Numero Celular",
+    "Apellido",
+    "URL Linti",
+    "Localidad",
+    "Cuit Empresas",
+    "Rol",
+  ];
 
-    // Aca definis los fields del json que mandan del back y abajo los nombres de las columnas
-    const fields = [
-        "cuil",
-        "nombre",
-        "numeroCel",
-        "apellido",
-        "urlLINTI",
-        "localidad",
-        "empresas",
-        "rol",
-    ];
-    const headerNames = [
-        "Cuil",
-        "Nombre",
-        "Numero Celular",
-        "Apellido",
-        "URL Linti",
-        "Localidad",
-        "Cuit Empresas",
-        "Roles"
-    ];
+  const isMobile = useMediaQuery("(max-width:768px)");
 
-    return (
-        <TablaTemplate
-            titulo="Colaboradores"
-            entidad="colaborador"
-            endpoint="colaboradores"
-            fields={fields}
-            headerNames={headerNames}
-            FormularioCreador={ChoferForm}
-        />
-    );
+  return isMobile ? (
+    <MobileCardList
+      titulo="Colaboradores"
+      entidad="colaborador"
+      endpoint="colaboradores"
+      fields={fields}
+      headerNames={headerNames}
+      FormularioCreador={ChoferForm} 
+      tituloField="apellido"
+      subtituloField="cuil"
+    />
+  ) : (
+    <TablaTemplate
+      titulo="Colaboradores"
+      entidad="colaborador"
+      endpoint="colaboradores"
+      fields={fields}
+      headerNames={headerNames}
+      FormularioCreador={ChoferForm}
+    />
+  );
 }
+

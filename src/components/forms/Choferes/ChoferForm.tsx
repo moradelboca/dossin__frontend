@@ -8,24 +8,29 @@ import DeleteEntidad from "../../dialogs/DeleteEntidad";
 import { FormularioProps } from "../../../interfaces/FormularioProps";
 import NumeroFormat from "../formatos/NumeroFormat";
 import AutocompletarPais from "../../cargas/autocompletar/AutocompletarPais";
-//import CuilFormat from "../forms/formatos/CuilFormat";
+import CuilFormat from "../formatos/CuilFormat";
+import { useMemo } from 'react';
 
 const ChoferForm: React.FC<FormularioProps> = ({ 
     seleccionado = {}, 
-    datos, 
+    datos = [], 
     setDatos, 
     handleClose 
 }) => {
     const { backendURL } = useContext(ContextoGeneral);
     const [openDialogDelete, setOpenDialogDelete] = useState(false);
+
     const [empresas, setEmpresas] = useState<any[]>([]);
-    const [empresasSeleccionadas, setEmpresasSeleccionadas] = useState<any[]>([]);  
+    const [empresasSeleccionadas, setEmpresasSeleccionadas] = useState<any[]>([]); 
+
     const [codigoSeleccionado, setCodigoSeleccionado] = useState<string>("");
     const [numeroCel, setNumeroCel] = useState<string>("");
-    const roles = [
+
+    const roles = useMemo(() => [
       { id: 1, nombre: "Camionero" },
       { id: 2, nombre: "Encargado" },
-    ];
+    ], []);
+    
     const [rolSeleccionado, setRolSeleccionado] = useState<{ id: number; nombre: string } | null>(
         roles.find((rol) => rol.nombre === seleccionado?.rol) || null
     );
@@ -36,7 +41,7 @@ const ChoferForm: React.FC<FormularioProps> = ({
     
     const { data, errors, handleChange, validateAll } = useValidation(
         {
-            cuil: "",
+            cuil: null,
             numeroCel: "",
             nombre: "",
             apellido: "",
@@ -49,10 +54,12 @@ const ChoferForm: React.FC<FormularioProps> = ({
         },
         {
             cuil: (value) => (!value ? "El CUIL es obligatorio" : null),
-            numeroCel: (value) =>
-                !value || !/^\+\d{1,4}-\d{10}$/.test(`${codigoSeleccionado}-${value}`)
+            numeroCel: (value) => {
+                const numeroCompleto = `${codigoSeleccionado}-${value}`;
+                return !value || !/^\+\d{1,4}-\d{10}$/.test(numeroCompleto)
                     ? "Número de celular inválido (Ej: +54-1234567890)"
-                    : null,
+                    : null;
+            },
             nombre: (value) => (!value ? "El nombre es obligatorio" : null),
             apellido: (value) => (!value ? "El apellido es obligatorio" : null),
             fechaNacimiento: (value) => (!value ? "La fecha de nacimiento es obligatoria" : null),
@@ -63,18 +70,26 @@ const ChoferForm: React.FC<FormularioProps> = ({
                 }
                 return null;
             },
+            urlLINTI: (value) =>
+                value && !/^https?:\/\//.test(value)
+                    ? "Debe ser una URL válida o dejarlo vacio"
+                    : null,
             idLocalidad: () => (!localidadSeleccionada ? "Debe seleccionar una localidad" : null),
             idRol: () => (!rolSeleccionado ? "El rol es obligatorio" : null),
         }
     );
     
     useEffect(() => {
-        if (typeof seleccionado?.empresas === "string") {
+        if (Array.isArray(seleccionado?.empresas)) {
+            const iniciales = seleccionado.empresas.map((empresa: { cuit: number }) => empresa.cuit);
+            setEmpresasSeleccionadas(iniciales);
+        } else if (typeof seleccionado?.empresas === "string") {
             const iniciales = seleccionado.empresas.split(",")
                 .map((empresa: string) => {
                     const cuit = empresa.split(" - ").pop();
                     return cuit ? Number(cuit) : null;
                 })
+                .filter((cuit: null) => cuit !== null);
             setEmpresasSeleccionadas(iniciales);
         }
     }, [seleccionado?.empresas]);
@@ -85,19 +100,25 @@ const ChoferForm: React.FC<FormularioProps> = ({
     );
 
     useEffect(() => {
-        if (seleccionado?.localidad && localidades.length > 0) {
-            const localidad = localidades.find(
-                (loc) => loc.displayName === seleccionado.localidad
+        if (typeof seleccionado?.localidad === "string") {
+            const [nombreLocalidad, nombreProvincia] = seleccionado.localidad.split(" / ").map((str: string) => str.trim());
+            const localidadEncontrada = localidades.find(
+                (loc) => loc.nombre === nombreLocalidad && loc.provincia === nombreProvincia
             );
-            if (localidad) {
-                setlocalidadSeleccionada(localidad.id);
+    
+            if (localidadEncontrada) {
+                setlocalidadSeleccionada(localidadEncontrada.displayName);
             }
+        } else if (seleccionado?.localidad && typeof seleccionado.localidad === "object") {
+            const displayName = `${seleccionado.localidad.nombre} / ${seleccionado.localidad.provincia.nombre}`;
+            setlocalidadSeleccionada(displayName);
         }
-    }, [seleccionado?.localidad]);
+    }, [seleccionado?.localidad, localidades]);
+    
     
     useEffect(() => {
         setLoadingEmpresas(true);
-        fetch(`${backendURL}/empresastransportistas`, {
+        fetch(`${backendURL}/empresas`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -115,7 +136,10 @@ const ChoferForm: React.FC<FormularioProps> = ({
         setLoadingLocalidades(true);
         fetch(`${backendURL}/ubicaciones/localidades`, {
             method: "GET",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+                "Content-Type": "application/json",
+                "ngrok-skip-browser-warning": "true",
+            },
         })
             .then((response) => response.json())
             .then((data) =>
@@ -133,8 +157,29 @@ const ChoferForm: React.FC<FormularioProps> = ({
     }, [backendURL]);
 
     useEffect(() => {
+        if (typeof seleccionado?.rol === "string") {
+            const rolEncontrado = roles.find((rol) => rol.nombre === seleccionado.rol);
+            setRolSeleccionado(rolEncontrado || null);
+        } else if (seleccionado?.rol && typeof seleccionado.rol === "object") {
+            setRolSeleccionado(seleccionado.rol);
+        }
+    }, [seleccionado?.rol, roles]);
+
+
+    useEffect(() => {
         if (seleccionado?.numeroCel) {
-            const [codigo, numero] = seleccionado.numeroCel.split("-");
+            let codigo = "";
+            let numero = "";
+
+            if (/^\+\d{1,4}-\d{10}$/.test(seleccionado.numeroCel)) {
+                [codigo, numero] = seleccionado.numeroCel.split("-");
+            }
+            
+            else if (/^\d{12,15}$/.test(seleccionado.numeroCel)) {
+                codigo = `+${seleccionado.numeroCel.slice(0, 3)}`;
+                numero = seleccionado.numeroCel.slice(3);
+            }
+    
             setCodigoSeleccionado(codigo || "");
             setNumeroCel(numero || "");
         }
@@ -154,11 +199,12 @@ const ChoferForm: React.FC<FormularioProps> = ({
                 ? `${backendURL}/colaboradores/${data.cuil}`
                 : `${backendURL}/colaboradores`;
 
-            const numeroCompleto = `${codigoSeleccionado}-${numeroCel}`;
+            const numeroCompleto = `${codigoSeleccionado}-${numeroCel}`.replace(/[^0-9]/g, '');
             data.numeroCel = numeroCompleto;
 
-            const localidadObjeto = localidades.find((loc) => loc.id === localidadSeleccionada);
-            const rolObjeto = roles.find((rol) => rol.nombre === rolSeleccionado?.nombre);
+            const localidadObjeto = localidades.find((loc) => loc.displayName === localidadSeleccionada);
+
+            const rolObjeto = roles.find((rol) => rol.id === rolSeleccionado?.id);
 
             const payload: any = {
                 cuil: data.cuil,
@@ -203,7 +249,6 @@ const ChoferForm: React.FC<FormularioProps> = ({
     const handleClickDelete = () => setOpenDialogDelete(true);
     const handleCloseDialog = () => setOpenDialogDelete(false);
 
-
     return (
         <>
             <TextField
@@ -211,6 +256,11 @@ const ChoferForm: React.FC<FormularioProps> = ({
                 label="CUIL"
                 name="cuil"
                 variant="outlined"
+                slotProps={{
+                    input: {
+                        inputComponent: CuilFormat as any,
+                    },
+                }}
                 fullWidth
                 value={data.cuil}
                 onChange={handleChange("cuil")}
@@ -337,7 +387,7 @@ const ChoferForm: React.FC<FormularioProps> = ({
                 options={localidades}
                 getOptionLabel={(option) => option.displayName}
                 value={localidades.find((loc) => loc.displayName === localidadSeleccionada) || null}
-                onChange={(_, newValue) => setlocalidadSeleccionada(newValue ? newValue.id : null)}
+                onChange={(_, newValue) => setlocalidadSeleccionada(newValue ? newValue.displayName : null)}
                 loading={loadingLocalidades}
                 renderInput={(params) => (
                     <TextField
@@ -365,7 +415,7 @@ const ChoferForm: React.FC<FormularioProps> = ({
                 onChange={(_, newValue) => setRolSeleccionado(newValue)}
                 options={roles}
                 getOptionLabel={(option) => option.nombre}
-                isOptionEqualToValue={(option, value) => option.id === value?.id} // Comparación personalizada
+                isOptionEqualToValue={(option, value) => option.id === value?.id}
                 renderInput={(params) => (
                     <TextField {...params} label="Rol" variant="outlined" fullWidth />
                 )}

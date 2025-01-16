@@ -43,12 +43,17 @@ export default function TablaTemplate({
                 "ngrok-skip-browser-warning": "true",
             },
         })
-            .then((response) => response.json())
+            .then((response) => {
+                if (!response.ok) throw new Error("Error en el servidor");
+                return response.json();
+            })
             .then((data) => {
                 setDatos(data);
                 setEstadoCarga("Cargado");
             })
-            .catch(() => console.error(`Error al obtener ${entidad}`));
+            .catch((error) => {
+                console.error(`Error al cargar datos para ${entidad}:`, error);
+                setEstadoCarga("Error"); });
     };
 
     useEffect(() => {
@@ -109,11 +114,27 @@ export default function TablaTemplate({
                 }
                 return "No especificado";
 
+            case "roles":
+                if (Array.isArray(value)) {
+                    return value.map((rol: any) => `${rol.nombre}`).join(", ");
+                }
+                return "No especificado";
+
             case "rol":
                 if (value) {
                     return `${value.nombre}` || "Sin rol";
                 }
                 return "No especificado";
+            case "numeroCel":
+                if (value) {
+                    const numero = value.toString();
+                    if (numero.length >= 10) {
+                        const codigo = numero.slice(0, numero.length - 10);
+                        const celular = numero.slice(-10);
+                        return `+${codigo}-${celular}`;
+                    }
+                }
+                return value || "No especificado";
 
             default:
                 return value || "No especificado";
