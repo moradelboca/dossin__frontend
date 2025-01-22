@@ -22,8 +22,9 @@ export default function ContainerDetalles() {
                 <IconButton
                     disabled={!cargaSeleccionada}
                     onClick={() => handleClickAbrirDialog(4)}
+                    sx={{ paddingTop: 0, paddingBottom: 0 }}
                 >
-                    <BorderColorIcon sx={{ fontSize: 17 }} />
+                    <BorderColorIcon sx={{ fontSize: 16 }} />
                 </IconButton>
             </Box>
             <Box
@@ -33,7 +34,6 @@ export default function ContainerDetalles() {
                     padding: 2,
                     width: "100%",
                     height: "100%",
-                    maxHeight: "145px",
                     textAlign: "left",
                     boxSizing: "border-box",
                     display: "flex",
@@ -45,7 +45,6 @@ export default function ContainerDetalles() {
                 <Typography
                     variant="subtitle2"
                     sx={{
-                        marginLeft: 2,
                         overflow: "hidden",
                         textOverflow: "ellipsis",
                         wordBreak: "break-word",

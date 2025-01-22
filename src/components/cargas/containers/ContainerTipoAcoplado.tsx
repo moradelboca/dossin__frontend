@@ -1,58 +1,77 @@
 import { Box, IconButton, Typography } from "@mui/material";
 import { useContext } from "react";
-import { ContextoCargas } from "./ContainerTajetasCargas";
 import BorderColorIcon from "@mui/icons-material/BorderColor";
+import { ContextoCargas } from "./ContainerTajetasCargas";
+import LocalShippingIcon from "@mui/icons-material/LocalShipping";
 
 export default function ContainerTipoAcoplado() {
     const { cargaSeleccionada, handleClickAbrirDialog } =
         useContext(ContextoCargas);
 
+    const tiposAcoplados = cargaSeleccionada?.tiposAcoplados
+        .map((acoplado: any) => acoplado.nombre)
+        .join(", ") || "No definido";
+
     return (
-        <>
+        <Box
+            sx={{
+                border: "1px solid #ccc",
+                borderRadius: "8px",
+                padding: "0.5rem",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-between",
+                height: "100%",
+                backgroundColor: "#ffffff",
+            }}
+        >
             <Box
                 sx={{
                     display: "flex",
-                    flexDirection: "row",
                     justifyContent: "space-between",
                     alignItems: "center",
                     width: "100%",
                 }}
             >
-                <Typography>Tipo de acoplado</Typography>
+                <Box
+                    sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 1,
+                        color: "#90979F",
+                    }}
+                >
+                    <LocalShippingIcon sx={{ fontSize: 20 }} />
+                </Box>
                 <IconButton
                     disabled={!cargaSeleccionada}
                     onClick={() => handleClickAbrirDialog(2)}
                 >
-                    <BorderColorIcon sx={{ fontSize: 17 }} />
+                    <BorderColorIcon sx={{ fontSize: 16 }} />
                 </IconButton>
             </Box>
-            <Box
-                sx={{
-                    border: "1px solid #ccc",
-                    borderRadius: "16px",
-                    padding: 2,
-                    width: "100%",
-                    textAlign: "left",
-                }}
-            >
+            <Box>
                 <Typography
-                    variant="subtitle2"
-                    sx={{ marginLeft: 2 }}
-                    color="#90979f"
-                    minHeight={22}
+                    variant="subtitle1"
+                    fontWeight="bold"
+                    sx={{
+                        color: "#90979F",
+                        fontSize: 12,
+                        marginBottom: "-0.5rem",
+                    }}
                 >
-                    {cargaSeleccionada?.tiposAcoplados.map(
-                        (acoplado: any, index: any) => (
-                            <span key={index}>
-                                {acoplado.nombre}
-                                {index <
-                                    cargaSeleccionada.tiposAcoplados.length -
-                                        1 && ", "}
-                            </span>
-                        )
-                    )}
+                    Tipo de acoplado
+                </Typography>
+                <Typography
+                    variant="h6"
+                    sx={{
+                        color: "#333",
+                        fontWeight: 600,
+                    }}
+                >
+                    {tiposAcoplados}
                 </Typography>
             </Box>
-        </>
+        </Box>
     );
 }

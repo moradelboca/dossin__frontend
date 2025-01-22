@@ -77,6 +77,7 @@ export function Mapa2(props: any) {
                 width: "100%",
                 borderRadius: "16px",
                 overflow: "hidden",
+                height: "100%",
             }}
         >
             <MapContainer
@@ -87,8 +88,8 @@ export function Mapa2(props: any) {
                 zoom={6}
                 scrollWheelZoom={false}
                 style={{
-                    height: "18vw",
-                    width: "39vw",
+                    height: "100%",
+                    width: "100%",
                     borderRadius: "16px",
                 }}
             >

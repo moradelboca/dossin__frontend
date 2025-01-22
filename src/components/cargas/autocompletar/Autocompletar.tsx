@@ -10,12 +10,12 @@ interface AutocompletarProps {
 
 export default function Autocompletar(props: AutocompletarProps) {
     const { title, datos, filtro, ubicacion } = props;
-    let ubicacionStrings = datos
+    const ubicacionStrings = datos
         .filter((ubicacion) => ubicacion.tipoUbicacion === filtro)
         .map((ubicacion) => {
             return `${ubicacion.nombre}, ${ubicacion.provincia}, ${ubicacion.pais}`;
         });
-    let ubicacionIds = datos
+    const ubicacionIds = datos
         .filter((ubicacion) => ubicacion.tipoUbicacion == filtro)
         .map((ubicacion) => {
             return ubicacion.id;

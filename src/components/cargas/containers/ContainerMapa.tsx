@@ -17,8 +17,6 @@ export default function ContainerMapa() {
                     justifyContent: "space-between",
                     alignItems: "center",
                     width: "100%",
-                    marginRight: 3,
-                    margingBottom: 1,
                 }}
             >
                 <Typography>Recorrido</Typography>
@@ -32,6 +30,7 @@ export default function ContainerMapa() {
             <Box
                 sx={{
                     marginTop: 0,
+                    height: "100%",
                 }}
             >
                 <Mapa2
@@ -47,6 +46,10 @@ export default function ContainerMapa() {
                         cargaSeleccionada?.ubicacionDescarga.latitud,
                         cargaSeleccionada?.ubicacionDescarga.longitud,
                     ]}
+                    sx={{
+                        width:"100%",
+                        height: "100%",
+                    }}
                 />
             </Box>
         </>

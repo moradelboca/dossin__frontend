@@ -1,184 +1,60 @@
-import { Box, IconButton, Typography } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import { useContext } from "react";
 import { ContextoCargas } from "./ContainerTajetasCargas";
-import BorderColorIcon from "@mui/icons-material/BorderColor";
-import { useNavigate } from "react-router-dom";
+import ContainerInfoCard from "../../cards/cargas/ContainerInfoCard";
 import ContainerTipoAcoplado from "./ContainerTipoAcoplado";
 
-//agregar una interface para recibir el valor de los cupos
+// Importar tus íconos SVG o componentes para representar los íconos
+import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
+import PublicIcon from "@mui/icons-material/Public";
+import GroupIcon from "@mui/icons-material/Group";
 
 export default function ContainerInformacionCarga() {
-    const navigate = useNavigate();
-    const { cupos } = useContext(ContextoCargas);
-    const cuposLength = cupos.length;
-    const { cargaSeleccionada, handleClickAbrirDialog } =
+    const { cupos, cargaSeleccionada, handleClickAbrirDialog } =
         useContext(ContextoCargas);
-    const handleClickVerCupos = () => {
-        navigate(`/cargas/${cargaSeleccionada.id}/cupos`);
-    };
+    const cuposLength = cupos.length;
 
     return (
         <>
-            {/* Tarifa */}
+            <Typography>Datos</Typography>
             <Box
                 sx={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    flexDirection: "column",
+                    display: "grid",
+                    gridTemplateColumns: "repeat(2, 1fr)",
+                    gap: 1,
                     width: "100%",
                     height: "100%",
                 }}
             >
-                <Box
-                    sx={{
-                        display: "flex",
-                        flexDirection: "row",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        width: "100%",
-                    }}
-                >
-                    <Typography>Tarifa</Typography>
-                    <IconButton
-                        disabled={!cargaSeleccionada}
-                        onClick={() => handleClickAbrirDialog(3)}
-                    >
-                        <BorderColorIcon sx={{ fontSize: 17 }} />
-                    </IconButton>
-                </Box>
-                <Box
-                    sx={{
-                        border: "1px solid #ccc",
-                        borderRadius: "16px",
-                        padding: 2,
-                        width: "100%",
-                        textAlign: "left",
-                    }}
-                >
-                    <Typography
-                        variant="subtitle2"
-                        sx={{ marginLeft: 2 }}
-                        color="#90979f"
-                        minHeight={22}
-                    >
-                        ${cargaSeleccionada?.tarifa} /
-                        {cargaSeleccionada?.tipoTarifa.nombre}
-                        {cargaSeleccionada?.incluyeIva === 1 ? "+IVA" : ""}
-                    </Typography>
-                </Box>
-            </Box>
+                {/* Tarifa */}
+                <ContainerInfoCard
+                    title="Tarifa"
+                    value={`$${cargaSeleccionada?.tarifa || "-"} / ${cargaSeleccionada?.tipoTarifa?.nombre || "-"}`}
+                    icon={<MonetizationOnIcon />}
+                    onEdit={() => handleClickAbrirDialog(3)}
+                    isEditable={!!cargaSeleccionada}
+                />
 
-            {/* Kilómetros */}
-            <Box
-                sx={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    flexDirection: "column",
-                    width: "100%",
-                    height: "100%",
-                    marginLeft: 2,
-                }}
-            >
-                <Box
-                    sx={{
-                        display: "flex",
-                        flexDirection: "row",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        width: "100%",
-                    }}
-                >
-                    <Typography>Kilometros</Typography>
-                    <IconButton
-                        disabled={!cargaSeleccionada}
-                        onClick={() => handleClickAbrirDialog(0)}
-                    >
-                        <BorderColorIcon sx={{ fontSize: 17 }} />
-                    </IconButton>
-                </Box>
-                <Box
-                    sx={{
-                        border: "1px solid #ccc",
-                        borderRadius: "16px",
-                        padding: 2,
-                        width: "100%",
-                        textAlign: "left",
-                    }}
-                >
-                    <Typography
-                        variant="subtitle2"
-                        sx={{ marginLeft: 2 }}
-                        color="#90979f"
-                        minHeight={22}
-                    >
-                        {cargaSeleccionada?.cantidadKm}
-                    </Typography>
-                </Box>
-            </Box>
+                {/* Kilómetros */}
+                <ContainerInfoCard
+                    title="Kilómetros"
+                    value={cargaSeleccionada?.cantidadKm || 0}
+                    icon={<PublicIcon />}
+                    onEdit={() => handleClickAbrirDialog(0)}
+                    isEditable={!!cargaSeleccionada}
+                />
 
-            {/* Cupos creados */}
-            <Box
-                sx={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    flexDirection: "column",
-                    width: "100%",
-                    height: "100%",
-                }}
-            >
-                <Box
-                    sx={{
-                        display: "flex",
-                        flexDirection: "row",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        width: "100%",
-                    }}
-                >
-                    <Typography>Cupos creados</Typography>
-                    <IconButton
-                        disabled={!cargaSeleccionada}
-                        onClick={handleClickVerCupos}
-                    >
-                        <BorderColorIcon sx={{ fontSize: 17 }} />
-                    </IconButton>
-                </Box>
-                <Box
-                    sx={{
-                        border: "1px solid #ccc",
-                        borderRadius: "16px",
-                        padding: 2,
-                        width: "100%",
-                        textAlign: "left",
-                    }}
-                >
-                    <Typography
-                        variant="subtitle2"
-                        sx={{ marginLeft: 2 }}
-                        color="#90979f"
-                        minHeight={22}
-                    >
-                        {cuposLength}
-                    </Typography>
-                </Box>
-            </Box>
+                {/* Cupos creados */}
+                <ContainerInfoCard
+                    title="Cupos creados"
+                    value={cuposLength}
+                    icon={<GroupIcon />}
+                    onEdit={() => console.log("Navegar a cupos")}
+                    isEditable={!!cargaSeleccionada}
+                />
 
-            {/* Tipos de camiones */}
-            <Box
-                sx={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    flexDirection: "column",
-                    width: "100%",
-                    height: "100%",
-                    marginLeft: 2,
-                }}
-            >
-                <ContainerTipoAcoplado />
+                {/* Tipo de acoplado */}
+                    <ContainerTipoAcoplado />
             </Box>
         </>
     );
