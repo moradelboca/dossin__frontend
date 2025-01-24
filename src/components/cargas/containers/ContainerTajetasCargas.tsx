@@ -68,6 +68,7 @@ export function ContainerTarjetasCargas() {
                 setCargas(data);
                 setEstadoCarga("Cargado");
             })
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
             .catch((_e) => {
                 console.error("Error al obtener las cargas");
             });
@@ -152,8 +153,9 @@ export function ContainerTarjetasCargas() {
                     display: "flex",
                     flexDirection: "row",
                     gap: 1,
-                    maxHeight: "85vh",
-                    marginTop: 1,
+                    maxHeight: "100%",
+                    height:"100%",
+                    padding:"1.2rem",
                 }}
             >
                 <Box
@@ -162,7 +164,7 @@ export function ContainerTarjetasCargas() {
                         display: "flex",
                         flexDirection: "column",
                         gap: 2,
-                        maxWidth: "35vw",
+                        maxWidth: "26vw",
                         overflowY: "auto",
                         overflowX: "hidden",
                         alignItems: "center",
@@ -290,8 +292,7 @@ export function ContainerTarjetasCargas() {
                 <Box
                     sx={{
                         maxWidth: "100%",
-                        height: "84vh",
-                        maxHeight: "1300px",
+                        height: "100%",
                         borderRadius: "16px",
                         flex: 1,
                         display: "flex",
@@ -303,14 +304,14 @@ export function ContainerTarjetasCargas() {
                 >
                     <Box
                         sx={{
-                            marginLeft: 5,
-                            marginTop: 2,
-                            marginRight: 5,
+                            paddingLeft: "24px",
+                            paddingTop: "12px",
+                            paddingRight: "24px",
                             display: "flex",
                             justifyContent: "space-between",
                             alignItems: "center",
                             width: "100%",
-                            maxWidth: "800px",
+                            maxWidth: "100%",
                             flexWrap: "wrap",
                         }}
                     >
@@ -322,10 +323,10 @@ export function ContainerTarjetasCargas() {
                             }}
                         >
                             <Typography variant="h6" color="#90979f">
-                                Id de Carga:
+                                Carga ID:
                             </Typography>
                             <Typography variant="h6">
-                                {cargaSeleccionada?.id}
+                                {`#${cargaSeleccionada?.id || " " }`}
                             </Typography>
                         </Box>
 
@@ -339,40 +340,39 @@ export function ContainerTarjetasCargas() {
                         </IconButton>
                     </Box>
 
-                    <Divider sx={{ marginTop: 1 }} />
-                    <Grid2>
+                    <Divider sx={{ marginTop: 1, marginBottom:"1rem" }} />
+                    <Grid2 sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
                         <Box
                             sx={{
-                                margin: 1,
                                 display: "flex",
                                 flexDirection: "row",
                                 borderRadius: "16px",
-                                height: "auto",
+                                height: "60%",
                                 width: "100%",
                                 flexWrap: "wrap",
+                                paddingLeft: "16px",
+                                paddingRight: "16px",
+                                gap:"0.5rem",
                             }}
                         >
                             <Box
                                 sx={{
                                     display: "flex",
                                     flexDirection: "column",
-                                    flex: 3,
-                                    marginRight: 0,
-                                    marginLeft: 4,
+                                    width:"60%",
+                                    height:"100%",
                                 }}
                             >
                                 <ContainerMapa />
                             </Box>
                             <Box
                                 sx={{
-                                    marginRight: 4,
                                     display: "flex",
                                     flexDirection: "column",
                                     flex: 1,
-                                    minWidth: 200,
-                                    width: "100%",
                                     alignItems: "center",
-                                    height: "100%",
+                                    width:"40%",
+                                    height:"100%",
                                 }}
                             >
                                 <ContainerProximosCupos />
@@ -385,22 +385,20 @@ export function ContainerTarjetasCargas() {
                                 display: "flex",
                                 flexDirection: { xs: "column", md: "row" },
                                 backgroundColor: "#ffffff",
-                                marginBottom: 3,
+                                width:"100%",
+                                height: "40%",
+                                padding:"1rem",
+                                gap: "0.5rem",
                             }}
                         >
                             {/* Caja 1 */}
                             <Box
                                 marginTop={0}
-                                marginLeft={2}
-                                marginBottom={1}
                                 sx={{
-                                    width: { xs: "100%", md: "50%" },
-                                    maxWidth: "500px",
+                                    width: { xs: "100%", md: "60%" },
                                     height: "100%",
-                                    display: "grid",
-                                    gridTemplateColumns: "repeat(2, 1fr)",
-                                    gridTemplateRows: "repeat(2, 1fr)",
-                                    padding: 1,
+                                    display: "flex",
+                                    flexDirection:"column",
                                 }}
                             >
                                 <ContainerInformacionCarga />
@@ -411,10 +409,8 @@ export function ContainerTarjetasCargas() {
                                 sx={{
                                     display: "flex",
                                     flexDirection: "column",
-                                    width: { xs: "100%", md: "50%" },
+                                    width: { xs: "100%", md: "40%" },
                                     height: "100%",
-                                    marginLeft: 1,
-                                    padding: 2,
                                 }}
                             >
                                 <ContainerDetalles />

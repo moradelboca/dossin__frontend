@@ -49,6 +49,10 @@ export default function ContainerProximosCupos() {
                 <IconButton
                     disabled={!cargaSeleccionada}
                     onClick={handleClickVerCupos}
+                    sx={{
+                        paddingRight:0,
+                        paddingBottom:0
+                    }}
                 >
                     <AddIcon />
                 </IconButton>
@@ -64,11 +68,6 @@ export default function ContainerProximosCupos() {
                     alignItems: "center",
                     justifyContent: "center",
                     flexGrow: 1,
-                    marginTop: 0,
-                    maxWidth: 300,
-                    maxHeight: 310,
-                    marginBottom: 1,
-                    minHeight: 275,
                 }}
             >
                 {!cupos.length ? (
