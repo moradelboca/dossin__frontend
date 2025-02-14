@@ -57,15 +57,15 @@ export function ContainerCupos() {
       });
   };
 
-  //useEffect(() => {
-  //  refreshCupos();
-  //}, []);
-
-  // Si deseas usar datos de prueba, puedes descomentar lo siguiente:
   useEffect(() => {
-    setCupos(cuposPrueba);
-    setEstadoCarga("Cargado");
-  }, []);
+    refreshCupos();
+  }, [])
+  
+  // Si deseas usar datos de prueba, puedes descomentar lo siguiente:
+  //useEffect(() => {
+  //  setCupos(cuposPrueba);
+  //  setEstadoCarga("Cargado");
+  //}, []);
 
   const handleChangeTab = (_event: React.SyntheticEvent, newValue: string) => {
     setSelectedTab(newValue);
