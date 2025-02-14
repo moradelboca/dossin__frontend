@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import Box from "@mui/material/Box";
 import Stepper from "@mui/material/Stepper";
 import Step from "@mui/material/Step";
@@ -67,7 +68,33 @@ export default function CrearCargaStepper(props: any) {
         horaFinDescarga: datosCarga?.horaFinDescarga,
         horaInicioBalanza: datosCarga?.horaInicioBalanza,
         horaFinBalanza: datosCarga?.horaFinBalanza,
+        tolerancia: 32.5,
+        creadoPor: "test@test.com"
     });
+    /*
+    {
+        "tarifa": 1200,
+        "idTipoTarifa": 1,
+        "incluyeIVA": true,
+        "cantidadKm": 200,
+        "idsTiposAcoplados": [1],
+        "idProveedor": 1,
+        "idCargamento": 1,
+        "horaInicioCarga": "08:00",
+        "horaFinCarga": "08:15:00",
+        "horaInicioDescarga": "20:00:00",
+        "horaFinDescarga": "20:15:00",
+        "horaInicioBalanza": "19:00:00",
+        "horaFinBalanza": "19:30:00",
+        "idUbicacionCarga": 1,
+        "idUbicacionDescarga": 1,
+        "idUbicacionBalanza":1,
+        "descripcion": "afafaw"
+
+        "tolerancia": 30.5,
+        "creadoPor": "test@test.com",
+    }
+    */
     const [datosSinCompletar, setDatosSinCompletar] = useState(false);
     const [pasoActivo, setPasoActivo] = useState<number>(pasoSeleccionado ?? 0);
     const [estadoCarga, setEstadoCarga] = useState("Creando");

@@ -100,13 +100,16 @@ export default function TablaUser() {
     const [estadoCarga, setEstadoCarga] = useState("Cargando");
 
     const refreshUsers = () => {
+        console.log("https://auth.dossin.com.ar/auth/usuarios");
+        console.log(`${pruebas}/auth/usuarios`);
         fetch(`${pruebas}/auth/usuarios`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
                 "ngrok-skip-browser-warning": "true",
             },
-        })
+            mode: "cors", // Asegúrate de configurar esto
+          })
             .then((response) => response.json())
             .then((data) => {
                 setUsers(data);

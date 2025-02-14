@@ -1,4 +1,5 @@
-// @ts-ignore
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { DateCalendar, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { PickersDay } from "@mui/x-date-pickers/PickersDay";
@@ -16,7 +17,7 @@ import { ContextoGeneral } from "../../Contexto";
 const theme = createTheme({
     palette: {
         primary: {
-            main: "#163660", // Color azul personalizado
+            main: "#163660",
         },
     },
 });
@@ -67,7 +68,7 @@ const cuposFromat = React.forwardRef<NumericFormatProps, CustomProps>(
 );
 
 export function CreadorCupos(props: any) {
-    let { idCarga, handleCloseDialog, refreshCupos } = props;
+    const { idCarga, handleCloseDialog, refreshCupos } = props;
     const { backendURL } = useContext(ContextoGeneral);
     const [selectedDates, setSelectedDates] = useState<Dayjs[]>([]);
     const [cupoSeleccionado, setCupoSeleccionado] = useState<number | null>(
@@ -89,7 +90,7 @@ export function CreadorCupos(props: any) {
             return;
         }
 
-        for (let fecha of selectedDates) {
+        for (const fecha of selectedDates) {
             const cupoDeCarga = {
                 fecha: fecha.format("YYYY-MM-DD"),
                 cupos: cupoSeleccionado,

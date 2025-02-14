@@ -1,7 +1,6 @@
 import { ContainerCargas } from "./components/cargas/containers/ContainerCargas";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Nav } from "./components/nav/Nav";
-//import ContainerInconvenientes from "./components/inconvenientes/ContainerInconvenientes";
 import { ContainerCupos } from "./components/cargas/cupos/ContainerCupos";
 import { CssBaseline } from "@mui/material";
 import Box from "@mui/material/Box";
@@ -16,7 +15,7 @@ import PaginaNoDisponible from "./components/inconvenientes/PaginaNoDisponible";
 import { AuthProvider } from "./components/autenticacion/ContextoAuth";
 import TablaUser from "./components/admin/TablaUser";
 import RutasProtegidas from "./components/autenticacion/RutasProtegidas";
-import Usuarios from "./components/admin/Usuarios";
+//import Usuarios from "./components/admin/Usuarios";
 import Dashboard from "./components/dashboard/Dashboard";
 import Inconvenientes from "./components/inconvenientes/Inconvenientes";
 
@@ -135,8 +134,7 @@ function App() {
                                         path="/admin"
                                         element={
                                             <RutasProtegidas>
-                                                <TablaUser />
-                                                <Usuarios/>
+                                                <TablaUser/>
                                             </RutasProtegidas>
                                             }
                                     />

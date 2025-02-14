@@ -6,6 +6,7 @@ import { EditToolbar } from "../botones/EditToolbar";
 import { ContextoGeneral } from "../Contexto";
 import BorderColorIcon from "@mui/icons-material/BorderColor";
 import CreadorEntidad from "../dialogs/CreadorEntidad";
+import useTransformarCampo from "../hooks/useTransformarCampo";
 
 export default function TablaTemplate({
     titulo,

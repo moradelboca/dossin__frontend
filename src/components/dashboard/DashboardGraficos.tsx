@@ -1,117 +1,102 @@
 import React, { useContext, useState } from "react";
 import { ContextoGeneral } from "../Contexto";
-import { Card, CardContent, Typography, IconButton, Chip, Box } from "@mui/material";
+import {
+  Card,
+  CardContent,
+  Typography,
+  IconButton,
+  Chip,
+  Box,
+} from "@mui/material";
 import BorderColorIcon from "@mui/icons-material/BorderColor";
-import { Radar, RadarChart, PolarGrid, Legend, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip } from "recharts";
 import DashboardFiltrosDialog from "../dialogs/dashboard/DashboardFiltrosDialog";
-
-// Definir tipos específicos para las cargas y los días
-type Cargas = {
-  provincia: string;
-  Maíz: number;
-  Soja: number;
-  Trigo: number;
-  Girasol: number;
-};
-
-type Dias = {
-  provincia: string;
-  Lunes: number;
-  Martes: number;
-  Miércoles: number;
-  Jueves: number;
-  Viernes: number;
-};
-
-type SimulacionData = {
-  cargas: Cargas[];
-  dias: Dias[];
-};
+import DashboardCargas from "./graficos/DashboardCargas";
+import DashboardFechas from "./graficos/DashboardFechas";
+import DashboardFechasDialog from "../dialogs/dashboard/DashboardFechasDialog";
 
 interface DashboardGraficosProps {
-  opcion: "cargas" | "dias";
+  opcion: "cargas" | "fechas";
 }
 
 const DashboardGraficos: React.FC<DashboardGraficosProps> = ({ opcion }) => {
   const { theme } = useContext(ContextoGeneral);
-  const [dialogOpen, setDialogOpen] = useState<"cargas" | "dias" | "provincias" | null>(null);
+  // Se abre el diálogo según el tipo de filtro
+  const [dialogOpen, setDialogOpen] = useState<
+    "cargas" | "fechas" | "provincias" | null
+  >(null);
 
+  // Estado para las selecciones de filtros.
+  // Ahora usamos "fechas" en lugar de "dias"
   const [selections, setSelections] = useState({
-    [opcion]: [] as string[],
+    cargas: [] as string[],
+    fechas: [] as string[], // cada fecha se guarda como "YYYY-MM-DD"
     provincias: [] as string[],
   });
 
+  // Opciones disponibles para cada tipo.
+  // Para fechas ya no se usan opciones fijas; se seleccionan mediante calendario.
   const opciones = {
-    cargas: ["Maíz", "Soja", "Trigo", "Girasol"],
-    dias: ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"],
-    provincias: ["Buenos Aires", "Córdoba", "Santa Fe", "Mendoza", "Salta"],
-  };
-
-  const simulacionData: SimulacionData = {
     cargas: [
-      { provincia: "Buenos Aires", Maíz: 2000, Soja: 1200, Trigo: 1500, Girasol: 1500 },
-      { provincia: "Córdoba", Maíz: 500, Soja: 300, Trigo: 200, Girasol: 150 },
-      { provincia: "Santa Fe", Maíz: 400, Soja: 250, Trigo: 180, Girasol: 100 },
-      { provincia: "Mendoza", Maíz: 600, Soja: 350, Trigo: 250, Girasol: 200 },
-      { provincia: "Salta", Maíz: 100, Soja: 50, Trigo: 80, Girasol: 40 },
+      "Maíz",
+      "Soja",
+      "Trigo",
+      "Girasol",
+      "tipo carga 1",
+      "tipo carga 2",
+      "General",
     ],
-    dias: [
-      { provincia: "Buenos Aires", Lunes: 500, Martes: 300, Miércoles: 450, Jueves: 400, Viernes: 600 },
-      { provincia: "Córdoba", Lunes: 200, Martes: 150, Miércoles: 180, Jueves: 170, Viernes: 250 },
-      { provincia: "Santa Fe", Lunes: 100, Martes: 120, Miércoles: 110, Jueves: 130, Viernes: 140 },
-      { provincia: "Mendoza", Lunes: 300, Martes: 250, Miércoles: 280, Jueves: 260, Viernes: 320 },
-      { provincia: "Salta", Lunes: 50, Martes: 70, Miércoles: 60, Jueves: 65, Viernes: 80 },
+    provincias: [
+      "Buenos Aires",
+      "Cordoba",
+      "Santa Fe",
+      "Mendoza",
+      "Salta",
+      "provincia 2",
+      "provincia 1",
     ],
   };
 
-  const filteredData = simulacionData[opcion as keyof SimulacionData] 
-    .filter((entry) => selections.provincias.includes(entry.provincia))
-    .map((entry) => ({
-      provincia: entry.provincia,
-      ...selections[opcion].reduce<Record<string, number>>((acc, item) => {
-        if (item in entry) {
-          acc[item] = Number(entry[item as keyof typeof entry]) || 0;
-        }
-        return acc;
-      }, {}),
-    }));
-
-  const handleClickAbrirDialog = (type: "cargas" | "dias" | "provincias") => {
+  const handleClickAbrirDialog = (
+    type: "cargas" | "fechas" | "provincias"
+  ) => {
     setDialogOpen(type);
   };
 
   const handleCloseDialog = () => setDialogOpen(null);
 
-  const handleAddItem = (item: string, type: "cargas" | "dias" | "provincias") => {
+  const handleAddItem = (
+    item: string,
+    type: "cargas" | "fechas" | "provincias"
+  ) => {
     setSelections((prev) => ({
       ...prev,
       [type]: prev[type].includes(item) ? prev[type] : [...prev[type], item],
     }));
   };
 
-  const handleRemoveItem = (item: string, type: "cargas" | "dias" | "provincias") => {
+  const handleRemoveItem = (
+    item: string,
+    type: "cargas" | "fechas" | "provincias"
+  ) => {
     setSelections((prev) => ({
       ...prev,
       [type]: prev[type].filter((x) => x !== item),
     }));
   };
 
-  const getAvailableOptions = (type: "cargas" | "dias" | "provincias") => {
+  const getAvailableOptions = (type: "cargas" | "provincias") => {
+    // No usamos opciones fijas para fechas, ya que se agregan mediante calendario.
     return opciones[type].filter((option) => !selections[type].includes(option));
   };
-
-  // Colores personalizados para cada línea o radar
-  const colorPalette = [
-    "#ff6347", "#ff4500", "#32cd32", "#8a2be2", "#00ced1", 
-    "#ff1493", "#ffd700", "#adff2f", "#ff8c00", "#e6e6fa"
-  ];
 
   return (
     <Card>
       <CardContent>
-        {/* Provincias */}
+        {/* Selección de Provincias */}
         <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mb: 2 }}>
-          <Typography sx={{ fontWeight: "bold", mr: 2 }}>Provincias:</Typography>
+          <Typography sx={{ fontWeight: "bold", mr: 2 }}>
+            Provincias:
+          </Typography>
           {selections.provincias.map((provincia) => (
             <Chip
               key={provincia}
@@ -131,9 +116,11 @@ const DashboardGraficos: React.FC<DashboardGraficosProps> = ({ opcion }) => {
           </IconButton>
         </Box>
 
-        {/* Elegir si es cargas o días */}
+        {/* Selección de Cargas o Fechas */}
         <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mb: 2 }}>
-          <Typography sx={{ fontWeight: "bold", mr: 2 }}>{opcion === "cargas" ? "Cargas:" : "Días:"}</Typography>
+          <Typography sx={{ fontWeight: "bold", mr: 2 }}>
+            {opcion === "cargas" ? "Cargas:" : "Fechas:"}
+          </Typography>
           {selections[opcion].map((item) => (
             <Chip
               key={item}
@@ -153,61 +140,47 @@ const DashboardGraficos: React.FC<DashboardGraficosProps> = ({ opcion }) => {
           </IconButton>
         </Box>
 
-        {/* Gráfico */}
-        {selections[opcion].length > 0 && selections.provincias.length > 0 && (
-          <ResponsiveContainer width="100%" height={400}>
-            {opcion === "dias" ? (
-              <LineChart
-                width={500}
-                height={300}
-                data={filteredData}
-                margin={{ top: 20, right: 30, left: 20, bottom: 10 }}
-              >
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="provincia" />
-                <YAxis />
-                <Tooltip />
-                {selections.dias.map((dia, index) => (
-                  <Line
-                    key={dia}
-                    type="monotone"
-                    dataKey={dia}
-                    stroke={colorPalette[index % colorPalette.length]} // Usamos el color según el índice
-                  />
-                ))}
-              </LineChart>
-            ) : (
-              <RadarChart data={filteredData}>
-                <PolarGrid />
-                <PolarAngleAxis dataKey="provincia" />
-                <PolarRadiusAxis />
-                {selections[opcion].map((item, index) => (
-                  <Radar
-                    key={item}
-                    name={item}
-                    dataKey={item}
-                    stroke={colorPalette[index % colorPalette.length]} // Usamos el color según el índice
-                    fill={colorPalette[index % colorPalette.length]}
-                    fillOpacity={0.6}
-                  />
-                ))}
-                <Legend />
-              </RadarChart>
-            )}
-          </ResponsiveContainer>
+        {/* Renderizado del gráfico según la opción */}
+        {opcion === "cargas" ? (
+          <DashboardCargas
+            selections={{
+              cargas: selections.cargas,
+              provincias: selections.provincias,
+            }}
+          />
+        ) : (
+          <DashboardFechas
+            selections={{
+              fechas: selections.fechas,
+              provincias: selections.provincias,
+            }}
+          />
         )}
       </CardContent>
 
-      {/* Dialog de Filtros */}
-      {dialogOpen && (
+      {/* Diálogo de Filtros para cargas y provincias */}
+      {dialogOpen && dialogOpen !== "fechas" && (
         <DashboardFiltrosDialog
           open={dialogOpen !== null}
           onClose={handleCloseDialog}
           dialogType={dialogOpen}
           selectedItems={selections[dialogOpen]}
-          options={getAvailableOptions(dialogOpen)}
-          handleAddItem={(item) => handleAddItem(item, dialogOpen)}
-          handleRemoveItem={(item) => handleRemoveItem(item, dialogOpen)}
+          options={getAvailableOptions(dialogOpen as "cargas" | "provincias")}
+          handleAddItem={(item) => handleAddItem(item, dialogOpen as "cargas" | "provincias")}
+          handleRemoveItem={(item) =>
+            handleRemoveItem(item, dialogOpen as "cargas" | "provincias")
+          }
+        />
+      )}
+
+      {/* Diálogo especial para la selección de fechas */}
+      {dialogOpen === "fechas" && (
+        <DashboardFechasDialog
+          open={true}
+          onClose={handleCloseDialog}
+          selectedFechas={selections.fechas}
+          onAddFecha={(fecha) => handleAddItem(fecha, "fechas")}
+          onRemoveFecha={(fecha) => handleRemoveItem(fecha, "fechas")}
         />
       )}
     </Card>

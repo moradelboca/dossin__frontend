@@ -5,7 +5,7 @@ import { ContextoGeneral } from "../../Contexto";
 import ClearSharpIcon from "@mui/icons-material/ClearSharp";
 
 export default function DeleteCarga(props: any) {
-    let { handleCloseDialog } = props;
+    const { handleCloseDialog } = props;
     const { backendURL, theme } = useContext(ContextoGeneral);
     const { cargaSeleccionada } = useContext(ContextoCargas);
 

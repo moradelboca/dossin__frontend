@@ -71,8 +71,7 @@ export function MapaMain() {
     const [ubicacionSeleccionada, setUbicacionSeleccionada] =
         React.useState<any>(null);
 
-    const [tipoUbicacionSeleccionado, setTipoUbicacionSeleccionado] =
-        useState<string>("Todas");
+    const [tipoUbicacionSeleccionado, setTipoUbicacionSeleccionado] = useState<string>("Todas");
     const [estadoCarga, setEstadoCarga] = useState(true);
 
     const refreshUbicaciones = () => {
