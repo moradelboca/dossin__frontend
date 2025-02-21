@@ -89,7 +89,8 @@ export const CuposGridContainer: React.FC<CuposGridContainerProps> = ({
               cuposConfirmados={cupo.turnos.length}
               idCarga={cupo.carga}
               refreshCupos={refreshCupos}
-              estaEnElGrid={true}
+              estaEnElGrid={true} 
+              cupos={[]}            
             />
 
             {/* Tabla de turnos */}

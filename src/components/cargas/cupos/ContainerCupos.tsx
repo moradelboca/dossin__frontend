@@ -9,9 +9,10 @@ import {
   Dialog,
   DialogContent,
   DialogTitle,
-  TextField,
-  Autocomplete,
+  useMediaQuery,
 } from "@mui/material";
+import ToggleButton from "@mui/material/ToggleButton";
+import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import { BotonIcon } from "../../botones/IconButton";
 import { AccessAlarmOutlined } from "@mui/icons-material";
 import ClearSharpIcon from "@mui/icons-material/ClearSharp";
@@ -19,10 +20,13 @@ import { useParams } from "react-router-dom";
 import { ContextoGeneral } from "../../Contexto";
 import { CreadorCupos } from "../creadores/CreadorCupos";
 import { CuposCardsContainer } from "./tabsCupos/CuposCardsContainer";
-import { ErroresCuposCardsContainer } from "./tabsCupos/ErroresCuposCardsContainer"; // <-- Importa el nuevo componente
+import { ErroresCuposCardsContainer } from "./tabsCupos/ErroresCuposCardsContainer";
 import { CuposGridContainer } from "./tabsCupos/CuposGridContainer";
+import { ErroresCuposGridContainer } from "./tabsCupos/ErroresCuposGridContainer";
 import { CuposGridPorDiaContainer } from "./tabsCupos/CuposGridPorDiaContainer";
+import { ErroresCuposGridPorDiaContainer } from "./tabsCupos/ErroresCuposGridPorDiaContainer";
 import { cuposPrueba } from "./cuposPrueba";
+import CuposMobile from "../../mobile/cupos/CuposMobile";
 
 export function ContainerCupos() {
   const { idCarga } = useParams();
@@ -32,7 +36,7 @@ export function ContainerCupos() {
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedTab, setSelectedTab] = useState("CARDS");
 
-  // Nuevo state para alternar entre Turnos y Con Errores
+  // State para elegir entre Turnos y Con Errores (para todas las tabs)
   const [selectedView, setSelectedView] = useState<{ label: string; value: string }>({
     label: "Turnos",
     value: "TURNOS",
@@ -59,13 +63,13 @@ export function ContainerCupos() {
 
   useEffect(() => {
     refreshCupos();
-  }, [])
-  
+  }, []);
+
   // Si deseas usar datos de prueba, puedes descomentar lo siguiente:
-  //useEffect(() => {
-  //  setCupos(cuposPrueba);
-  //  setEstadoCarga("Cargado");
-  //}, []);
+  // useEffect(() => {
+  //   setCupos(cuposPrueba);
+  //   setEstadoCarga("Cargado");
+  // }, []);
 
   const handleChangeTab = (_event: React.SyntheticEvent, newValue: string) => {
     setSelectedTab(newValue);
@@ -107,6 +111,24 @@ export function ContainerCupos() {
     "Nro Orden de Pago",
   ];
 
+  const isMobile = useMediaQuery("(max-width:768px)");
+
+  if (isMobile) {
+    return (
+      <CuposMobile
+        cupos={cupos}
+        estadoCarga={estadoCarga}
+        selectedView={selectedView}
+        setSelectedView={setSelectedView}
+        idCarga={idCarga}
+        refreshCupos={refreshCupos}
+        theme={theme}
+        fields={fields}
+        headerNames={headerNames}
+      />
+    );
+  }
+
   return (
     <Box display="flex" flexDirection="column" alignItems="center" width="100%" marginTop={2}>
       <Box display="flex" justifyContent="space-between" alignItems="center" width="100%" padding={2}>
@@ -115,12 +137,59 @@ export function ContainerCupos() {
           <Tab value="GRID" label="GRID" />
           <Tab value="POR_DIA" label="POR DÍA" />
         </Tabs>
-        <BotonIcon
-          onClick={handleClickCrearCupo}
-          title="Quiero crear un nuevo cupo"
-          icon={<AccessAlarmOutlined />}
-        />
+        
+        {selectedView.value !== "ERRORES" && (
+          <BotonIcon
+            onClick={handleClickCrearCupo}
+            title="Quiero crear un nuevo cupo"
+            icon={<AccessAlarmOutlined />}
+          />
+        )}
       </Box>
+
+      {/* Selector para Turnos / Con Errores: se aplica para todas las tabs */}
+      <Box display="flex" justifyContent="center" my={2}>
+        <ToggleButtonGroup
+          value={selectedView.value}
+          exclusive
+          onChange={(_, newValue) => {
+            if (newValue !== null) {
+              setSelectedView({
+                label: newValue === "TURNOS" ? "Turnos" : "Con Errores",
+                value: newValue,
+              });
+            }
+          }}
+        >
+          <ToggleButton
+            value="TURNOS"
+            sx={{
+              backgroundColor: selectedView.value === "TURNOS" ? theme.colores.azul : "transparent",
+              color: selectedView.value === "TURNOS" ? "white" : "black",
+              '&.Mui-selected': {
+                backgroundColor: theme.colores.azul, // Aquí puedes cambiar el color al que desees
+                color: "white", // El color del texto cuando está seleccionado
+              },
+            }}
+          >
+            Turnos
+          </ToggleButton>
+          <ToggleButton
+            value="ERRORES"
+            sx={{
+              backgroundColor: selectedView.value === "ERRORES" ? theme.colores.azul : "transparent",
+              color: selectedView.value === "ERRORES" ? "white" : "black",
+              '&.Mui-selected': {
+                backgroundColor: theme.colores.azul,
+                color: "white",
+              },
+            }}
+          >
+            Con Errores
+          </ToggleButton>
+        </ToggleButtonGroup>
+      </Box>
+
 
       {estadoCarga === "Cargando" && (
         <Box
@@ -143,21 +212,6 @@ export function ContainerCupos() {
         <Box width="100%">
           {selectedTab === "CARDS" && (
             <>
-              <Box display="flex" justifyContent="center" my={2}>
-                <Autocomplete
-                  value={selectedView}
-                  onChange={(event, newValue) => {
-                    if (newValue) setSelectedView(newValue);
-                  }}
-                  options={[
-                    { label: "Turnos", value: "TURNOS" },
-                    { label: "Con Errores", value: "ERRORES" },
-                  ]}
-                  getOptionLabel={(option) => option.label}
-                  renderInput={(params) => <TextField {...params} label="Ver" variant="outlined" />}
-                  sx={{ width: 200 }}
-                />
-              </Box>
               {selectedView.value === "TURNOS" ? (
                 <CuposCardsContainer
                   cupos={cupos}
@@ -171,9 +225,23 @@ export function ContainerCupos() {
               )}
             </>
           )}
-          {selectedTab === "GRID" && <CuposGridContainer cupos={cupos} refreshCupos={refreshCupos} />}
+          {selectedTab === "GRID" && (
+            <>
+              {selectedView.value === "TURNOS" ? (
+                <CuposGridContainer cupos={cupos} refreshCupos={refreshCupos} />
+              ) : (
+                <ErroresCuposGridContainer cupos={cupos} refreshCupos={refreshCupos} />
+              )}
+            </>
+          )}
           {selectedTab === "POR_DIA" && (
-            <CuposGridPorDiaContainer cupos={cupos} refreshCupos={refreshCupos} />
+            <>
+              {selectedView.value === "TURNOS" ? (
+                <CuposGridPorDiaContainer cupos={cupos} refreshCupos={refreshCupos} />
+              ) : (
+                <ErroresCuposGridPorDiaContainer cupos={cupos} refreshCupos={refreshCupos} />
+              )}
+            </>
           )}
         </Box>
       )}

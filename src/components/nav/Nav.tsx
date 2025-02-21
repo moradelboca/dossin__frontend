@@ -1,33 +1,43 @@
 import Navbar from "./Navbar";
 import Navside from "./Navside";
-import { useState } from "react";
 
-export function Nav() {
-    const transicion = "width 0.3s ease-in-out";
-    const anchoAbierto = 200;
-    const anchoCerrado = 60;
+// Interfaz de props para Nav
+interface NavProps {
+  navAbierto: boolean;
+  setNavAbierto: React.Dispatch<React.SetStateAction<boolean>>;
+  anchoAbierto: number;
+  anchoCerrado: number;
+}
 
-    const [navAbierto, setNavAbierto] = useState(false);
+export function Nav({ navAbierto, setNavAbierto, anchoAbierto, anchoCerrado }: NavProps) {
+  const transicion = "width 0.3s ease-in-out";
 
-    const handleClickToggleNav = () => {
-        setNavAbierto(!navAbierto);
-    };
+  // Función para alternar el estado
+  const handleClickToggleNav = () => {
+    setNavAbierto((prev) => !prev);
+  };
 
-    return (
-        <nav>
-            <Navbar
-                navAbierto={navAbierto}
-                anchoAbierto={anchoAbierto}
-                anchoCerrado={anchoCerrado}
-                transicion={transicion}
-            />
-            <Navside
-                navAbierto={navAbierto}
-                handleClickToggleNav={handleClickToggleNav}
-                anchoAbierto={anchoAbierto}
-                anchoCerrado={anchoCerrado}
-                transicion={transicion}
-            />
-        </nav>
-    );
+  // Función para cerrar el nav (útil en mobile al hacer clic fuera)
+  const handleCloseNav = () => {
+    setNavAbierto(false);
+  };
+
+  return (
+    <nav>
+      <Navbar
+        navAbierto={navAbierto}
+        anchoAbierto={anchoAbierto}
+        anchoCerrado={anchoCerrado}
+        transicion={transicion}
+        handleClickToggleNav={handleClickToggleNav}
+      />
+      <Navside
+        navAbierto={navAbierto}
+        anchoAbierto={anchoAbierto}
+        anchoCerrado={anchoCerrado}
+        transicion={transicion}
+        onClose={handleCloseNav}
+      />
+    </nav>
+  );
 }

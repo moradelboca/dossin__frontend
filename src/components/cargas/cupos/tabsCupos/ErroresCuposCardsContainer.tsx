@@ -29,6 +29,9 @@ export function ErroresCuposCardsContainer({ cupos, refreshCupos }: Props) {
     patenteAcopladoExtra: "",
   });
 
+  
+  console.log(cupos);
+
   const handleOpenDialog = (error: any) => {
     setSelectedError(error);
     setFormData({
@@ -42,39 +45,6 @@ export function ErroresCuposCardsContainer({ cupos, refreshCupos }: Props) {
   const handleCloseDialog = () => {
     setSelectedError(null);
     setOpenDialog(false);
-  };
-
-  const handleSave = () => {
-    if (!selectedError) return;
-
-    const payload = {
-      idEstado: 3,
-      patenteCamion: formData.patenteCamion,
-      patenteAcoplado: formData.patenteAcoplado,
-      patenteAcopladoExtra: formData.patenteAcopladoExtra,
-    };
-
-    fetch(`${backendURL}/turnos/errores/${selectedError.id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        "ngrok-skip-browser-warning": "true",
-      },
-      body: JSON.stringify(payload),
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Error al actualizar el turno con error");
-        }
-        return response.json();
-      })
-      .then(() => {
-        refreshCupos();
-        handleCloseDialog();
-      })
-      .catch((error) => {
-        console.error(error);
-      });
   };
 
   const renderErrorCards = (errores: any[]) => {

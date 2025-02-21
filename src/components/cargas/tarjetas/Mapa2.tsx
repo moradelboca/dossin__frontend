@@ -43,7 +43,9 @@ function ZoomToLocation({
 
     useEffect(() => {
         if (lat !== undefined && lng !== undefined) {
-            map.flyTo([lat, lng], 5);
+            if (lat !== map.getCenter().lat || lng !== map.getCenter().lng) {
+                map.flyTo([lat, lng], 5);
+            }
         }
     }, [lat, lng, map]);
 
