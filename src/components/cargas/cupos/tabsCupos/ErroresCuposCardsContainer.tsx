@@ -1,5 +1,5 @@
 // ErroresCuposCardsContainer.tsx
-import React, { useState, useContext } from "react";
+import { useState } from "react";
 import {
   Box,
   Typography,
@@ -10,7 +10,6 @@ import {
 import { Grid2 as Grid } from "@mui/material";
 import CancelIcon from "@mui/icons-material/Cancel";
 import CardMobile from "../../../cards/mobile/CardMobile";
-import { ContextoGeneral } from "../../../Contexto";
 import TurnoConErroresForm from "../../../forms/turnos/tabs/turnosConErrores/TurnoConErroresForm";
 
 interface Props {
@@ -20,25 +19,14 @@ interface Props {
 }
 
 export function ErroresCuposCardsContainer({ cupos, refreshCupos }: Props) {
-  const { backendURL } = useContext(ContextoGeneral);
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedError, setSelectedError] = useState<any>(null);
-  const [formData, setFormData] = useState({
-    patenteCamion: "",
-    patenteAcoplado: "",
-    patenteAcopladoExtra: "",
-  });
 
   
   console.log(cupos);
 
   const handleOpenDialog = (error: any) => {
     setSelectedError(error);
-    setFormData({
-      patenteCamion: error.patenteCamion,
-      patenteAcoplado: error.patenteAcoplado,
-      patenteAcopladoExtra: error.patenteAcopladoExtra,
-    });
     setOpenDialog(true);
   };
 

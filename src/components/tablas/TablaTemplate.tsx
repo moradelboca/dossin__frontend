@@ -1,12 +1,31 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useContext, useEffect, useState } from "react";
-import { Dialog, DialogTitle, DialogContent } from "@mui/material";
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  Box,
+  useMediaQuery,
+} from "@mui/material";
 import { GridColDef } from "@mui/x-data-grid";
 import BorderColorIcon from "@mui/icons-material/BorderColor";
 import { ContextoGeneral } from "../Contexto";
 import CreadorEntidad from "../dialogs/CreadorEntidad";
-import { GridTemplate } from "../grid/GridTemplate"; // Asegúrate de ajustar la ruta
-// import useTransformarCampo from "../hooks/useTransformarCampo"; // Si lo usas en otro lado
+import { GridTemplate } from "../grid/GridTemplate";
+import MobileCardList from "../mobile/MobileCardList";
+
+interface TablaTemplateProps {
+  titulo: string;
+  entidad: string;
+  endpoint: string;
+  fields: string[];
+  headerNames: string[];
+  FormularioCreador: React.ComponentType<any>;
+  usarPruebas?: boolean;
+  renderFullScreen?: boolean; // Activa el modo pantalla completa
+  // Props extras para la vista mobile
+  tituloField?: string;
+  subtituloField?: string;
+}
 
 export default function TablaTemplate({
   titulo,
@@ -16,15 +35,14 @@ export default function TablaTemplate({
   headerNames,
   FormularioCreador,
   usarPruebas = false,
-}: {
-  titulo: string;
-  entidad: string;
-  endpoint: string;
-  fields: string[];
-  headerNames: string[];
-  FormularioCreador: React.ComponentType<any>;
-  usarPruebas?: boolean;
-}) {
+  renderFullScreen = false,
+  tituloField,
+  subtituloField,
+}: TablaTemplateProps) {
+  // Uso de media query para detectar dispositivos móviles
+  const isMobile = useMediaQuery("(max-width:768px)");
+
+  // Estados compartidos para la edición/creación
   const [open, setOpen] = useState(false);
   const [seleccionado, setSeleccionado] = useState<any>(null);
   const { backendURL, pruebas, theme } = useContext(ContextoGeneral);
@@ -60,18 +78,18 @@ export default function TablaTemplate({
   }, []);
 
   const handleOpen = (item: any) => {
-    if (item) {
-      setSeleccionado(item);
-    }
+    // Se asigna el item seleccionado (puede ser null para crear)
+    setSeleccionado(item);
     setOpen(true);
   };
 
   const handleClose = () => {
     setSeleccionado(null);
     setOpen(false);
+    refreshDatos();
   };
 
-  // Función para transformar campos (puedes moverla o reutilizar el hook si lo prefieres)
+  // Función para transformar campos según sea necesario (para escritorio)
   const transformarCampo = (field: string, value: any) => {
     switch (field) {
       case "localidad":
@@ -106,12 +124,25 @@ export default function TablaTemplate({
           }
         }
         return value || "No especificado";
+      case "titularCartaDePorte":
+      case "destino":
+      case "remitente":
+        if (value) {
+          const { razonSocial, nombreFantasia } = value;
+          return `${nombreFantasia} - ${razonSocial}`;
+        }
+        return "No especificado";
+      case "cargas":
+        if (Array.isArray(value)) {
+          return value.map((carga: any) => `${carga.id}`).join(", ");
+        }
+        return "No especificado";
       default:
         return value || "No especificado";
     }
   };
 
-  // Genera las columnas a partir de los arrays de props
+  // Genera las columnas del grid a partir de los arrays de props (versión escritorio)
   const columns: GridColDef[] = fields.map((field, index) => ({
     field: field,
     headerName: headerNames[index],
@@ -123,7 +154,7 @@ export default function TablaTemplate({
     ),
   }));
 
-  // Agrega la columna de edición
+  // Columna de edición
   columns.push({
     field: "edit",
     headerName: "Edit",
@@ -140,7 +171,7 @@ export default function TablaTemplate({
     ),
   });
 
-  // Transforma los datos para el grid
+  // Transforma los datos para el grid (versión escritorio)
   const transformedRows = datos.map((item) => {
     const datosNormalizado = { ...item };
     fields.forEach((field) => {
@@ -149,33 +180,74 @@ export default function TablaTemplate({
     return datosNormalizado;
   });
 
+  // Si es móvil, delega la renderización en MobileCardList
+  if (isMobile) {
+    return (
+      <MobileCardList
+        titulo={titulo}
+        entidad={entidad}
+        fields={fields}
+        headerNames={headerNames}
+        usarPruebas={usarPruebas}
+        FormularioCreador={FormularioCreador}
+        tituloField={tituloField}
+        subtituloField={subtituloField}
+        datos={datos}         // datos obtenidos en TablaTemplate
+        setDatos={setDatos}   // setter de datos de TablaTemplate
+        seleccionado={seleccionado}
+        openDialog={open}
+        handleOpenDialog={handleOpen}
+        handleCloseDialog={handleClose}
+      />
+    );
+  }
+
+  // Versión escritorio
   return (
     <>
-      <GridTemplate
-        titulo={titulo}
-        rows={transformedRows}
-        columns={columns}
-        loading={estadoCarga === "Cargando"}
-        theme={theme}
-        getRowId={(row) => row[fields[0]]}
-        onAdd={() => handleOpen(null)}
-        entityName={entidad}
-      />
-      <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>
-          {seleccionado ? `Editar ${entidad}` : `Crear ${entidad}`}
-        </DialogTitle>
-        <DialogContent>
-          <CreadorEntidad
+      {open && renderFullScreen ? (
+        // Modo pantalla completa
+        <Box sx={{ padding: 3 }}>
+          <FormularioCreador
             seleccionado={seleccionado}
             handleClose={handleClose}
             datos={datos}
             setDatos={setDatos}
             nombreEntidad={entidad}
-            Formulario={FormularioCreador}
           />
-        </DialogContent>
-      </Dialog>
+        </Box>
+      ) : (
+        <>
+          <GridTemplate
+            titulo={titulo}
+            rows={transformedRows}
+            columns={columns}
+            loading={estadoCarga === "Cargando"}
+            theme={theme}
+            getRowId={(row) => row[fields[0]]}
+            onAdd={() => handleOpen(null)}
+            entityName={entidad}
+          />
+          {/* Dialog para edición/creación */}
+          {!renderFullScreen && (
+            <Dialog open={open} onClose={handleClose}>
+              <DialogTitle>
+                {seleccionado ? `Editar ${entidad}` : `Crear ${entidad}`}
+              </DialogTitle>
+              <DialogContent>
+                <CreadorEntidad
+                  seleccionado={seleccionado}
+                  handleClose={handleClose}
+                  datos={datos}
+                  setDatos={setDatos}
+                  nombreEntidad={entidad}
+                  Formulario={FormularioCreador}
+                />
+              </DialogContent>
+            </Dialog>
+          )}
+        </>
+      )}
     </>
   );
 }

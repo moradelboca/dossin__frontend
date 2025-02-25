@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import { useContext } from "react";
 import { Box, Button, Typography } from "@mui/material";
 import ClearSharpIcon from "@mui/icons-material/ClearSharp";
 import { ContextoGeneral } from "../Contexto";

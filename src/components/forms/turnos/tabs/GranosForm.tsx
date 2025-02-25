@@ -79,7 +79,7 @@ const GranosForm: React.FC<GranosFormProps> = ({
   };
 
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
     setter: React.Dispatch<React.SetStateAction<number | string>>
   ) => {
     const value = e.target.value;
@@ -100,7 +100,7 @@ const GranosForm: React.FC<GranosFormProps> = ({
         onChange={(e) => handleInputChange(e, setKgCargados)}
         error={!!errors.kgCargados}
         helperText={errors.kgCargados}
-        inputProps={{ inputMode: 'numeric', pattern: '[0-9]*', min: 0 }} // Aseguramos que no haya flechitas y solo números positivos
+        inputProps={{ inputMode: 'numeric', pattern: '[0-9]*', min: 0 }}
       />
       <TextField
         margin="dense"

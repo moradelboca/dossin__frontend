@@ -63,10 +63,16 @@ import Autocomplete from "@mui/material/Autocomplete";
 import { ContextoStepper } from "../creadores/CrearCargaStepper";
 import { useContext, useState } from "react";
 
+const mapeoTipos: Record<string, string> = {
+    Carga: "tipo ubi 1",
+    Descarga: "tipo ubi 1",
+    Balanza: "tipo ubi 1"
+};
+
 interface AutocompletarProps {
     title: string;
     ubicaciones: any[];
-    filtro: string;
+    filtro: keyof typeof mapeoTipos;
     estadoCarga: boolean;
 }
 
@@ -77,14 +83,7 @@ export default function AutocompletarUbicacion(props: AutocompletarProps) {
         datosNuevaCarga["nombreUbicacion" + filtro] || null
     );
 
-    // Mapeo de los filtros de la API a los valores esperados
-    const mapeoTipos = {
-        Carga: "tipo ubi 1",    // Ejemplo de mapeo, ajustar según la API
-        Descarga: "tipo ubi 1", // Asegúrate de que los nombres coincidan con los de la API
-        Balanza: "tipo ubi 1"
-    };
-
-    const tipoUbicacionAPI = mapeoTipos[filtro] || filtro;  // Si no hay mapeo, usa el filtro tal cual
+    const tipoUbicacionAPI = mapeoTipos[filtro as keyof typeof mapeoTipos] || filtro;
 
     // Filtra las ubicaciones según el tipo mapeado
     const ubicacionesFiltradas = ubicaciones.filter(

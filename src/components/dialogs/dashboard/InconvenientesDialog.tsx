@@ -90,7 +90,7 @@ const InconvenientesDialog: React.FC<InconvenientesDialogProps> = ({ open, handl
     "Asignado a"
   ];
 
-  const handleChangeTab = (event: React.SyntheticEvent, newValue: number) => {
+  const handleChangeTab = (_event: React.SyntheticEvent, newValue: number) => {
     setTabIndex(newValue);
   };
 

@@ -1,8 +1,7 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Box, IconButton, Typography } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import { useNavigate } from "react-router-dom";
-import { ContextoGeneral } from "../../Contexto";
 
 interface DrawerCuposCargaMobileProps {
   cargaSeleccionada: any;
@@ -13,8 +12,6 @@ export default function DrawerCuposCargaMobile({
 }: DrawerCuposCargaMobileProps) {
   const [cupos, setCupos] = useState<any[]>([]);
   const navigate = useNavigate();
-  
-  const { theme } = useContext(ContextoGeneral);
   
   const handleClickVerCupos = () => {
     navigate(`/cargas/${cargaSeleccionada.idCarga}/cupos`);

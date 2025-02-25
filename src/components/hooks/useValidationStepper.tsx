@@ -39,7 +39,7 @@ export default function useValidationStepper(initialData: any, rules: Validation
 
     const handleChange = (field: string) => (event: any) => {
         const value = event?.target?.value || event; // Soporta inputs o autocompletes
-        setData((prev) => ({ ...prev, [field]: value }));
+        setData((prev: any) => ({ ...prev, [field]: value }));
         validateField(field, value);
     };
 

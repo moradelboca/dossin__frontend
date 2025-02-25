@@ -44,7 +44,7 @@ export function ContainerCargas() {
       });
   }, [backendURL]);
 
-  // Ejemplo: usar datos de prueba en vez del fetch real
+  
   useEffect(() => {
     refreshCargas();
     //setCargas(cargasPrueba);

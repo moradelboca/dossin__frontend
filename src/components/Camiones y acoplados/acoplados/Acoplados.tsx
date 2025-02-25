@@ -1,8 +1,6 @@
 
 import TablaTemplate from "../../tablas/TablaTemplate";
 import AcopladoForm from "../../forms/acoplados/AcopladoForm";
-import MobileCardList from "../../mobile/MobileCardList";
-import { useMediaQuery } from "@mui/material";
 
 export default function Acoplados() {
     const fields = [
@@ -20,10 +18,8 @@ export default function Acoplados() {
         "URL Ruta",
     ];
 
-    const isMobile = useMediaQuery("(max-width:768px)");
-
-    return isMobile ? (
-        <MobileCardList
+    return (
+        <TablaTemplate
             titulo="Acoplados"
             entidad="acoplado"
             endpoint="acoplados"
@@ -32,15 +28,6 @@ export default function Acoplados() {
             FormularioCreador={AcopladoForm}
             tituloField="patente"
             subtituloField="tipoAcoplado"
-        />
-    ) : (
-        <TablaTemplate
-            titulo="Acoplados"
-            entidad="acoplado"
-            endpoint="acoplados"
-            fields={fields}
-            headerNames={headerNames}
-            FormularioCreador={AcopladoForm}
         />
     );
 }

@@ -5,7 +5,6 @@ import {
   styled,
   Tab,
   Tabs,
-  useTheme,
   SwipeableDrawer,
 } from "@mui/material";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
@@ -52,15 +51,13 @@ export default function DrawerCargaMobile({
   onClose = () => {},
   cargaSeleccionada,
 }: DrawerCargaMobileProps) {
-  const theme = useTheme();
-
   // Controla si el drawer está colapsado (3rem) o expandido (60vh)
   const [expanded, setExpanded] = useState(false);
 
   // Controla la pestaña activa (0 = Cupos, 1 = Datos)
   const [tabValue, setTabValue] = useState(0);
 
-  const handleChangeTab = (event: React.SyntheticEvent, newValue: number) => {
+  const handleChangeTab = (_event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
   };
 

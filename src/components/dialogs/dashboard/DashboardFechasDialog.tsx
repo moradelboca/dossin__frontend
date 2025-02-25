@@ -8,11 +8,10 @@ import {
   Box,
   Chip,
   Typography,
-  TextField,
 } from "@mui/material";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import dayjs, { Dayjs } from "dayjs";
+import { Dayjs } from "dayjs";
 
 interface DashboardFechasDialogProps {
   open: boolean;
@@ -48,12 +47,16 @@ const DashboardFechasDialog: React.FC<DashboardFechasDialogProps> = ({
         <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
           {/* Selección mediante DatePicker */}
           <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <DatePicker
-              label="Elige una fecha"
-              value={selectedDate}
-              onChange={(newValue) => setSelectedDate(newValue)}
-              renderInput={(params) => <TextField {...params} fullWidth />}
-            />
+          <DatePicker
+            label="Elige una fecha"
+            value={selectedDate}
+            onChange={(newValue) => setSelectedDate(newValue)}
+            slotProps={{
+              textField: {
+                fullWidth: true,
+              },
+            }}
+          />
           </LocalizationProvider>
           <Button
             variant="contained"

@@ -1,5 +1,5 @@
 // CuposMobile.tsx
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   Box,
   Typography,
@@ -204,7 +204,7 @@ export default function CuposMobile({
   };
 
   // Render de turnos con errores (lista vertical)
-  const renderErrores = (errores: any[], cupo: Cupo) => {
+  const renderErrores = (errores: any[]) => {
     const errorFields = [
       "id",
       "cuilColaborador",
@@ -411,7 +411,7 @@ export default function CuposMobile({
                               gap: 2,
                             }}
                           >
-                            {renderErrores(cupo.turnosConErrores, cupo)}
+                            {renderErrores(cupo.turnosConErrores)}
                           </Box>
                         </Box>
                       ) : null

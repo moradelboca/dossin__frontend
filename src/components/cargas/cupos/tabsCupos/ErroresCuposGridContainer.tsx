@@ -18,7 +18,6 @@ import {
   DialogContent,
 } from "@mui/material";
 import { KeyboardArrowDown, KeyboardArrowUp } from "@mui/icons-material";
-import { TarjetaCupos } from "../TarjetaCupos";
 import TurnoConErroresForm from "../../../forms/turnos/tabs/turnosConErrores/TurnoConErroresForm";
 import useTransformarCampo from "../../../hooks/useTransformarCampo";
 
@@ -57,7 +56,6 @@ export const ErroresCuposGridContainer: React.FC<ErroresCuposGridContainerProps>
   const [openRows, setOpenRows] = useState<{ [key: number]: boolean }>({});
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedTurno, setSelectedTurno] = useState<any>(null);
-  const [selectedCupo, setSelectedCupo] = useState<any>(null);
 
   const transformarCampo = useTransformarCampo();
 
@@ -65,9 +63,8 @@ export const ErroresCuposGridContainer: React.FC<ErroresCuposGridContainerProps>
     setOpenRows((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
-  const handleOpenDialog = (turno: any, cupo: any) => {
+  const handleOpenDialog = (turno: any) => {
     setSelectedTurno(turno);
-    setSelectedCupo(cupo);
     setOpenDialog(true);
   };
 
@@ -188,7 +185,7 @@ export const ErroresCuposGridContainer: React.FC<ErroresCuposGridContainerProps>
                                 <Box display="flex" justifyContent="flex-start" mt={2}>
                                   <Button
                                     variant="contained"
-                                    onClick={() => handleOpenDialog(turno, cupo)}
+                                    onClick={() => handleOpenDialog(turno)}
                                   >
                                     Editar Turno
                                   </Button>

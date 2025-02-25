@@ -2,21 +2,12 @@ import React, { useEffect, useState, useContext } from "react";
 import {
   ResponsiveContainer,
   LineChart,
-  CartesianGrid,
   XAxis,
   YAxis,
   Tooltip,
   Line,
 } from "recharts";
 import { ContextoGeneral } from "../../Contexto";
-
-// Define el tipo de data que proviene del endpoint
-interface ProvinciaData {
-  Cantidad: number;
-  Cargamento: string;
-  Toneladas: string; // por ejemplo: "100t"
-  Turnos: any[];
-}
 
 interface DashboardFechasProps {
   selections: {

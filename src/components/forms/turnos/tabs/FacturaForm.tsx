@@ -135,7 +135,7 @@ const FacturaForm: React.FC<FacturaFormProps> = ({
         options={tiposFacturaOptions}
         getOptionLabel={(option) => option.nombre}
         value={tipoFactura}  // Directamente el objeto
-        onChange={(event, newValue) => setTipoFactura(newValue)}
+        onChange={(_event, newValue) => setTipoFactura(newValue)}
         renderInput={(params) => (
           <TextField
             {...params}

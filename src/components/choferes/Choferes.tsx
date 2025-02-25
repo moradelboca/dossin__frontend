@@ -1,7 +1,5 @@
 
 import TablaTemplate from "../tablas/TablaTemplate";
-import MobileCardList from "../mobile/MobileCardList";
-import { useMediaQuery } from "@mui/material";
 import ChoferForm from "../forms/Choferes/ChoferForm";
 
 export default function Choferes() {
@@ -26,10 +24,9 @@ export default function Choferes() {
     "Rol",
   ];
 
-  const isMobile = useMediaQuery("(max-width:768px)");
 
-  return isMobile ? (
-    <MobileCardList
+  return (
+    <TablaTemplate
       titulo="Colaboradores"
       entidad="colaborador"
       endpoint="colaboradores"
@@ -38,15 +35,6 @@ export default function Choferes() {
       FormularioCreador={ChoferForm} 
       tituloField="apellido"
       subtituloField="cuil"
-    />
-  ) : (
-    <TablaTemplate
-      titulo="Colaboradores"
-      entidad="colaborador"
-      endpoint="colaboradores"
-      fields={fields}
-      headerNames={headerNames}
-      FormularioCreador={ChoferForm}
     />
   );
 }

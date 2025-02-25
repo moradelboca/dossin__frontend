@@ -14,6 +14,7 @@ interface AutocompleteEmpresasProps {
   onChange: (value: string | null) => void;
   error?: boolean;
   helperText?: string | null;
+  labelText?:string;
 }
 
 const AutocompleteEmpresas: React.FC<AutocompleteEmpresasProps> = ({
@@ -21,6 +22,7 @@ const AutocompleteEmpresas: React.FC<AutocompleteEmpresasProps> = ({
   onChange,
   error = false,
   helperText = '',
+  labelText = '',
 }) => {
   const { backendURL } = useContext(ContextoGeneral);
   const [empresas, setEmpresas] = useState<Empresa[]>([]);
@@ -60,7 +62,7 @@ const AutocompleteEmpresas: React.FC<AutocompleteEmpresasProps> = ({
       renderInput={(params) => (
         <TextField
           {...params}
-          label="Empresa"
+          label={labelText ? labelText :"Empresa"}
           variant="outlined"
           error={error || localError}
           helperText={helperText || (localError ? "La empresa no coincide con los datos disponibles" : "")}

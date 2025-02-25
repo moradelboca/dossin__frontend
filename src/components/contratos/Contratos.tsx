@@ -1,52 +1,36 @@
 
 import TablaTemplate from "../tablas/TablaTemplate";
-import MobileCardList from "../mobile/MobileCardList";
-import { useMediaQuery } from "@mui/material";
-import ChoferForm from "../forms/Choferes/ChoferForm";
+import ContratoForm from "../forms/contratos/ContratoForm";
 
 export default function Choferes() {
   const fields = [
-    "cuil",
-    "nombre",
-    "numeroCel",
-    "apellido",
-    "urlLINTI",
-    "localidad",
-    "empresas",
-    "rol",
+    "titularCartaDePorte",
+    "destino",
+    "remitente",
+    "plantaProcedenciaRuca",
+    "destinoRuca",
+    "cargas",
   ];
   const headerNames = [
-    "Cuil",
-    "Nombre",
-    "Numero Celular",
-    "Apellido",
-    "URL Linti",
-    "Localidad",
-    "Cuit Empresas",
-    "Rol",
+    "Titular CP",
+    "Destino",
+    "Remitente",
+    "Procedencia Ruca",
+    "Destino Ruca",
+    "Cargas",
   ];
 
-  const isMobile = useMediaQuery("(max-width:768px)");
-
-  return isMobile ? (
-    <MobileCardList
-      titulo="Colaboradores"
-      entidad="colaborador"
-      endpoint="colaboradores"
-      fields={fields}
-      headerNames={headerNames}
-      FormularioCreador={ChoferForm} 
-      tituloField="apellido"
-      subtituloField="cuil"
-    />
-  ) : (
+  return (
     <TablaTemplate
-      titulo="Colaboradores"
-      entidad="colaborador"
-      endpoint="colaboradores"
-      fields={fields}
-      headerNames={headerNames}
-      FormularioCreador={ChoferForm}
+    titulo="Contratos"
+    entidad="Contrato"
+    endpoint="Contratos"
+    fields={fields}
+    headerNames={headerNames}
+    FormularioCreador={ContratoForm} 
+    tituloField="titularCartaDePorte"
+    subtituloField="destino"
+      renderFullScreen={true} // Activa el modo pantalla completa
     />
   );
 }

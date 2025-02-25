@@ -25,7 +25,7 @@ import { CuposGridContainer } from "./tabsCupos/CuposGridContainer";
 import { ErroresCuposGridContainer } from "./tabsCupos/ErroresCuposGridContainer";
 import { CuposGridPorDiaContainer } from "./tabsCupos/CuposGridPorDiaContainer";
 import { ErroresCuposGridPorDiaContainer } from "./tabsCupos/ErroresCuposGridPorDiaContainer";
-import { cuposPrueba } from "./cuposPrueba";
+//import { cuposPrueba } from "./cuposPrueba";
 import CuposMobile from "../../mobile/cupos/CuposMobile";
 
 export function ContainerCupos() {

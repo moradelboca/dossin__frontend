@@ -1,7 +1,6 @@
 // GridTemplate.tsx
-import React from "react";
 import { Box, Typography, CircularProgress } from "@mui/material";
-import { DataGrid, GridColDef, GridRowModesModel, GridRowsProp } from "@mui/x-data-grid";
+import { DataGrid, GridColDef} from "@mui/x-data-grid";
 import { EditToolbar } from "../botones/EditToolbar";
 
 interface GridTemplateProps {
@@ -25,6 +24,7 @@ export function GridTemplate({
   onAdd,
   entityName,
 }: GridTemplateProps) {
+    console.log(rows)
   return (
     <Box
       sx={{
@@ -86,9 +86,9 @@ export function GridTemplate({
             }}
             slots={{
               toolbar: (props) => (
-                <EditToolbar setRows={function (newRows: (oldRows: GridRowsProp) => GridRowsProp): void {
+                <EditToolbar setRows={function (): void {
                         throw new Error("Function not implemented.");
-                    } } setRowModesModel={function (newModel: (oldModel: GridRowModesModel) => GridRowModesModel): void {
+                    } } setRowModesModel={function (): void {
                         throw new Error("Function not implemented.");
                     } } {...props} onAdd={onAdd} name={entityName} />
               ),

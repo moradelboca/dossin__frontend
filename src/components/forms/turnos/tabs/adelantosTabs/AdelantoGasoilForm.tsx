@@ -189,7 +189,7 @@ const AdelantoGasoilForm: React.FC<AdelantoGasoilFormProps> = ({
         options={tiposCombustibleOptions}
         getOptionLabel={(option) => option.nombre}
         value={tipoCombustible}
-        onChange={(event, newValue) => setTipoCombustible(newValue)}
+        onChange={(_event, newValue) => setTipoCombustible(newValue)}
         renderInput={(params) => (
           <TextField
             {...params}

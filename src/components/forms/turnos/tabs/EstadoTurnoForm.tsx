@@ -64,7 +64,7 @@ const EstadoTurnoForm: React.FC<EstadoTurnoFormProps> = ({
         options={estados}
         getOptionLabel={(option) => option.nombre}
         value={selectedEstado}
-        onChange={(event, newValue) => {
+        onChange={(_event, newValue) => {
           if (newValue) {
             setSelectedEstado(newValue);
             setError(null);

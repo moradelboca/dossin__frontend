@@ -57,7 +57,7 @@ const EditarTurnoForm: React.FC<EditarTurnoFormProps> = ({
     "Adelantos"
   ];
 
-  const handleTabChange = (event: any, newValue: string | null) => {
+  const handleTabChange = (_event: any, newValue: string | null) => {
     if (newValue !== null) {
       const newIndex = tabs.indexOf(newValue);
       setActiveTab(newIndex);
@@ -276,7 +276,7 @@ const EditarTurnoForm: React.FC<EditarTurnoFormProps> = ({
       <TabPanel value={activeTab} index={7}>
         <AdelantosTurnoForm
           turnoId={seleccionado.id} // debe tener el id correcto
-          onSuccess={(updatedAdelanto) => { handleClose(); }}
+          onSuccess={() => { handleClose(); }}
           onCancel={handleClose}
         />
       </TabPanel>

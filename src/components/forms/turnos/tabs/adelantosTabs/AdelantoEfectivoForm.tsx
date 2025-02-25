@@ -174,7 +174,7 @@ const AdelantoEfectivoForm: React.FC<AdelantoEfectivoFormProps> = ({
         options={tiposMedioPagoOptions}
         getOptionLabel={(option) => option.nombre}
         value={tipoMedioPago}
-        onChange={(event, newValue) => setTipoMedioPago(newValue)}
+        onChange={(_event, newValue) => setTipoMedioPago(newValue)}
         renderInput={(params) => (
           <TextField
             {...params}
