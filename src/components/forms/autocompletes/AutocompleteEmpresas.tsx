@@ -1,12 +1,18 @@
-import React, { useContext, useEffect, useState } from 'react';
+// AutocompleteEmpresas.tsx
+import React, { useContext, useEffect, useState, useMemo } from 'react';
 import { Autocomplete, TextField } from '@mui/material';
 import { ContextoGeneral } from '../../Contexto';
 
-// Define la interfaz para la Empresa (ajusta los tipos según corresponda)
-interface Empresa {
+interface Role {
+  nombre: string;
+  id: number;
+}
+
+export interface Empresa {
   cuit: string;
   razonSocial: string;
   nombreFantasia: string;
+  roles?: Role[];
 }
 
 interface AutocompleteEmpresasProps {
@@ -14,7 +20,8 @@ interface AutocompleteEmpresasProps {
   onChange: (value: string | null) => void;
   error?: boolean;
   helperText?: string | null;
-  labelText?:string;
+  labelText?: string;
+  rolEmpresa?: string; // Para filtrar empresas (ej.: "transportista")
 }
 
 const AutocompleteEmpresas: React.FC<AutocompleteEmpresasProps> = ({
@@ -23,11 +30,13 @@ const AutocompleteEmpresas: React.FC<AutocompleteEmpresasProps> = ({
   error = false,
   helperText = '',
   labelText = '',
+  rolEmpresa = 'transportista',
 }) => {
   const { backendURL } = useContext(ContextoGeneral);
-  const [empresas, setEmpresas] = useState<Empresa[]>([]);
+  const [allEmpresas, setAllEmpresas] = useState<Empresa[]>([]);
   const [localError, setLocalError] = useState<boolean>(false);
 
+  //console.log("Empresa: \n", value)
   useEffect(() => {
     fetch(`${backendURL}/empresas`, {
       method: 'GET',
@@ -37,11 +46,24 @@ const AutocompleteEmpresas: React.FC<AutocompleteEmpresasProps> = ({
       }
     })
       .then(response => response.json())
-      .then((data: Empresa[]) => setEmpresas(data))
+      .then((data: Empresa[]) => setAllEmpresas(data))
       .catch(err => console.error('Error al obtener las empresas', err));
   }, [backendURL]);
 
-  // Cuando se cargan las opciones, verificamos si el valor actual existe
+  // Filtra las empresas según el rol (si se pasa)
+  const empresas = useMemo(() => {
+    if (rolEmpresa) {
+      return allEmpresas.filter(emp =>
+        emp.roles && emp.roles.some(role => role.nombre === rolEmpresa)
+      );
+    }
+    return allEmpresas;
+  }, [allEmpresas, rolEmpresa]);
+
+  // Se selecciona la empresa comparando por CUIT
+  const selectedEmpresa = empresas.find(emp => emp.cuit === value);
+
+  // Verifica si el valor ingresado existe
   useEffect(() => {
     if (value && empresas.length > 0) {
       const found = empresas.some(emp => emp.cuit === value);
@@ -56,13 +78,14 @@ const AutocompleteEmpresas: React.FC<AutocompleteEmpresasProps> = ({
       getOptionLabel={(option: Empresa) =>
         `${option.razonSocial} - ${option.nombreFantasia}`
       }
-      // Se asume que "value" es el cuit de la empresa
-      value={empresas.find(emp => emp.cuit === value) || null}
-      onChange={(_, newValue) => onChange(newValue ? newValue.cuit : null)}
+      value={selectedEmpresa || null}
+      onChange={(_, newValue) => {
+        onChange(newValue ? newValue.cuit : null);
+      }}
       renderInput={(params) => (
         <TextField
           {...params}
-          label={labelText ? labelText :"Empresa"}
+          label={labelText || "Empresa"}
           variant="outlined"
           error={error || localError}
           helperText={helperText || (localError ? "La empresa no coincide con los datos disponibles" : "")}

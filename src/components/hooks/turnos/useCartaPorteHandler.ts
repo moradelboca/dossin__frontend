@@ -9,7 +9,7 @@ const useCartaPorteHandler = () => {
     "ngrok-skip-browser-warning": "true",
   };
 
-  // Se añade el parámetro isUpdate para decidir el método.
+  // Función para crear o actualizar la Carta de Porte
   const handleCartaPorteSubmission = async (
     turnoId: string,
     payload: { numeroCartaPorte: number; CTG: number },
@@ -20,7 +20,6 @@ const useCartaPorteHandler = () => {
       ? `${backendURL}/cartasdeporte/${payload.numeroCartaPorte}`
       : `${backendURL}/cartasdeporte`;
 
-    // Realizar la operación en la carta de porte
     const cartaResponse = await fetch(url, {
       method,
       headers,
@@ -34,7 +33,6 @@ const useCartaPorteHandler = () => {
     }
     const data = await cartaResponse.json();
 
-    // Actualizar el turno (se asocia el número de carta guardado)
     const turnoResponse = await fetch(`${backendURL}/turnos/${turnoId}`, {
       method: "PUT",
       headers,
@@ -46,7 +44,25 @@ const useCartaPorteHandler = () => {
     return data;
   };
 
-  return { handleCartaPorteSubmission };
+  // Función para eliminar la Carta de Porte
+  const handleCartaPorteDeletion = async (numeroCartaPorte: number) => {
+    if (!numeroCartaPorte) return;
+    try {
+      const response = await fetch(
+        `${backendURL}/cartasdeporte/${numeroCartaPorte}`,
+        { method: "DELETE", headers }
+      );
+      if (!response.ok) {
+        throw new Error(await response.text());
+      }
+      return { deleted: true, numeroCartaPorte };
+    } catch (error) {
+      console.error("Error al eliminar la Carta de Porte:", error);
+      throw error;
+    }
+  };
+
+  return { handleCartaPorteSubmission, handleCartaPorteDeletion };
 };
 
 export default useCartaPorteHandler;

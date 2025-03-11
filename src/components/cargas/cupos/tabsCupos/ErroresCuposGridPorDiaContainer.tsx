@@ -20,11 +20,13 @@ interface Cupo {
 
 interface ErroresCuposGridPorDiaContainerProps {
   cupos: Cupo[];
+  idCarga: string | undefined;
   refreshCupos: () => void;
 }
 
 export function ErroresCuposGridPorDiaContainer({
   cupos,
+  idCarga,
   refreshCupos,
 }: ErroresCuposGridPorDiaContainerProps) {
   // Extraemos las fechas únicas de los cupos
@@ -66,7 +68,7 @@ export function ErroresCuposGridPorDiaContainer({
 
       <Box mt={3}>
         {filteredCupos.length > 0 ? (
-          <ErroresCuposGridContainer cupos={filteredCupos} refreshCupos={refreshCupos} />
+          <ErroresCuposGridContainer cupos={filteredCupos} refreshCupos={refreshCupos} idCarga={idCarga}/>
         ) : (
           <Typography>No hay cupos para la fecha seleccionada</Typography>
         )}

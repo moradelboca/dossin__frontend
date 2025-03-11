@@ -12,6 +12,7 @@ interface DatosPrincipalesFormProps {
   datos: any;
   setDatos: any;
   handleClose: () => void;
+  tieneBitren?: boolean | null;
 }
 
 const DatosPrincipalesForm: React.FC<DatosPrincipalesFormProps> = ({
@@ -19,6 +20,7 @@ const DatosPrincipalesForm: React.FC<DatosPrincipalesFormProps> = ({
   datos,
   setDatos,
   handleClose,
+  tieneBitren,
 }) => {
   const { backendURL } = useContext(ContextoGeneral);
 
@@ -128,11 +130,13 @@ const DatosPrincipalesForm: React.FC<DatosPrincipalesFormProps> = ({
         error={!!errors.patenteAcoplado}
         helperText={errors.patenteAcoplado}
       />
-      <AutocompleteAcoplados
-        value={patenteAcopladoSeleccionadaExtra}
-        onChange={setPatenteAcopladoSeleccionadaExtra}
-        tituloOpcional="Patente Acoplado Extra"
-      />
+      {tieneBitren && (
+        <AutocompleteAcoplados
+          value={patenteAcopladoSeleccionadaExtra}
+          onChange={setPatenteAcopladoSeleccionadaExtra}
+          tituloOpcional="Patente Acoplado Extra"
+        />
+      )}
       <Stack
         direction="row"
         spacing={2}

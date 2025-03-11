@@ -198,10 +198,11 @@ export function TarjetaCupos(props: TarjetaProps & { estaEnElGrid?: boolean }) {
             </Dialog>
             <Dialog open={openDialogDelete} onClose={handleCloseDialog} maxWidth="sm" fullWidth>
                 <DeleteCupo
-                    idCarga={idCarga}
-                    handleCloseDialog={handleCloseDialog}
-                    fecha={fecha}
-                    refreshCupos={refreshCupos}
+                  idCarga={idCarga}
+                  handleCloseDialog={handleCloseDialog}
+                  fecha={fecha}
+                  refreshCupos={refreshCupos}
+                  selectedCupo={cupos.find((cupo) => cupo.fecha === fecha)}
                 />
             </Dialog>
         </>

@@ -27,6 +27,15 @@ const useTransformarCampo = () => {
         return "No especificado";
       case "rol":
         return value ? `${value.nombre}` : "Sin rol";
+      case "tiposAcoplados":
+        if (Array.isArray(value)) {
+          return value.map((tipoAcoplado: any) => `${tipoAcoplado.nombre}`).join(", ");
+        }
+        return "No especificado";
+      case "incluyeIVA":
+        return value ? "Si" : "No";
+      case "cupos":
+        return value && Array.isArray(value) ? value.length : "Sin cupos";
       case "numeroCel":
         if (value) {
           const numero = value.toString();
@@ -37,6 +46,19 @@ const useTransformarCampo = () => {
           }
         }
         return value || "No especificado";
+      case "titularCartaDePorte":
+      case "destino":
+      case "remitente":
+        if (value) {
+          const { razonSocial, nombreFantasia } = value;
+          return `${nombreFantasia} - ${razonSocial}`;
+        }
+        return "No especificado";
+      case "cargas":
+        if (Array.isArray(value)) {
+          return value.map((carga: any) => `${carga.id}`).join(", ");
+        }
+        return "No especificado";
       default:
         return value || "No especificado";
     }

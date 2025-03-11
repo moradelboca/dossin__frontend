@@ -11,23 +11,24 @@ interface AutocompletarProps {
 
 export default function AutocompletarLocalidad(props: AutocompletarProps) {
     const { datosNuevaCarga, datosSinCompletar } = useContext(ContextoStepper);
-    let { title, ubicaciones, filtro } = props;
-    let [ubicacionSeleccionada, setUbicacionSeleccionada] = useState<any>(
-        datosNuevaCarga["nombreUbicacion" + filtro] || null
-    );
-    const seleccionarUbicacion = (_event: any, seleccionado: string | null) => {
+    const { title, ubicaciones, filtro } = props;
+    const [ubicacionSeleccionada, setUbicacionSeleccionada] = useState<any>(
+        (datosNuevaCarga as any)["nombreUbicacion" + filtro] || null
+      );
+      
+      const seleccionarUbicacion = (_event: any, seleccionado: string | null) => {
         if (seleccionado) {
-            const ubicacionesStrings = ubicaciones.map(
-                (ubicacion) =>
-                    `${ubicacion.nombre}, ${ubicacion.provincia}, ${ubicacion.pais}`
-            );
-            const index = ubicacionesStrings.indexOf(seleccionado);
-            const ubicacionesIds = ubicaciones.map((ubicacion) => ubicacion.id);
-            datosNuevaCarga["idUbicacion" + filtro] = ubicacionesIds[index];
-            datosNuevaCarga["nombreUbicacion" + filtro] = seleccionado;
-            setUbicacionSeleccionada(seleccionado);
+          const ubicacionesStrings = ubicaciones.map(
+            (ubicacion) =>
+              `${ubicacion.nombre}, ${ubicacion.provincia}, ${ubicacion.pais}`
+          );
+          const index = ubicacionesStrings.indexOf(seleccionado);
+          const ubicacionesIds = ubicaciones.map((ubicacion) => ubicacion.id);
+          (datosNuevaCarga as any)["idUbicacion" + filtro] = ubicacionesIds[index];
+          (datosNuevaCarga as any)["nombreUbicacion" + filtro] = seleccionado;
+          setUbicacionSeleccionada(seleccionado);
         }
-    };
+      };
 
     return (
         <Autocomplete

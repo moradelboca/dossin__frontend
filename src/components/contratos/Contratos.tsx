@@ -4,6 +4,7 @@ import ContratoForm from "../forms/contratos/ContratoForm";
 
 export default function Choferes() {
   const fields = [
+    "id",
     "titularCartaDePorte",
     "destino",
     "remitente",
@@ -12,6 +13,7 @@ export default function Choferes() {
     "cargas",
   ];
   const headerNames = [
+    "ID",
     "Titular CP",
     "Destino",
     "Remitente",
@@ -30,7 +32,7 @@ export default function Choferes() {
     FormularioCreador={ContratoForm} 
     tituloField="titularCartaDePorte"
     subtituloField="destino"
-      renderFullScreen={true} // Activa el modo pantalla completa
+    renderFullScreen={true} // Activa el modo pantalla completa
     />
   );
 }

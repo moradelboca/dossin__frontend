@@ -510,8 +510,9 @@ export default function CuposMobile({
             datos={selectedError ? [selectedError] : []}
             setDatos={() => {
               refreshCupos();
-            }}
-            handleClose={handleCloseDialogError}
+            } }
+            handleClose={handleCloseDialogError} 
+            idCarga={idCarga}          
           />
         </DialogContent>
       </Dialog>

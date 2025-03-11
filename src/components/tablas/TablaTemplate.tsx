@@ -75,7 +75,7 @@ export default function TablaTemplate({
 
   useEffect(() => {
     refreshDatos();
-  }, []);
+  }, [apiURL]);
 
   const handleOpen = (item: any) => {
     // Se asigna el item seleccionado (puede ser null para crear)
@@ -192,8 +192,8 @@ export default function TablaTemplate({
         FormularioCreador={FormularioCreador}
         tituloField={tituloField}
         subtituloField={subtituloField}
-        datos={datos}         // datos obtenidos en TablaTemplate
-        setDatos={setDatos}   // setter de datos de TablaTemplate
+        datos={datos}      
+        setDatos={setDatos}
         seleccionado={seleccionado}
         openDialog={open}
         handleOpenDialog={handleOpen}

@@ -1,6 +1,18 @@
 // components/tabs/AdelantoGasoilForm.tsx
 import React, { useState, useEffect, useContext } from 'react';
-import { TextField, Button, Stack, Box, Autocomplete } from '@mui/material';
+import {
+  TextField,
+  Button,
+  Stack,
+  Box,
+  Autocomplete,
+  IconButton,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+} from '@mui/material';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import { ContextoGeneral } from '../../../../Contexto';
 
 interface TipoCombustible {
@@ -35,8 +47,11 @@ const AdelantoGasoilForm: React.FC<AdelantoGasoilFormProps> = ({
     'ngrok-skip-browser-warning': 'true',
   };
 
-  // Estado local para el adelanto (si existe)
+  // Estado para el adelanto actualmente seleccionado
   const [adelanto, setAdelanto] = useState<AdelantoGasoil | undefined>(initialAdelanto);
+  // Estado para el listado de adelantos del turno
+  const [adelantos, setAdelantos] = useState<AdelantoGasoil[]>([]);
+  // Estados para el formulario
   const [tipoCombustible, setTipoCombustible] = useState<TipoCombustible | null>(null);
   const [cantLitros, setCantLitros] = useState<number | ''>(initialAdelanto?.cantLitros || '');
   const [precioLitros, setPrecioLitros] = useState<number | ''>(initialAdelanto?.precioLitros || '');
@@ -47,6 +62,8 @@ const AdelantoGasoilForm: React.FC<AdelantoGasoilFormProps> = ({
   }>({});
 
   const [tiposCombustibleOptions, setTiposCombustibleOptions] = useState<TipoCombustible[]>([]);
+  // Estado para controlar la apertura del dialog de eliminación
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
 
   // 1. Cargar las opciones para el autocomplete de tipos de combustible
   useEffect(() => {
@@ -67,37 +84,36 @@ const AdelantoGasoilForm: React.FC<AdelantoGasoilFormProps> = ({
     fetchTiposCombustible();
   }, [backendURL]);
 
-  // 2. Si no se recibe un adelanto inicial, se consulta el endpoint para ver si ya existe uno para el turno
+  // 2. Obtener el listado de adelantos para el turno y filtrar por turnoId
   useEffect(() => {
-    if (!initialAdelanto) {
-      const fetchAdelanto = async () => {
-        try {
-          const response = await fetch(`${backendURL}/adelantos/gasoil`, {
-            method: 'GET',
-            headers,
-          });
-          if (!response.ok) throw new Error('Error al obtener los adelantos de gasoil');
-          const data = await response.json();
-          // Buscamos el adelanto cuyo turno coincida
-          const existingAdelanto = data.find(
-            (item: any) => item.turnoDeCarga?.id === Number(turnoId)
-          );
-          if (existingAdelanto) {
-            const transformed = transformAdelanto(existingAdelanto);
-            setAdelanto(transformed);
-            setCantLitros(transformed.cantLitros);
-            setPrecioLitros(transformed.precioLitros);
-          }
-        } catch (error) {
-          console.error(error);
+    const fetchAdelantos = async () => {
+      try {
+        const response = await fetch(`${backendURL}/adelantos/gasoil`, {
+          method: 'GET',
+          headers,
+        });
+        if (!response.ok) throw new Error('Error al obtener los adelantos de gasoil');
+        const data = await response.json();
+        const filtered = data
+          .filter((item: any) => item.turnoDeCarga?.id === Number(turnoId))
+          .map(transformAdelanto);
+        setAdelantos(filtered);
+        // Si se pasó un adelanto inicial, lo establecemos
+        if (initialAdelanto) {
+          const transformed = transformAdelanto(initialAdelanto);
+          setAdelanto(transformed);
+          setCantLitros(transformed.cantLitros);
+          setPrecioLitros(transformed.precioLitros);
         }
-      };
-  
-      fetchAdelanto();
-    }
-  }, [backendURL, initialAdelanto, turnoId]);
+      } catch (error) {
+        console.error(error);
+      }
+    };
 
-  // 3. Una vez que se tengan las opciones y, si existe, el adelanto, se marca el tipo de combustible seleccionado
+    fetchAdelantos();
+  }, [backendURL, turnoId, initialAdelanto]);
+
+  // 3. Actualizar el tipo de combustible si ya hay un adelanto seleccionado
   useEffect(() => {
     if (adelanto && tiposCombustibleOptions.length > 0) {
       const foundTipo = tiposCombustibleOptions.find(
@@ -178,13 +194,98 @@ const AdelantoGasoilForm: React.FC<AdelantoGasoilFormProps> = ({
       }
       const data = await response.json();
       onSuccess(data);
+      // (Opcional) Actualizar la lista de adelantos tras el cambio
     } catch (error) {
       console.error('Error al procesar el adelanto de gasoil:', error);
     }
   };
 
+  // Funciones para el dialog de eliminación
+  const handleOpenDeleteDialog = () => {
+    setOpenDeleteDialog(true);
+  };
+
+  const handleCloseDeleteDialog = () => {
+    setOpenDeleteDialog(false);
+  };
+
+  const handleDelete = async () => {
+    if (!adelanto || !adelanto.id) return;
+    try {
+      const response = await fetch(`${backendURL}/adelantos/gasoil/${adelanto.id}`, {
+        method: 'DELETE',
+        headers,
+      });
+      if (!response.ok) {
+        throw new Error(await response.text());
+      }
+      // Se notifica al padre o se actualiza la lista local tras la eliminación
+      onSuccess({ deleted: true, id: adelanto.id });
+      // Limpiar el formulario
+      setAdelanto(undefined);
+      setCantLitros('');
+      setPrecioLitros('');
+      setTipoCombustible(null);
+    } catch (error) {
+      console.error('Error al eliminar el adelanto de gasoil:', error);
+    }
+    setOpenDeleteDialog(false);
+  };
+
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+      {/* Selector de adelantos existentes, botón para agregar y botón para eliminar */}
+      <Stack direction="row" spacing={2} alignItems="center">
+        <Autocomplete
+          options={adelantos}
+          getOptionLabel={(option) =>
+            `Adelanto ${option.id} : ${option.cantLitros}L - ${option.precioLitros}$`
+          }
+          value={adelanto || null}
+          onChange={(_event, newValue) => {
+            if (newValue) {
+              setAdelanto(newValue);
+              setCantLitros(newValue.cantLitros);
+              setPrecioLitros(newValue.precioLitros);
+              const foundTipo = tiposCombustibleOptions.find(
+                (tipo) => tipo.id === newValue.idTipoCombustible
+              );
+              setTipoCombustible(foundTipo || null);
+            } else {
+              // Si se deselecciona, se limpian los campos para crear uno nuevo
+              setAdelanto(undefined);
+              setCantLitros('');
+              setPrecioLitros('');
+              setTipoCombustible(null);
+            }
+          }}
+          renderInput={(params) => (
+            <TextField {...params} label="Selecciona un adelanto" />
+          )}
+          sx={{ flex: 1 }}
+        />
+        <Button
+          variant="contained"
+          onClick={() => {
+            // Al hacer click en '+' se limpian los campos para agregar un nuevo adelanto
+            setAdelanto(undefined);
+            setCantLitros('');
+            setPrecioLitros('');
+            setTipoCombustible(null);
+          }}
+        >
+          +
+        </Button>
+        <IconButton
+          onClick={handleOpenDeleteDialog}
+          disabled={!adelanto}
+          sx={{ color: adelanto ? '#d32f2f' : 'grey' }}
+        >
+          <DeleteOutlineIcon />
+        </IconButton>
+      </Stack>
+
+      {/* Campos del formulario */}
       <Autocomplete
         options={tiposCombustibleOptions}
         getOptionLabel={(option) => option.nombre}
@@ -225,6 +326,20 @@ const AdelantoGasoilForm: React.FC<AdelantoGasoilFormProps> = ({
           {adelanto && adelanto.id ? 'Actualizar Adelanto' : 'Crear Adelanto'}
         </Button>
       </Stack>
+
+      {/* Dialog de confirmación para eliminar */}
+      <Dialog open={openDeleteDialog} onClose={handleCloseDeleteDialog}>
+        <DialogTitle>Eliminar Adelanto</DialogTitle>
+        <DialogContent>
+          ¿Está seguro de que desea eliminar este adelanto?
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDeleteDialog}>No</Button>
+          <Button onClick={handleDelete} color="error">
+            Sí, eliminar
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };

@@ -12,16 +12,16 @@ interface props {
 
 export default function Reloj(props: props) {
     const { datosNuevaCarga, datosSinCompletar } = useContext(ContextoStepper);
-    let { filtro } = props;
+    const { filtro } = props;
     const [horarioSeleccionado, setHorarioSeleccionado] =
         useState<dayjs.Dayjs | null>(
-            datosNuevaCarga[filtro]
-                ? dayjs(datosNuevaCarga[filtro], "HH:mm")
+            (datosNuevaCarga as any)[filtro]
+                ? dayjs((datosNuevaCarga as any)[filtro], "HH:mm")
                 : null
         );
     const manejarTiempo = (seleccionado: any) => {
         if (seleccionado != null) {
-            datosNuevaCarga[filtro] = seleccionado.format("HH:mm") + ":00";
+            (datosNuevaCarga as any)[filtro] = seleccionado.format("HH:mm") + ":00";
             setHorarioSeleccionado(seleccionado);
         }
     };

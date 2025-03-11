@@ -1,6 +1,18 @@
 // components/tabs/AdelantoEfectivoForm.tsx
 import React, { useState, useEffect, useContext } from 'react';
-import { TextField, Button, Stack, Box, Autocomplete } from '@mui/material';
+import {
+  TextField,
+  Button,
+  Stack,
+  Box,
+  Autocomplete,
+  IconButton,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+} from '@mui/material';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import { ContextoGeneral } from '../../../../Contexto';
 
 interface TipoMedioPago {
@@ -35,8 +47,11 @@ const AdelantoEfectivoForm: React.FC<AdelantoEfectivoFormProps> = ({
     'ngrok-skip-browser-warning': 'true',
   };
 
-  // Estado local para el adelanto efectivo
+  // Estado para el adelanto efectivo seleccionado
   const [adelanto, setAdelanto] = useState<AdelantoEfectivo | undefined>(initialAdelanto);
+  // Estado para la lista de adelantos que coinciden con el turno
+  const [adelantos, setAdelantos] = useState<AdelantoEfectivo[]>([]);
+  // Estados para los campos del formulario
   const [tipoMedioPago, setTipoMedioPago] = useState<TipoMedioPago | null>(null);
   const [montoAdelantado, setMontoAdelantado] = useState<number | ''>(
     initialAdelanto?.montoAdelantado || ''
@@ -44,6 +59,8 @@ const AdelantoEfectivoForm: React.FC<AdelantoEfectivoFormProps> = ({
   const [errors, setErrors] = useState<{ tipoMedioPago?: string; montoAdelantado?: string }>({});
 
   const [tiposMedioPagoOptions, setTiposMedioPagoOptions] = useState<TipoMedioPago[]>([]);
+  // Estado para controlar la apertura del diálogo de eliminación
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
 
   // 1. Cargar las opciones para el autocomplete de tipos de medio de pago
   useEffect(() => {
@@ -64,36 +81,35 @@ const AdelantoEfectivoForm: React.FC<AdelantoEfectivoFormProps> = ({
     fetchTiposMedioPago();
   }, [backendURL]);
 
-  // 2. Si no se recibe un adelanto inicial, consultar el endpoint para ver si ya existe uno para el turno
+  // 2. Obtener el listado de adelantos efectivos filtrados por turnoId
   useEffect(() => {
-    if (!initialAdelanto) {
-      const fetchAdelanto = async () => {
-        try {
-          const response = await fetch(`${backendURL}/adelantos/efectivo`, {
-            method: 'GET',
-            headers,
-          });
-          if (!response.ok) throw new Error('Error al obtener los adelantos efectivos');
-          const data = await response.json();
-          // Buscamos el adelanto cuyo turno coincida
-          const existingAdelanto = data.find(
-            (item: any) => item.turnoDeCarga?.id === Number(turnoId)
-          );
-          if (existingAdelanto) {
-            const transformed = transformAdelanto(existingAdelanto);
-            setAdelanto(transformed);
-            setMontoAdelantado(transformed.montoAdelantado);
-          }
-        } catch (error) {
-          console.error(error);
+    const fetchAdelantos = async () => {
+      try {
+        const response = await fetch(`${backendURL}/adelantos/efectivo`, {
+          method: 'GET',
+          headers,
+        });
+        if (!response.ok) throw new Error('Error al obtener los adelantos efectivos');
+        const data = await response.json();
+        const filtered = data
+          .filter((item: any) => item.turnoDeCarga?.id === Number(turnoId))
+          .map(transformAdelanto);
+        setAdelantos(filtered);
+        // Si se pasó un adelanto inicial se establece
+        if (initialAdelanto) {
+          const transformed = transformAdelanto(initialAdelanto);
+          setAdelanto(transformed);
+          setMontoAdelantado(transformed.montoAdelantado);
         }
-      };
+      } catch (error) {
+        console.error(error);
+      }
+    };
 
-      fetchAdelanto();
-    }
-  }, [backendURL, initialAdelanto, turnoId]);
+    fetchAdelantos();
+  }, [backendURL, turnoId, initialAdelanto]);
 
-  // 3. Una vez que se tienen las opciones y, si existe, el adelanto, se marca el tipo de medio de pago seleccionado
+  // 3. Establecer el tipo de medio de pago cuando ya hay un adelanto seleccionado
   useEffect(() => {
     if (adelanto && tiposMedioPagoOptions.length > 0) {
       const foundTipo = tiposMedioPagoOptions.find(
@@ -114,15 +130,14 @@ const AdelantoEfectivoForm: React.FC<AdelantoEfectivoFormProps> = ({
     };
   };
 
-  // Función de validación simple
+  // Validación simple de los campos
   const validate = () => {
     const newErrors: { tipoMedioPago?: string; montoAdelantado?: string } = {};
     if (!tipoMedioPago) {
       newErrors.tipoMedioPago = 'El tipo de medio de pago es obligatorio';
     }
     if (montoAdelantado === '' || Number(montoAdelantado) <= 0) {
-      newErrors.montoAdelantado =
-        'El monto adelantado es obligatorio y debe ser mayor a 0';
+      newErrors.montoAdelantado = 'El monto adelantado es obligatorio y debe ser mayor a 0';
     }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -168,8 +183,88 @@ const AdelantoEfectivoForm: React.FC<AdelantoEfectivoFormProps> = ({
     }
   };
 
+  // Funciones para el diálogo de confirmación de eliminación
+  const handleOpenDeleteDialog = () => {
+    setOpenDeleteDialog(true);
+  };
+
+  const handleCloseDeleteDialog = () => {
+    setOpenDeleteDialog(false);
+  };
+
+  const handleDelete = async () => {
+    if (!adelanto || !adelanto.id) return;
+    try {
+      const response = await fetch(`${backendURL}/adelantos/efectivo/${adelanto.id}`, {
+        method: 'DELETE',
+        headers,
+      });
+      if (!response.ok) {
+        throw new Error(await response.text());
+      }
+      // Notifica al padre o actualiza la lista tras la eliminación
+      onSuccess({ deleted: true, id: adelanto.id });
+      // Limpiar los campos del formulario
+      setAdelanto(undefined);
+      setMontoAdelantado('');
+      setTipoMedioPago(null);
+    } catch (error) {
+      console.error('Error al eliminar el adelanto efectivo:', error);
+    }
+    setOpenDeleteDialog(false);
+  };
+
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+      {/* Selector de adelantos existentes, botón para agregar nuevo y botón de eliminar */}
+      <Stack direction="row" spacing={2} alignItems="center">
+        <Autocomplete
+          options={adelantos}
+          getOptionLabel={(option) =>
+            `Adelanto ${option.id} : ${option.montoAdelantado}$`
+          }
+          value={adelanto || null}
+          onChange={(_event, newValue) => {
+            if (newValue) {
+              setAdelanto(newValue);
+              setMontoAdelantado(newValue.montoAdelantado);
+              const foundTipo = tiposMedioPagoOptions.find(
+                (tipo) => tipo.id === newValue.idTipoMedioPago
+              );
+              setTipoMedioPago(foundTipo || null);
+            } else {
+              // Si se deselecciona, se limpian los campos para crear uno nuevo
+              setAdelanto(undefined);
+              setMontoAdelantado('');
+              setTipoMedioPago(null);
+            }
+          }}
+          renderInput={(params) => (
+            <TextField {...params} label="Selecciona un adelanto" />
+          )}
+          sx={{ flex: 1 }}
+        />
+        <Button
+          variant="contained"
+          onClick={() => {
+            // Limpia la selección para crear un nuevo adelanto
+            setAdelanto(undefined);
+            setMontoAdelantado('');
+            setTipoMedioPago(null);
+          }}
+        >
+          +
+        </Button>
+        <IconButton
+          onClick={handleOpenDeleteDialog}
+          disabled={!adelanto}
+          sx={{ color: adelanto ? '#d32f2f' : 'grey' }}
+        >
+          <DeleteOutlineIcon />
+        </IconButton>
+      </Stack>
+
+      {/* Campo para seleccionar el tipo de medio de pago */}
       <Autocomplete
         options={tiposMedioPagoOptions}
         getOptionLabel={(option) => option.nombre}
@@ -184,6 +279,7 @@ const AdelantoEfectivoForm: React.FC<AdelantoEfectivoFormProps> = ({
           />
         )}
       />
+      {/* Campo para el monto adelantado */}
       <TextField
         label="Monto Adelantado"
         type="number"
@@ -200,6 +296,20 @@ const AdelantoEfectivoForm: React.FC<AdelantoEfectivoFormProps> = ({
           {adelanto && adelanto.id ? 'Actualizar Adelanto' : 'Crear Adelanto'}
         </Button>
       </Stack>
+
+      {/* Diálogo de confirmación para eliminar el adelanto */}
+      <Dialog open={openDeleteDialog} onClose={handleCloseDeleteDialog}>
+        <DialogTitle>Eliminar Adelanto</DialogTitle>
+        <DialogContent>
+          ¿Está seguro de que desea eliminar este adelanto efectivo?
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDeleteDialog}>No</Button>
+          <Button onClick={handleDelete} color="error">
+            Sí, eliminar
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };

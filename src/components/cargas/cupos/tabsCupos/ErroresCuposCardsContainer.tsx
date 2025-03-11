@@ -18,12 +18,9 @@ interface Props {
   refreshCupos: () => void;
 }
 
-export function ErroresCuposCardsContainer({ cupos, refreshCupos }: Props) {
+export function ErroresCuposCardsContainer({ cupos, idCarga, refreshCupos }: Props) {
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedError, setSelectedError] = useState<any>(null);
-
-  
-  console.log(cupos);
 
   const handleOpenDialog = (error: any) => {
     setSelectedError(error);
@@ -139,6 +136,7 @@ export function ErroresCuposCardsContainer({ cupos, refreshCupos }: Props) {
                 refreshCupos();
               }}
               handleClose={handleCloseDialog}
+              idCarga={idCarga}
             />
           </DialogContent>
         </Dialog>

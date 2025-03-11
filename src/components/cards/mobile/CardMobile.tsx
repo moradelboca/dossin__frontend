@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext } from "react"; 
 import {
   Box,
   Button,
@@ -24,8 +24,11 @@ interface CardMobileProps {
   subtituloField?: string;
   customIcon?: string;
   usarSinDesplegable?: boolean;
-  /** Si es false, no se renderiza el botón de editar */
   mostrarBotonEditar?: boolean;
+  // Nuevos props opcionales para botón secundario
+  textoSecondaryButton?: string;
+  handleSecondButton?: (item: any) => void;
+  colorSecondaryButton?: string;
 }
 
 const CardMobile: React.FC<CardMobileProps> = ({
@@ -41,6 +44,9 @@ const CardMobile: React.FC<CardMobileProps> = ({
   customIcon,
   usarSinDesplegable,
   mostrarBotonEditar = true,
+  textoSecondaryButton,
+  handleSecondButton,
+  colorSecondaryButton,
 }) => {
   const { theme } = useContext(ContextoGeneral);
   const transformarCampo = useTransformarCampo();
@@ -126,6 +132,7 @@ const CardMobile: React.FC<CardMobileProps> = ({
               </Typography>
             </Box>
           ))}
+          {/* Botón primario de Editar */}
           {mostrarBotonEditar && (
             <Button
               variant="outlined"
@@ -135,6 +142,21 @@ const CardMobile: React.FC<CardMobileProps> = ({
               onClick={() => handleOpenDialog(item)}
             >
               Editar
+            </Button>
+          )}
+          {/* Botón secundario condicional */}
+          {textoSecondaryButton && handleSecondButton && (
+            <Button
+              variant="outlined"
+              fullWidth
+              sx={{
+                marginTop: 2,
+                borderColor: colorSecondaryButton ? colorSecondaryButton : theme.colores.azul,
+                color: colorSecondaryButton ? colorSecondaryButton : theme.colores.azul,
+              }}
+              onClick={() => handleSecondButton(item)}
+            >
+              {textoSecondaryButton}
             </Button>
           )}
         </Box>

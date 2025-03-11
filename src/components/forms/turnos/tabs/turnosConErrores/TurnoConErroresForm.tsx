@@ -1,5 +1,4 @@
-// TurnoConErroresForm.tsx
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { Box, Button } from "@mui/material";
 import { ContextoGeneral } from "../../../../Contexto";
 import AutocompleteColaboradores from "../../../autocompletes/AutocompleteColaboradores";
@@ -12,6 +11,7 @@ interface TurnoConErroresFormProps {
   datos: any;
   setDatos: (data: any) => void;
   handleClose: () => void;
+  idCarga: any;
 }
 
 const TurnoConErroresForm: React.FC<TurnoConErroresFormProps> = ({
@@ -19,8 +19,41 @@ const TurnoConErroresForm: React.FC<TurnoConErroresFormProps> = ({
   datos,
   setDatos,
   handleClose,
+  idCarga,
 }) => {
   const { backendURL } = useContext(ContextoGeneral);
+
+  // Estado para saber si se requiere el bitren
+  const [tieneBitren, setTieneBitren] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    const fetchRequiereBitren = async () => {
+      try {
+        const response = await fetch(`${backendURL}/cargas/${idCarga}/requiere-bitren`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "ngrok-skip-browser-warning": "true",
+          },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          // Supongamos que data es un booleano que indica si requiere bitren
+          setTieneBitren(Array.isArray(data) && data.length > 0 ? true : false);
+        } else {
+          throw new Error("No se pudo obtener el estado de requiere-bitren");
+        }
+      } catch (error) {
+        console.error("Error fetching requiere-bitren:", error);
+        setTieneBitren(false);
+      }
+    };
+
+    if (idCarga) {
+      fetchRequiereBitren();
+    }
+  }, [backendURL, idCarga]);
 
   // Definimos qué campos se deben mostrar basándonos en el valor de "errores"
   let fieldsToShow: string[] = [];
@@ -115,7 +148,7 @@ const TurnoConErroresForm: React.FC<TurnoConErroresFormProps> = ({
           onChange={setPatenteAcopladoSeleccionada}
         />
       )}
-      {fieldsToShow.includes("patenteAcopladoExtra") && (
+      {tieneBitren && fieldsToShow.includes("patenteAcopladoExtra") && (
         <AutocompleteAcoplados
           value={patenteAcopladoExtraSeleccionada}
           onChange={setPatenteAcopladoExtraSeleccionada}

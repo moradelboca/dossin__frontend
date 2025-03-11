@@ -1,4 +1,3 @@
-// CrearNuevoTurnoForm.tsx
 import React, { useContext, useState } from "react";
 import { Box, Button, Typography } from "@mui/material";
 import { ContextoGeneral } from "../../Contexto";
@@ -13,6 +12,7 @@ interface CrearNuevoTurnoFormProps {
   handleClose: () => void;
   idCarga: any;
   fechaCupo?: string;
+  tieneBitren?: boolean | null;
 }
 
 const CrearNuevoTurnoForm: React.FC<CrearNuevoTurnoFormProps> = ({
@@ -20,6 +20,7 @@ const CrearNuevoTurnoForm: React.FC<CrearNuevoTurnoFormProps> = ({
   handleClose,
   idCarga,
   fechaCupo,
+  tieneBitren,  // Recibimos el prop
 }) => {
   const { backendURL } = useContext(ContextoGeneral);
 
@@ -30,7 +31,6 @@ const CrearNuevoTurnoForm: React.FC<CrearNuevoTurnoFormProps> = ({
   const [patenteAcopladoSeleccionada, setPatenteAcopladoSeleccionada] = useState<any | null>(null);
   const [patenteAcopladoSeleccionadaExtra, setPatenteAcopladoSeleccionadaExtra] = useState<any | null>(null);
 
-  // Datos y reglas para la validación (en este ejemplo se validan los mismos campos de los autocompletes)
   const initialData = {
     cuilColaborador: null,
     cuitEmpresa: null,
@@ -50,14 +50,10 @@ const CrearNuevoTurnoForm: React.FC<CrearNuevoTurnoFormProps> = ({
       !patenteAcopladoSeleccionada ? "La patente del acoplado es obligatoria" : null,
   };
 
-  const {errors, validateAll } = useValidation(initialData, rules);
+  const {errors, validateAll} = useValidation(initialData, rules);
 
-  // Función para enviar el formulario.
   const handleSubmit = async () => {
-    // Validamos tanto con el hook como los estados locales.
-    if (
-      !validateAll()
-    ) {
+    if (!validateAll()) {
       console.log("Faltan completar algunos campos obligatorios");
       return;
     }
@@ -103,35 +99,34 @@ const CrearNuevoTurnoForm: React.FC<CrearNuevoTurnoFormProps> = ({
           error={!!errors.cuilColaborador}
           helperText={errors.cuilColaborador}
         />
-
         <AutocompleteEmpresas
           value={empresaTransportistaSeleccionada}
           onChange={setEmpresaTransportistaSeleccionada}
           error={!!errors.cuitEmpresa}
           helperText={errors.cuitEmpresa}
         />
-
         <AutocompleteCamiones
           value={patenteCamionSeleccionada}
           onChange={setPatenteCamionSeleccionada}
           error={!!errors.patenteCamion}
           helperText={errors.patenteCamion}
         />
-
         <AutocompleteAcoplados
           value={patenteAcopladoSeleccionada}
           onChange={setPatenteAcopladoSeleccionada}
           error={!!errors.patenteAcoplado}
           helperText={errors.patenteAcoplado}
         />
-
-        <AutocompleteAcoplados
-          value={patenteAcopladoSeleccionadaExtra}
-          onChange={setPatenteAcopladoSeleccionadaExtra}
-          tituloOpcional="Patente Acoplado Extra"
-          error={!!errors.patenteAcopladoExtra}
-          helperText={errors.patenteAcopladoExtra}
-        />
+        {/* Solo mostrar si tieneBitren es true */}
+        {tieneBitren && (
+          <AutocompleteAcoplados
+            value={patenteAcopladoSeleccionadaExtra}
+            onChange={setPatenteAcopladoSeleccionadaExtra}
+            tituloOpcional="Patente Acoplado Extra"
+            error={!!errors.patenteAcopladoExtra}
+            helperText={errors.patenteAcopladoExtra}
+          />
+        )}
       </Box>
 
       <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 1, mt: 2 }}>

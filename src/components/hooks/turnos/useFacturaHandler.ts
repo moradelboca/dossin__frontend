@@ -2,8 +2,12 @@ import { useContext } from 'react';
 import { ContextoGeneral } from '../../Contexto';
 
 interface FacturaPayload {
-  idFactura?: string;
-  tipoFactura: number;
+  idFactura?: string; // si es update
+  // Campos para crear factura
+  idsTurnos?: string[];
+  nroFactura?: string;
+  tipoFactura?: number;
+  // Campos comunes
   fecha: string;
   valorIva: number;
   total: number;
@@ -12,39 +16,43 @@ interface FacturaPayload {
 const useFacturaHandler = () => {
   const { backendURL } = useContext(ContextoGeneral);
 
-  const handleFacturaSubmission = async (turnoId: string, payload: FacturaPayload) => {
+  const handleFacturaSubmission = async (cuitEmpresa: string | number, payload: FacturaPayload) => {
     try {
       const isUpdating = Boolean(payload.idFactura);
       const url = isUpdating
         ? `${backendURL}/facturas/${payload.idFactura}`
-        : `${backendURL}/facturas`;
+        : `${backendURL}/facturas/${cuitEmpresa}/crear-factura`;
       const method = isUpdating ? 'PUT' : 'POST';
 
-      // 1. Crear/Actualizar Factura
+      console.log("Metodo: \n", method);
+      console.log("URL: \n", url);
+
+      const body = isUpdating
+        ? {
+            fecha: payload.fecha,
+            valorIva: payload.valorIva,
+            total: payload.total,
+          }
+        : {
+            idsTurnos: payload.idsTurnos,
+            nroFactura: payload.nroFactura,
+            tipoFactura: payload.tipoFactura,
+            fecha: payload.fecha,
+            valorIva: payload.valorIva,
+            total: payload.total,
+          };
+
       const facturaResponse = await fetch(url, {
         method,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          tipoFactura: payload.tipoFactura,
-          fecha: payload.fecha,
-          valorIva: payload.valorIva,
-          total: payload.total,
-        }),
+        headers: {
+          "Content-Type": "application/json",
+          "ngrok-skip-browser-warning": "true",
+        },
+        body: JSON.stringify(body),
       });
 
       if (!facturaResponse.ok) throw new Error(await facturaResponse.text());
       const facturaData = await facturaResponse.json();
-
-      // 2. Si es una nueva factura, vincularla al turno
-      if (!isUpdating) {
-        const turnoResponse = await fetch(`${backendURL}/turnos/${turnoId}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ idFactura: facturaData.id }),
-        });
-        if (!turnoResponse.ok) throw new Error(await turnoResponse.text());
-      }
-
       return facturaData;
     } catch (error) {
       console.error('Error en el proceso de Factura:', error);

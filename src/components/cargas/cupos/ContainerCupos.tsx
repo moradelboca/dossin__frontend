@@ -230,7 +230,7 @@ export function ContainerCupos() {
               {selectedView.value === "TURNOS" ? (
                 <CuposGridContainer cupos={cupos} refreshCupos={refreshCupos} />
               ) : (
-                <ErroresCuposGridContainer cupos={cupos} refreshCupos={refreshCupos} />
+                <ErroresCuposGridContainer idCarga={idCarga} cupos={cupos} refreshCupos={refreshCupos} />
               )}
             </>
           )}
@@ -239,7 +239,7 @@ export function ContainerCupos() {
               {selectedView.value === "TURNOS" ? (
                 <CuposGridPorDiaContainer cupos={cupos} refreshCupos={refreshCupos} />
               ) : (
-                <ErroresCuposGridPorDiaContainer cupos={cupos} refreshCupos={refreshCupos} />
+                <ErroresCuposGridPorDiaContainer idCarga={idCarga}  cupos={cupos} refreshCupos={refreshCupos} />
               )}
             </>
           )}

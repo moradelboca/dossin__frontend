@@ -34,7 +34,6 @@ interface TurnoError {
   kgDescargados: number;
   numeroOrdenPago: number;
   fechaCreacion: string;
-  // Otros campos que puedan existir...
 }
 
 interface Cupo {
@@ -46,11 +45,13 @@ interface Cupo {
 
 interface ErroresCuposGridContainerProps {
   cupos: Cupo[];
+  idCarga: string | undefined;
   refreshCupos: () => void;
 }
 
 export const ErroresCuposGridContainer: React.FC<ErroresCuposGridContainerProps> = ({
   cupos,
+  idCarga,
   refreshCupos,
 }) => {
   const [openRows, setOpenRows] = useState<{ [key: number]: boolean }>({});
@@ -225,8 +226,8 @@ export const ErroresCuposGridContainer: React.FC<ErroresCuposGridContainerProps>
             seleccionado={selectedTurno}
             datos={selectedTurno ? [selectedTurno] : []}
             setDatos={() => refreshCupos()}
-            handleClose={handleCloseDialog}
-          />
+            handleClose={handleCloseDialog} 
+            idCarga={idCarga}/>
         </DialogContent>
       </Dialog>
     </Box>

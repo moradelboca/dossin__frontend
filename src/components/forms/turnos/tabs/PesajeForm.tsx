@@ -2,18 +2,18 @@ import React, { useContext, useState } from "react";
 import { Box, Button, TextField, Stack } from "@mui/material";
 import { ContextoGeneral } from "../../../Contexto";
 
-interface GranosFormProps {
+interface PesajeFormProps {
   turnoId: number;
   initialData?: {
     kgCargados?: number;
     kgDescargados?: number;
-    precioGrano?: number;
+    precioPorKilogramo?: number;
   };
   onSuccess: (updatedData: any) => void;
   onCancel: () => void;
 }
 
-const GranosForm: React.FC<GranosFormProps> = ({
+const PesajeForm: React.FC<PesajeFormProps> = ({
   turnoId,
   initialData,
   onSuccess,
@@ -26,8 +26,8 @@ const GranosForm: React.FC<GranosFormProps> = ({
   const [kgDescargados, setKgDescargados] = useState<number | string>(
     initialData?.kgDescargados ?? ""
   );
-  const [precioGrano, setPrecioGrano] = useState<number | string>(
-    initialData?.precioGrano ?? ""
+  const [precioPorKilogramo, setPrecioPorKilogramo] = useState<number | string>(
+    initialData?.precioPorKilogramo ?? ""
   );
   const [errors, setErrors] = useState<{ [key: string]: string | null }>({});
 
@@ -42,9 +42,9 @@ const GranosForm: React.FC<GranosFormProps> = ({
       newErrors.kgDescargados =
         "Kilogramos descargados es obligatorio y debe ser un número";
     }
-    if (precioGrano === "" || isNaN(Number(precioGrano))) {
-      newErrors.precioGrano =
-        "Precio grano es obligatorio y debe ser un número";
+    if (precioPorKilogramo === "" || isNaN(Number(precioPorKilogramo))) {
+      newErrors.precioPorKilogramo =
+        "Precio por kg es obligatorio y debe ser un número";
     }
 
     setErrors(newErrors);
@@ -60,7 +60,7 @@ const GranosForm: React.FC<GranosFormProps> = ({
       const payload = {
         kgCargados: Number(kgCargados),
         kgDescargados: Number(kgDescargados),
-        precioGrano: Number(precioGrano),
+        precioGrano: Number(precioPorKilogramo),
       };
 
       const url = `${backendURL}/turnos/${turnoId}`;
@@ -116,15 +116,15 @@ const GranosForm: React.FC<GranosFormProps> = ({
       />
       <TextField
         margin="dense"
-        label="Precio Grano"
-        name="precioGrano"
+        label="Precio Por Kilogramo"
+        name="precioPorKilogramo"
         variant="outlined"
         fullWidth
-        value={precioGrano}
-        onChange={(e) => handleInputChange(e, setPrecioGrano)}
-        error={!!errors.precioGrano}
-        helperText={errors.precioGrano}
-        inputProps={{ inputMode: 'numeric', pattern: '[0-9]*', min: 0 }} // Igual para precio grano
+        value={precioPorKilogramo}
+        onChange={(e) => handleInputChange(e, setPrecioPorKilogramo)}
+        error={!!errors.precioPorKilogramo}
+        helperText={errors.precioPorKilogramo}
+        inputProps={{ inputMode: 'numeric', pattern: '[0-9]*', min: 0 }}
       />
       <Stack
         direction="row"
@@ -136,11 +136,11 @@ const GranosForm: React.FC<GranosFormProps> = ({
           Cancelar
         </Button>
         <Button color="primary" onClick={handleSubmit}>
-          Guardar Granos
+          Guardar Pesaje
         </Button>
       </Stack>
     </Box>
   );
 };
 
-export default GranosForm;
+export default PesajeForm;

@@ -80,7 +80,7 @@ export default function AutocompletarUbicacion(props: AutocompletarProps) {
     const { datosNuevaCarga, datosSinCompletar } = useContext(ContextoStepper);
     const { title, ubicaciones, filtro, estadoCarga } = props;
     const [ubicacionSeleccionada, setUbicacionSeleccionada] = useState<any>(
-        datosNuevaCarga["nombreUbicacion" + filtro] || null
+        (datosNuevaCarga as any)["nombreUbicacion" + filtro] || null
     );
 
     const tipoUbicacionAPI = mapeoTipos[filtro as keyof typeof mapeoTipos] || filtro;
@@ -101,8 +101,8 @@ export default function AutocompletarUbicacion(props: AutocompletarProps) {
             const index = opcionesStrings.indexOf(seleccionado);
             if (index !== -1) {
                 // Guarda tanto el id como el nombre de la ubicación seleccionada
-                datosNuevaCarga["idUbicacion" + filtro] = ubicacionesFiltradas[index].id;
-                datosNuevaCarga["nombreUbicacion" + filtro] = seleccionado;
+                (datosNuevaCarga as any)["idUbicacion" + filtro] = ubicacionesFiltradas[index].id;
+                (datosNuevaCarga as any)["nombreUbicacion" + filtro] = seleccionado;
                 setUbicacionSeleccionada(seleccionado);
             }
         }
