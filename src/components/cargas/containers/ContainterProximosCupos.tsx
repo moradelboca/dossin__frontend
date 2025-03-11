@@ -10,6 +10,7 @@ export default function ContainerProximosCupos() {
     const [cupos, setCupos] = useState<any[]>([]);
     const { backendURL } = useContext(ContextoGeneral);
     const { cargaSeleccionada } = useContext(ContextoCargas);
+
     const handleClickVerCupos = () => {
         navigate(`/cargas/${cargaSeleccionada.id}/cupos`);
     };
@@ -23,16 +24,25 @@ export default function ContainerProximosCupos() {
                     "ngrok-skip-browser-warning": "true",
                 },
             })
-                .then((response) => response.json())
-                .then((cupos) => {
-                    setCupos(cupos);
+                .then((response) => {
+                    if (!response.ok) {
+                        throw new Error("Error al obtener los cupos");
+                    }
+                    return response.json();
+                })
+                .then((data) => {
+                    // Verifica si los cupos están definidos y son un array
+                    if (Array.isArray(data)) {
+                        setCupos(data);
+                    } else {
+                        setCupos([]); // Si no es un array válido, asigna un array vacío
+                    }
                 })
                 .catch(() => {
-                    setCupos([]);
-                    console.error("Error al obtener los cupos disponibles");
+                    setCupos([]); // En caso de error, asigna un array vacío
                 });
         }
-    }, [cargaSeleccionada]);
+    }, [cargaSeleccionada, backendURL]);
 
     return (
         <>
@@ -50,8 +60,8 @@ export default function ContainerProximosCupos() {
                     disabled={!cargaSeleccionada}
                     onClick={handleClickVerCupos}
                     sx={{
-                        paddingRight:0,
-                        paddingBottom:0
+                        paddingRight: 0,
+                        paddingBottom: 0,
                     }}
                 >
                     <AddIcon />
@@ -110,7 +120,7 @@ export default function ContainerProximosCupos() {
                                 }}
                                 color="#90979f"
                             >
-                                Cupos confirmados: {cupo.turnos.length} ⛟ 🗸
+                                Cupos confirmados: {cupo.turnos?.length} ⛟ 🗸
                             </Typography>
                             <Typography
                                 variant="subtitle2"

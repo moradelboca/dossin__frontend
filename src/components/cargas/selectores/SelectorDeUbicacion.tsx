@@ -35,6 +35,7 @@ export default function SelectorDeUbicacion() {
                 console.error("Error al obtener las Ubicaciones disponibles")
             );
     }, []);
+    console.log(ubicaciones)
 
     return (
         <>

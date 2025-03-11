@@ -1,3 +1,5 @@
+import ClearSharpIcon from "@mui/icons-material/ClearSharp";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import {
     Box,
     Button,
@@ -8,35 +10,32 @@ import {
     TextField,
     Typography,
 } from "@mui/material";
-import { CustomButtom } from "../../botones/CustomButtom";
-import { styled } from "@mui/material/styles";
-import Grid from "@mui/material/Grid2";
 import Divider from "@mui/material/Divider";
+import Grid from "@mui/material/Grid2";
+import { styled } from "@mui/material/styles";
 import { useContext, useState } from "react";
-import CreadorTurno from "../creadores/CreadorTurno";
+import { CustomButtom } from "../../botones/CustomButtom";
 import { ContextoGeneral } from "../../Contexto";
-import ClearSharpIcon from "@mui/icons-material/ClearSharp";
-import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import DeleteCupo from "../creadores/DeleteCupo";
+import TurnoForm from "../../forms/turnos/TurnoForm";
 
 const StyledCaja = styled(Box)(() => ({
     minWidth: 180,
     minHeight: 170,
     maxHeight: 230,
     maxWidth: 230,
-    background: "#d9d9d9",
+    background: "#ffffff",
     borderRadius: "20px",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
     flexDirection: "column",
-    boxShadow: "0 6px 16px 0 #8d8c8c",
     transition: "0.2s",
     margin: 1,
+    border: "1px solid #ccc",
     padding: "28px 12px",
     "&:hover": {
-        background: "#b5b5b5",
-        transform: "scale(1.1)",
+        transform: "scale(1.05)",
     },
 }));
 
@@ -45,18 +44,18 @@ interface TarjetaProps {
     cuposDisponibles: number;
     cuposConfirmados: number;
     idCarga: any;
-    refreshCupos: any;
+    refreshCupos: () => void;
+    cupos:any[];
 }
 
-export function TarjetaCupos(props: TarjetaProps) {
-    const { idCarga, fecha, cuposDisponibles, cuposConfirmados, refreshCupos } =
-        props;
+export function TarjetaCupos(props: TarjetaProps & { estaEnElGrid?: boolean }) {
+    const { idCarga, fecha, cuposDisponibles, cuposConfirmados, refreshCupos, estaEnElGrid, cupos } = props;
     const { theme } = useContext(ContextoGeneral);
-    const [cuposDisponiblesEstado, setCuposDisponiblesEstado] =
-        useState(cuposDisponibles);
-
+    const [cuposDisponiblesEstado, setCuposDisponiblesEstado] = useState(cuposDisponibles);
     const [openDialog, setOpenDialog] = useState(false);
     const [openDialog2, setOpenDialog2] = useState(false);
+    const [openDialogDelete, setOpenDialogDelete] = useState(false);
+    
     const { backendURL } = useContext(ContextoGeneral);
 
     function handleClick() {
@@ -73,10 +72,9 @@ export function TarjetaCupos(props: TarjetaProps) {
         setOpenDialog2(false);
         setOpenDialogDelete(false);
     }
+
     function handleSave() {
-        const cupoDeCarga = {
-            cupos: cuposDisponiblesEstado,
-        };
+        const cupoDeCarga = { cupos: cuposDisponiblesEstado };
         fetch(`${backendURL}/cargas/${idCarga}/cupos/${fecha}`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
@@ -98,80 +96,33 @@ export function TarjetaCupos(props: TarjetaProps) {
         refreshCupos();
         handleCloseDialog();
     }
-    const [openDialogDelete, setOpenDialogDelete] = useState(false);
+
     const handleClickDeleteCarga = () => {
         setOpenDialogDelete(true);
     };
 
-    return (
+    const Dialogos = () => (
         <>
-            <StyledCaja>
-                <Typography variant="h5" color="#163660">
-                    {fecha}
-                </Typography>
-                <Divider
-                    orientation="horizontal"
-                    flexItem
-                    sx={{ bgcolor: "#163660" }}
-                />
-                <Grid container spacing="10px" padding="28px 0px">
-                    <Grid width="45%" alignItems="center">
-                        <Typography
-                            variant="body1"
-                            textAlign="center"
-                            color="#163660"
-                        >
-                            Cupos Disponibles:
-                        </Typography>
-                        <Typography
-                            variant="h6"
-                            textAlign="center"
-                            color="#163660"
-                        >
-                            {cuposDisponiblesEstado}
-                        </Typography>
-                    </Grid>
-                    <Grid width="45%" alignItems="center">
-                        <Typography
-                            variant="body1"
-                            textAlign="center"
-                            color="#163660"
-                        >
-                            Cupos Confirmados:
-                        </Typography>
-                        <Typography
-                            variant="h6"
-                            textAlign="center"
-                            color="#163660"
-                        >
-                            {cuposConfirmados}
-                        </Typography>
-                    </Grid>
-                </Grid>
-                <Box display={"flex"} flexDirection={"row"} gap={2}>
-                    <CustomButtom
-                        onClick={handleClickDialog}
-                        title="Crear turno"
+            <Dialog open={openDialog} onClose={handleCloseDialog} fullWidth maxWidth="sm">
+                <DialogContent>
+                <Box
+                    display="flex"
+                    justifyContent="center"
+                    alignItems="center"
+                    minHeight="200px"
+                >
+                    <TurnoForm
+                      seleccionado={null}
+                      handleClose={handleCloseDialog}
+                      idCarga={idCarga}
+                      fechaCupo={fecha}
+                      datos={cupos}
+                      setDatos={refreshCupos}
                     />
-                    <CustomButtom onClick={handleClick} title="Ver mas" />
                 </Box>
-            </StyledCaja>
-
-            <CreadorTurno
-                idCarga={idCarga}
-                fecha={fecha}
-                refreshCupos={refreshCupos}
-                handleCloseDialog={handleCloseDialog}
-                openDialog={openDialog}
-                seleccionado={false}
-            />
-
-            <Dialog
-                open={openDialog2}
-                onClose={handleCloseDialog}
-                fullWidth
-                maxWidth="sm"
-            >
+                </DialogContent>
+            </Dialog>
+            <Dialog open={openDialog2} onClose={handleCloseDialog} fullWidth maxWidth="sm">
                 <ClearSharpIcon
                     onClick={handleCloseDialog}
                     sx={{
@@ -198,26 +149,17 @@ export function TarjetaCupos(props: TarjetaProps) {
                                     backgroundColor: theme.colores.azul,
                                     color: theme.colores.gris,
                                     width: "20px",
-                                    "&:hover": {
-                                        backgroundColor:
-                                            theme.colores.azulOscuro,
-                                    },
+                                    "&:hover": { backgroundColor: theme.colores.azulOscuro },
                                     borderRadius: "50px",
                                 }}
                                 variant="contained"
-                                onClick={() =>
-                                    setCuposDisponiblesEstado(
-                                        Math.max(0, cuposDisponiblesEstado - 1)
-                                    )
-                                }
+                                onClick={() => setCuposDisponiblesEstado(Math.max(0, cuposDisponiblesEstado - 1))}
                             >
                                 -
                             </Button>
                             <TextField
                                 value={cuposDisponiblesEstado}
-                                InputProps={{
-                                    readOnly: true,
-                                }}
+                                InputProps={{ readOnly: true }}
                                 variant="outlined"
                                 sx={{ width: 100, textAlign: "center" }}
                             />
@@ -226,18 +168,11 @@ export function TarjetaCupos(props: TarjetaProps) {
                                     backgroundColor: theme.colores.azul,
                                     color: theme.colores.gris,
                                     width: "20px",
-                                    "&:hover": {
-                                        backgroundColor:
-                                            theme.colores.azulOscuro,
-                                    },
+                                    "&:hover": { backgroundColor: theme.colores.azulOscuro },
                                     borderRadius: "50px",
                                 }}
                                 variant="contained"
-                                onClick={() =>
-                                    setCuposDisponiblesEstado(
-                                        cuposDisponiblesEstado + 1
-                                    )
-                                }
+                                onClick={() => setCuposDisponiblesEstado(cuposDisponiblesEstado + 1)}
                             >
                                 +
                             </Button>
@@ -247,40 +182,92 @@ export function TarjetaCupos(props: TarjetaProps) {
                                 sx={{
                                     backgroundColor: theme.colores.azul,
                                     color: theme.colores.gris,
-                                    "&:hover": {
-                                        backgroundColor:
-                                            theme.colores.azulOscuro,
-                                    },
+                                    "&:hover": { backgroundColor: theme.colores.azulOscuro },
                                 }}
                                 variant="contained"
                                 onClick={handleSave}
                             >
                                 Guardar
                             </Button>
-                            <IconButton
-                                onClick={() => handleClickDeleteCarga()}
-                            >
-                                <DeleteOutlineIcon
-                                    sx={{ fontSize: 20, color: "#d68384" }}
-                                />
+                            <IconButton onClick={handleClickDeleteCarga}>
+                                <DeleteOutlineIcon sx={{ fontSize: 20, color: "#d68384" }} />
                             </IconButton>
                         </Box>
                     </Box>
                 </DialogContent>
             </Dialog>
-            <Dialog
-                open={openDialogDelete}
-                onClose={handleCloseDialog}
-                maxWidth="sm"
-                fullWidth
-            >
+            <Dialog open={openDialogDelete} onClose={handleCloseDialog} maxWidth="sm" fullWidth>
                 <DeleteCupo
-                    idCarga={idCarga}
-                    handleCloseDialog={handleCloseDialog}
-                    fecha={fecha}
-                    refreshCupos={refreshCupos}
+                  idCarga={idCarga}
+                  handleCloseDialog={handleCloseDialog}
+                  fecha={fecha}
+                  refreshCupos={refreshCupos}
+                  selectedCupo={cupos.find((cupo) => cupo.fecha === fecha)}
                 />
             </Dialog>
         </>
     );
+    
+    if (estaEnElGrid) {
+        return (
+            <Box display="flex" flexDirection="column" alignItems="start" mb={2}>
+                <Typography variant="h5" fontWeight="bold">{fecha}</Typography>
+                <Box display="flex" alignItems="center">
+                    <Typography variant="body2" fontWeight="bold" mr={1}>
+                        Turnos Disponibles:
+                    </Typography>
+                    <Typography variant="body2">{cuposDisponiblesEstado}</Typography>
+                </Box>
+                <Box display="flex" alignItems="center">
+                    <Typography variant="body2" fontWeight="bold" mr={1}>
+                        Turnos Confirmados:
+                    </Typography>
+                    <Typography variant="body2">{cuposConfirmados}</Typography>
+                </Box>
+                <Box display="flex" gap={2} mt={2}>
+                    {cuposDisponiblesEstado > 0 && (
+                        <CustomButtom onClick={handleClickDialog} title="Crear turno" />
+                    )}
+                    <CustomButtom onClick={handleClick} title="Ver más" />
+                </Box>
+                {Dialogos()}
+            </Box>
+        );
+    }
+    
+    // Modo tarjeta
+    return (
+        <>
+            <StyledCaja>
+                <Typography variant="h5" color="#163660">{fecha}</Typography>
+                <Divider orientation="horizontal" flexItem sx={{ bgcolor: "#163660" }} />
+                <Grid container spacing="10px" padding="28px 0px">
+                    <Grid width="45%" alignItems="center">
+                        <Typography variant="body1" textAlign="center" color="#163660">
+                            Turnos Disponibles:
+                        </Typography>
+                        <Typography variant="h6" textAlign="center" color="#163660">
+                            {cuposDisponiblesEstado}
+                        </Typography>
+                    </Grid>
+                    <Grid width="45%" alignItems="center">
+                        <Typography variant="body1" textAlign="center" color="#163660">
+                            Turnos Confirmados:
+                        </Typography>
+                        <Typography variant="h6" textAlign="center" color="#163660">
+                            {cuposConfirmados}
+                        </Typography>
+                    </Grid>
+                </Grid>
+                <Box display="flex" flexDirection="row" gap={2}>
+                    {cuposDisponiblesEstado > 0 && (
+                        <CustomButtom onClick={handleClickDialog} title="Crear turno" />
+                    )}
+                    <CustomButtom onClick={handleClick} title="Ver más" />
+                </Box>
+            </StyledCaja>
+            {Dialogos()}
+        </>
+    );
+    
 }

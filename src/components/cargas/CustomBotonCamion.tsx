@@ -36,17 +36,17 @@ export function CustomBotonCamion(props: CustomButtomProps) {
     const { datosNuevaCarga } = useContext(ContextoStepper);
     const { title, imageSrc, id } = props;
     const [isPressed, setIsPressed] = useState(
-        datosNuevaCarga["idsTiposAcoplados"].includes(id)
+        (datosNuevaCarga as any)["idsTiposAcoplados"].includes(id)
     );
 
     function handleClick() {
         setIsPressed(!isPressed);
         if (!isPressed) {
-            datosNuevaCarga["idsTiposAcoplados"].push(parseInt(id));
+            (datosNuevaCarga as any)["idsTiposAcoplados"].push(parseInt(id));
         } else {
-            const pos = datosNuevaCarga["idsTiposAcoplados"].indexOf(id);
+            const pos = (datosNuevaCarga as any)["idsTiposAcoplados"].indexOf(id);
             if (pos !== -1) {
-                datosNuevaCarga["idsTiposAcoplados"].splice(pos, 1);
+                (datosNuevaCarga as any)["idsTiposAcoplados"].splice(pos, 1);
             }
         }
     }

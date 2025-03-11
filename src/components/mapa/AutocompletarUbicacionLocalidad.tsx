@@ -1,51 +1,63 @@
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 interface AutocompletarProps {
-    title: string;
-    localidades: any[];
-    datosNuevaUbicacion: any;
-    error: any;
-    estadoCarga: any;
+  title: string;
+  localidades: any[];
+  datosNuevaUbicacion: any;
+  setDatosNuevaUbicacion: (nuevo: any) => void;
+  error: boolean;
+  estadoCarga: boolean;
 }
 
-export default function AutocompletarUbicacionLocalidad(
-    props: AutocompletarProps
-) {
-    let { title, localidades, datosNuevaUbicacion, error, estadoCarga } = props;
-    let [ubicacionSeleccionada, setUbicacionSeleccionada] = useState<any>(
-        datosNuevaUbicacion["nombreLocalidad"] || null
-    );
+export default function AutocompletarUbicacionLocalidad(props: AutocompletarProps) {
+  const { title, localidades, datosNuevaUbicacion, setDatosNuevaUbicacion, error, estadoCarga } = props;
 
-    const seleccionarUbicacion = (_event: any, seleccionado: string | null) => {
-        if (seleccionado) {
-            const localidadesStrings = localidades.map(
-                (localidad) =>
-                    `${localidad.nombre}, ${localidad.provincia.nombre}`
-            );
-            const index = localidadesStrings.indexOf(seleccionado);
-            const localidadesIds = localidades.map((localidad) => localidad.id);
-            datosNuevaUbicacion["idLocalidad"] = localidadesIds[index];
-            datosNuevaUbicacion["nombreLocalidad"] = seleccionado;
-            setUbicacionSeleccionada(seleccionado);
-        }
-    };
+  // Busca la localidad inicial (si existe) comparando el id
+  const initialLocalidad = localidades.find(
+    (loca) => loca.id === datosNuevaUbicacion.idLocalidad
+  ) || null;
 
-    return (
-        <Autocomplete
-            disablePortal
-            options={localidades.map((localidad) => {
-                return `${localidad.nombre}, ${localidad.provincia.nombre}`;
-            })}
-            sx={{ width: 350 }}
-            value={ubicacionSeleccionada}
-            defaultValue={ubicacionSeleccionada}
-            onChange={seleccionarUbicacion}
-            renderInput={(params) => (
-                <TextField {...params} error={error} label={title} />
-            )}
-            loading={estadoCarga}
-        />
-    );
+  const [selectedLocalidad, setSelectedLocalidad] = useState<any>(initialLocalidad);
+
+  // Actualiza el estado local si cambian los datos o las opciones
+  useEffect(() => {
+    const newLocalidad =
+      localidades.find((loca) => loca.id === datosNuevaUbicacion.idLocalidad) || null;
+    setSelectedLocalidad(newLocalidad);
+  }, [datosNuevaUbicacion.idLocalidad, localidades]);
+
+  const seleccionarUbicacion = (_event: any, newValue: any | null) => {
+    setSelectedLocalidad(newValue);
+    if (newValue) {
+      setDatosNuevaUbicacion({
+        ...datosNuevaUbicacion,
+        idLocalidad: newValue.id,
+        // Arma el nombre a partir del objeto seleccionado
+        nombreLocalidad: `${newValue.nombre}, ${newValue.provincia.nombre}`,
+      });
+    } else {
+      setDatosNuevaUbicacion({
+        ...datosNuevaUbicacion,
+        idLocalidad: null,
+        nombreLocalidad: "",
+      });
+    }
+  };
+
+  return (
+    <Autocomplete
+      disablePortal
+      options={localidades}
+      getOptionLabel={(option) => `${option.nombre}, ${option.provincia.nombre}`}
+      sx={{ width: 350 }}
+      value={selectedLocalidad}
+      onChange={seleccionarUbicacion}
+      renderInput={(params) => (
+        <TextField {...params} error={error} label={title} />
+      )}
+      loading={estadoCarga}
+    />
+  );
 }

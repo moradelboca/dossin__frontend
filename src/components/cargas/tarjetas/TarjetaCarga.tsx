@@ -28,10 +28,6 @@ export function TarjetaCarga(props: any) {
                     boxShadow: "none",
                     transition: "0.2s",
                     flexGrow: 1,
-                    "&:hover": {
-                        boxShadow: `0 0 10px ${theme.colores.gris}`,
-                        transform: "scale(1.05)",
-                    },
                 }}
             >
                 <CardContent

@@ -17,15 +17,6 @@ const InconvenienteForm: React.FC<FormularioProps> = ({
   const [creadoPor, setCreadoPor] = useState<string | null>(null);
   const [asignadoA, setAsignadoA] = useState<string | null>(null);
 
-  // const [tiposInconvenientes, setTiposInconvenientes] = useState<any[]>([
-  //   { id: 1, nombre: "Turno con errores" },
-  //   { id: 2, nombre: "Generado por chofer" },
-  // ]);
-  // const [nivelesUrgencia, setNivelesUrgencia] = useState<any[]>([
-  //   { id: 1, nombre: "Leve" },
-  //   { id: 2, nombre: "Media" },
-  //   { id: 3, nombre: "Urgente" },
-  // ]);
   const tiposInconvenientes = [
     { id: 1, nombre: "Turno con errores" },
     { id: 2, nombre: "Generado por chofer" },

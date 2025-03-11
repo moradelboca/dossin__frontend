@@ -1,9 +1,8 @@
 import { ContainerCargas } from "./components/cargas/containers/ContainerCargas";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Nav } from "./components/nav/Nav";
-//import ContainerInconvenientes from "./components/inconvenientes/ContainerInconvenientes";
 import { ContainerCupos } from "./components/cargas/cupos/ContainerCupos";
-import { CssBaseline } from "@mui/material";
+import { CssBaseline, useMediaQuery } from "@mui/material";
 import Box from "@mui/material/Box";
 import { ContextoGeneral, ValoresContexto } from "./components/Contexto";
 import Empresas from "./components/empresas/Empresas";
@@ -16,12 +15,18 @@ import PaginaNoDisponible from "./components/inconvenientes/PaginaNoDisponible";
 import { AuthProvider } from "./components/autenticacion/ContextoAuth";
 import TablaUser from "./components/admin/TablaUser";
 import RutasProtegidas from "./components/autenticacion/RutasProtegidas";
-import Usuarios from "./components/admin/Usuarios";
+//import Usuarios from "./components/admin/Usuarios";
 import Dashboard from "./components/dashboard/Dashboard";
 import Inconvenientes from "./components/inconvenientes/Inconvenientes";
+import { useState } from "react";
+import Contratos from "./components/contratos/Contratos";
 
 
 function App() {
+    const [navAbierto, setNavAbierto] = useState(false);
+  const anchoAbierto = 200;
+  const anchoCerrado = 60;
+  const isMobile = useMediaQuery('(max-width:768px)');
     return (
         <BrowserRouter>
             <AuthProvider>
@@ -34,13 +39,19 @@ function App() {
                         }}
                     >
                         <CssBaseline>
-                            <Nav />
+                        <Nav
+                          navAbierto={navAbierto}
+                          setNavAbierto={setNavAbierto}
+                          anchoAbierto={anchoAbierto}
+                          anchoCerrado={anchoCerrado}
+                        />
                             <Box
-                                sx={{
-                                    marginTop: "65px",
-                                    overflowX: "hidden",
-                                    width: "100%",
-                                }}
+                              sx={{
+                                marginTop: "65px",
+                                marginLeft: isMobile ? 0 : `${anchoCerrado}px`,
+                                width: isMobile ? "100%" : `calc(100% - ${anchoCerrado}px)`,
+                                overflowX: "hidden",
+                              }}
                             >
                                 <Routes>
 
@@ -74,6 +85,14 @@ function App() {
                                             </RutasProtegidas>
                                     }
 
+                                    />
+                                    <Route
+                                        path="/contratos"
+                                        element={
+                                            <RutasProtegidas>
+                                                <Contratos />
+                                            </RutasProtegidas>
+                                        }
                                     />
                                     <Route
                                         path="/colaboradores"
@@ -135,8 +154,7 @@ function App() {
                                         path="/admin"
                                         element={
                                             <RutasProtegidas>
-                                                <TablaUser />
-                                                <Usuarios/>
+                                                <TablaUser/>
                                             </RutasProtegidas>
                                             }
                                     />

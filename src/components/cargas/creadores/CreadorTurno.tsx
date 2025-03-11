@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import ClearSharpIcon from "@mui/icons-material/ClearSharp";
 import {
     Button,
@@ -85,7 +86,7 @@ export default function CreadorTurno(props: CreadorProps) {
             .catch(() =>
                 console.error("Error al obtener los choferes disponibles")
             );
-        fetch(`${backendURL}/empresastransportistas`, {
+        fetch(`${backendURL}/empresas`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -335,6 +336,7 @@ export default function CreadorTurno(props: CreadorProps) {
                                         )}
                                         onChange={(_e, v: any) => {
                                             if (v && typeof v === "string") {
+                                                // eslint-disable-next-line @typescript-eslint/no-unused-vars
                                                 const [_, empresa] =
                                                     v.split(" - ");
                                                 setEmpresaTransportistaSeleccionada(

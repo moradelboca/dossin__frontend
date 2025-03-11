@@ -1,7 +1,5 @@
 import TablaTemplate from "../tablas/TablaTemplate";
 import EmpresaForm from "../forms/empresas/EmpresaForm";
-import MobileCardList from "../mobile/MobileCardList";
-import { useMediaQuery } from "@mui/material";
 
 export default function Empresas() {
     const fields = [
@@ -27,27 +25,17 @@ export default function Empresas() {
         "Email",
     ];
 
-    const isMobile = useMediaQuery("(max-width:768px)");
 
-    return isMobile ? (
-        <MobileCardList
-            titulo="Empresas"
-            entidad="empresa"
-            endpoint="empresas"
-            fields={fields}
-            headerNames={headerNames}
-            FormularioCreador={EmpresaForm}
-            tituloField="razonSocial"
-            subtituloField="cuit"
-        />
-    ) : (
+    return (
         <TablaTemplate
-            titulo="Empresas"
-            entidad="empresa"
-            endpoint="empresas"
-            fields={fields}
-            headerNames={headerNames}
-            FormularioCreador={EmpresaForm}
+        titulo="Empresas"
+        entidad="empresa"
+        endpoint="empresas"
+        fields={fields}
+        headerNames={headerNames}
+        FormularioCreador={EmpresaForm}
+        tituloField="razonSocial"
+        subtituloField="cuit"
         />
     );
 }

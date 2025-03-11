@@ -184,11 +184,6 @@ const EmpresaForm: React.FC<FormularioProps> = ({
             const url = seleccionado?.cuit
                 ? `${backendURL}/empresas/${data.cuit}`
                 : `${backendURL}/empresas`;
-    
-            if (isNaN(data.cuit)) {
-                const cuitLimpio = data.cuit.replace(/[^0-9]/g, '');
-                data.cuit = Number(cuitLimpio);
-            }
             
             const numeroCompleto = `${codigoSeleccionado}-${numeroCel}`.replace(/[^0-9]/g, '');
             data.numeroCel = numeroCompleto;
@@ -201,7 +196,7 @@ const EmpresaForm: React.FC<FormularioProps> = ({
             }).filter((id) => id !== null);
 
             const payload = {
-                cuit: data.cuit,
+                cuit: Number(data.cuit),
                 razonSocial: data.razonSocial,
                 nombreFantasia: data.nombreFantasia,
                 idLocalidad: localidadObjeto?.id,
