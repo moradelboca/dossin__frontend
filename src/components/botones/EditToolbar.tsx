@@ -1,11 +1,11 @@
-import { GridToolbarQuickFilter } from "@mui/x-data-grid";
-import { Box, Button} from "@mui/material";
+import { Box, Button } from "@mui/material";
+import { GridToolbarColumnsButton, GridToolbarContainer, GridToolbarExport, GridToolbarFilterButton, GridToolbarQuickFilter } from "@mui/x-data-grid";
 import { EditToolbarProps } from "../../interfaces/EditToolbarProps";
-import { GridToolbarContainer, GridToolbarFilterButton, GridToolbarExport, GridToolbarColumnsButton } from "@mui/x-data-grid";
 //import { PersonAddAlt } from "@mui/icons-material";
+import { Add } from "@mui/icons-material";
 import { useContext } from "react";
 import { ContextoGeneral } from "../Contexto";
-import { Add } from "@mui/icons-material";
+import { ProtectedComponent } from "../protectedComponent/ProtectedComponent";
 
 // Ya no hace falta definir el EditToolbarProps en todos los archivos
 export function EditToolbar(props: EditToolbarProps) {
@@ -46,15 +46,17 @@ export function EditToolbar(props: EditToolbarProps) {
                         },
                     }}
                 />
-                <GridToolbarExport
-                    slotProps={{
-                        button: {
-                            sx: {
-                                color: theme.colores.azul,
+                <ProtectedComponent allowedRoles={["Admin"]}>
+                    <GridToolbarExport
+                        slotProps={{
+                            button: {
+                                sx: {
+                                    color: theme.colores.azul,
+                                },
                             },
-                        },
-                    }}
-                />
+                        }}
+                    />
+                </ProtectedComponent>
                 <GridToolbarColumnsButton
                     slotProps={{
                         button: {

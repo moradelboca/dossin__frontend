@@ -140,28 +140,27 @@ const ContratoForm: React.FC<FormularioProps> = ({
 
   const handleSubmit = () => {
     if (validateAll()) {
-      // Combina cargas existentes y creadas
       const todasLasCargas = [...cargas, ...listaCargasCreadas];
       if (todasLasCargas.length === 0) {
         alert("Debe crear al menos una carga.");
         return;
       }
-
+  
       const metodo = safeSeleccionado.id ? "PUT" : "POST";
       const url = safeSeleccionado.id
         ? `${backendURL}/contratos/${data.id || safeSeleccionado.id}`
         : `${backendURL}/contratos`;
-
+  
       const payload = {
         titularCartaDePorte: data.titularCartaDePorte,
         destino: data.destino,
         remitente: data.remitente,
         plantaProcedenciaRuca: data.plantaProcedenciaRuca,
         destinoRuca: data.destinoRuca,
-        idsCargas:
-          todasLasCargas.length > 0 ? todasLasCargas.map((carga) => carga.id) : [],
+        idsCargas: todasLasCargas.map((carga) => carga.id),
       };
       console.log("PAYLOAD: \n", payload);
+      
       fetch(url, {
         method: metodo,
         headers: { "Content-Type": "application/json" },
@@ -184,10 +183,43 @@ const ContratoForm: React.FC<FormularioProps> = ({
             );
             setDatos(datosActualizados);
           }
+          handleClose();
         })
         .catch((error) =>
           console.error("Error al guardar el contrato: ", error.message)
         );
+    }
+  };
+  
+  // Agrega esta función dentro del componente ContratoForm
+  const handleCancel = () => {
+    // Si no hay un contrato seleccionado (modo creación) y existen cargas nuevas...
+    if (!safeSeleccionado.id && listaCargasCreadas.length > 0) {
+      Promise.all(
+        listaCargasCreadas.map((carga) => {
+          // Si la carga tiene id, se asume que se persistió y se debe borrar.
+          if (carga.id) {
+            return fetch(`${backendURL}/cargas/${carga.id}`, {
+              method: "DELETE",
+              headers: {
+                "Content-Type": "application/json",
+                "ngrok-skip-browser-warning": "true",
+              },
+            });
+          }
+          return Promise.resolve();
+        })
+      )
+        .then(() => {
+          // Limpiamos la lista y cerramos el formulario
+          setListaCargasCreadas([]);
+          handleClose();
+        })
+        .catch((error) => {
+          console.error("Error al borrar las cargas creadas:", error);
+          handleClose();
+        });
+    } else {
       handleClose();
     }
   };
@@ -417,7 +449,7 @@ const ContratoForm: React.FC<FormularioProps> = ({
       </Dialog>
 
       <Box display="flex" justifyContent="space-between" mt={2}>
-        <Button onClick={handleClose} color="primary">
+        <Button onClick={handleCancel} color="primary">
           Cancelar
         </Button>
         <Button onClick={handleSubmit} color="primary">

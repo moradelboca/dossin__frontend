@@ -1,6 +1,6 @@
 // components/tabs/AdelantosTurnoForm.tsx
 import React, { useState } from 'react';
-import { Box, Tabs, Tab } from '@mui/material';
+import { Box, Tabs, Tab, Typography } from '@mui/material';
 import AdelantoGasoilForm from './adelantosTabs/AdelantoGasoilForm';
 import AdelantoEfectivoForm from './adelantosTabs/AdelantoEfectivoForm';
 
@@ -10,6 +10,7 @@ interface AdelantosTurnoFormProps {
   initialAdelantoEfectivo?: any; // Igual para el adelanto efectivo
   onSuccess: (updatedData: any) => void;
   onCancel: () => void;
+  rolPermitido?: boolean;
 }
 
 const AdelantosTurnoForm: React.FC<AdelantosTurnoFormProps> = ({
@@ -18,13 +19,22 @@ const AdelantosTurnoForm: React.FC<AdelantosTurnoFormProps> = ({
   initialAdelantoEfectivo,
   onSuccess,
   onCancel,
+  rolPermitido = false,
 }) => {
   const [tabIndex, setTabIndex] = useState(0);
 
   const handleChange = (_event: React.SyntheticEvent, newValue: number) => {
     setTabIndex(newValue);
   };
-
+  if (!rolPermitido) {
+    return (
+      <Box sx={{ p: 3, textAlign: 'center' }}>
+        <Typography color="error">
+          No tienes permisos para acceder a esta sección
+        </Typography>
+      </Box>
+    );
+  }
   return (
     <Box>
       <Tabs value={tabIndex} onChange={handleChange}>

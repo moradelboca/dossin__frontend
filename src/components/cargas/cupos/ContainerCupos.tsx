@@ -65,7 +65,6 @@ export function ContainerCupos() {
     refreshCupos();
   }, []);
 
-  // Si deseas usar datos de prueba, puedes descomentar lo siguiente:
   // useEffect(() => {
   //   setCupos(cuposPrueba);
   //   setEstadoCarga("Cargado");
