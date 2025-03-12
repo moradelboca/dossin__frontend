@@ -1,30 +1,38 @@
+
+import DeleteIcon from "@mui/icons-material/Delete";
 import React, { useEffect, useState } from "react";
 import {
-  Autocomplete,
-  TextField,
-  Box,
-  Popper,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogContentText,
-  DialogActions,
-  Button,
-  IconButton,
+    Autocomplete,
+    Box,
+    Button,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogContentText,
+    DialogTitle,
+    IconButton,
+    Popper,
+    TextField,
 } from "@mui/material";
-import DeleteIcon from "@mui/icons-material/Delete";
-import DatosPrincipalesForm from "./tabs/DatosPrincipalesForm";
-import TaraForm from "./tabs/TaraForm";
+import React, { useEffect, useState } from "react";
+import { useAllowed } from "../../hooks/auth/useAllowed";
+import useBorrarTurno from "../../hooks/borrado/useBorrarTurno";
+import AdelantosTurnoForm from "./tabs/AdelantosTurnoForm";
 import CartaPorteForm from "./tabs/CartaPorteForm";
+import DatosPrincipalesForm from "./tabs/DatosPrincipalesForm";
+import EstadoTurnoForm from "./tabs/EstadoTurnoForm";
+import FacturaForm from "./tabs/FacturaForm";
 import OrdenPagoForm from "./tabs/OrdenPagoForm";
 import PesajeForm from "./tabs/PesajeForm";
+import TaraForm from "./tabs/TaraForm";
+
+const ROLES_PERMITIDOS_ADELANTOS = ["Administrador", "Logistica", ];
 import FacturaForm from "./tabs/FacturaForm";
 import AdelantosTurnoForm from "./tabs/AdelantosTurnoForm";
 import EstadoTurnoForm from "./tabs/EstadoTurnoForm";
 import useBorrarTurno from "../../hooks/borrado/useBorrarTurno";
 import { useAllowed } from "../../hooks/auth/useAllowed";
 
-const ROLES_PERMITIDOS_ADELANTOS = ["Admin", "Logistica", ];
 
 interface EditarTurnoFormProps {
   seleccionado?: any;
