@@ -1,4 +1,6 @@
+
 import DeleteIcon from "@mui/icons-material/Delete";
+import React, { useEffect, useState } from "react";
 import {
     Autocomplete,
     Box,
@@ -25,6 +27,12 @@ import PesajeForm from "./tabs/PesajeForm";
 import TaraForm from "./tabs/TaraForm";
 
 const ROLES_PERMITIDOS_ADELANTOS = ["Administrador", "Logistica", ];
+import FacturaForm from "./tabs/FacturaForm";
+import AdelantosTurnoForm from "./tabs/AdelantosTurnoForm";
+import EstadoTurnoForm from "./tabs/EstadoTurnoForm";
+import useBorrarTurno from "../../hooks/borrado/useBorrarTurno";
+import { useAllowed } from "../../hooks/auth/useAllowed";
+
 
 interface EditarTurnoFormProps {
   seleccionado?: any;
