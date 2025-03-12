@@ -22,7 +22,7 @@ export const dataPruebas = [
     "activo": true,
     "rol": {
       "id": 2,
-      "nombre": "Admin"
+      "nombre": "Administrador"
     }
   },
   {
@@ -35,7 +35,7 @@ export const dataPruebas = [
     "activo": true,
     "rol": {
       "id": 2,
-      "nombre": "Admin"
+      "nombre": "Administrador"
     }
   },
   {
@@ -48,7 +48,7 @@ export const dataPruebas = [
     "activo": true,
     "rol": {
       "id": 2,
-      "nombre": "Admin"
+      "nombre": "Administrador"
     }
   }
 ]

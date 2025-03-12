@@ -114,7 +114,7 @@ const MobileEditToolbar: React.FC<MobileEditToolbarProps> = ({
           </Button>
         )}
 
-        <ProtectedComponent allowedRoles={["Admin"]}>
+        <ProtectedComponent allowedRoles={["Administrador"]}>
         <Button
           startIcon={<SaveAlt />}
           onClick={handleExportClick}
