@@ -1,5 +1,5 @@
 import TablaTemplate from "../tablas/TablaTemplate";
-import CreadorUser from "./CreadorUser";
+import UsuariosForm from "../forms/usuarios/UsuariosForm";
 
 export default function Usuarios() {
 
@@ -10,7 +10,7 @@ export default function Usuarios() {
         "apellido",
         "nombreDeUsuario",
         "imagen",
-        "rolNombre",
+        "rol",
         "activo",
     ];
     const headerNames = [
@@ -31,8 +31,10 @@ export default function Usuarios() {
             endpoint="auth/usuarios"
             fields={fields}
             headerNames={headerNames}
-            FormularioCreador={CreadorUser}
+            FormularioCreador={UsuariosForm}
             usarPruebas={true}
+            tituloField="apellido"
+            subtituloField="nombre"
         />
     );
 }

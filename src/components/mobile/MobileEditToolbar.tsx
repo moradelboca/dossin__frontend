@@ -1,7 +1,8 @@
-import React, { useContext, useState } from "react";
-import { Box, Button, Menu, MenuItem, TextField } from "@mui/material";
 import { Add, FilterList, SaveAlt, Search } from "@mui/icons-material";
+import { Box, Button, Menu, MenuItem, TextField } from "@mui/material";
+import React, { useContext, useState } from "react";
 import { ContextoGeneral } from "../Contexto";
+import { ProtectedComponent } from "../protectedComponent/ProtectedComponent";
 
 interface MobileEditToolbarProps {
   onAdd?: () => void;
@@ -113,6 +114,7 @@ const MobileEditToolbar: React.FC<MobileEditToolbarProps> = ({
           </Button>
         )}
 
+        <ProtectedComponent allowedRoles={["Admin"]}>
         <Button
           startIcon={<SaveAlt />}
           onClick={handleExportClick}
@@ -130,6 +132,7 @@ const MobileEditToolbar: React.FC<MobileEditToolbarProps> = ({
         >
           Exportar
         </Button>
+        </ProtectedComponent>
 
         <Menu
           anchorEl={anchorEl}

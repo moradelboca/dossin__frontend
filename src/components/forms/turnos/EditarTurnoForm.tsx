@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Autocomplete,
   TextField,
@@ -22,6 +22,9 @@ import FacturaForm from "./tabs/FacturaForm";
 import AdelantosTurnoForm from "./tabs/AdelantosTurnoForm";
 import EstadoTurnoForm from "./tabs/EstadoTurnoForm";
 import useBorrarTurno from "../../hooks/borrado/useBorrarTurno";
+import { useAllowed } from "../../hooks/auth/useAllowed";
+
+const ROLES_PERMITIDOS_ADELANTOS = ["Admin", "Logistica", ];
 
 interface EditarTurnoFormProps {
   seleccionado?: any;
@@ -59,25 +62,38 @@ const EditarTurnoForm: React.FC<EditarTurnoFormProps> = ({
   handleClose,
   tieneBitren,
 }) => {
+  const isAllowed = useAllowed(ROLES_PERMITIDOS_ADELANTOS);
   const [activeTab, setActiveTab] = useState(0);
   const { borrarTurno } = useBorrarTurno();
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const [filteredTabs, setFilteredTabs] = useState<string[]>([]);
 
-  // Se agrega la nueva pestaña "Adelantos" al listado
-  const tabs = [
+  const baseTabs = [
     "Datos Principales",
     "Estado",
-    "Tara",
+    "Tara", 
     "Factura",
     "Carta de Porte",
     "Pesaje",
-    "Orden Pago",
-    "Adelantos",
+    "Orden Pago"
   ];
+
+  useEffect(() => {    
+    const newTabs = [...baseTabs];
+    if (isAllowed) {
+      newTabs.push("Adelantos");
+    }
+    
+    setFilteredTabs(newTabs);
+    
+    if (activeTab >= newTabs.length) {
+      setActiveTab(0);
+    }
+  }, [isAllowed]);
 
   const handleTabChange = (_event: any, newValue: string | null) => {
     if (newValue !== null) {
-      const newIndex = tabs.indexOf(newValue);
+      const newIndex = filteredTabs.indexOf(newValue); // Usar filteredTabs actual
       setActiveTab(newIndex);
     }
   };
@@ -136,8 +152,8 @@ const EditarTurnoForm: React.FC<EditarTurnoFormProps> = ({
         }}
       >
         <Autocomplete
-          options={tabs}
-          value={tabs[activeTab]}
+          options={filteredTabs}
+          value={filteredTabs[activeTab]}
           onChange={handleTabChange}
           disableClearable
           PopperComponent={CustomPopper}
@@ -354,16 +370,18 @@ const EditarTurnoForm: React.FC<EditarTurnoFormProps> = ({
         />
       </TabPanel>
 
-      {/* Adelantos (nueva pestaña) */}
-      <TabPanel value={activeTab} index={7}>
-        <AdelantosTurnoForm
-          turnoId={seleccionado.id}
-          onSuccess={() => {
-            handleClose();
-          }}
-          onCancel={handleClose}
-        />
-      </TabPanel>
+      {/* Pestaña Adelantos condicional */}
+      {filteredTabs.includes("Adelantos") && (
+        <TabPanel value={activeTab} index={7}>
+          <AdelantosTurnoForm
+            turnoId={seleccionado.id}
+            onSuccess={handleClose}
+            onCancel={handleClose}
+            // Añadir validación de rol en el formulario mismo
+            rolPermitido={isAllowed}
+          />
+        </TabPanel>
+      )}
     </Box>
   );
 };
