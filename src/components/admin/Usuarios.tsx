@@ -33,8 +33,8 @@ export default function Usuarios() {
             headerNames={headerNames}
             FormularioCreador={UsuariosForm}
             usarPruebas={true}
-            tituloField="apellido"
-            subtituloField="nombre"
+            tituloField="email"
+            subtituloField="apellido"
         />
     );
 }

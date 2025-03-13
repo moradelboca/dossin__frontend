@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-explicit-any */ 
 import React, { useContext, useEffect, useState } from "react";
 import { 
   Button, 
@@ -6,17 +6,20 @@ import {
   Box, 
   Autocomplete, 
   FormControlLabel, 
-  Switch 
+  Switch,
+  Dialog,
+  IconButton
 } from "@mui/material";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { ContextoGeneral } from "../../Contexto";
 import useValidation from "../../hooks/useValidation";
+import DeleteEntidad from "../../dialogs/DeleteEntidad";
 
 interface UsuariosFormProps {
   seleccionado?: any;
   datos: any[];
   setDatos: (data: any) => void;
   handleClose: () => void;
-  refreshUsers: () => void;
 }
 
 const UsuariosForm: React.FC<UsuariosFormProps> = ({
@@ -24,34 +27,33 @@ const UsuariosForm: React.FC<UsuariosFormProps> = ({
   datos,
   setDatos,
   handleClose,
-  refreshUsers
 }) => {
   const { pruebas } = useContext(ContextoGeneral);
   const [roles, setRoles] = useState<any[]>([]);
   const [rolSeleccionado, setRolSeleccionado] = useState<any>(null);
-  const [activo, setActivo] = useState(seleccionado?.activo || false);
+  const [openDialogDelete, setOpenDialogDelete] = useState(false);
+
+  const [activo, setActivo] = useState(() => {
+    if (seleccionado?.activo !== undefined && seleccionado?.activo !== null) {
+      if (typeof seleccionado.activo === 'boolean') return seleccionado.activo;
+      if (typeof seleccionado.activo === 'string') {
+        return seleccionado.activo.toLowerCase() === 'activo';
+      }
+    }
+    return true;
+  });
 
   const { data, errors, handleChange, validateAll } = useValidation(
     {
       id: seleccionado?.id || null,
       email: seleccionado?.email || "",
-      nombre: seleccionado?.nombre || "",
-      apellido: seleccionado?.apellido || "",
-      nombreDeUsuario: seleccionado?.nombreDeUsuario || "",
-      rolId: seleccionado?.rolId || null,
-      activo: seleccionado?.activo || true,
+      rolId: seleccionado?.rol?.id || seleccionado?.rolId || null,
+      activo: activo
     },
     {
       email: (value) => 
         !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) ? "Email inválido" : null,
-      nombre: (value) => 
-        value.length > 50 ? "Máximo 50 caracteres" : null,
-      apellido: (value) => 
-        value.length > 50 ? "Máximo 50 caracteres" : null,
-      nombreDeUsuario: (value) => 
-        value.length > 20 ? "Máximo 20 caracteres" : null,
-      rolId: () => 
-        !rolSeleccionado ? "Seleccione un rol" : null,
+      rolId: () => !rolSeleccionado ? "Seleccione un rol" : null,
     }
   );
 
@@ -70,58 +72,63 @@ const UsuariosForm: React.FC<UsuariosFormProps> = ({
 
   useEffect(() => {
     if (seleccionado && roles.length > 0) {
-      const rolInicial = roles.find(r => r.id === seleccionado.rolId);
-      setRolSeleccionado(rolInicial);
+      let rolInicial = null;
+      
+      if (seleccionado.rol && typeof seleccionado.rol === 'object') {
+        rolInicial = roles.find(r => r.id === seleccionado.rol.id);
+      }
+      else if (typeof seleccionado.rol === 'string') {
+        rolInicial = roles.find(r => 
+          r.nombre.toLowerCase() === seleccionado.rol.toLowerCase()
+        );
+      }
+      else if (seleccionado.rolId) {
+        rolInicial = roles.find(r => r.id === seleccionado.rolId);
+      }
+      
+      setRolSeleccionado(rolInicial || null);
     }
   }, [seleccionado, roles]);
 
   const handleSubmit = () => {
     if (validateAll()) {
-      const metodo = seleccionado?.id ? "PUT" : "POST";
-      const url = seleccionado?.id 
-        ? `${pruebas}/auth/usuarios/${data.id}`
-        : `${pruebas}/auth/usuarios`;
-  
+      const isEdit = Boolean(seleccionado?.id);
+      const metodo = isEdit ? "PUT" : "POST";
+      const url = `${pruebas}/auth/usuarios${isEdit ? `/${seleccionado?.id}` : ''}`;
+      
+      const payloadActivo = typeof activo === 'boolean' 
+        ? activo 
+        : activo === 'Activo';
+
       const payload = {
-        ...data,
+        email: data.email,
         rolId: rolSeleccionado?.id,
-        activo: activo
+        ...(isEdit && { activo: payloadActivo })
       };
-  
+
       fetch(url, {
         method: metodo,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        body: JSON.stringify(isEdit ? payload : { ...payload, activo: true }),
       })
         .then(async (response) => {
-          if (!response.ok) {
-            const errorMessage = await response.text();
-            throw new Error(`Error del servidor: ${errorMessage}`);
-          }
+          if (!response.ok) throw new Error(await response.text());
           return response.json();
         })
         .then((newData) => {
-          if (seleccionado?.id) {
-            // Actualiza el usuario existente en el array
-            setDatos(
-              datos.map((usuario) =>
-                usuario.id === data.id ? newData : usuario
-              )
-            );
-          } else {
-            // Agrega el nuevo usuario al array
-            setDatos([...datos, newData]);
-          }
-          refreshUsers();
+          setDatos(isEdit
+            ? datos.map(usuario => usuario.id === data.id ? newData : usuario)
+            : [...datos, newData]
+          );
           handleClose();
         })
         .catch((error) => console.error(`Error: ${error.message}`));
     }
   };
-  
-  const handleToggleActivo = () => {
-    setActivo(!activo);
-  };
+
+  const handleToggleActivo = () => setActivo(!activo);
+  const handleClickDelete = () => setOpenDialogDelete(true);
+  const handleCloseDialog = () => setOpenDialogDelete(false);
 
   return (
     <>
@@ -135,43 +142,6 @@ const UsuariosForm: React.FC<UsuariosFormProps> = ({
         onChange={handleChange("email")}
         error={!!errors.email}
         helperText={errors.email}
-        disabled={!!seleccionado}
-      />
-
-      <TextField
-        margin="dense"
-        label="Nombre"
-        name="nombre"
-        variant="outlined"
-        fullWidth
-        value={data.nombre}
-        onChange={handleChange("nombre")}
-        error={!!errors.nombre}
-        helperText={errors.nombre}
-      />
-
-      <TextField
-        margin="dense"
-        label="Apellido"
-        name="apellido"
-        variant="outlined"
-        fullWidth
-        value={data.apellido}
-        onChange={handleChange("apellido")}
-        error={!!errors.apellido}
-        helperText={errors.apellido}
-      />
-
-      <TextField
-        margin="dense"
-        label="Nombre de Usuario"
-        name="nombreDeUsuario"
-        variant="outlined"
-        fullWidth
-        value={data.nombreDeUsuario}
-        onChange={handleChange("nombreDeUsuario")}
-        error={!!errors.nombreDeUsuario}
-        helperText={errors.nombreDeUsuario}
       />
 
       <Autocomplete
@@ -180,6 +150,7 @@ const UsuariosForm: React.FC<UsuariosFormProps> = ({
         getOptionLabel={(option) => option.nombre}
         value={rolSeleccionado}
         onChange={(_e, newValue) => setRolSeleccionado(newValue)}
+        isOptionEqualToValue={(option, value) => option.id === value.id}
         renderInput={(params) => (
           <TextField
             {...params}
@@ -214,7 +185,29 @@ const UsuariosForm: React.FC<UsuariosFormProps> = ({
         >
           Guardar
         </Button>
+        {seleccionado && (
+          <IconButton onClick={handleClickDelete}>
+            <DeleteOutlineIcon sx={{ fontSize: 20, color: "#d68384" }} />
+          </IconButton>
+        )}
       </Box>
+
+      <Dialog
+        open={openDialogDelete}
+        onClose={handleCloseDialog}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DeleteEntidad
+          idEntidad={data.id}
+          endpointEntidad="auth/usuarios"
+          handleCloseDialog={handleCloseDialog}
+          handleClose={handleClose}
+          datos={datos}
+          setDatos={setDatos}
+          usarPruebas={true}
+        />
+      </Dialog>
     </>
   );
 };

@@ -59,6 +59,10 @@ const useTransformarCampo = () => {
           return value.map((carga: any) => `${carga.id}`).join(", ");
         }
         return "No especificado";
+      case "activo":
+        return typeof value === "boolean" 
+          ? value ? "Activo" : "Inactivo" 
+          : "No especificado"
       default:
         return value || "No especificado";
     }

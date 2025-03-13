@@ -65,6 +65,7 @@ export default function TablaTemplate({
       })
       .then((data) => {
         setDatos(data);
+        console.log(data);
         setEstadoCarga("Cargado");
       })
       .catch((error) => {
@@ -137,6 +138,10 @@ export default function TablaTemplate({
           return value.map((carga: any) => `${carga.id}`).join(", ");
         }
         return "No especificado";
+        case "activo":
+          return typeof value === "boolean" 
+            ? value ? "Activo" : "Inactivo" 
+            : "No especificado"
       default:
         return value || "No especificado";
     }
