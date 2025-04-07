@@ -50,7 +50,7 @@ export default function TablaTemplate({
   const [estadoCarga, setEstadoCarga] = useState("Cargando");
 
   const apiURL = usarPruebas ? pruebas : backendURL;
-
+  console.log(`${apiURL}/${endpoint}`);
   const refreshDatos = () => {
     fetch(`${apiURL}/${endpoint}`, {
       method: "GET",
