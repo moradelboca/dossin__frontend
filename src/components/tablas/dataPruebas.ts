@@ -1,54 +1,390 @@
 export const dataPruebas = [
   {
-    "id": 9,
-    "email": "moradelboca@gmail.com",
-    "nombreDeUsuario": null,
-    "nombre": "José Ignacio",
-    "apellido": "Mora Del Boca",
-    "imagen": "https://lh3.googleusercontent.com/a/ACg8ocJh5hL42bo-DtUGOF7R2o8oKftHqeCG4gRS-WBhdAryc6HJU3ZP=s96-c",
-    "activo": true,
-    "rol": {
-      "id": 1,
-      "nombre": "Empleado"
-    }
-  },
-  {
-    "id": 10,
-    "email": "zullolau@gmail.com",
-    "nombreDeUsuario": null,
-    "nombre": "lauti",
-    "apellido": "zullo",
-    "imagen": "https://lh3.googleusercontent.com/a/ACg8ocLXi_TSo20Zq4M0Gt-iNU45V2bn32CL1IDasP0nyZIKm4Rv0V1i=s96-c",
-    "activo": true,
-    "rol": {
-      "id": 2,
-      "nombre": "Administrador"
-    }
-  },
-  {
-    "id": 11,
-    "email": "fabriciosolisw@gmail.com",
-    "nombreDeUsuario": null,
-    "nombre": "Fabricio",
-    "apellido": "solis Wahnish",
-    "imagen": "https://lh3.googleusercontent.com/a/ACg8ocL_xgJMFfL0TO3x2PSQuhKE25btHI9IXg5ONCbHGmfBMv86PBGY=s96-c",
-    "activo": true,
-    "rol": {
-      "id": 2,
-      "nombre": "Administrador"
-    }
-  },
-  {
     "id": 12,
-    "email": "maxirivadero2000@gmail.com",
-    "nombreDeUsuario": null,
-    "nombre": "Maxi",
-    "apellido": "Rivadero",
-    "imagen": "https://lh3.googleusercontent.com/a/ACg8ocK0l-qfNQvkU5oPCSyE28crQbfY5M_wpUMs1CttsVieLxNeYY9v=s96-c",
-    "activo": true,
-    "rol": {
-      "id": 2,
-      "nombre": "Administrador"
+    "titularCartaDePorte": {
+        "cuit": 30438127705,
+        "razonSocial": "LautiSA",
+        "nombreFantasia": "LautiSA",
+        "localidad": {
+            "nombre": "localidad 1",
+            "id": 1,
+            "provincia": {
+                "nombre": "provincia 1",
+                "id": 1,
+                "pais": {
+                    "nombre": "pais 1",
+                    "id": 1
+                }
+            }
+        },
+        "numeroCel": "5496541683465",
+        "urlConstanciaAfip": "https://chatgpt.com/",
+        "urlConstanciaCBU": "https://chatgpt.com/",
+        "roles": [
+            {
+                "nombre": "transportista",
+                "id": 1
+            },
+            {
+                "nombre": "remitente comercial",
+                "id": 2
+            }
+        ],
+        "email": "adddddd@gmail.com",
+        "facturas": []
+    },
+    "remitenteProductor": {
+        "cuit": 30438127705,
+        "razonSocial": "LautiSA",
+        "nombreFantasia": "LautiSA",
+        "localidad": {
+            "nombre": "localidad 1",
+            "id": 1,
+            "provincia": {
+                "nombre": "provincia 1",
+                "id": 1,
+                "pais": {
+                    "nombre": "pais 1",
+                    "id": 1
+                }
+            }
+        },
+        "numeroCel": "5496541683465",
+        "urlConstanciaAfip": "https://chatgpt.com/",
+        "urlConstanciaCBU": "https://chatgpt.com/",
+        "roles": [
+            {
+                "nombre": "transportista",
+                "id": 1
+            },
+            {
+                "nombre": "remitente comercial",
+                "id": 2
+            }
+        ],
+        "email": "adddddd@gmail.com",
+        "facturas": []
+    },
+    "cargas": [{id:1},{id:2}],
+    "remitenteVentaPrimaria": {
+        "cuit": 30438127705,
+        "razonSocial": "LautiSA",
+        "nombreFantasia": "LautiSA",
+        "localidad": {
+            "nombre": "localidad 1",
+            "id": 1,
+            "provincia": {
+                "nombre": "provincia 1",
+                "id": 1,
+                "pais": {
+                    "nombre": "pais 1",
+                    "id": 1
+                }
+            }
+        },
+        "numeroCel": "5496541683465",
+        "urlConstanciaAfip": "https://chatgpt.com/",
+        "urlConstanciaCBU": "https://chatgpt.com/",
+        "roles": [
+            {
+                "nombre": "transportista",
+                "id": 1
+            },
+            {
+                "nombre": "remitente comercial",
+                "id": 2
+            }
+        ],
+        "email": "adddddd@gmail.com",
+        "facturas": []
+    },
+    "remitenteVentaSecundaria": {
+        "cuit": 30438127705,
+        "razonSocial": "LautiSA",
+        "nombreFantasia": "LautiSA",
+        "localidad": {
+            "nombre": "localidad 1",
+            "id": 1,
+            "provincia": {
+                "nombre": "provincia 1",
+                "id": 1,
+                "pais": {
+                    "nombre": "pais 1",
+                    "id": 1
+                }
+            }
+        },
+        "numeroCel": "5496541683465",
+        "urlConstanciaAfip": "https://chatgpt.com/",
+        "urlConstanciaCBU": "https://chatgpt.com/",
+        "roles": [
+            {
+                "nombre": "transportista",
+                "id": 1
+            },
+            {
+                "nombre": "remitente comercial",
+                "id": 2
+            }
+        ],
+        "email": "adddddd@gmail.com",
+        "facturas": []
+    },
+    "corredorVentaPrimaria": {
+        "cuit": 30438127705,
+        "razonSocial": "LautiSA",
+        "nombreFantasia": "LautiSA",
+        "localidad": {
+            "nombre": "localidad 1",
+            "id": 1,
+            "provincia": {
+                "nombre": "provincia 1",
+                "id": 1,
+                "pais": {
+                    "nombre": "pais 1",
+                    "id": 1
+                }
+            }
+        },
+        "numeroCel": "5496541683465",
+        "urlConstanciaAfip": "https://chatgpt.com/",
+        "urlConstanciaCBU": "https://chatgpt.com/",
+        "roles": [
+            {
+                "nombre": "transportista",
+                "id": 1
+            },
+            {
+                "nombre": "remitente comercial",
+                "id": 2
+            }
+        ],
+        "email": "adddddd@gmail.com",
+        "facturas": []
+    },
+    "corredorVentaSecundaria": {
+        "cuit": 30438127705,
+        "razonSocial": "LautiSA",
+        "nombreFantasia": "LautiSA",
+        "localidad": {
+            "nombre": "localidad 1",
+            "id": 1,
+            "provincia": {
+                "nombre": "provincia 1",
+                "id": 1,
+                "pais": {
+                    "nombre": "pais 1",
+                    "id": 1
+                }
+            }
+        },
+        "numeroCel": "5496541683465",
+        "urlConstanciaAfip": "https://chatgpt.com/",
+        "urlConstanciaCBU": "https://chatgpt.com/",
+        "roles": [
+            {
+                "nombre": "transportista",
+                "id": 1
+            },
+            {
+                "nombre": "remitente comercial",
+                "id": 2
+            }
+        ],
+        "email": "adddddd@gmail.com",
+        "facturas": []
+    },
+    "representanteEntregador": {
+        "cuit": 30438127705,
+        "razonSocial": "LautiSA",
+        "nombreFantasia": "LautiSA",
+        "localidad": {
+            "nombre": "localidad 1",
+            "id": 1,
+            "provincia": {
+                "nombre": "provincia 1",
+                "id": 1,
+                "pais": {
+                    "nombre": "pais 1",
+                    "id": 1
+                }
+            }
+        },
+        "numeroCel": "5496541683465",
+        "urlConstanciaAfip": "https://chatgpt.com/",
+        "urlConstanciaCBU": "https://chatgpt.com/",
+        "roles": [
+            {
+                "nombre": "transportista",
+                "id": 1
+            },
+            {
+                "nombre": "remitente comercial",
+                "id": 2
+            }
+        ],
+        "email": "adddddd@gmail.com",
+        "facturas": []
+    },
+    "representanteRecibidor": {
+        "cuit": 30438127705,
+        "razonSocial": "LautiSA",
+        "nombreFantasia": "LautiSA",
+        "localidad": {
+            "nombre": "localidad 1",
+            "id": 1,
+            "provincia": {
+                "nombre": "provincia 1",
+                "id": 1,
+                "pais": {
+                    "nombre": "pais 1",
+                    "id": 1
+                }
+            }
+        },
+        "numeroCel": "5496541683465",
+        "urlConstanciaAfip": "https://chatgpt.com/",
+        "urlConstanciaCBU": "https://chatgpt.com/",
+        "roles": [
+            {
+                "nombre": "transportista",
+                "id": 1
+            },
+            {
+                "nombre": "remitente comercial",
+                "id": 2
+            }
+        ],
+        "email": "adddddd@gmail.com",
+        "facturas": []
+    },
+    "destinatario": {
+        "cuit": 30438127705,
+        "razonSocial": "LautiSA",
+        "nombreFantasia": "LautiSA",
+        "localidad": {
+            "nombre": "localidad 1",
+            "id": 1,
+            "provincia": {
+                "nombre": "provincia 1",
+                "id": 1,
+                "pais": {
+                    "nombre": "pais 1",
+                    "id": 1
+                }
+            }
+        },
+        "numeroCel": "5496541683465",
+        "urlConstanciaAfip": "https://chatgpt.com/",
+        "urlConstanciaCBU": "https://chatgpt.com/",
+        "roles": [
+            {
+                "nombre": "transportista",
+                "id": 1
+            },
+            {
+                "nombre": "remitente comercial",
+                "id": 2
+            }
+        ],
+        "email": "adddddd@gmail.com",
+        "facturas": []
+    },
+    "destino": {
+        "cuit": 30438127705,
+        "razonSocial": "LautiSA",
+        "nombreFantasia": "LautiSA",
+        "localidad": {
+            "nombre": "localidad 1",
+            "id": 1,
+            "provincia": {
+                "nombre": "provincia 1",
+                "id": 1,
+                "pais": {
+                    "nombre": "pais 1",
+                    "id": 1
+                }
+            }
+        },
+        "numeroCel": "5496541683465",
+        "urlConstanciaAfip": "https://chatgpt.com/",
+        "urlConstanciaCBU": "https://chatgpt.com/",
+        "roles": [
+            {
+                "nombre": "transportista",
+                "id": 1
+            },
+            {
+                "nombre": "remitente comercial",
+                "id": 2
+            }
+        ],
+        "email": "adddddd@gmail.com",
+        "facturas": []
+    },
+    "intermediarioDeFlete": {
+        "cuit": 30438127705,
+        "razonSocial": "LautiSA",
+        "nombreFantasia": "LautiSA",
+        "localidad": {
+            "nombre": "localidad 1",
+            "id": 1,
+            "provincia": {
+                "nombre": "provincia 1",
+                "id": 1,
+                "pais": {
+                    "nombre": "pais 1",
+                    "id": 1
+                }
+            }
+        },
+        "numeroCel": "5496541683465",
+        "urlConstanciaAfip": "https://chatgpt.com/",
+        "urlConstanciaCBU": "https://chatgpt.com/",
+        "roles": [
+            {
+                "nombre": "transportista",
+                "id": 1
+            },
+            {
+                "nombre": "remitente comercial",
+                "id": 2
+            }
+        ],
+        "email": "adddddd@gmail.com",
+        "facturas": []
+    },
+    "fletePagador": {
+        "cuit": 30438127705,
+        "razonSocial": "LautiSA",
+        "nombreFantasia": "LautiSA",
+        "localidad": {
+            "nombre": "localidad 1",
+            "id": 1,
+            "provincia": {
+                "nombre": "provincia 1",
+                "id": 1,
+                "pais": {
+                    "nombre": "pais 1",
+                    "id": 1
+                }
+            }
+        },
+        "numeroCel": "5496541683465",
+        "urlConstanciaAfip": "https://chatgpt.com/",
+        "urlConstanciaCBU": "https://chatgpt.com/",
+        "roles": [
+            {
+                "nombre": "transportista",
+                "id": 1
+            },
+            {
+                "nombre": "remitente comercial",
+                "id": 2
+            }
+        ],
+        "email": "adddddd@gmail.com",
+        "facturas": []
     }
-  }
+},
 ]

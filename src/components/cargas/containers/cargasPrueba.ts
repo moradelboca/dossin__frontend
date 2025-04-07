@@ -23,10 +23,6 @@ export const cargasPrueba = [{
       {
         "id": 1,
         "nombre": "Semirremolque"
-      },
-      {
-        "id": 3,
-        "nombre": "Bitren"
       }
     ],
     "horaInicioCarga": "08:00:00",
@@ -79,9 +75,31 @@ export const cargasPrueba = [{
         }
       }
     },
-    "horaInicioBalanza": null,
-    "horaFinBalanza": null,
-    "ubicacionBalanza": null,
+    "horaInicioBalanza": "08:00:00",
+    "horaFinBalanza": "08:10:00",
+    "ubicacionBalanza": {
+      "id": 2,
+      "urlMaps": "asdasda",
+      "nombre": "ubicacion 2",
+      "latitud": 12,
+      "longitud": 12,
+      "tipoUbicacion": {
+        "nombre": "tipo ubi 1",
+        "id": 1
+      },
+      "localidad": {
+        "nombre": "localidad 2",
+        "id": 2,
+        "provincia": {
+          "nombre": "provincia 2",
+          "id": 2,
+          "pais": {
+            "nombre": "pais 1",
+            "id": 1
+          }
+        }
+      }
+    },
     "tolerancia": 32.5,
     "creadoPor": "test@test.com",
     "descripcion": "fgagweawge",

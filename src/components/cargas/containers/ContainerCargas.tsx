@@ -5,7 +5,7 @@ import { useParams } from "react-router-dom";
 import { ContextoGeneral } from "../../Contexto";
 import { CargasMobile } from "../../mobile/cargas/CargasMobile";
 import { CargaDialog } from "../tarjetas/CargaDialog";
-//import { cargasPrueba } from "./cargasPrueba";
+import { cargasPrueba } from "./cargasPrueba";
 import { ContainerTarjetasCargas } from "./ContainerTajetasCargas";
 
 export function ContainerCargas() {

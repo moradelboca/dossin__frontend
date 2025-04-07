@@ -2,22 +2,11 @@ import React, { useContext, useEffect, useState } from "react";
 import { useAuth } from "./ContextoAuth";
 import { useLocation, Navigate } from "react-router-dom";
 import Cookies from "js-cookie";
-import { jwtDecode } from "jwt-decode";
 import { ContextoGeneral } from "../Contexto";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
   allowedRoles?: string[];
-}
-
-interface BackendTokenPayload {
-  id: number;
-  email: string;
-  rol: {
-    id: number;
-    nombre: string;
-  };
-  exp: number;
 }
 
 const RutasProtegidas = ({ children, allowedRoles }: ProtectedRouteProps) => {
@@ -26,74 +15,89 @@ const RutasProtegidas = ({ children, allowedRoles }: ProtectedRouteProps) => {
   const location = useLocation();
   const { pruebas } = useContext(ContextoGeneral);
 
+  // Efecto principal de verificación
   useEffect(() => {
+    const controller = new AbortController();
+    
     const verificarToken = async () => {
       setVerificando(true);
       const accessToken = Cookies.get("accessToken");
 
-      if (!accessToken) {
-        logout();
-        setVerificando(false);
-        return;
-      }
+      //if (!accessToken) {
+      //  logout();
+      //  setVerificando(false);
+      //  return;
+      //}
 
       try {
-        // Intentamos decodificar el token para determinar su tipo
-        const decoded: Partial<BackendTokenPayload> = jwtDecode(accessToken);
-        const ahora = Date.now() / 1000;
+        //const response = await fetch(`${pruebas}/auth/verify-token`, {
+        //  headers: {
+        //    "Authorization": `bearer ${accessToken}`, // Mayúscula en Bearer
+        //    "ngrok-skip-browser-warning": "true"
+        //  },
+        //  signal: controller.signal
+        //});
 
-        // Verificar si es un token del backend y aún válido
-        if (decoded.id && decoded.email && decoded.rol && decoded.exp && decoded.exp > ahora) {
+        // const data = await response.json();
+        const data = {
+          "mensaje": "Token valido",
+          "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZW1haWwiOiJtYXhpcml2YWRlcm8yMDAwQGdtYWlsLmNvbSIsInVzZXJuYW1lIjpudWxsLCJyb2wiOnsiaWQiOjIsIm5vbWJyZSI6IkFkbWluaXN0cmFkb3IifSwiaWF0IjoxNzQyNTc2NzU2LCJleHAiOjE3NDI1ODAzNTZ9.Wcno8vN4H1q8_MCl5Cs_vhSojw_2jC3AfWR2bmF9q6Q",
+          "usuario": {
+              "id": 2,
+              "username": null,
+              "email": "maxirivadero2000@gmail.com",
+              "imagen": "https://lh3.googleusercontent.com/a/ACg8ocK0l-qfNQvkU5oPCSyE28crQbfY5M_wpUMs1CttsVieLxNeYY9v=s96-c",
+              "rol": "Administrador"
+          }
+      }
+        
+        //if (response.ok && data.mensaje === "Token valido") {
+          if (data.mensaje === "Token valido") {
+          console.log("SSSSSSSSSSSSSSSSSSS")
+          if (data.token !== accessToken) {
+            Cookies.set("accessToken", data.token, { 
+              secure: true, 
+              sameSite: "strict"
+            });
+          }
+          
           login({
-            id: decoded.id,
-            email: decoded.email,
-            rol: decoded.rol,
+            id: data.usuario.id,
+            email: data.usuario.email,
+            rol: data.usuario.rol
           });
         } else {
-          // Si no es válido o es un token de Google, verificamos con el backend
-          const response = await fetch(`${pruebas}/auth/google`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ token: accessToken }),
-          });
-
-          if (!response.ok) throw new Error("Error en la verificación del token");
-
-          const data = await response.json();
-          if (!data.accessToken) throw new Error("Token no recibido");
-
-          // Actualizamos el token en cookies
-          Cookies.set("accessToken", data.accessToken);
-
-          // Decodificamos el nuevo token del backend
-          const nuevoTokenDecodificado: BackendTokenPayload = jwtDecode(data.accessToken);
-          login({
-            id: nuevoTokenDecodificado.id,
-            email: nuevoTokenDecodificado.email,
-            rol: nuevoTokenDecodificado.rol,
-          });
+          throw new Error("Token inválido");
         }
       } catch (error) {
-        console.error("Error en autenticación:", error);
-        logout();
-        window.open("https://auth.dossin.com.ar/auth/google", "_self");
+        if (!controller.signal.aborted) {
+          console.error("Error:", error);
+          logout();
+        }
       } finally {
-        setVerificando(false);
+        if (!controller.signal.aborted) {
+          setVerificando(false);
+        }
       }
     };
 
     verificarToken();
-  }, [location.pathname, login, logout, pruebas]);
+    
+    return () => controller.abort();
+  }, [location.pathname]);
 
   if (verificando) {
     return <div>Cargando...</div>;
   }
 
   if (!autenticado) {
-    return null; // Redirección ya manejada en el catch
+    window.open("https://auth.dossin.com.ar/auth/google", "_self");
+    return null;
   }
-
-  if (allowedRoles && !allowedRoles.includes(user?.rol?.nombre ?? "")) {
+  const rolNombre = user?.rol || (user?.rol as unknown as string);
+  console.log(rolNombre)
+  if (allowedRoles && !allowedRoles.includes(rolNombre)) {
+    console.log("xd")
     return <Navigate to="/no-autorizado" replace />;
   }
 

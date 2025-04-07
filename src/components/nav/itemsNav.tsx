@@ -1,11 +1,11 @@
 // itemsNav.ts
 import {
-  AddLocationAltOutlined,
-  DomainAddOutlined,
-  ErrorOutline,
-  GroupsOutlined,
-  LocalShippingOutlined,
-  ViewInAr,
+    AddLocationAltOutlined,
+    DomainAddOutlined,
+    ErrorOutline,
+    GroupsOutlined,
+    LocalShippingOutlined,
+    ViewInAr,
 } from "@mui/icons-material";
 import AdminPanelSettingsOutlinedIcon from "@mui/icons-material/AdminPanelSettingsOutlined";
 import AssignmentOutlinedIcon from "@mui/icons-material/AssignmentOutlined";
@@ -21,7 +21,7 @@ export interface NavItem {
   
   export const navItems: NavItem[] = [
     // Este item es público, sin roles definidos.
-    { label: "Home", ruta: "/", icono: <GridView /> },
+    { label: "Home", ruta: "/", rolesPermitidos: ["Administrador"],icono: <GridView /> },
     // Items protegidos:
     { label: "Cargas", ruta: "/cargas", rolesPermitidos: ["Administrador", "Logistica", "Pagos"], icono: <ViewInAr /> },
     { label: "Contratos", ruta: "/contratos", rolesPermitidos: ["Administrador", "Logistica", "Pagos"], icono: <AssignmentOutlinedIcon /> },

@@ -13,6 +13,7 @@ import DashboardFiltrosDialog from "../dialogs/dashboard/DashboardFiltrosDialog"
 import DashboardCargas from "./graficos/DashboardCargas";
 import DashboardFechas from "./graficos/DashboardFechas";
 import DashboardFechasDialog from "../dialogs/dashboard/DashboardFechasDialog";
+import { useMediaQuery } from '@mui/material';
 
 interface DashboardGraficosProps {
   opcion: "cargas" | "fechas";
@@ -32,6 +33,8 @@ const DashboardGraficos: React.FC<DashboardGraficosProps> = ({ opcion }) => {
     fechas: [] as string[], // cada fecha se guarda como "YYYY-MM-DD"
     provincias: [] as string[],
   });
+
+  const isLargeScreen = useMediaQuery("(min-width:1200px)");
 
   // Opciones disponibles para cada tipo.
   // Para fechas ya no se usan opciones fijas; se seleccionan mediante calendario.
@@ -89,73 +92,91 @@ const DashboardGraficos: React.FC<DashboardGraficosProps> = ({ opcion }) => {
     return opciones[type].filter((option) => !selections[type].includes(option));
   };
 
+  const renderChips = (items: string[], type: "cargas" | "fechas" | "provincias") => (
+    <>
+      {items.slice(0, isLargeScreen ? 1 : 3).map((item) => (
+        <Chip
+          key={item}
+          label={item}
+          onDelete={() => handleRemoveItem(item, type)}
+          sx={{
+            borderRadius: "8px",
+            backgroundColor: "#ffffff",
+            border: `1px solid ${theme.colores.azul}`,
+            color: theme.colores.azul,
+            fontWeight: "bold",
+          }}
+        />
+      ))}
+      {items.length > (isLargeScreen ? 1 : 3) && (
+        <Chip
+          label={`+${items.length - (isLargeScreen ? 1 : 3)}`}
+          sx={{
+            borderRadius: "8px",
+            backgroundColor: "#ffffff",
+            border: `1px solid ${theme.colores.azul}`,
+            color: theme.colores.azul,
+            fontWeight: "bold",
+            cursor: 'pointer',
+          }}
+        />
+      )}
+    </>
+  );
+  
+  
+
+  // Ajustar tamaños de fuente responsive
+  const titleFontSize = isLargeScreen ? '0.8rem' : '0.9rem';
+  const chartHeight = isLargeScreen ? "85%" : 400;
+  const chartContainerStyles = isLargeScreen
+  ? { flex: 1, minHeight: 300 }
+  : { flex: 1, height: 400 };
+
   return (
     <Card>
-      <CardContent>
-        {/* Selección de Provincias */}
+      <CardContent sx={{ 
+        height: '100%', 
+        display: 'flex', 
+        flexDirection: 'column',
+        '& .recharts-surface': { fontSize: isLargeScreen ? '12px' : '14px' }
+      }}>
+        {/* Sección de Provincias */}
         <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mb: 2 }}>
-          <Typography sx={{ fontWeight: "bold", mr: 2 }}>
+          <Typography sx={{ fontWeight: "bold", mr: 2, fontSize: titleFontSize }}>
             Provincias:
           </Typography>
-          {selections.provincias.map((provincia) => (
-            <Chip
-              key={provincia}
-              label={provincia}
-              onDelete={() => handleRemoveItem(provincia, "provincias")}
-              sx={{
-                borderRadius: "8px",
-                backgroundColor: "#ffffff",
-                border: `1px solid ${theme.colores.azul}`,
-                color: theme.colores.azul,
-                fontWeight: "bold",
-              }}
-            />
-          ))}
+          {renderChips(selections.provincias, "provincias")}
           <IconButton onClick={() => handleClickAbrirDialog("provincias")}>
-            <BorderColorIcon sx={{ fontSize: 20 }} />
+            <BorderColorIcon sx={{ fontSize: isLargeScreen ? 18 : 20 }} />
           </IconButton>
         </Box>
 
-        {/* Selección de Cargas o Fechas */}
+        {/* Sección de Cargas/Fechas */}
         <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mb: 2 }}>
-          <Typography sx={{ fontWeight: "bold", mr: 2 }}>
+          <Typography sx={{ fontWeight: "bold", mr: 2, fontSize: titleFontSize }}>
             {opcion === "cargas" ? "Cargas:" : "Fechas:"}
           </Typography>
-          {selections[opcion].map((item) => (
-            <Chip
-              key={item}
-              label={item}
-              onDelete={() => handleRemoveItem(item, opcion)}
-              sx={{
-                borderRadius: "8px",
-                backgroundColor: "#ffffff",
-                border: `1px solid ${theme.colores.azul}`,
-                color: theme.colores.azul,
-                fontWeight: "bold",
-              }}
-            />
-          ))}
+          {renderChips(selections[opcion], opcion)}
           <IconButton onClick={() => handleClickAbrirDialog(opcion)}>
-            <BorderColorIcon sx={{ fontSize: 20 }} />
+            <BorderColorIcon sx={{ fontSize: isLargeScreen ? 18 : 20 }} />
           </IconButton>
         </Box>
 
-        {/* Renderizado del gráfico según la opción */}
-        {opcion === "cargas" ? (
-          <DashboardCargas
-            selections={{
-              cargas: selections.cargas,
-              provincias: selections.provincias,
-            }}
-          />
-        ) : (
-          <DashboardFechas
-            selections={{
-              fechas: selections.fechas,
-              provincias: selections.provincias,
-            }}
-          />
-        )}
+        {/* Gráfico con altura responsive */}
+        <Box sx={chartContainerStyles }>
+          {opcion === "cargas" ? (
+            <DashboardCargas
+              selections={selections}
+              chartHeight={chartHeight}
+            />
+          ) : (
+            <DashboardFechas
+              selections={selections}
+              chartHeight={chartHeight}
+            />
+          )}
+        </Box>
       </CardContent>
 
       {/* Diálogo de Filtros para cargas y provincias */}

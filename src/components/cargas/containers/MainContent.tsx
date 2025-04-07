@@ -1,9 +1,10 @@
 import React from "react";
-import { Box, Typography, IconButton, Divider, Grid } from "@mui/material";
+import { Box, Typography, IconButton} from "@mui/material";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import ContainerMapa from "./ContainerMapa";
 import ContainerProximosCupos from "./ContainterProximosCupos";
 import ContainerInformacionCarga from "./ContainerInformacionCarga";
+import ContainerDescripcion from "./ContainerDescripcion";
 import ContainerDetalles from "./ContainerDetalles";
 
 interface MainContentProps {
@@ -18,114 +19,111 @@ const MainContent: React.FC<MainContentProps> = ({
   return (
     <Box
       sx={{
-        maxWidth: "100%",
+        display: "flex",
+        flexDirection: "column",
+        flex: 1,
         height: "100%",
-        borderRadius: "16px",
+        overflowY: { xs: "auto", lg: "hidden" }, 
+        backgroundColor: "#ffffff",
+      }}
+    >
+      {/* Header */}
+      <Box sx={{ padding: "12px 24px 0", flexShrink: 0 }}>
+        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            <Typography variant="h6" color="#90979f">
+              Carga ID:
+            </Typography>
+            <Typography variant="h6">
+              {`#${cargaSeleccionada?.id || " "}`}
+            </Typography>
+          </Box>
+          <IconButton disabled={!cargaSeleccionada} onClick={onDeleteCarga}>
+            <DeleteOutlineIcon sx={{ fontSize: 20, color: "#d68384" }} />
+          </IconButton>
+        </Box>
+      </Box>
+
+      {/* Contenido principal dividido en 60% - 40% */}
+      <Box sx={{
         flex: 1,
         display: "flex",
         flexDirection: "column",
-        backgroundColor: "#ffffff",
-        overflowY: "auto",
-        overflowX: "hidden",
-      }}
-    >
-      <Box
-        sx={{
-          paddingLeft: "24px",
-          paddingTop: "12px",
-          paddingRight: "24px",
+      }}>
+        {/* Sección superior (60%) */}
+        <Box sx={{
+          flex: { lg: '0 0 60%', xs: '0 0 auto' },
           display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          width: "100%",
-          maxWidth: "100%",
-          flexWrap: "wrap",
-        }}
-      >
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-          <Typography variant="h6" color="#90979f">
-            Carga ID:
-          </Typography>
-          <Typography variant="h6">
-            {`#${cargaSeleccionada?.id || " "}`}
-          </Typography>
-        </Box>
-        <IconButton disabled={!cargaSeleccionada} onClick={onDeleteCarga}>
-          <DeleteOutlineIcon sx={{ fontSize: 20, color: "#d68384" }} />
-        </IconButton>
-      </Box>
-      <Divider sx={{ marginTop: 1, marginBottom: "1rem" }} />
-      <Grid container direction="column" sx={{ height: "100%" }}>
-        <Box
-          sx={{
+          p: 1.5,
+          paddingTop: 0,
+          flexDirection: { xs: "column", lg: "row" },
+          gap: "0.5rem",
+          minHeight: 0,
+        }}>
+          {/* Mapa (60% del espacio superior) */}
+          <Box sx={{
+            flex: 1,
+            minWidth: { xs: "100%", lg: "60%" },
+            height: { lg: "100%", xs: "400px" },
+            minHeight: { xs: "400px", lg: 0 },
             display: "flex",
-            flexDirection: "row",
-            borderRadius: "16px",
-            height: "60%",
-            width: "100%",
-            flexWrap: "wrap",
-            paddingX: "16px",
-            gap: "0.5rem",
-          }}
-        >
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              width: "60%",
-              height: "100%",
-            }}
-          >
+            flexDirection: "column",
+            overflow: "hidden"
+          }}>
             <ContainerMapa />
           </Box>
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              flex: 1,
-              alignItems: "center",
-              width: "40%",
-              height: "100%",
-            }}
-          >
+          
+          {/* Cupos (40% del espacio superior) */}
+          <Box sx={{
+            flex: 1,
+            height: { lg: "100%", xs: "400px" },
+            minHeight: { lg: "100%", xs: "400px" },
+            minWidth: { xs: "100%", lg: "40%" },
+            display: "flex",
+            flexDirection: "column",
+            overflow: "hidden"
+          }}>
             <ContainerProximosCupos />
+            <ContainerDetalles/>
           </Box>
         </Box>
-        <Box
-          sx={{
-            maxWidth: "100%",
-            borderRadius: "16px",
+
+        {/* Sección inferior (40%) */}
+        <Box sx={{
+          flex: { lg: '0 0 40%', xs: '0 0 auto' }, 
+          minHeight: 0,
+          display: "flex",
+          gap: "0.5rem",
+          p: 1.5,
+          paddingTop: 0,
+          flexDirection: { xs: "column", lg: "row" },
+        }}>
+          {/* Información (60% del espacio inferior) */}
+          <Box sx={{
+            flex: 1,
+            height: { lg: "100%", xs: "auto" },
+            minWidth: { xs: "100%", lg: "60%" },
+            minHeight: { xs: "220px" },
             display: "flex",
-            flexDirection: { xs: "column", md: "row" },
-            backgroundColor: "#ffffff",
-            width: "100%",
-            height: "40%",
-            p: "1rem",
-            gap: "0.5rem",
-          }}
-        >
-          <Box
-            sx={{
-              width: { xs: "100%", md: "60%" },
-              height: "100%",
-              display: "flex",
-              flexDirection: "column",
-            }}
-          >
+            flexDirection: "column",
+            overflow: "hidden"
+          }}>
             <ContainerInformacionCarga />
           </Box>
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              width: { xs: "100%", md: "40%" },
-              height: "100%",
-            }}
-          >
-            <ContainerDetalles />
+          
+          {/* Detalles (40% del espacio inferior) */}
+          <Box sx={{
+            flex: 1,
+            height: { lg: "100%", xs: "auto" },
+            minWidth: { xs: "100%", lg: "40%" },
+            display: "flex",
+            flexDirection: "column",
+            overflow: "hidden"
+          }}>
+            <ContainerDescripcion />
           </Box>
         </Box>
-      </Grid>
+      </Box>
     </Box>
   );
 };
