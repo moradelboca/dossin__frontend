@@ -47,8 +47,6 @@ const useBuscarEmpresa = (value: string | null): UseBuscarEmpresaReturn => {
       });
   }, [value, backendURL]);
 
-  console.log("EMPRESA HOOK: ", empresa);
-
   return { empresa, error };
 };
 
