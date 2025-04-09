@@ -11,17 +11,19 @@ interface IDeleteEntidad {
     handleClose: () => void;
     datos: any;
     setDatos: any;
+    usarPruebas?: boolean;
 }
 export default function DeleteEntidad(props: IDeleteEntidad) {
-    const { handleCloseDialog, idEntidad, endpointEntidad, handleClose, datos, setDatos } = props;
-    const { backendURL, theme } = useContext(ContextoGeneral);
+    const { handleCloseDialog, idEntidad, endpointEntidad, handleClose, datos, setDatos, usarPruebas } = props;
+    const { pruebas, backendURL, theme } = useContext(ContextoGeneral);
 
     const handleNoClick = () => {
         handleCloseDialog();
     };
 
+    const apiURL = usarPruebas ? pruebas : backendURL;
     const borrarEntidad = () => {
-        fetch(`${backendURL}/${endpointEntidad}/${idEntidad}`, {
+        fetch(`${apiURL}/${endpointEntidad}/${idEntidad}`, {
             method: "DELETE",
             headers: {
                 "Content-Type": "application/json",

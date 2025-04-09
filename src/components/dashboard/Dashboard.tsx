@@ -1,6 +1,6 @@
 // Dashboard.tsx (fragmento modificado)
 import React, { useContext, useEffect, useState } from "react";
-import { Box, Typography, IconButton } from "@mui/material";
+import { Box, IconButton } from "@mui/material";
 import AddIcon from '@mui/icons-material/Add';
 import { ContextoGeneral } from "../Contexto";
 import DashboardCard from "../cards/Dashboard/DashboardCard";
@@ -130,35 +130,34 @@ const Dashboard: React.FC = () => {
         padding: 2,
       }}
     >
-      {/* Título */}
-      <Typography
-        variant="h5"
-        sx={{
-          color: theme.colores.azul,
-          fontWeight: "bold",
-          mb: 2,
-          fontSize: "2rem",
-          pb: 1,
-          ml: 1,
-        }}
-      >
-        Dashboard
-      </Typography>
-
       {/* Grid principal */}
       <Box
         display="grid"
-        gridTemplateColumns="repeat(6, 1fr)"
-        gridTemplateRows="180px 1fr 1fr"
+        gridTemplateColumns={{
+          xs: "repeat(4, 1fr)",
+          md: "repeat(6, 1fr)",
+          lg: "repeat(6, 1fr)"
+        }}
+        gridTemplateRows={{
+          xs: "auto auto auto auto",
+          lg: "180px minmax(400px, 1fr)" // Altura mínima para la sección inferior
+        }}
         gap="20px"
         sx={{ height: "100%" }}
       >
-        {/* Tarjetas principales */}
+        {/* Tarjetas Principales */}
         <Box
-          gridColumn="span 4"
-          gridRow="span 1"
+          gridColumn={{
+            xs: "span 4",
+            md: "span 6",
+            lg: "span 4"
+          }}
+          gridRow="auto"
           display="grid"
-          gridTemplateColumns="repeat(4, 1fr)"
+          gridTemplateColumns={{
+            xs: "1fr",        // En mobile, cada card ocupa toda la fila
+            md: "repeat(4, 1fr)"
+          }}
           gap="10px"
           sx={{
             backgroundColor: theme.colores.gris,
@@ -167,11 +166,10 @@ const Dashboard: React.FC = () => {
           }}
         >
           {tarjetasPrincipales.map((card, index) => {
-            // Si es la card de "Cantidad de inconvenientes", incluimos el botón +
             if (card.title === "Cantidad de inconvenientes") {
               return (
                 <Box key={index} sx={{ position: "relative" }}>
-                  <DashboardCard {...card}/>
+                  <DashboardCard {...card} />
                   <IconButton
                     size="small"
                     onClick={() => setOpenInconvenientesDialog(true)}
@@ -187,17 +185,29 @@ const Dashboard: React.FC = () => {
                 </Box>
               );
             }
-            return <DashboardCard key={index} {...card}/>;
+            return <DashboardCard key={index} {...card} />;
           })}
         </Box>
-
-        {/* Tarjetas secundarias */}
+        
+        {/* Tarjetas Secundarias */}
         <Box
-          gridColumn="span 2"
-          gridRow="span 1"
+          gridColumn={{
+            xs: "span 4",
+            md: "span 6",
+            lg: "span 2"
+          }}
+          gridRow="auto"
           display="grid"
-          gridTemplateColumns="repeat(2, 1fr)"
-          gridTemplateRows="1fr 1fr"
+          gridTemplateColumns={{
+            xs: "1fr",         // Una sola columna en mobile
+            md: "repeat(4, 1fr)",
+            lg: "repeat(2, 1fr)"
+          }}
+          gridTemplateRows={{
+            xs: "auto",
+            md: "auto",
+            lg: "1fr 1fr"
+          }}
           gap="6px"
           sx={{
             backgroundColor: theme.colores.gris,
@@ -206,7 +216,6 @@ const Dashboard: React.FC = () => {
           }}
         >
           {tarjetasSecundarias.map((card, index) => (
-            // Si la card es la de colaboradores, incluimos el botón para abrir el diálogo
             card.title === "Colaboradores nuevos" ? (
               <Box key={index} sx={{ position: "relative" }}>
                 <DashboardCard {...card} {...cardStyles} />
@@ -228,13 +237,26 @@ const Dashboard: React.FC = () => {
             )
           ))}
         </Box>
-
-        {/* Segunda fila: Gráficos e historial */}
+        
+        {/* Sección de Gráficos */}
+        {/* Gráficos */}
         <Box
-          gridColumn="span 4"
-          gridRow="2 / span 2"
+          gridColumn={{
+            xs: "span 4",
+            md: "span 6",
+            lg: "span 4"
+          }}
+          gridRow={{
+            xs: "auto",
+            md: "auto",
+            lg: "2 / span 2"
+          }}
           display="grid"
-          gridTemplateColumns="repeat(2, 1fr)"
+          gridTemplateColumns={{
+            xs: "1fr",
+            md: "repeat(2, 1fr)",
+            lg: "repeat(2, 1fr)"
+          }}
           gap="10px"
           sx={{
             backgroundColor: theme.colores.gris,
@@ -245,24 +267,32 @@ const Dashboard: React.FC = () => {
           <DashboardGraficos opcion="cargas" />
           <DashboardGraficos opcion="fechas" />
         </Box>
-
+        
         {/* Historial */}
         <Box
-          gridColumn="span 2"
-          gridRow="2 / span 2"
+          gridColumn={{
+            xs: "span 4",
+            md: "span 6",
+            lg: "span 2"
+          }}
+          gridRow={{
+            xs: "auto",
+            md: "auto",
+            lg: 2
+          }}
           sx={{
             backgroundColor: theme.colores.gris,
             padding: 1,
             borderRadius: 2,
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "space-between",
-            height: "100%",
+            height: '100%',
+            display: 'flex',
+            flexDirection: 'column'
           }}
         >
           <HistorialTurnos />
         </Box>
       </Box>
+
 
       {/* Diálogo de inconvenientes */}
       <InconvenientesDialog

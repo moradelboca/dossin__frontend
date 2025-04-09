@@ -173,7 +173,17 @@ const HistorialTurnos: React.FC = () => {
           </Tabs>
 
           {/* Contenido de cada pestaña */}
-          <Box sx={{ flex: 1, overflow: "auto", mt: 2 }}>
+          <Box sx={{ 
+            flex: 1, 
+            overflow: "auto", 
+            mt: 2,
+            minHeight: 0, // Permite que el contenedor se reduzca
+            maxHeight: '70vh', // Altura máxima relativa
+            '& .MuiTableContainer-root': {
+              maxHeight: '100%', // Hereda la altura máxima
+              overflow: 'auto'
+            }
+          }}>
             {tabValue === 0 && (
               <>
                 {loadingRecent ? (
@@ -185,8 +195,19 @@ const HistorialTurnos: React.FC = () => {
                     {errorRecent}
                   </Typography>
                 ) : (
-                  <TableContainer component={Paper}>
-                    <Table>
+                  <TableContainer 
+                    component={Paper}
+                    sx={{
+                      '& th': {
+                        position: 'sticky',
+                        top: 0,
+                        backgroundColor: '#fff',
+                        zIndex: 1,
+                        boxShadow: '0 2px 2px -1px rgba(0,0,0,0.1)'
+                      }
+                    }}
+                  >
+                    <Table stickyHeader>
                       <TableHead>
                         <TableRow>
                           <TableCell>Turno</TableCell>
@@ -224,8 +245,19 @@ const HistorialTurnos: React.FC = () => {
                     {errorAnteriores}
                   </Typography>
                 ) : (
-                  <TableContainer component={Paper}>
-                    <Table>
+                  <TableContainer 
+                    component={Paper}
+                    sx={{
+                      '& th': {
+                        position: 'sticky',
+                        top: 0,
+                        backgroundColor: '#fff',
+                        zIndex: 1,
+                        boxShadow: '0 2px 2px -1px rgba(0,0,0,0.1)'
+                      }
+                    }}
+                  >
+                    <Table >
                       <TableHead>
                         <TableRow>
                           <TableCell>Turno</TableCell>

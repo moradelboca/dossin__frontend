@@ -11,12 +11,13 @@ import { ContextoGeneral } from "../../Contexto";
 
 interface DashboardFechasProps {
   selections: {
-    fechas: string[]; // en formato "YYYY-MM-DD"
-    provincias: string[]; // puede incluir "General" o nombres específicos
+    fechas: string[];
+    provincias: string[];
   };
+  chartHeight: number | string;
 }
 
-const DashboardFechas: React.FC<DashboardFechasProps> = ({ selections }) => {
+const DashboardFechas: React.FC<DashboardFechasProps> = ({ selections, chartHeight }) => {
   const { dashboardURL } = useContext(ContextoGeneral);
   const [chartData, setChartData] = useState<any[]>([]);
 
@@ -120,7 +121,7 @@ const DashboardFechas: React.FC<DashboardFechasProps> = ({ selections }) => {
   ];
 
   return (
-    <ResponsiveContainer width="100%" height={400}>
+    <ResponsiveContainer width="100%" height={chartHeight}>
       <LineChart
         data={chartData}
         margin={{ top: 20, right: 30, left: 20, bottom: 10 }}

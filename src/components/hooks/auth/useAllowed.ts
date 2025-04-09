@@ -6,5 +6,9 @@ export const useAllowed = (allowedRoles: string[]): boolean => {
   // Hay usuario a verificar?
   if (!user) return false;
   // Se verifica
-  return allowedRoles.includes(user.rol.nombre);
+
+  console.log(allowedRoles)
+  console.log(user.rol)
+  console.log(allowedRoles.includes(user.rol))
+  return allowedRoles.includes(user.rol);
 };

@@ -1,6 +1,5 @@
 import React, { useContext, useState, useEffect } from "react";
 import { ContextoGeneral } from "../../Contexto";
-import { CircularProgress, Box, Alert } from "@mui/material";
 import {
   Radar,
   RadarChart,
@@ -22,14 +21,13 @@ interface DashboardCargasProps {
     cargas: string[];
     provincias: string[];
   };
+  chartHeight: number | string;
 }
 
 
-const DashboardCargas: React.FC<DashboardCargasProps> = ({ selections }) => {
+const DashboardCargas: React.FC<DashboardCargasProps> = ({ selections, chartHeight }) => {
   const { dashboardURL } = useContext(ContextoGeneral);
   const [fetchedData, setFetchedData] = useState<Cargas[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   // Función para realizar fetch según cada tipo de carga seleccionado
   const fetchCargasData = async () => {
@@ -90,18 +88,13 @@ const DashboardCargas: React.FC<DashboardCargasProps> = ({ selections }) => {
         });
       });
       setFetchedData(Object.values(combined));
-      setLoading(false);
     } catch (err) {
       console.error("Error al combinar los datos:", err);
-      setError("Error al cargar los datos");
-      setLoading(false);
     }
   };
 
   useEffect(() => {
     if (selections.cargas.length > 0 && selections.provincias.length > 0) {
-      setLoading(true);
-      setError(null);
       fetchCargasData();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -114,36 +107,24 @@ const DashboardCargas: React.FC<DashboardCargasProps> = ({ selections }) => {
   ];
 
   return (
-    <>
-      {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
-      {loading ? (
-        <Box sx={{ display: "flex", justifyContent: "center", my: 2 }}>
-          <CircularProgress />
-        </Box>
-      ) : (
-        selections.cargas.length > 0 &&
-        selections.provincias.length > 0 && (
-          <ResponsiveContainer width="100%" height={400}>
-            <RadarChart data={fetchedData}>
-              <PolarGrid />
-              <PolarAngleAxis dataKey="provincia" />
-              <PolarRadiusAxis />
-              {selections.cargas.map((item, index) => (
-                <Radar
-                  key={item}
-                  name={item}
-                  dataKey={item}
-                  stroke={colorPalette[index % colorPalette.length]}
-                  fill={colorPalette[index % colorPalette.length]}
-                  fillOpacity={0.6}
-                />
-              ))}
-              <Legend />
-            </RadarChart>
-          </ResponsiveContainer>
-        )
-      )}
-    </>
+    <ResponsiveContainer width="100%" height={chartHeight}>
+      <RadarChart data={fetchedData}>
+        <PolarGrid />
+        <PolarAngleAxis dataKey="provincia" />
+        <PolarRadiusAxis />
+        {selections.cargas.map((item, index) => (
+          <Radar
+            key={item}
+            name={item}
+            dataKey={item}
+            stroke={colorPalette[index % colorPalette.length]}
+            fill={colorPalette[index % colorPalette.length]}
+            fillOpacity={0.6}
+          />
+        ))}
+        <Legend />
+      </RadarChart>
+    </ResponsiveContainer>
   );
 };
 

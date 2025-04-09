@@ -5,10 +5,7 @@ import Cookies from "js-cookie";
 interface User {
   id: number;
   email: string;
-  rol: {
-    id: number;
-    nombre: string;
-  };
+  rol: string;
 }
 
 interface AuthContextProps {

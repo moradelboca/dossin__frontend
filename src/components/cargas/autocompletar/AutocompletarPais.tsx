@@ -2,16 +2,18 @@
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
+import { useMediaQuery } from "@mui/material";
 
 interface Telefono {
     setCodigoSeleccionado: (value: string) => void;
     error: boolean;
     defaultPhone?: string;
+    fullWidth?: boolean;
 }
 
-export default function AutocompletarPa(props: Telefono) {
-    const { setCodigoSeleccionado, error, defaultPhone } = props;
-
+export default function AutocompletarPais(props: Telefono) {
+    const { setCodigoSeleccionado, error, defaultPhone, fullWidth } = props;
+    const isMobile = useMediaQuery("768px");
     
     const defaultCountry = countries.find(country => country.phone === defaultPhone) || null;
 
@@ -28,17 +30,33 @@ export default function AutocompletarPa(props: Telefono) {
             id="country-select-demo"
             options={countries}
             autoHighlight
-            sx={{ width: "120px" }}
+            sx={{ 
+                width: fullWidth ? "100%" : "120px",
+                minWidth: "120px" 
+            }}
             getOptionLabel={(option) => option.phone}
             value={defaultCountry}
-            componentsProps={{ popper: { style: { width: "300px" } } }}
+            componentsProps={{ 
+                popper: { 
+                    style: { 
+                        width: isMobile ? "100%" : "300px",
+                        minWidth: "300px" 
+                    } 
+                } 
+            }}
             renderOption={(props, option) => {
                 const { key, ...optionProps } = props;
                 return (
                     <Box
                         key={key}
                         component="li"
-                        sx={{ "& > img": { mr: 2, flexShrink: 0 } }}
+                        sx={{ 
+                            "& > img": { 
+                                mr: 2, 
+                                flexShrink: 0 
+                            },
+                            fontSize: isMobile ? "0.875rem" : "1rem"
+                        }}
                         {...optionProps}
                     >
                         <img
@@ -48,22 +66,35 @@ export default function AutocompletarPa(props: Telefono) {
                             src={`https://flagcdn.com/w20/${option.code.toLowerCase()}.png`}
                             alt=""
                         />
-                        {option.label} ({option.code}) {option.phone}{" "}
+                        {option.label} ({option.code}) {option.phone}
                     </Box>
                 );
             }}
             renderInput={(params) => (
                 <TextField
                     {...params}
-                    sx={{ width: "120px" }}
+                    sx={{ 
+                        width: fullWidth ? "100%" : "120px",
+                        "& .MuiInputBase-root": {
+                            height: isMobile ? "56px" : "auto"
+                        }
+                    }}
                     label="Característica"
-                    slotProps={{
-                        htmlInput: {
-                            ...params.inputProps,
-                            autoComplete: "new-password",
-                        },
+                    inputProps={{
+                        ...params.inputProps,
+                        autoComplete: "new-password",
+                        style: {
+                            fontSize: isMobile ? "0.875rem" : "1rem"
+                        }
                     }}
                     error={error}
+                    helperText={error ? "Seleccione código" : ""} 
+                    FormHelperTextProps={{
+                        sx: {
+                            mx: 0,
+                            whiteSpace: "nowrap"
+                        }
+                    }}
                 />
             )}
             onChange={handleChange}

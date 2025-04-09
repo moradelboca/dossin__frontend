@@ -1,6 +1,14 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useContext, useEffect, useState } from "react";
-import { Button, Dialog, IconButton, TextField, Box, Autocomplete } from "@mui/material";
+import { 
+  Button, 
+  Dialog, 
+  IconButton, 
+  TextField, 
+  Box, 
+  Autocomplete,
+  useTheme,
+  useMediaQuery 
+} from "@mui/material";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import DeleteEntidad from "../../dialogs/DeleteEntidad";
 import useValidation from "../../hooks/useValidation";
@@ -8,205 +16,244 @@ import { ContextoGeneral } from "../../Contexto";
 import { FormularioProps } from "../../../interfaces/FormularioProps";
 
 const AcopladoForm: React.FC<FormularioProps> = ({
-    seleccionado = {},
-    datos,
-    setDatos,
-    handleClose,
+  seleccionado = {},
+  datos,
+  setDatos,
+  handleClose,
 }) => {
-    const { backendURL } = useContext(ContextoGeneral);
-    const [openDialogDelete, setOpenDialogDelete] = useState(false);
+  const { backendURL } = useContext(ContextoGeneral);
+  const [openDialogDelete, setOpenDialogDelete] = useState(false);
+  const [tiposAcoplados, setTiposAcoplados] = useState<any[]>([]);
+  const [tipoSeleccionado, setTipoSeleccionado] = useState<string | null>(seleccionado?.tipoAcoplado || null);
+  const [acopladoExistente, setAcopladoExistente] = useState(false);
 
-    const [tiposAcoplados, setTiposAcoplados] = useState<any[]>([]);
-    const [tipoSeleccionado, setTipoSeleccionado] = useState<string | null>(seleccionado?.tipoAcoplado  || null);
-    
-    const { data, errors, handleChange, validateAll } = useValidation(
-        {
-            patente: "",
-            tipoAcoplado: "",
-            urlRTO: "",
-            urlPolizaSeguro: "",
-            urlRuta: "",
-            ...seleccionado,
-        },
-        {
-            patente: (value) =>
-                !/^([A-Za-z]{3}\d{3}|[A-Za-z]{2}\d{3}[A-Za-z]{2})$/.test(value)
-                    ? "La patente debe ser válida (LLLNNN o LLNNNLL)"
-                    : null,
-            tipoAcoplado: () => (!tipoSeleccionado ? "Debe seleccionar un tipo de acoplado" : null),
-            urlRTO: (value) =>
-                value && !/^https?:\/\//.test(value)
-                    ? "Debe ser una URL válida"
-                    : null,
-            urlPolizaSeguro: (value) =>
-                value && !/^https?:\/\//.test(value)
-                    ? "Debe ser una URL válida"
-                    : null,
-            urlRuta: (value) =>
-                value && !/^https?:\/\//.test(value)
-                    ? "Debe ser una URL válida"
-                    : null,
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
+  const { data, errors, handleChange, validateAll } = useValidation(
+    {
+      patente: "",
+      tipoAcoplado: "",
+      urlRTO: "",
+      urlPolizaSeguro: "",
+      urlRuta: "",
+      ...seleccionado,
+    },
+    {
+      patente: (value) =>
+        !/^([A-Za-z]{3}\d{3}|[A-Za-z]{2}\d{3}[A-Za-z]{2})$/.test(value)
+          ? "La patente debe ser válida (LLLNNN o LLNNNLL)"
+          : null,
+      tipoAcoplado: () => (!tipoSeleccionado ? "Debe seleccionar un tipo de acoplado" : null),
+      urlRTO: (value) =>
+        value && !/^https?:\/\//.test(value)
+          ? "Debe ser una URL válida"
+          : null,
+      urlPolizaSeguro: (value) =>
+        value && !/^https?:\/\//.test(value)
+          ? "Debe ser una URL válida"
+          : null,
+      urlRuta: (value) =>
+        value && !/^https?:\/\//.test(value)
+          ? "Debe ser una URL válida"
+          : null,
+    }
+  );
+
+  useEffect(() => {
+    fetch(`${backendURL}/acoplados/tiposacoplados`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "ngrok-skip-browser-warning": "true",
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => setTiposAcoplados(data))
+      .catch(() => console.error("Error al obtener los tipos de acoplados disponibles"));
+  }, [backendURL]);
+
+  // Función para verificar si ya existe un acoplado con la patente ingresada
+  const checkIfAcopladoExists = () => {
+    // Solo verificar si la patente tiene un formato válido y no es en modo edición
+    if (!data.patente || seleccionado?.patente) return;
+    fetch(`${backendURL}/acoplados/${data.patente}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((response) => {
+        if (response.ok) {
+          setAcopladoExistente(true);
+        } else {
+          setAcopladoExistente(false);
         }
-    );
+      })
+      .catch(() => {
+        setAcopladoExistente(false);
+      });
+  };
 
-    useEffect(() => {
-        fetch(`${backendURL}/acoplados/tiposacoplados`, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-                "ngrok-skip-browser-warning": "true",
-            },
+  const handleSubmit = () => {
+    // Si ya existe, notificar al usuario y detener el envío
+    if (acopladoExistente) {
+      alert("Ya existe un acoplado con esta patente.");
+      return;
+    }
+
+    if (validateAll()) {
+      const metodo = seleccionado?.patente ? "PUT" : "POST";
+      const url = seleccionado?.patente
+        ? `${backendURL}/acoplados/${data.patente}`
+        : `${backendURL}/acoplados`;
+
+      const idTipoAcoplado = tiposAcoplados.find(
+        (tipo) => tipo.nombre === tipoSeleccionado
+      )?.id;
+
+      const payload = {
+        patente: data.patente,
+        urlRTO: data.urlRTO,
+        urlPolizaSeguro: data.urlPolizaSeguro,
+        urlRuta: data.urlRuta,
+        idTipoAcoplado,
+      };
+
+      fetch(url, {
+        method: metodo,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      })
+        .then(async (response) => {
+          if (!response.ok) {
+            const errorMessage = await response.text();
+            throw new Error(`Error del servidor: ${errorMessage}`);
+          }
+          return response.json();
         })
-            .then((response) => response.json())
-            .then((data) => setTiposAcoplados(data))
-            .catch(() => console.error("Error al obtener los tipos de acoplados disponibles"));
-    }, [backendURL]);
+        .then((newData) => {
+          if (metodo === "POST") {
+            setDatos([...datos, newData]);
+          } else {
+            setDatos(
+              datos.map((acoplado: { patente: any }) =>
+                acoplado.patente === data.patente ? newData : acoplado
+              )
+            );
+          }
+          handleClose();
+        })
+        .catch((error) => console.error(`Error: ${error.message}`));
+    }
+  };
 
+  const handleClickDeleteCarga = () => setOpenDialogDelete(true);
+  const handleCloseDialog = () => setOpenDialogDelete(false);
 
-    const handleSubmit = () => {
-        if (validateAll()) {
-            const metodo = seleccionado?.patente ? "PUT" : "POST";
-            const url = seleccionado?.patente
-                ? `${backendURL}/acoplados/${data.patente}`
-                : `${backendURL}/acoplados`;
-    
-            const idTipoAcoplado = tiposAcoplados.find(
-                (tipo) => tipo.nombre === tipoSeleccionado
-            )?.id;
-            
-            const payload = {
-                patente: data.patente,
-                urlRTO: data.urlRTO,
-                urlPolizaSeguro: data.urlPolizaSeguro,
-                urlRuta: data.urlRuta,
-                idTipoAcoplado,
-            };
-    
-            fetch(url, {
-                method: metodo,
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(payload),
-            })
-                .then(async (response) => {
-                    if (!response.ok) {
-                        const errorMessage = await response.text();
-                        throw new Error(`Error del servidor: ${errorMessage}`);
-                    }
-                    return response.json();
-                })
-                .then((newData) => {
-                    if (metodo === "POST") {
-                        setDatos([...datos, newData]);
-                    } else {
-                        setDatos(
-                            datos.map((acoplado: { patente: any; }) =>
-                                acoplado.patente === data.patente ? newData : acoplado
-                            )
-                        );
-                    }
-                    handleClose();
-                })
-                .catch((error) => console.error(`Error: ${error.message}`));
-        }
-    };
-    
-
-    const handleClickDeleteCarga = () => setOpenDialogDelete(true);
-    const handleCloseDialog = () => setOpenDialogDelete(false);
-
-    return (
-        <>
-            <TextField
-                margin="dense"
-                label="Patente"
-                name="patente"
-                variant="outlined"
-                fullWidth
-                value={data.patente}
-                onChange={handleChange("patente")}
-                error={!!errors.patente}
-                helperText={errors.patente}
-                disabled={!!seleccionado?.patente}
-            />
+  return (
+    <Box sx={{ p: isMobile ? 2 : 4 }}>
+      <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+        <TextField
+          margin="dense"
+          label="Patente"
+          name="patente"
+          variant="outlined"
+          fullWidth
+          value={data.patente}
+          onChange={handleChange("patente")}
+          onBlur={checkIfAcopladoExists}
+          error={!!errors.patente || acopladoExistente}
+          helperText={
+            acopladoExistente
+              ? "Ya existe un acoplado con esta patente"
+              : errors.patente
+          }
+          disabled={!!seleccionado?.patente}
+        />
 
         <Autocomplete
-                disablePortal
-                options={tiposAcoplados.map((tipo) => tipo.nombre)}
-                value={tipoSeleccionado}
-                onChange={(_, newValue) => setTipoSeleccionado(newValue)}
-                renderInput={(params) => (
-                    <TextField
-                        {...params}
-                        label="Tipo de Acoplado"
-                        variant="outlined"
-                        error={!!errors.tipoAcoplado}
-                        helperText={!tipoSeleccionado ? "Seleccione un tipo de acoplado" : ""}
-                    />
-                )}
-            />
-
+          disablePortal
+          options={tiposAcoplados.map((tipo) => tipo.nombre)}
+          value={tipoSeleccionado}
+          onChange={(_, newValue) => setTipoSeleccionado(newValue)}
+          renderInput={(params) => (
             <TextField
-                margin="dense"
-                label="URL RTO"
-                variant="outlined"
-                fullWidth
-                value={data.urlRTO}
-                onChange={handleChange("urlRTO")}
-                error={!!errors.urlRTO}
-                helperText={errors.urlRTO}
+              {...params}
+              label="Tipo de Acoplado"
+              variant="outlined"
+              error={!!errors.tipoAcoplado}
+              helperText={!tipoSeleccionado ? "Seleccione un tipo de acoplado" : ""}
             />
+          )}
+        />
 
-            <TextField
-                label="URL Póliza de Seguro"
-                variant="outlined"
-                fullWidth
-                value={data.urlPolizaSeguro}
-                onChange={handleChange("urlPolizaSeguro")}
-                error={!!errors.urlPolizaSeguro}
-                helperText={errors.urlPolizaSeguro}
-            />
+        <TextField
+          margin="dense"
+          label="URL RTO"
+          variant="outlined"
+          fullWidth
+          value={data.urlRTO}
+          onChange={handleChange("urlRTO")}
+          error={!!errors.urlRTO}
+          helperText={errors.urlRTO}
+        />
 
-            <TextField
-                label="URL Ruta"
-                variant="outlined"
-                fullWidth
-                value={data.urlRuta}
-                onChange={handleChange("urlRuta")}
-                error={!!errors.urlRuta}
-                helperText={errors.urlRuta}
-            />
+        <TextField
+          label="URL Póliza de Seguro"
+          variant="outlined"
+          fullWidth
+          value={data.urlPolizaSeguro}
+          onChange={handleChange("urlPolizaSeguro")}
+          error={!!errors.urlPolizaSeguro}
+          helperText={errors.urlPolizaSeguro}
+        />
 
-            <Box display="flex" justifyContent="space-between">
-                <Button onClick={handleClose} color="primary">
-                    Cancelar
-                </Button>
-                <Button onClick={handleSubmit} color="primary">
-                    Guardar
-                </Button>
-                {seleccionado && (
-                    <IconButton onClick={handleClickDeleteCarga}>
-                        <DeleteOutlineIcon sx={{ fontSize: 20, color: "#d68384" }} />
-                    </IconButton>
-                )}
-            </Box>
+        <TextField
+          label="URL Ruta"
+          variant="outlined"
+          fullWidth
+          value={data.urlRuta}
+          onChange={handleChange("urlRuta")}
+          error={!!errors.urlRuta}
+          helperText={errors.urlRuta}
+        />
 
-            <Dialog
-                open={openDialogDelete}
-                onClose={handleCloseDialog}
-                maxWidth="sm"
-                fullWidth
-            >
-                <DeleteEntidad
-                    idEntidad={data.patente}
-                    endpointEntidad="acoplados"
-                    handleCloseDialog={handleCloseDialog}
-                    handleClose={handleClose}
-                    datos={datos}
-                    setDatos={setDatos}
-                />
-            </Dialog>
-        </>
-    );
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: isMobile ? "column" : "row",
+            gap: isMobile ? 1 : 2,
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <Button onClick={handleClose} color="primary" variant="outlined" fullWidth={isMobile}>
+            Cancelar
+          </Button>
+          <Button onClick={handleSubmit} color="primary" variant="contained" fullWidth={isMobile}>
+            Guardar
+          </Button>
+          {seleccionado && (
+            <IconButton onClick={handleClickDeleteCarga}>
+              <DeleteOutlineIcon sx={{ fontSize: 20, color: "#d68384" }} />
+            </IconButton>
+          )}
+        </Box>
+      </Box>
+
+      <Dialog open={openDialogDelete} onClose={handleCloseDialog} maxWidth="sm" fullWidth>
+        <DeleteEntidad
+          idEntidad={data.patente}
+          endpointEntidad="acoplados"
+          handleCloseDialog={handleCloseDialog}
+          handleClose={handleClose}
+          datos={datos}
+          setDatos={setDatos}
+        />
+      </Dialog>
+    </Box>
+  );
 };
 
 export default AcopladoForm;

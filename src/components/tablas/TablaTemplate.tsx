@@ -12,6 +12,7 @@ import { ContextoGeneral } from "../Contexto";
 import CreadorEntidad from "../dialogs/CreadorEntidad";
 import { GridTemplate } from "../grid/GridTemplate";
 import MobileCardList from "../mobile/MobileCardList";
+import { dataPruebas } from "./dataPruebas";
 
 interface TablaTemplateProps {
   titulo: string;
@@ -65,6 +66,7 @@ export default function TablaTemplate({
       })
       .then((data) => {
         setDatos(data);
+        console.log(data);
         setEstadoCarga("Cargado");
       })
       .catch((error) => {
@@ -74,7 +76,9 @@ export default function TablaTemplate({
   };
 
   useEffect(() => {
-    refreshDatos();
+    //refreshDatos();
+    setDatos(dataPruebas);
+    setEstadoCarga("Cargado");
   }, [apiURL]);
 
   const handleOpen = (item: any) => {
@@ -125,8 +129,17 @@ export default function TablaTemplate({
         }
         return value || "No especificado";
       case "titularCartaDePorte":
+      case "remitenteProductor":
+      case "remitenteVentaPrimaria":
+      case "remitenteVentaSecundaria":
+      case "corredorVentaPrimaria":
+      case "corredorVentaSecundaria":
+      case "representanteEntregador":
+      case "representanteRecibidor":
+      case "destinatario":
       case "destino":
-      case "remitente":
+      case "intermediarioDeFlete":
+      case "fletePagador":
         if (value) {
           const { razonSocial, nombreFantasia } = value;
           return `${nombreFantasia} - ${razonSocial}`;
@@ -137,6 +150,10 @@ export default function TablaTemplate({
           return value.map((carga: any) => `${carga.id}`).join(", ");
         }
         return "No especificado";
+        case "activo":
+          return typeof value === "boolean" 
+            ? value ? "Activo" : "Inactivo" 
+            : "No especificado"
       default:
         return value || "No especificado";
     }

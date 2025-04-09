@@ -23,7 +23,6 @@ const useBuscarEmpresa = (value: string | null): UseBuscarEmpresaReturn => {
       setEmpresa(null);
       return;
     }
-    console.log("value HOOK: ", value);
 
     fetch(`${backendURL}/empresas`, {
       method: "GET",

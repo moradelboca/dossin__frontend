@@ -107,25 +107,6 @@ export default function Navbar(props: NavbarProps) {
           anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
         >
           <MenuItem onClick={handleClickCerrarMenuUsuario}>
-            <Avatar /> Perfil
-          </MenuItem>
-          <MenuItem onClick={handleClickCerrarMenuUsuario}>
-            <Avatar /> Mi cuenta
-          </MenuItem>
-          <Divider />
-          <MenuItem onClick={handleClickCerrarMenuUsuario}>
-            <ListItemIcon>
-              <PersonAdd fontSize="small" />
-            </ListItemIcon>
-            Agregar otra cuenta
-          </MenuItem>
-          <MenuItem onClick={handleClickCerrarMenuUsuario}>
-            <ListItemIcon>
-              <Settings fontSize="small" />
-            </ListItemIcon>
-            Ajustes
-          </MenuItem>
-          <MenuItem onClick={handleClickCerrarMenuUsuario}>
             <ListItemIcon>
               <Logout fontSize="small" />
             </ListItemIcon>
