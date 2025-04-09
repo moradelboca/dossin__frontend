@@ -22,9 +22,7 @@ const InconvenienteForm: React.FC<FormularioProps> = ({
 
   const [tipoInconveniente, setTipoInconveniente] = useState<string | null>(null);
   const [urgencia, setUrgencia] = useState<string | null>(null);
-  // Ahora "asignadoA" almacenará el objeto Usuario seleccionado o null
   const [asignadoA, setAsignadoA] = useState<Usuario | null>(null);
-  // Estado para almacenar los usuarios (resultado del GET)
   const [usuarios, setUsuarios] = useState<Usuario[]>([]);
 
   // Opciones fijas
@@ -68,7 +66,6 @@ const InconvenienteForm: React.FC<FormularioProps> = ({
       descripcion: "",
       tipoInconveniente: "",
       urgencia: "",
-      // Se mantiene asignadoA en los datos para validación, aunque el valor real será el id
       asignadoA: "",
     },
     {
@@ -77,7 +74,7 @@ const InconvenienteForm: React.FC<FormularioProps> = ({
       tipoInconveniente: () =>
         !tipoInconveniente ? "Seleccione un tipo de inconveniente" : null,
       urgencia: () => (!urgencia ? "Seleccione el nivel de urgencia" : null),
-      // Puedes agregar validación para asignadoA si lo requieres
+      asignadoA: () => (!asignadoA ? "Seleccione a quien asignar el inconveniente" : null),
     }
   );
 
@@ -90,8 +87,7 @@ const InconvenienteForm: React.FC<FormularioProps> = ({
         tipoInconveniente: tiposInconvenientes.find(
           (tipo) => tipo.nombre === tipoInconveniente
         )?.id,
-        creadoPor: user?.email, // Se asigna el email obtenido del token
-        // Se envía el id del usuario seleccionado o null si no hay ninguno
+        creadoPor: user?.email,
         asignadoA: asignadoA?.id || null,
       };
 

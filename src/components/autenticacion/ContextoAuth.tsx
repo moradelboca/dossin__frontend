@@ -2,10 +2,15 @@
 import { createContext, useState, useContext, ReactNode } from "react";
 import Cookies from "js-cookie";
 
+interface RolUsuario {
+  id: number;
+  nombre: string;
+}
+
 interface User {
   id: number;
   email: string;
-  rol: string;
+  rol: RolUsuario;
 }
 
 interface AuthContextProps {

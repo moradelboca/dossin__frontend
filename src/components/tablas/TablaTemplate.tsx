@@ -12,7 +12,7 @@ import { ContextoGeneral } from "../Contexto";
 import CreadorEntidad from "../dialogs/CreadorEntidad";
 import { GridTemplate } from "../grid/GridTemplate";
 import MobileCardList from "../mobile/MobileCardList";
-import { dataPruebas } from "./dataPruebas";
+//import { dataPruebas } from "./dataPruebas";
 
 interface TablaTemplateProps {
   titulo: string;
@@ -76,9 +76,9 @@ export default function TablaTemplate({
   };
 
   useEffect(() => {
-    //refreshDatos();
-    setDatos(dataPruebas);
-    setEstadoCarga("Cargado");
+    refreshDatos();
+    //setDatos(dataPruebas);
+    //setEstadoCarga("Cargado");
   }, [apiURL]);
 
   const handleOpen = (item: any) => {

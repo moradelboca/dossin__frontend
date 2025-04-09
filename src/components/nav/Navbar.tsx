@@ -6,8 +6,8 @@ import Tooltip from "@mui/material/Tooltip";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import { styled } from "@mui/material/styles";
-import { Divider, ListItemIcon, Box } from "@mui/material";
-import { Logout, PersonAdd, Settings } from "@mui/icons-material";
+import { ListItemIcon, Box } from "@mui/material";
+import { Logout } from "@mui/icons-material";
 import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 

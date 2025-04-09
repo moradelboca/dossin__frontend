@@ -1,17 +1,17 @@
 
 import DeleteIcon from "@mui/icons-material/Delete";
 import {
-    Autocomplete,
-    Box,
-    Button,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogContentText,
-    DialogTitle,
-    IconButton,
-    Popper,
-    TextField,
+  Autocomplete,
+  Box,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  IconButton,
+  Popper,
+  TextField,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useAllowed } from "../../hooks/auth/useAllowed";
@@ -25,7 +25,7 @@ import OrdenPagoForm from "./tabs/OrdenPagoForm";
 import PesajeForm from "./tabs/PesajeForm";
 import TaraForm from "./tabs/TaraForm";
 
-const ROLES_PERMITIDOS_ADELANTOS = ["Administrador", "Logistica", ];
+const ROLES_PERMITIDOS_ADELANTOS = [1, 2 ];
 
 
 interface EditarTurnoFormProps {
