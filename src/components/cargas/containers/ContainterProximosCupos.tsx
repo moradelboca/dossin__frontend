@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { useContext, useEffect, useRef, useState } from "react";
 import { ContextoCargas } from "./ContainerTajetasCargas";
 import { ContextoGeneral } from "../../Contexto";
-import { cuposCargasPrueba } from "./cuposCargasPrueba";
+//import { cuposCargasPrueba } from "./cuposCargasPrueba";
 
 export default function ContainerProximosCupos() {
   const navigate = useNavigate();
@@ -59,7 +59,6 @@ export default function ContainerProximosCupos() {
           return response.json();
         })
         .then((data) => {
-          // Aquí usarías 'data' real, pero por ahora se simula con cuposCargasPrueba
           if (Array.isArray(data)) {
             setCupos(data);
           } else {

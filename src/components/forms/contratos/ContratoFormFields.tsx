@@ -2,11 +2,18 @@
 import React from "react";
 import AutocompleteEmpresas from "../autocompletes/AutocompleteEmpresas";
 
+type EmpresaField = {
+  key: string;
+  label: string;
+  rol: string;
+};
+
 interface FormFieldsProps {
   data: any;
   errors: any;
   setData: (data: any) => void;
   errorTitular?: any;
+  empresaFields: EmpresaField[]; // Se agrega la propiedad
 }
 
 const ContratoFormFields: React.FC<FormFieldsProps> = ({

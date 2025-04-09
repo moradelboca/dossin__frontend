@@ -5,7 +5,6 @@ import { useParams } from "react-router-dom";
 import { ContextoGeneral } from "../../Contexto";
 import { CargasMobile } from "../../mobile/cargas/CargasMobile";
 import { CargaDialog } from "../tarjetas/CargaDialog";
-import { cargasPrueba } from "./cargasPrueba";
 import { ContainerTarjetasCargas } from "./ContainerTajetasCargas";
 
 export function ContainerCargas() {
@@ -47,8 +46,6 @@ export function ContainerCargas() {
   
   useEffect(() => {
     refreshCargas();
-    //setCargas(cargasPrueba);
-    //setEstadoCarga("Cargado");
   }, [refreshCargas]);
 
   // Actualizar la carga seleccionada si las cargas cambian

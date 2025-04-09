@@ -57,7 +57,7 @@ function App() {
                   <Route
                     path="/"
                     element={
-                      <RutasProtegidas allowedRoles={["Administrador"]}>
+                      <RutasProtegidas allowedRoles={[1]}>
                         <Dashboard />
                       </RutasProtegidas>
                     }
@@ -66,7 +66,7 @@ function App() {
                   <Route
                     path="/cargas"
                     element={
-                      <RutasProtegidas allowedRoles={["Administrador", "Logistica", "Pagos"]}>
+                      <RutasProtegidas allowedRoles={[1, 2, 3]}>
                         <ContainerCargas />
                       </RutasProtegidas>
                     }
@@ -75,7 +75,7 @@ function App() {
                   <Route
                     path="/cargas/:idCarga"
                     element={
-                      <RutasProtegidas allowedRoles={["Administrador", "Logistica", "Pagos"]}>
+                      <RutasProtegidas allowedRoles={[1, 2, 3]}>
                         <ContainerCargas />
                       </RutasProtegidas>
                     }
@@ -84,7 +84,7 @@ function App() {
                   <Route
                     path="cargas/:idCarga/cupos"
                     element={
-                      <RutasProtegidas allowedRoles={["Administrador", "Logistica", "Pagos"]}>
+                      <RutasProtegidas allowedRoles={[1, 2, 3]}>
                         <ContainerCupos />
                       </RutasProtegidas>
                     }
@@ -93,7 +93,7 @@ function App() {
                   <Route
                     path="/contratos"
                     element={
-                      <RutasProtegidas allowedRoles={["Administrador", "Logistica", "Pagos"]}>
+                      <RutasProtegidas allowedRoles={[1, 2, 3]}>
                         <Contratos />
                       </RutasProtegidas>
                     }
@@ -102,7 +102,7 @@ function App() {
                   <Route
                     path="/colaboradores"
                     element={
-                      <RutasProtegidas allowedRoles={["Administrador", "Logistica", "Pagos"]}>
+                      <RutasProtegidas allowedRoles={[1, 2, 3]}>
                         <Choferes />
                       </RutasProtegidas>
                     }
@@ -111,7 +111,7 @@ function App() {
                   <Route
                     path="/ubicaciones"
                     element={
-                      <RutasProtegidas allowedRoles={["Administrador", "Logistica", "Pagos"]}>
+                      <RutasProtegidas allowedRoles={[1, 2, 3]}>
                         <MapaMain />
                       </RutasProtegidas>
                     }
@@ -120,7 +120,7 @@ function App() {
                   <Route
                     path="/empresas"
                     element={
-                      <RutasProtegidas allowedRoles={["Administrador", "Logistica", "Pagos"]}>
+                      <RutasProtegidas allowedRoles={[1, 2, 3]}>
                         <Empresas />
                       </RutasProtegidas>
                     }
@@ -129,7 +129,7 @@ function App() {
                   <Route
                     path="/camiones"
                     element={
-                      <RutasProtegidas allowedRoles={["Administrador", "Logistica"]}>
+                      <RutasProtegidas allowedRoles={[1, 2]}>
                         <TabCamiones />
                       </RutasProtegidas>
                     }
@@ -138,7 +138,7 @@ function App() {
                   <Route
                     path="/inconvenientes"
                     element={
-                      <RutasProtegidas allowedRoles={["Administrador", "Logistica"]}>
+                      <RutasProtegidas allowedRoles={[1, 2]}>
                         <Inconvenientes />
                       </RutasProtegidas>
                     }
@@ -147,7 +147,7 @@ function App() {
                   <Route
                     path="/clima"
                     element={
-                      <RutasProtegidas allowedRoles={["Administrador", "Logistica"]}>
+                      <RutasProtegidas allowedRoles={[1, 2]}>
                         <Clima />
                       </RutasProtegidas>
                     }
@@ -156,7 +156,7 @@ function App() {
                   <Route
                     path="/calculadora"
                     element={
-                      <RutasProtegidas allowedRoles={["Administrador", "Logistica"]}>
+                      <RutasProtegidas allowedRoles={[1, 2]}>
                         <TarifaApp />
                       </RutasProtegidas>
                     }
@@ -165,7 +165,7 @@ function App() {
                   <Route
                     path="/admin"
                     element={
-                      <RutasProtegidas allowedRoles={["Administrador"]}>
+                      <RutasProtegidas allowedRoles={[1]}>
                         <Usuarios />
                       </RutasProtegidas>
                     }

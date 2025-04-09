@@ -46,7 +46,7 @@ export function EditToolbar(props: EditToolbarProps) {
                         },
                     }}
                 />
-                <ProtectedComponent allowedRoles={["Administrador"]}>
+                <ProtectedComponent allowedRoles={[1]}>
                     <GridToolbarExport
                         slotProps={{
                             button: {
