@@ -53,7 +53,7 @@ const RutasProtegidas = ({ children, allowedRoles }: ProtectedRouteProps) => {
         //  }
         //}
         
-          Cookies.set("accessToken", data.accesToken, { 
+          Cookies.set("accessToken", data.accessToken, { 
             secure: true, 
             sameSite: "strict"
           });
