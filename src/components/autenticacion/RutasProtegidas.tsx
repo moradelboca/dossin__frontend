@@ -38,8 +38,9 @@ const RutasProtegidas = ({ children, allowedRoles }: ProtectedRouteProps) => {
           },
           signal: controller.signal
         });
-
-        const data = await response.json();
+        
+        if (response.status === 200) {
+          const data = await response.json();
         //const data = {
         //  "mensaje": "Token valido",
         //  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.//eyJpZCI6MiwiZW1haWwiOiJtYXhpcml2YWRlcm8yMDAwQGdtYWlsLmNvbSIsInVzZXJuYW1lIjpudWxsLCJyb2wiOnsiaWQiOjIsIm5vbWJyZSI6////IkFkbWluaXN0cmFkb3IifSwiaWF0IjoxNzQyNTc2NzU2LCJleHAiOjE3NDI1ODAzNTZ9.//Wcno8vN4H1q8_MCl5Cs_vhSojw_2jC3AfWR2bmF9q6Q",
@@ -52,13 +53,10 @@ const RutasProtegidas = ({ children, allowedRoles }: ProtectedRouteProps) => {
         //  }
         //}
         
-        if (data.mensaje === "Token valido") {
-        if (data.token !== accessToken) {
-          Cookies.set("accessToken", data.token, { 
+          Cookies.set("accessToken", data.accesToken, { 
             secure: true, 
             sameSite: "strict"
           });
-        }
         //if (data.mensaje === "Token valido") {
         //  if (data.token) {
         //    Cookies.set("accessToken", data.token, { 
