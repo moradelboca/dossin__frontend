@@ -100,7 +100,7 @@ const EmpresaForm: React.FC<FormularioProps> = ({
         });
       }
       else if (typeof seleccionado.roles === "string") {
-        const nombres = seleccionado.roles.split(",").map((s) => s.trim());
+        const nombres = seleccionado.roles.split(",").map((s: string) => s.trim());
         rolesIniciales = roles.filter((r) => nombres.includes(r.nombre));
       }
       setRolesSeleccionados(rolesIniciales);
