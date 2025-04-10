@@ -17,17 +17,17 @@ const RutasProtegidas = ({ children, allowedRoles }: ProtectedRouteProps) => {
 
   useEffect(() => {
     const controller = new AbortController();
-    
+
     const verificarToken = async () => {
       setVerificando(true);
       const accessToken = Cookies.get("accessToken");
-      
+
       if (!accessToken) {
         logout();
         setVerificando(false);
         return;
       }
-      
+
       try {
         const response = await fetch(`${pruebas}/auth/verify-token`, {
           method: "GET",
@@ -37,19 +37,17 @@ const RutasProtegidas = ({ children, allowedRoles }: ProtectedRouteProps) => {
           },
           signal: controller.signal
         });
-        
-        if (response.status === 200) {
+
+        if (response.ok) {
           const data = await response.json();
-          
           if (data.token) {
             Cookies.set("accessToken", data.token, { 
-              secure: true, 
               sameSite: "strict"
             });
           } else {
             throw new Error("Token inválido");
           }
-  
+
           login({
             id: data.usuario.id,
             email: data.usuario.email,
@@ -60,6 +58,7 @@ const RutasProtegidas = ({ children, allowedRoles }: ProtectedRouteProps) => {
         }
       } catch (error) {
         if (!controller.signal.aborted) {
+          console.error("Error", error);
           logout();
         }
       } finally {
@@ -70,21 +69,24 @@ const RutasProtegidas = ({ children, allowedRoles }: ProtectedRouteProps) => {
     };
 
     verificarToken();
-    
+
     return () => {
       controller.abort();
     };
   }, [location.pathname]);
 
+  // Solo redirige cuando no se este verificando y no este autenticado
+  useEffect(() => {
+    if (!verificando && !autenticado) {
+      window.open("https://auth.dossin.com.ar/auth/google", "_self");
+    }
+  }, [verificando, autenticado]);
+
   if (verificando) {
     return <div>Cargando...</div>;
   }
 
-  if (!autenticado) {
-    window.open("https://auth.dossin.com.ar/auth/google", "_self");
-    return null;
-  }
-  if (allowedRoles && !allowedRoles.includes(user!.rol.id)) {
+  if (allowedRoles && user && !allowedRoles.includes(user.rol.id)) {
     return <Navigate to="/no-autorizado" replace />;
   }
 
