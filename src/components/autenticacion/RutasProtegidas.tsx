@@ -20,19 +20,20 @@ const RutasProtegidas = ({ children, allowedRoles }: ProtectedRouteProps) => {
     const controller = new AbortController();
     
     const verificarToken = async () => {
-      setVerificando(true);
-      const accessToken = Cookies.get("accessToken");
+    setVerificando(true);
+    const accessToken = Cookies.get("accessToken");
 
-      if (!accessToken) {
-        logout();
-        setVerificando(false);
-        return;
-      }
-
+    if (!accessToken) {
+      logout();
+      setVerificando(false);
+      return;
+    }
+    
       try {
         const response = await fetch(`${pruebas}/auth/verify-token`, {
+          method: "GET",
           headers: {
-            "Authorization": `bearer ${accessToken}`,
+            "Authorization": `Bearer ${accessToken}`,
             "ngrok-skip-browser-warning": "true"
           },
           signal: controller.signal
@@ -41,7 +42,7 @@ const RutasProtegidas = ({ children, allowedRoles }: ProtectedRouteProps) => {
         const data = await response.json();
         //const data = {
         //  "mensaje": "Token valido",
-        //  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.//eyJpZCI6MiwiZW1haWwiOiJtYXhpcml2YWRlcm8yMDAwQGdtYWlsLmNvbSIsInVzZXJuYW1lIjpudWxsLCJyb2wiOnsiaWQiOjIsIm5vbWJyZSI6//IkFkbWluaXN0cmFkb3IifSwiaWF0IjoxNzQyNTc2NzU2LCJleHAiOjE3NDI1ODAzNTZ9.//Wcno8vN4H1q8_MCl5Cs_vhSojw_2jC3AfWR2bmF9q6Q",
+        //  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.//eyJpZCI6MiwiZW1haWwiOiJtYXhpcml2YWRlcm8yMDAwQGdtYWlsLmNvbSIsInVzZXJuYW1lIjpudWxsLCJyb2wiOnsiaWQiOjIsIm5vbWJyZSI6////IkFkbWluaXN0cmFkb3IifSwiaWF0IjoxNzQyNTc2NzU2LCJleHAiOjE3NDI1ODAzNTZ9.//Wcno8vN4H1q8_MCl5Cs_vhSojw_2jC3AfWR2bmF9q6Q",
         //  "usuario": {
         //      "id": 2,
         //      "username": null,
@@ -50,8 +51,7 @@ const RutasProtegidas = ({ children, allowedRoles }: ProtectedRouteProps) => {
         //      "rol": { id:1, nombre:"Admin" }
         //  }
         //}
-        //
-        if (response.ok && data.mensaje === "Token valido") {
+        
         if (data.mensaje === "Token valido") {
         if (data.token !== accessToken) {
           Cookies.set("accessToken", data.token, { 
@@ -59,6 +59,12 @@ const RutasProtegidas = ({ children, allowedRoles }: ProtectedRouteProps) => {
             sameSite: "strict"
           });
         }
+        //if (data.mensaje === "Token valido") {
+        //  if (data.token) {
+        //    Cookies.set("accessToken", data.token, { 
+        //      secure: true, 
+        //      sameSite: "strict"
+        //    });
           
           login({
             id: data.usuario.id,
@@ -68,7 +74,7 @@ const RutasProtegidas = ({ children, allowedRoles }: ProtectedRouteProps) => {
         } else {
           throw new Error("Token inválido");
         }
-      } }catch (error) {
+      }catch (error) {
         if (!controller.signal.aborted) {
           console.error("Error:", error);
           logout();
@@ -93,8 +99,6 @@ const RutasProtegidas = ({ children, allowedRoles }: ProtectedRouteProps) => {
     window.open("https://auth.dossin.com.ar/auth/google", "_self");
     return null;
   }
-  const rolNombre = user?.rol || (user?.rol as unknown as string);
-  console.log(rolNombre)
   if (allowedRoles && !allowedRoles.includes(user!.rol.id)) {
     return <Navigate to="/no-autorizado" replace />;
   }
