@@ -15,20 +15,19 @@ const RutasProtegidas = ({ children, allowedRoles }: ProtectedRouteProps) => {
   const location = useLocation();
   const { pruebas } = useContext(ContextoGeneral);
 
-  
   useEffect(() => {
     const controller = new AbortController();
     
     const verificarToken = async () => {
-    setVerificando(true);
-    const accessToken = Cookies.get("accessToken");
-
-    if (!accessToken) {
-      logout();
-      setVerificando(false);
-      return;
-    }
-    
+      setVerificando(true);
+      const accessToken = Cookies.get("accessToken");
+      
+      if (!accessToken) {
+        logout();
+        setVerificando(false);
+        return;
+      }
+      
       try {
         const response = await fetch(`${pruebas}/auth/verify-token`, {
           method: "GET",
@@ -41,29 +40,16 @@ const RutasProtegidas = ({ children, allowedRoles }: ProtectedRouteProps) => {
         
         if (response.status === 200) {
           const data = await response.json();
-        //const data = {
-        //  "mensaje": "Token valido",
-        //  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.//eyJpZCI6MiwiZW1haWwiOiJtYXhpcml2YWRlcm8yMDAwQGdtYWlsLmNvbSIsInVzZXJuYW1lIjpudWxsLCJyb2wiOnsiaWQiOjIsIm5vbWJyZSI6////IkFkbWluaXN0cmFkb3IifSwiaWF0IjoxNzQyNTc2NzU2LCJleHAiOjE3NDI1ODAzNTZ9.//Wcno8vN4H1q8_MCl5Cs_vhSojw_2jC3AfWR2bmF9q6Q",
-        //  "usuario": {
-        //      "id": 2,
-        //      "username": null,
-        //      "email": "maxirivadero2000@gmail.com",
-        //      "imagen": "https://lh3.googleusercontent.com/a///ACg8ocK0l-qfNQvkU5oPCSyE28crQbfY5M_wpUMs1CttsVieLxNeYY9v=s96-c",
-        //      "rol": { id:1, nombre:"Admin" }
-        //  }
-        //}
-        
-          Cookies.set("accessToken", data.accessToken, { 
-            secure: true, 
-            sameSite: "strict"
-          });
-        //if (data.mensaje === "Token valido") {
-        //  if (data.token) {
-        //    Cookies.set("accessToken", data.token, { 
-        //      secure: true, 
-        //      sameSite: "strict"
-        //    });
           
+          if (data.token) {
+            Cookies.set("accessToken", data.token, { 
+              secure: true, 
+              sameSite: "strict"
+            });
+          } else {
+            throw new Error("Token inválido");
+          }
+  
           login({
             id: data.usuario.id,
             email: data.usuario.email,
@@ -72,9 +58,8 @@ const RutasProtegidas = ({ children, allowedRoles }: ProtectedRouteProps) => {
         } else {
           throw new Error("Token inválido");
         }
-      }catch (error) {
+      } catch (error) {
         if (!controller.signal.aborted) {
-          console.error("Error:", error);
           logout();
         }
       } finally {
@@ -86,7 +71,9 @@ const RutasProtegidas = ({ children, allowedRoles }: ProtectedRouteProps) => {
 
     verificarToken();
     
-    return () => controller.abort();
+    return () => {
+      controller.abort();
+    };
   }, [location.pathname]);
 
   if (verificando) {
