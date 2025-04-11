@@ -36,30 +36,21 @@ const RutasProtegidas = ({ children, allowedRoles }: ProtectedRouteProps) => {
           },
           signal: controller.signal
         });
-
-        if (response.ok) {
-          const data = await response.json();
-          if (data.token) {
-            Cookies.set("accessToken", data.token, { 
-              sameSite: "strict"
-            });
-          } else {
-            throw new Error("Token inválido");
-          }
-
+        const data = await response.json();
+        if (response.ok && data.token)  {
+          Cookies.set("accessToken", data.token, { 
+            sameSite: "strict"
+          });
           login({
             id: data.usuario.id,
             email: data.usuario.email,
             rol: { id: data.usuario.rol.id, nombre: data.usuario.rol.nombre }
           });
         } else {
-          throw new Error("Token inválido");
+          logout(); 
         }
       } catch (error) {
-        if (!controller.signal.aborted) {
-          console.error("Ocurrio un error: ", error);
-          //logout();
-        }
+        console.error("Ocurrio un error: ", error);
       } finally {
         if (!controller.signal.aborted) {
           setVerificando(false);
