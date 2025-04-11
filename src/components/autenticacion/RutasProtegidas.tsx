@@ -21,7 +21,6 @@ const RutasProtegidas = ({ children, allowedRoles }: ProtectedRouteProps) => {
     const verificarToken = async () => {
       setVerificando(true);
       const accessToken = Cookies.get("accessToken");
-
       if (!accessToken) {
         logout();
         setVerificando(false);
