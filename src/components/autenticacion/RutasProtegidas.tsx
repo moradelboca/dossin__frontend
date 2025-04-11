@@ -10,7 +10,7 @@ interface ProtectedRouteProps {
 }
 
 const RutasProtegidas = ({ children, allowedRoles }: ProtectedRouteProps) => {
-  const { autenticado, user, login, logout } = useAuth();
+  const { user, login, logout } = useAuth();
   const [verificando, setVerificando] = useState(true);
   const location = useLocation();
   const { pruebas } = useContext(ContextoGeneral);
@@ -21,7 +21,6 @@ const RutasProtegidas = ({ children, allowedRoles }: ProtectedRouteProps) => {
     const verificarToken = async () => {
       setVerificando(true);
       const accessToken = Cookies.get("accessToken");
-
       if (!accessToken) {
         logout();
         setVerificando(false);
@@ -76,11 +75,11 @@ const RutasProtegidas = ({ children, allowedRoles }: ProtectedRouteProps) => {
   }, [location.pathname]);
 
   // Solo redirige cuando no se este verificando y no este autenticado
-  useEffect(() => {
-    if (!verificando && !autenticado) {
-      window.open("https://auth.dossin.com.ar/auth/google", "_self");
-    }
-  }, [verificando, autenticado]);
+  //useEffect(() => {
+  //  if (!verificando && !autenticado) {
+  //    window.open("https://auth.dossin.com.ar/auth/google", "_self");
+  //  }
+  //}, [verificando, autenticado]);
 
   if (verificando) {
     return <div>Cargando...</div>;

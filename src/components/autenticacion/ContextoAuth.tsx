@@ -14,7 +14,7 @@ interface User {
 }
 
 interface AuthContextProps {
-  autenticado: boolean;
+  //autenticado: boolean;
   user: User | null;
   login: (userData: User) => void;
   logout: () => void;
@@ -23,22 +23,20 @@ interface AuthContextProps {
 const AuthContext = createContext<AuthContextProps | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [autenticado, setAutenticado] = useState(false);
   const [user, setUser] = useState<User | null>(null);
 
   const login = (userData: User) => {
-    setAutenticado(true);
     setUser(userData);
   };
 
   const logout = () => {
-    setAutenticado(false);
     setUser(null);
     Cookies.remove("accessToken");
+    window.open("https://auth.dossin.com.ar/auth/google", "_self");
   };
 
   return (
-    <AuthContext.Provider value={{ autenticado, user, login, logout }}>
+    <AuthContext.Provider value={{ user, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
