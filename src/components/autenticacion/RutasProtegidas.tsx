@@ -57,8 +57,8 @@ const RutasProtegidas = ({ children, allowedRoles }: ProtectedRouteProps) => {
         }
       } catch (error) {
         if (!controller.signal.aborted) {
-          console.error("Error", error);
-          logout();
+          console.error("Ocurrio un error: ", error);
+          //logout();
         }
       } finally {
         if (!controller.signal.aborted) {

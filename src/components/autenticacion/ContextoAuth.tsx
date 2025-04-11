@@ -30,6 +30,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const logout = () => {
+    console.log("Logout");
     setUser(null);
     Cookies.remove("accessToken");
     window.open("https://auth.dossin.com.ar/auth/google", "_self");
