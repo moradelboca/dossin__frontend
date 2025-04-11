@@ -75,11 +75,11 @@ const RutasProtegidas = ({ children, allowedRoles }: ProtectedRouteProps) => {
   }, [location.pathname]);
 
   // Solo redirige cuando no se este verificando y no este autenticado
-  //useEffect(() => {
-  //  if (!verificando && !autenticado) {
-  //    window.open("https://auth.dossin.com.ar/auth/google", "_self");
-  //  }
-  //}, [verificando, autenticado]);
+  /* useEffect(() => {
+    if (!verificando && !autenticado) {
+      window.open("https://auth.dossin.com.ar/auth/google", "_self");
+    }
+  }, [verificando, autenticado]); */
 
   if (verificando) {
     return <div>Cargando...</div>;
