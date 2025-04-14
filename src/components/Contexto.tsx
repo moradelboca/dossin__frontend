@@ -19,3 +19,5 @@ export const ValoresContexto = {
 export const ContextoGeneral = createContext({
     ...ValoresContexto,
 });
+
+console.log("ValoresContexto: ", ValoresContexto);
