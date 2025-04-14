@@ -16,18 +16,22 @@ const RutasProtegidas = ({ children, allowedRoles }: ProtectedRouteProps) => {
   const { pruebas } = useContext(ContextoGeneral);
 
   useEffect(() => {
+    console.log("Verificando token...");
     const controller = new AbortController();
 
     const verificarToken = async () => {
       setVerificando(true);
+      console.log("Verificando token...");
       const accessToken = Cookies.get("accessToken");
       if (!accessToken) {
         logout();
         setVerificando(false);
         return;
       }
+      console.log("Token: ", accessToken);
 
       try {
+        console.log("Obteniendo nuevo token en ", pruebas)
         const response = await fetch(`${pruebas}/auth/verify-token`, {
           method: "GET",
           headers: {
@@ -36,6 +40,7 @@ const RutasProtegidas = ({ children, allowedRoles }: ProtectedRouteProps) => {
           },
           signal: controller.signal
         });
+        console.log("Response: ", response);
         const data = await response.json();
         if (response.ok && data.token)  {
           Cookies.set("accessToken", data.token, { 
@@ -48,6 +53,7 @@ const RutasProtegidas = ({ children, allowedRoles }: ProtectedRouteProps) => {
             rol: { id: data.usuario.rol.id, nombre: data.usuario.rol.nombre }
           });
         } else {
+          console.log("Token no valido, log out");
           logout(); 
         }
       } catch (error) {
