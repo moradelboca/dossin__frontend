@@ -21,7 +21,7 @@ export interface NavItem {
   
   export const navItems: NavItem[] = [
     // Este item es público, sin roles definidos.
-    { label: "Home", ruta: "/", rolesPermitidos: [1],icono: <GridView /> },
+    { label: "Home", ruta: "/",icono: <GridView /> },
     // Items protegidos:
     { label: "Cargas", ruta: "/cargas", rolesPermitidos: [1, 2, 3], icono: <ViewInAr /> },
     { label: "Contratos", ruta: "/contratos", rolesPermitidos: [1, 2, 3], icono: <AssignmentOutlinedIcon /> },
