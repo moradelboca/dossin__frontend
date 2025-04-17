@@ -6,22 +6,22 @@ import {
   DialogTitle,
   Typography,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
-import MobileEditToolbar from "./MobileEditToolbar";
-import CreadorEntidad from "../dialogs/CreadorEntidad";
-import FilterDialog from "../dialogs/tablas/FilterDialog";
 import "jspdf-autotable";
-import CardMobile from "../cards/mobile/CardMobile";
-import { handleFilterApply, Filter } from "../../utils/filtrosUtils";
+import React, { useEffect, useState } from "react";
 import { handleSearch } from "../../utils/busquedaUtils";
 import { exportarCSV, exportarPDF } from "../../utils/exportUtils";
+import { Filter, handleFilterApply } from "../../utils/filtrosUtils";
+import CardMobile from "../cards/mobile/CardMobile";
+import CreadorEntidad from "../dialogs/CreadorEntidad";
+import FilterDialog from "../dialogs/tablas/FilterDialog";
+import MobileEditToolbar from "./MobileEditToolbar";
 
 interface MobileCardListProps {
   titulo: string;
   entidad: string;
   fields: string[];
   headerNames: string[];
-  usarPruebas?: boolean;
+  usarAuthURL?: boolean;
   FormularioCreador: React.ComponentType<any>;
   customIcon?: string;
   tituloField?: string;

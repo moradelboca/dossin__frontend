@@ -174,7 +174,6 @@ const InconvenientesDialog: React.FC<InconvenientesDialogProps> = ({ open, handl
         <TabPanel value={tabIndex} index={0}>
           {(() => {
             const data = filterInconvenientes();
-            console.log(data)
             return (
               <>
                 <Typography variant="subtitle1">Cantidad: {data?.length}</Typography>

@@ -24,9 +24,6 @@ const useFacturaHandler = () => {
         : `${backendURL}/facturas/${cuitEmpresa}/crear-factura`;
       const method = isUpdating ? 'PUT' : 'POST';
 
-      console.log("Metodo: \n", method);
-      console.log("URL: \n", url);
-
       const body = isUpdating
         ? {
             fecha: payload.fecha,

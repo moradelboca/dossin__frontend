@@ -31,8 +31,8 @@ export default function SelectorDeUbicacion() {
                 setEstadoCarga(false);
                 console.log(ubicaciones);
             })
-            .catch(() =>
-                console.error("Error al obtener las Ubicaciones disponibles")
+            .catch((error) =>
+                console.error("Error al obtener las Ubicaciones disponibles: ", error)
             );
     }, []);
     console.log(ubicaciones)

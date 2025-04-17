@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useContext, useState,useMemo } from "react";
+import React, { useContext, useState,useMemo, useEffect } from "react";
 import {
   Button,
   Dialog,
@@ -21,12 +21,12 @@ import useCargas from "../../hooks/contratos/useCargas";
 import ContratoFormFields from "./ContratoFormFields";
 import CargasSection from "./CargasSection";
 import DeleteCarga from "../../dialogs/contratos/DeleteCarga";
-
+import useSortEmpresasPorRol from "../../hooks/contratos/useSortEmpresasPorRol";
 
 type EmpresaField = {
   key: string;
   label: string;
-  rol: string;
+  rol: number;
 };
 
 const ContratoForm: React.FC<FormularioProps> = ({
@@ -59,22 +59,59 @@ const ContratoForm: React.FC<FormularioProps> = ({
   // Hook para cargar las cargas existentes
   const { cargas, setCargas } = useCargas(safeSeleccionado.cargas, backendURL);
 
+  // Empresas y sus roles
+  const [allEmpresas, setAllEmpresas] = useState<any[]>([]);
+  const [roles, setRoles] = useState<any[]>([]);
+
+  // Fetch empresas
+  useEffect(() => {
+
+    fetch(`${backendURL}/empresas`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'ngrok-skip-browser-warning': 'true'
+      }
+    })
+      .then(response => response.json())
+      .then((data) => setAllEmpresas(data))
+      .catch(err => console.error('Error al obtener las empresas', err));
+
+    //--------------------------------------
+
+    fetch(`${backendURL}/empresas/roles`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'ngrok-skip-browser-warning': 'true'
+      }
+    })
+      .then(response => response.json())
+      .then(data => setRoles(data))
+      .catch(err => console.error('Error al obtener los roles', err));
+    
+  }, [backendURL]);
+
+  const sorteredEmpresasSegunRol = useSortEmpresasPorRol(allEmpresas, roles);
+
   // Lista de campos de empresas con sus configuraciones
   const empresaFields: EmpresaField[] = useMemo(() => [
-    { key: 'titularCartaDePorte', label: 'Titular Carta de Porte', rol: 'remitente comercial' },
-    { key: 'remitenteProductor', label: 'Remitente Productor', rol: 'remitente comercial' },
-    { key: 'remitenteVentaPrimaria', label: 'Remitente Venta Primaria', rol: 'remitente comercial' },
-    { key: 'remitenteVentaSecundaria', label: 'Remitente Venta Secundaria', rol: 'remitente comercial' },
-    { key: 'remitenteVentaSecundaria2', label: 'Remitente Venta Secundaria 2', rol: 'remitente comercial' },
-    { key: 'corredorVentaPrimaria', label: 'Corredor Venta Primaria', rol: 'remitente comercial' },
-    { key: 'corredorVentaSecundaria', label: 'Corredor Venta Secundaria', rol: 'remitente comercial' },
-    { key: 'representanteEntregador', label: 'Representante Entregador', rol: 'remitente comercial' },
-    { key: 'representanteRecibidor', label: 'Representante Recibidor', rol: 'remitente comercial' },
-    { key: 'destinatario', label: 'Destinatario', rol: 'remitente comercial' },
-    { key: 'destino', label: 'Destino', rol: 'transportista' },
-    { key: 'intermediarioDeFlete', label: 'Intermediario de Flete', rol: 'remitente comercial' },
-    { key: 'fletePagador', label: 'Flete Pagador', rol: 'remitente comercial' },
+    { key: 'titularCartaDePorte', label: 'Titular Carta de Porte', rol: 1 },
+    { key: 'remitenteProductor', label: 'Remitente Productor', rol: 1 },
+    { key: 'remitenteVentaPrimaria', label: 'Remitente Venta Primaria', rol: 1 },
+    { key: 'remitenteVentaSecundaria', label: 'Remitente Venta Secundaria', rol: 1 },
+    { key: 'remitenteVentaSecundaria2', label: 'Remitente Venta Secundaria 2', rol: 1 },
+    { key: 'corredorVentaPrimaria', label: 'Corredor Venta Primaria', rol: 1 },
+    { key: 'corredorVentaSecundaria', label: 'Corredor Venta Secundaria', rol: 1 },
+    { key: 'representanteEntregador', label: 'Representante Entregador', rol: 1 },
+    { key: 'representanteRecibidor', label: 'Representante Recibidor', rol: 1 },
+    { key: 'destinatario', label: 'Destinatario', rol: 1 },
+    { key: 'destino', label: 'Destino', rol: 1 },
+    { key: 'intermediarioDeFlete', label: 'Intermediario de Flete', rol: 1 },
+    { key: 'fletePagador', label: 'Flete Pagador', rol: 1 },
   ], []);
+
+  
 
   // Configuración de validación del formulario
   const { data, errors, validateAll, setData } = useValidation(
@@ -133,7 +170,6 @@ const ContratoForm: React.FC<FormularioProps> = ({
         : `${backendURL}/contratos`;
   
       const payload = getOptimizedPayload();
-      console.log("PAYLOAD: \n", payload);
       
       fetch(url, {
         method: metodo,
@@ -256,15 +292,14 @@ const ContratoForm: React.FC<FormularioProps> = ({
       
       <ContratoFormFields
         data={data}
-        errors={{ ...errors }}
+        errors={errors}
         setData={setData}
         empresaFields={empresaFields}
+        sorteredEmpresasSegunRol={sorteredEmpresasSegunRol}
       />
 
       <CargasSection
         cargas={allCargas}
-        fields={[/* campos correspondientes */]}
-        headerNames={[/* nombres de encabezados */]}
         expandedCard={expandedCard}
         handleExpandClick={handleExpandClick}
         handleOpenDialog={handleOpenDialog}

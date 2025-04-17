@@ -44,10 +44,6 @@ export default function SelectorProveedor() {
     const { datosNuevaCarga, datosSinCompletar } = useContext(ContextoStepper);
     const { backendURL } = useContext(ContextoGeneral);
     const [cargamentos, setCargamentos] = useState<any[]>([]);
-    const [proveedores, setProveedores] = useState<any[]>([]);
-    const [valueProveedores, setValueProveedores] = useState<any>(
-        datosNuevaCarga["nombreProveedor"] || null
-    );
     const [valueCargamentos, setValueCargamentos] = useState<any>(
         datosNuevaCarga["nombreCargamento"] || null
     );
@@ -68,22 +64,6 @@ export default function SelectorProveedor() {
             })
             .catch(() =>
                 console.error("Error al obtener los Cargamentos disponibles")
-            );
-
-        fetch(`${backendURL}/proveedores`, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-                "ngrok-skip-browser-warning": "true",
-            },
-        })
-            .then((response) => response.json())
-            .then((p) => {
-                setProveedores(p);
-                setEstadoCarga(false);
-            })
-            .catch(() =>
-                console.error("Error al obtener los Proveedores disponibles")
             );
     }, []);
 
@@ -108,18 +88,6 @@ export default function SelectorProveedor() {
             setValueCargamentos(seleccionado);
         }
     };
-    const seleccionarProveedor = (_event: any, seleccionado: string | null) => {
-        if (seleccionado) {
-            const proveedoresStrings = proveedores.map(
-                (proveedor) => proveedor.nombre
-            );
-            const index = proveedoresStrings.indexOf(seleccionado);
-            const proveedoresIds = proveedores.map((proveedor) => proveedor.id);
-            datosNuevaCarga["idProveedor"] = proveedoresIds[index];
-            datosNuevaCarga["nombreProveedor"] = seleccionado;
-            setValueProveedores(seleccionado);
-        }
-    };
 
     return (
         <Box
@@ -130,21 +98,6 @@ export default function SelectorProveedor() {
             alignItems={"flex-start"}
             width={"800px"}
         >
-            <Autocomplete
-                options={proveedores.map((proveedor: any) => proveedor.nombre)}
-                value={valueProveedores}
-                defaultValue={valueProveedores}
-                onChange={seleccionarProveedor}
-                sx={{ width: 540 }}
-                loading={estadoCarga}
-                renderInput={(params) => (
-                    <TextField
-                        {...params}
-                        error={!valueProveedores ? datosSinCompletar : false}
-                        label="Proveedor"
-                    />
-                )}
-            />
             <Box
                 display="flex"
                 flexDirection="row"

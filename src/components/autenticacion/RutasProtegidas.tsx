@@ -13,7 +13,7 @@ const RutasProtegidas = ({ children, allowedRoles }: ProtectedRouteProps) => {
   const { user, login, logout } = useAuth();
   const [verificando, setVerificando] = useState(true);
   const location = useLocation();
-  const { pruebas } = useContext(ContextoGeneral);
+  const { authURL } = useContext(ContextoGeneral);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -27,7 +27,7 @@ const RutasProtegidas = ({ children, allowedRoles }: ProtectedRouteProps) => {
         return;
       }
       try {
-        const response = await fetch(`${pruebas}/auth/verify-token`, {
+        const response = await fetch(`${authURL}/auth/verify-token`, {
           method: "GET",
           headers: {
             "Authorization": `Bearer ${accessToken}`,

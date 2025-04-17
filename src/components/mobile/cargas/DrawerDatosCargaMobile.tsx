@@ -13,7 +13,6 @@ export default function DrawerDatosCargaMobile({
     tipoTarifa,
     incluyeIVA,
     cantidadKm,
-    proveedor,
     cargamento,
     tiposAcoplados,
     horaInicioCarga,
@@ -28,6 +27,8 @@ export default function DrawerDatosCargaMobile({
     tolerancia,
     creadoPor,
     descripcion,
+    plantaProcedenciaRuca,
+    destinoRuca
   } = cargaSeleccionada || {};
 
   // Ejemplo de función para manejar la edición de cada campo
@@ -46,7 +47,6 @@ export default function DrawerDatosCargaMobile({
     },
     { label: "Incluye IVA", value: incluyeIVA ? "Sí" : "No" },
     { label: "Kilómetros", value: cantidadKm || 0 },
-    { label: "Proveedor", value: proveedor?.nombre || "No definido" },
     {
       label: "Cargamento",
       value: `${cargamento?.nombre || "No definido"} / ${
@@ -81,6 +81,8 @@ export default function DrawerDatosCargaMobile({
     { label: "Tolerancia", value: tolerancia !== undefined ? tolerancia : "-" },
     { label: "Creado Por", value: creadoPor || "-" },
     { label: "Descripción", value: descripcion || "-" },
+    { label: "Planta Procedencia Ruca", value: plantaProcedenciaRuca || "-" },
+    { label: "Destino Ruca", value: destinoRuca || "-" },
   ];
 
   return (

@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import * as React from "react";
-import { DataGrid, GridColDef, GridToolbarQuickFilter } from "@mui/x-data-grid";
+import { PersonAddAlt } from "@mui/icons-material";
+import BorderColorIcon from "@mui/icons-material/BorderColor";
+import CancelIcon from "@mui/icons-material/Cancel";
 import {
     Box,
     Button,
@@ -10,18 +11,11 @@ import {
     DialogTitle,
     Typography,
 } from "@mui/material";
-import { GridRowsProp } from "@mui/x-data-grid";
-import { GridRowModesModel } from "@mui/x-data-grid";
-import { GridToolbarContainer } from "@mui/x-data-grid";
-import { GridToolbarFilterButton } from "@mui/x-data-grid";
-import { GridToolbarExport } from "@mui/x-data-grid";
-import { GridToolbarColumnsButton } from "@mui/x-data-grid";
-import BorderColorIcon from "@mui/icons-material/BorderColor";
-import { ContextoGeneral } from "../Contexto";
-import { PersonAddAlt } from "@mui/icons-material";
+import { DataGrid, GridColDef, GridRowModesModel, GridRowsProp, GridToolbarColumnsButton, GridToolbarContainer, GridToolbarExport, GridToolbarFilterButton, GridToolbarQuickFilter } from "@mui/x-data-grid";
+import * as React from "react";
 import { useEffect, useState } from "react";
+import { ContextoGeneral } from "../Contexto";
 import CreadorUser from "./CreadorUser";
-import CancelIcon from "@mui/icons-material/Cancel";
 
 interface EditToolbarProps {
     setRows: (newRows: (oldRows: GridRowsProp) => GridRowsProp) => void;
@@ -95,14 +89,12 @@ function EditToolbar(props: EditToolbarProps) {
 export default function TablaUser() {
     const [open, setOpen] = React.useState(false);
     const [userSeleccionado, setUserSeleccionado] = React.useState<any>(null);
-    const { pruebas, theme } = React.useContext(ContextoGeneral);
+    const { authURL, theme } = React.useContext(ContextoGeneral);
     const [users, setUsers] = React.useState<any[]>([]);
     const [estadoCarga, setEstadoCarga] = useState("Cargando");
 
     const refreshUsers = () => {
-        console.log("https://auth.dossin.com.ar/auth/usuarios");
-        console.log(`${pruebas}/auth/usuarios`);
-        fetch(`${pruebas}/auth/usuarios`, {
+        fetch(`${authURL}/auth/usuarios`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",

@@ -1,18 +1,18 @@
-import React, { useContext, useEffect, useState } from "react";
+import BorderColorIcon from "@mui/icons-material/BorderColor";
 import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
   Box,
+  Dialog,
+  DialogContent,
+  DialogTitle,
   useMediaQuery,
 } from "@mui/material";
 import { GridColDef } from "@mui/x-data-grid";
-import BorderColorIcon from "@mui/icons-material/BorderColor";
+import React, { useContext, useEffect, useState } from "react";
 import { ContextoGeneral } from "../Contexto";
 import CreadorEntidad from "../dialogs/CreadorEntidad";
 import { GridTemplate } from "../grid/GridTemplate";
 import MobileCardList from "../mobile/MobileCardList";
-//import { dataPruebas } from "./dataPruebas";
+//import { dataPruebas } from "./dataauthURL";
 
 interface TablaTemplateProps {
   titulo: string;
@@ -21,7 +21,7 @@ interface TablaTemplateProps {
   fields: string[];
   headerNames: string[];
   FormularioCreador: React.ComponentType<any>;
-  usarPruebas?: boolean;
+  usarAuthURL?: boolean;
   renderFullScreen?: boolean; // Activa el modo pantalla completa
   // Props extras para la vista mobile
   tituloField?: string;
@@ -35,7 +35,7 @@ export default function TablaTemplate({
   fields,
   headerNames,
   FormularioCreador,
-  usarPruebas = false,
+  usarAuthURL = false,
   renderFullScreen = false,
   tituloField,
   subtituloField,
@@ -46,12 +46,11 @@ export default function TablaTemplate({
   // Estados compartidos para la edición/creación
   const [open, setOpen] = useState(false);
   const [seleccionado, setSeleccionado] = useState<any>(null);
-  const { backendURL, pruebas, theme } = useContext(ContextoGeneral);
+  const { backendURL, authURL, theme } = useContext(ContextoGeneral);
   const [datos, setDatos] = useState<any[]>([]);
   const [estadoCarga, setEstadoCarga] = useState("Cargando");
 
-  const apiURL = usarPruebas ? pruebas : backendURL;
-  console.log(`${apiURL}/${endpoint}`);
+  const apiURL = usarAuthURL ? authURL : backendURL;
   const refreshDatos = () => {
     fetch(`${apiURL}/${endpoint}`, {
       method: "GET",
@@ -66,7 +65,6 @@ export default function TablaTemplate({
       })
       .then((data) => {
         setDatos(data);
-        console.log(data);
         setEstadoCarga("Cargado");
       })
       .catch((error) => {
@@ -205,7 +203,7 @@ export default function TablaTemplate({
         entidad={entidad}
         fields={fields}
         headerNames={headerNames}
-        usarPruebas={usarPruebas}
+        usarAuthURL={usarAuthURL}
         FormularioCreador={FormularioCreador}
         tituloField={tituloField}
         subtituloField={subtituloField}

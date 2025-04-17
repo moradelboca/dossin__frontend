@@ -48,16 +48,17 @@ const CrearNuevoTurnoForm: React.FC<CrearNuevoTurnoFormProps> = ({
       !patenteCamionSeleccionada ? "La patente del camión es obligatoria" : null,
     patenteAcoplado: () =>
       !patenteAcopladoSeleccionada ? "La patente del acoplado es obligatoria" : null,
+    patenteAcopladoExtra: () =>
+      (!patenteAcopladoSeleccionadaExtra && tieneBitren) ? "La patente del acoplado Extra es obligatoria" : null,
   };
 
   const {errors, validateAll} = useValidation(initialData, rules);
 
   const handleSubmit = async () => {
     if (!validateAll()) {
-      console.log("Faltan completar algunos campos obligatorios");
       return;
     }
-
+    
     const payload = {
       cuilColaborador: colaboradorSeleccionado,
       cuitEmpresa: empresaTransportistaSeleccionada,

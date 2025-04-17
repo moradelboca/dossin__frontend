@@ -2,7 +2,7 @@ import { createContext } from "react";
 
 export const ValoresContexto = {
     backendURL: import.meta.env.VITE_BACKEND_URL,
-    pruebas: import.meta.env.VITE_AUTH_URL,
+    authURL: import.meta.env.VITE_AUTH_URL,
     dashboardURL: import.meta.env.VITE_DASHBOARD_URL,
     theme: {
         colores: {

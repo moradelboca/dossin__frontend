@@ -61,8 +61,6 @@ const useTaraHandler = () => {
 
   // Función para eliminar la Tara y actualizar el turno
   const handleTaraDeletion = async (turnoId: string, idTara: string) => {
-    console.log("payload",turnoId);
-    console.log("idtara",idTara);
     try {
       const turnoResponse = await fetch(`${backendURL}/turnos/${turnoId}`, {
         method: "PUT",

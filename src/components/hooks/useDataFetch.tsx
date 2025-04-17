@@ -1,11 +1,11 @@
-import { useState, useEffect, useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import { ContextoGeneral } from "../Contexto";
 
-export const useDataFetch = (endpoint: string, entidad: string, usarPruebas: boolean) => {
-  const { backendURL, pruebas } = useContext(ContextoGeneral);
+export const useDataFetch = (endpoint: string, entidad: string, usarAuthURL: boolean) => {
+  const { backendURL, authURL } = useContext(ContextoGeneral);
   const [datos, setDatos] = useState<any[]>([]);
   const [estadoCarga, setEstadoCarga] = useState("Cargando");
-  const apiURL = usarPruebas ? pruebas : backendURL;
+  const apiURL = usarAuthURL ? authURL : backendURL;
 
   const refreshDatos = () => {
     fetch(`${apiURL}/${endpoint}`, {
