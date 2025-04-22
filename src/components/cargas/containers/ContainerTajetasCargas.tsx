@@ -4,7 +4,7 @@ import {
   DialogTitle,
 } from "@mui/material";
 import Box from "@mui/material/Box";
-import React, { createContext, MouseEvent, useCallback } from "react";
+import React, { createContext, useCallback } from "react";
 import CrearCargaStepper from "../creadores/CrearCargaStepper";
 import DeleteCarga from "../creadores/DeleteCarga";
 import MainContent from "./MainContent";
@@ -46,7 +46,7 @@ export function ContainerTarjetasCargas({
   const [openDialogDelete, setOpenDialogDelete] = React.useState(false);
   const [pasoSeleccionado, setPasoSeleccionado] = React.useState<any>(null);
   const [creando, setCreando] = React.useState(false);
-  const [provincia, setProvincia] = React.useState<string | null>(null);
+  const [provincia, setProvincia] = React.useState<number | null>(null);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const menuOpen = Boolean(anchorEl);
 
@@ -60,10 +60,6 @@ export function ContainerTarjetasCargas({
     setOpenDialog(true);
   }, []);
 
-  const handleCrearCarga = () => {
-    setCreando(true);
-  };
-
   const handleCloseDialog = () => {
     setOpenDialog(false);
     setOpenDialogDelete(false);
@@ -75,12 +71,8 @@ export function ContainerTarjetasCargas({
   };
 
   // Handlers para el filtro por provincia
-  const handleProvinciaChange = (_event: any, seleccionado: any | null) => {
-    setProvincia(seleccionado?.value || null);
-  };
-
-  const handleMenuClick = (event: MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
+  const handleProvinciaChange = (value: number | null) => {
+    setProvincia(value);
   };
 
   const handleMenuClose = () => {
@@ -115,14 +107,9 @@ export function ContainerTarjetasCargas({
           estadoCarga={estadoCarga}
           provincia={provincia}
           onProvinciaChange={handleProvinciaChange}
-          onMenuClick={handleMenuClick}
           menuOpen={menuOpen}
           anchorEl={anchorEl}
           onMenuClose={handleMenuClose}
-          onCrearCarga={() => {
-            handleClickAbrirDialog(0);
-            handleCrearCarga();
-          }}
           onCardClick={handleCardClick}
           cargaSeleccionada={cargaSeleccionada}
         />
