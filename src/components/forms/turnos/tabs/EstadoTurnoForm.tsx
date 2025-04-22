@@ -43,7 +43,6 @@ const EstadoTurnoForm: React.FC<EstadoTurnoFormProps> = ({
       const payload = {
         idEstado: selectedEstado.id,
       };
-      console.log(payload);
       const response = await fetch(url, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },

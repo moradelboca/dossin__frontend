@@ -3,7 +3,7 @@ import React, { useContext, useEffect, useState, useMemo } from 'react';
 import { Autocomplete, TextField } from '@mui/material';
 import { ContextoGeneral } from '../../Contexto';
 
-interface Role {
+interface Rol {
   nombre: string;
   id: number;
 }
@@ -12,7 +12,7 @@ export interface Empresa {
   cuit: string;
   razonSocial: string;
   nombreFantasia: string;
-  roles?: Role[];
+  roles?: Rol[];
 }
 
 interface AutocompleteEmpresasProps {
@@ -30,13 +30,12 @@ const AutocompleteEmpresas: React.FC<AutocompleteEmpresasProps> = ({
   error = false,
   helperText = '',
   labelText = '',
-  rolEmpresa = 'transportista',
+  rolEmpresa = '',
 }) => {
   const { backendURL } = useContext(ContextoGeneral);
   const [allEmpresas, setAllEmpresas] = useState<Empresa[]>([]);
   const [localError, setLocalError] = useState<boolean>(false);
 
-  //console.log("Empresa: \n", value)
   useEffect(() => {
     fetch(`${backendURL}/empresas`, {
       method: 'GET',
@@ -49,7 +48,7 @@ const AutocompleteEmpresas: React.FC<AutocompleteEmpresasProps> = ({
       .then((data: Empresa[]) => setAllEmpresas(data))
       .catch(err => console.error('Error al obtener las empresas', err));
   }, [backendURL]);
-
+  console.log(value)
   // Filtra las empresas según el rol (si se pasa)
   const empresas = useMemo(() => {
     if (rolEmpresa) {

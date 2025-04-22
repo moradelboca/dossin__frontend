@@ -6,8 +6,6 @@ import CardMobile from "../../cards/mobile/CardMobile";
 
 interface CargasSectionProps {
   cargas: any[];
-  fields: string[];
-  headerNames: string[];
   expandedCard: number | null;
   handleExpandClick: (index: number) => void;
   handleOpenDialog: (carga: any) => void;
@@ -16,13 +14,57 @@ interface CargasSectionProps {
 
 const CargasSection: React.FC<CargasSectionProps> = ({
   cargas,
-  fields,
-  headerNames,
   expandedCard,
   handleExpandClick,
   handleOpenDialog,
   handleDeleteCarga,
 }) => {
+  const fields = [
+    "id",
+    "tarifa",
+    "tipoTarifa",
+    "incluyeIVA",
+    "cantidadKm",
+    "cargamento",
+    "tiposAcoplados",
+    "horaInicioCarga",
+    "horaFinCarga",
+    "ubicacionCarga",
+    "horaInicioDescarga",
+    "horaFinDescarga",
+    "ubicacionDescarga",
+    "horaInicioBalanza",
+    "horaFinBalanza",
+    "ubicacionBalanza",
+    "tolerancia",
+    "creadoPor",
+    "descripcion",
+    "plantaProcedenciaRuca",
+    "destinoRuca", 
+  ];
+  const headerNames = [
+    "ID",
+    "Tarifa",
+    "Tipo Tarifa",
+    "Incluye IVA",
+    "Cantidad Km",
+    "Cargamento",
+    "Tipos Acoplados",
+    "Hora InicioCarga",
+    "Hora Fin Carga",
+    "Ubicacion Carga",
+    "Hora Inicio Descarga",
+    "Hora Fin Descarga",
+    "Ubicacion Descarga",
+    "Hora Inicio Balanza",
+    "Hora Fin Balanza",
+    "Ubicacion Balanza",
+    "Tolerancia",
+    "Creado Por",
+    "Descripcion",
+    "Planta Procedencia Ruca",
+    "Destino Ruca", 
+  ];
   return (
     <Box mt={4}>
       <Box display="flex" justifyContent="space-between" alignItems="center">

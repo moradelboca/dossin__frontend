@@ -71,7 +71,9 @@ export default function CuposMobile({
   const [selectedError, setSelectedError] = useState<any>(null);
 
   // 1) Fechas únicas
-  const availableDates = Array.from(new Set(cupos.map((c) => c.fecha)));
+  console.log(cupos)
+  console.log(idCarga)
+  const availableDates = Array.from(new Set(cupos?.map((c) => c.fecha)));
   const [selectedDate, setSelectedDate] = useState<string>(availableDates[0] || "");
   const [filteredCupos, setFilteredCupos] = useState<Cupo[]>([]);
 

@@ -67,7 +67,7 @@ export default function DrawerCargaMobile({
 
   // Si no hay cargaSeleccionada, no renderizamos nada
   if (!cargaSeleccionada) return null;
-
+  console.log(cargaSeleccionada)
   return (
     <SwipeableDrawer
   anchor="bottom"

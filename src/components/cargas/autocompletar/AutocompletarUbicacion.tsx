@@ -64,9 +64,9 @@ import { ContextoStepper } from "../creadores/CrearCargaStepper";
 import { useContext, useState } from "react";
 
 const mapeoTipos: Record<string, string> = {
-    Carga: "tipo ubi 1",
-    Descarga: "tipo ubi 1",
-    Balanza: "tipo ubi 1"
+    Carga: "Carga",
+    Descarga: "Descarga",
+    Balanza: "Balanza"
 };
 
 interface AutocompletarProps {

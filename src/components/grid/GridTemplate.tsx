@@ -24,7 +24,6 @@ export function GridTemplate({
   onAdd,
   entityName,
 }: GridTemplateProps) {
-    console.log(rows)
   return (
     <Box
       sx={{

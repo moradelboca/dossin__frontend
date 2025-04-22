@@ -28,7 +28,8 @@ interface DatosNuevaCarga {
   idTipoTarifa?: number;
   tarifa?: number;
   descripcion?: string;
-  nombreProveedor?: string;
+  plantaProcedenciaRuca?: string;
+  destinoRuca?: string; 
   nombreCargamento?: string;
   nombreUbicacionCarga?: string;
   idUbicacionCarga?: number;
@@ -37,7 +38,6 @@ interface DatosNuevaCarga {
   requiereBalanza?: boolean;
   nombreUbicacionBalanza?: string;
   idUbicacionBalanza?: number | string;
-  idProveedor?: number;
   idCargamento?: number;
   cantidadKm?: number;
   horaInicioCarga?: string;
@@ -93,7 +93,8 @@ const CrearCargaStepper: React.FC<CrearCargaStepperProps> = ({
     idTipoTarifa: initialCargaData?.tipoTarifa?.id,
     tarifa: initialCargaData?.tarifa,
     descripcion: initialCargaData?.descripcion || "",
-    nombreProveedor: initialCargaData?.proveedor?.nombre || "",
+    plantaProcedenciaRuca: initialCargaData?.plantaProcedenciaRuca || "",
+    destinoRuca: initialCargaData?.destinoRuca || "",
     nombreCargamento: initialCargaData?.cargamento?.nombre || "",
     nombreUbicacionCarga: initialCargaData?.ubicacionCarga?.nombre || "",
     idUbicacionCarga: initialCargaData?.ubicacionCarga?.id,
@@ -102,7 +103,6 @@ const CrearCargaStepper: React.FC<CrearCargaStepperProps> = ({
     requiereBalanza: Boolean(initialCargaData?.horaInicioBalanza),
     nombreUbicacionBalanza: initialCargaData?.ubicacionBalanza?.nombre || "",
     idUbicacionBalanza: initialCargaData?.ubicacionBalanza?.id || null,
-    idProveedor: initialCargaData?.proveedor?.id,
     idCargamento: initialCargaData?.cargamento?.id,
     cantidadKm: initialCargaData?.cantidadKm,
     horaInicioCarga: initialCargaData?.horaInicioCarga || "",
@@ -111,8 +111,8 @@ const CrearCargaStepper: React.FC<CrearCargaStepperProps> = ({
     horaFinDescarga: initialCargaData?.horaFinDescarga || "",
     horaInicioBalanza: initialCargaData?.horaInicioBalanza || "",
     horaFinBalanza: initialCargaData?.horaFinBalanza || "",
-    tolerancia: 32,
-    creadoPor: "test@test.com",
+    tolerancia: initialCargaData?.tolerancia || 0,
+    creadoPor: user?.email || "test@test.com",
   });
 
   const [datosSinCompletar, setDatosSinCompletar] = useState<boolean>(false);
@@ -157,7 +157,6 @@ const CrearCargaStepper: React.FC<CrearCargaStepperProps> = ({
     switch (pasoActivo) {
       case 0:
         return !!(
-          datosNuevaCarga.idProveedor &&
           datosNuevaCarga.cantidadKm &&
           datosNuevaCarga.idCargamento
         );
@@ -183,7 +182,7 @@ const CrearCargaStepper: React.FC<CrearCargaStepperProps> = ({
       case 3:
         return !!(datosNuevaCarga.idTipoTarifa && datosNuevaCarga.tarifa);
       case 4:
-        return !!datosNuevaCarga.descripcion;
+        return !!(datosNuevaCarga.descripcion && datosNuevaCarga.tolerancia && datosNuevaCarga.destinoRuca && datosNuevaCarga.plantaProcedenciaRuca);
       default:
         return false;
     }
@@ -209,7 +208,6 @@ const CrearCargaStepper: React.FC<CrearCargaStepperProps> = ({
         nombreUbicacionDescarga,
         nombreUbicacionBalanza,
         nombreTipoTarifa,
-        nombreProveedor,
         nombreCargamento,
         requiereBalanza,
         ...body
@@ -243,6 +241,7 @@ const CrearCargaStepper: React.FC<CrearCargaStepperProps> = ({
           setEstadoCarga("Creado");
           setTimeout(handleCloseDialog, 1000);
         } catch (error) {
+          console.log("Error:", error)
           setEstadoCarga("Error");
         }
       })();

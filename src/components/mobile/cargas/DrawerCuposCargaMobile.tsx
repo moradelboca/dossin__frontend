@@ -14,7 +14,7 @@ export default function DrawerCuposCargaMobile({
   const navigate = useNavigate();
   
   const handleClickVerCupos = () => {
-    navigate(`/cargas/${cargaSeleccionada.idCarga}/cupos`);
+    navigate(`/cargas/${cargaSeleccionada?.id}/cupos`);
   };
 
   // Aquí asignamos los cupos directamente desde la carga seleccionada

@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Button, FormControlLabel, Switch, TextField } from "@mui/material";
-import * as React from "react";
-import { ContextoGeneral } from "../Contexto";
-import { useContext, useEffect, useState } from "react";
 import Autocomplete from "@mui/material/Autocomplete";
+import * as React from "react";
+import { useContext, useEffect, useState } from "react";
+import { ContextoGeneral } from "../Contexto";
 
 interface Choferes {
     handleClose: any;
@@ -14,7 +14,7 @@ interface Choferes {
 }
 
 export default function CreadorUser(props: Choferes) {
-    const { pruebas } = useContext(ContextoGeneral);
+    const { authURL } = useContext(ContextoGeneral);
     const { handleClose, userSeleccionado, refreshUsers } = props;
     const [ datosNuevoUser, setDatosNuevoUser ] = React.useState<any>({
         id: userSeleccionado?.id,
@@ -69,7 +69,7 @@ export default function CreadorUser(props: Choferes) {
     const [estadoCarga, setEstadoCarga] = useState(true);
 
     useEffect(() => {
-        fetch(`${pruebas}/auth/usuarios/roles`, {
+        fetch(`${authURL}/auth/usuarios/roles`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -100,8 +100,8 @@ export default function CreadorUser(props: Choferes) {
         }
         const metodo = userSeleccionado ? "PUT" : "POST";
         const url = userSeleccionado
-            ? `${pruebas}/auth/usuarios/${datosNuevoUser["id"]}`
-            : `${pruebas}/auth/usuarios`;
+            ? `${authURL}/auth/usuarios/${datosNuevoUser["id"]}`
+            : `${authURL}/auth/usuarios`;
 
         fetch(url, {
             method: metodo,
@@ -126,7 +126,7 @@ export default function CreadorUser(props: Choferes) {
     const handleDesactivarUsuario = (activo: any) => {
         datosNuevoUser["activo"] = activo;
         setDatosNuevoUser({ ...datosNuevoUser });
-        fetch(`${pruebas}/auth/usuarios/${datosNuevoUser["id"]}`, {
+        fetch(`${authURL}/auth/usuarios/${datosNuevoUser["id"]}`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(datosNuevoUser),

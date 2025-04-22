@@ -4,15 +4,14 @@ import { ContextoGeneral } from '../../Contexto';
 
 interface Acoplado {
   patente: string;
-  // Otros campos si los necesitas...
 }
 
 interface AutocompleteAcopladosProps {
-  value: string | null; // Se espera que sea la patente del acoplado
+  value: string | null;
   onChange: (value: string | null) => void;
   error?: boolean;
   helperText?: string | null;
-  tituloOpcional?: string | null; // Si se pasa este título, consideramos que es el campo opcional
+  tituloOpcional?: string | null; 
 }
 
 const AutocompleteAcoplados: React.FC<AutocompleteAcopladosProps> = ({
@@ -35,7 +34,14 @@ const AutocompleteAcoplados: React.FC<AutocompleteAcopladosProps> = ({
       },
     })
       .then(response => response.json())
-      .then((data: Acoplado[]) => setAcoplados(data))
+      .then((data: any) => {
+        const lista: Acoplado[] = Array.isArray(data)
+          ? data
+          : Array.isArray(data?.data)
+            ? data.data
+            : [];
+        setAcoplados(lista);
+      })
       .catch(err => console.error('Error al obtener los acoplados', err));
   }, [backendURL]);
 

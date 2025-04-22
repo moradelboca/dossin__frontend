@@ -1,19 +1,19 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */ 
-import React, { useContext, useEffect, useState } from "react";
-import { 
-  Button, 
-  TextField, 
-  Box, 
-  Autocomplete, 
-  FormControlLabel, 
-  Switch,
-  Dialog,
-  IconButton
-} from "@mui/material";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+import {
+  Autocomplete,
+  Box,
+  Button,
+  Dialog,
+  FormControlLabel,
+  IconButton,
+  Switch,
+  TextField
+} from "@mui/material";
+import React, { useContext, useEffect, useState } from "react";
 import { ContextoGeneral } from "../../Contexto";
-import useValidation from "../../hooks/useValidation";
 import DeleteEntidad from "../../dialogs/DeleteEntidad";
+import useValidation from "../../hooks/useValidation";
 
 interface UsuariosFormProps {
   seleccionado?: any;
@@ -28,7 +28,7 @@ const UsuariosForm: React.FC<UsuariosFormProps> = ({
   setDatos,
   handleClose,
 }) => {
-  const { pruebas } = useContext(ContextoGeneral);
+  const { authURL } = useContext(ContextoGeneral);
   const [roles, setRoles] = useState<any[]>([]);
   const [rolSeleccionado, setRolSeleccionado] = useState<any>(null);
   const [openDialogDelete, setOpenDialogDelete] = useState(false);
@@ -58,7 +58,7 @@ const UsuariosForm: React.FC<UsuariosFormProps> = ({
   );
 
   useEffect(() => {
-    fetch(`${pruebas}/auth/usuarios/roles`, {
+    fetch(`${authURL}/auth/usuarios/roles`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -68,7 +68,7 @@ const UsuariosForm: React.FC<UsuariosFormProps> = ({
       .then((response) => response.json())
       .then((data) => setRoles(data))
       .catch(() => console.error("Error al obtener los roles"));
-  }, [pruebas]);
+  }, [authURL]);
 
   useEffect(() => {
     if (seleccionado && roles.length > 0) {
@@ -94,7 +94,7 @@ const UsuariosForm: React.FC<UsuariosFormProps> = ({
     if (validateAll()) {
       const isEdit = Boolean(seleccionado?.id);
       const metodo = isEdit ? "PUT" : "POST";
-      const url = `${pruebas}/auth/usuarios${isEdit ? `/${seleccionado?.id}` : ''}`;
+      const url = `${authURL}/auth/usuarios${isEdit ? `/${seleccionado?.id}` : ''}`;
       
       const payloadActivo = typeof activo === 'boolean' 
         ? activo 
@@ -205,7 +205,7 @@ const UsuariosForm: React.FC<UsuariosFormProps> = ({
           handleClose={handleClose}
           datos={datos}
           setDatos={setDatos}
-          usarPruebas={true}
+          usarAuthURL={true}
         />
       </Dialog>
     </>

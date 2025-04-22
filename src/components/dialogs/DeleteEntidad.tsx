@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import ClearSharpIcon from "@mui/icons-material/ClearSharp";
 import { Box, Button, Typography } from "@mui/material";
 import { useContext } from "react";
 import { ContextoGeneral } from "../Contexto";
-import ClearSharpIcon from "@mui/icons-material/ClearSharp";
 
 interface IDeleteEntidad {
     idEntidad: string | number;
@@ -11,17 +11,17 @@ interface IDeleteEntidad {
     handleClose: () => void;
     datos: any;
     setDatos: any;
-    usarPruebas?: boolean;
+    usarAuthURL?: boolean;
 }
 export default function DeleteEntidad(props: IDeleteEntidad) {
-    const { handleCloseDialog, idEntidad, endpointEntidad, handleClose, datos, setDatos, usarPruebas } = props;
-    const { pruebas, backendURL, theme } = useContext(ContextoGeneral);
+    const { handleCloseDialog, idEntidad, endpointEntidad, handleClose, datos, setDatos, usarAuthURL } = props;
+    const { authURL, backendURL, theme } = useContext(ContextoGeneral);
 
     const handleNoClick = () => {
         handleCloseDialog();
     };
 
-    const apiURL = usarPruebas ? pruebas : backendURL;
+    const apiURL = usarAuthURL ? authURL : backendURL;
     const borrarEntidad = () => {
         fetch(`${apiURL}/${endpointEntidad}/${idEntidad}`, {
             method: "DELETE",

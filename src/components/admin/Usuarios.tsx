@@ -1,5 +1,5 @@
-import TablaTemplate from "../tablas/TablaTemplate";
 import UsuariosForm from "../forms/usuarios/UsuariosForm";
+import TablaTemplate from "../tablas/TablaTemplate";
 
 export default function Usuarios() {
 
@@ -32,7 +32,7 @@ export default function Usuarios() {
             fields={fields}
             headerNames={headerNames}
             FormularioCreador={UsuariosForm}
-            usarPruebas={true}
+            usarAuthURL={true}
             tituloField="email"
             subtituloField="apellido"
         />

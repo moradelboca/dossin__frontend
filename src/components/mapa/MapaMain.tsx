@@ -105,7 +105,6 @@ export function MapaMain() {
     const handleClose = () => {
         setOpenDialog(false);
     };
-
     const tipoUbicacionOptions = ["Todas", "Carga", "Descarga", "Balanza"];
     return (
         <Box position={"relative"}>
