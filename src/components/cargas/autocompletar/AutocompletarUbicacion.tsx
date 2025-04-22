@@ -86,9 +86,13 @@ export default function AutocompletarUbicacion(props: AutocompletarProps) {
     const tipoUbicacionAPI = mapeoTipos[filtro as keyof typeof mapeoTipos] || filtro;
 
     // Filtra las ubicaciones según el tipo mapeado
-    const ubicacionesFiltradas = ubicaciones.filter(
-        (ubicacion) => ubicacion.tipoUbicacion.nombre === tipoUbicacionAPI
-    );
+    const ubicacionesFiltradas = ubicaciones.filter(({ tipoUbicacion }) => {
+        const nombre = tipoUbicacion?.nombre;
+        if (tipoUbicacion === "Carga/Descarga") {
+            return nombre === "Carga" || nombre === "Descarga";
+        }
+        return nombre === tipoUbicacionAPI;
+    });
 
     // Mapea las ubicaciones filtradas a strings
     const opcionesStrings = ubicacionesFiltradas.map(
