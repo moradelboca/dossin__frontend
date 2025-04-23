@@ -66,7 +66,8 @@ import { useContext, useState } from "react";
 const mapeoTipos: Record<string, string> = {
     Carga: "Carga",
     Descarga: "Descarga",
-    Balanza: "Balanza"
+    Balanza: "Balanza",
+    Carga_Descarga: "Carga/Descarga"
 };
 
 interface AutocompletarProps {
@@ -86,9 +87,13 @@ export default function AutocompletarUbicacion(props: AutocompletarProps) {
     const tipoUbicacionAPI = mapeoTipos[filtro as keyof typeof mapeoTipos] || filtro;
 
     // Filtra las ubicaciones según el tipo mapeado
-    const ubicacionesFiltradas = ubicaciones.filter(
-        (ubicacion) => ubicacion.tipoUbicacion.nombre === tipoUbicacionAPI
-    );
+    const ubicacionesFiltradas = ubicaciones.filter(({ tipoUbicacion }) => {
+        const nombreUbi = tipoUbicacion?.nombre;
+        if (nombreUbi === "Carga/Descarga") {
+            return tipoUbicacionAPI === "Carga" || tipoUbicacionAPI === "Descarga";
+        }
+        return nombreUbi === tipoUbicacionAPI;
+    });
 
     // Mapea las ubicaciones filtradas a strings
     const opcionesStrings = ubicacionesFiltradas.map(
