@@ -10,6 +10,7 @@ import NumeroFormat from "../formatos/NumeroFormat";
 import AutocompletarPais from "../../cargas/autocompletar/AutocompletarPais";
 import CuilFormat from "../formatos/CuilFormat";
 import { useMemo } from 'react';
+import { useNotificacion } from "../../Notificaciones/NotificacionSnackbar";
 
 const ChoferForm: React.FC<FormularioProps> = ({ 
     seleccionado = {}, 
@@ -18,6 +19,9 @@ const ChoferForm: React.FC<FormularioProps> = ({
     handleClose 
 }) => {
     const { backendURL } = useContext(ContextoGeneral);
+    // States para el tema de las notificaciones
+    const { showNotificacion } = useNotificacion();
+
     const [openDialogDelete, setOpenDialogDelete] = useState(false);
 
     const [empresas, setEmpresas] = useState<any[]>([]);
@@ -53,10 +57,28 @@ const ChoferForm: React.FC<FormularioProps> = ({
             ...seleccionado,
         },
         {
-            cuil: (value) => (!value ? "El CUIL es obligatorio" : null),
+            cuil: (value) => {
+              if (!value) {
+                return "El CUIL es obligatorio";
+              }
+              const valStr = typeof value === "number"
+                ? value.toString()
+                : value.trim(); 
+                
+              if (valStr.length !== 11 && !seleccionado?.cuil) {
+                return "El CUIL está incompleto";
+              }
+              
+              const prefijosValidos = ['20', '23', '24', '27', '30', '33'];
+              const prefijo = valStr.slice(0, 2);
+              if (!prefijosValidos.includes(prefijo)) {
+                return `Prefijo inválido (‘${prefijo}’). Debe ser uno de: ${prefijosValidos.join(', ')}`;
+              }
+              
+              return null;
+            },
             numeroCel: (value) => {
-                const numeroCompleto = `${codigoSeleccionado}-${value}`;
-                return !value || !/^\+\d{1,4}-\d{10}$/.test(numeroCompleto)
+                return !value || !/^\+\d{1,4}-\d{10}$/.test(`${codigoSeleccionado}-${value}`)
                     ? "Número de celular inválido (Ej: +54-1234567890)"
                     : null;
             },
@@ -125,10 +147,17 @@ const ChoferForm: React.FC<FormularioProps> = ({
                 "ngrok-skip-browser-warning": "true",
             },
         })
-            .then((response) => response.json())
-            .then((data) => setEmpresas(data))
-            .catch(() => console.error("Error al obtener las empresas"))
-            .finally(() => setLoadingEmpresas(false));
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(`Error HTTP: ${response.status}`);
+          }
+          return response.json();
+        })
+        .then((data) => setEmpresas(data))
+        .catch((error) => {
+          throw new Error(`Error al obtener las empresas: ${error}`);
+        })
+        .finally(() => setLoadingEmpresas(false));
     }, [backendURL]);
 
     
@@ -141,7 +170,12 @@ const ChoferForm: React.FC<FormularioProps> = ({
                 "ngrok-skip-browser-warning": "true",
             },
         })
-            .then((response) => response.json())
+            .then((response) => {
+              if (!response.ok) {
+                throw new Error(`Error HTTP: ${response.status}`);
+              }
+              return response.json();
+            })
             .then((data) =>
                 setLocalidades(
                     data.map((ubicacion: any) => ({
@@ -152,7 +186,9 @@ const ChoferForm: React.FC<FormularioProps> = ({
                     }))
                 )
             )
-            .catch(() => console.error("Error al obtener localidades"))
+            .catch((error) => {
+              throw new Error(`Error al obetener las localidades: ${error}`);
+            })
             .finally(() => setLoadingLocalidades(false));
     }, [backendURL]);
 
@@ -199,16 +235,13 @@ const ChoferForm: React.FC<FormularioProps> = ({
                 ? `${backendURL}/colaboradores/${data.cuil}`
                 : `${backendURL}/colaboradores`;
 
-            const numeroCompleto = `${codigoSeleccionado}-${numeroCel}`.replace(/[^0-9]/g, '');
-            data.numeroCel = numeroCompleto;
-
             const localidadObjeto = localidades.find((loc) => loc.displayName === localidadSeleccionada);
 
             const rolObjeto = roles.find((rol) => rol.id === rolSeleccionado?.id);
 
             const payload: any = {
                 cuil: data.cuil,
-                numeroCel: data.numeroCel,
+                numeroCel: `${codigoSeleccionado}-${numeroCel}`.replace(/[^0-9]/g, ''),
                 nombre: data.nombre,
                 apellido: data.apellido,
                 fechaNacimiento: data.fechaNacimiento,
@@ -223,27 +256,47 @@ const ChoferForm: React.FC<FormularioProps> = ({
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(payload),
             })
-                .then(async (response) => {
-                    if (!response.ok) {
-                        const errorMessage = await response.text();
-                        throw new Error(`Error del servidor: ${errorMessage}`);
-                    }
-                    return response.json();
-                })
-                .then((newData) => {
-                    if (metodo === "POST") {
-                        setDatos([...datos, newData]);
-                    } else {
-                        setDatos(
-                            datos.map((colaborador: { cuil: any }) =>
-                                colaborador.cuil === data.cuil ? newData : colaborador
-                            )
-                        );
-                    }
-                    handleClose();
-                })
-                .catch((error) => console.error(`Error: ${error.message}`));
-        }
+            .then(async (response) => {
+                if (!response.ok) {
+                  let errorMessage = await response.text();
+                  try {
+                    const errorData = JSON.parse(errorMessage);
+                    errorMessage = errorData.message || errorMessage;
+                  } catch (e) {
+                    // Si no es JSON, quedarse con el texto plano
+                  }
+                  throw new Error(errorMessage);
+                }
+                return response.json();
+              })
+            .then((newData) => {
+                if (metodo === "POST") {
+                    setDatos([...datos, newData]);
+                    showNotificacion('Colaborador creado exitosamente', 'success');
+                } else {
+                    setDatos(
+                        datos.map((colaborador: { cuil: any }) =>
+                            colaborador.cuil === data.cuil ? newData : colaborador
+                        )
+                    );
+                    showNotificacion('Colaborador actualizado exitosamente', 'success');
+                }
+                handleClose();
+            })
+            .catch((error) => {
+              console.error('Error:', error);
+              showNotificacion(
+                `Error al procesar la solicitud: ${error.message}`,
+                'error'
+              );
+            });
+        } else {
+            // Mostrar error de validación
+            showNotificacion(
+              'Por favor corrija los errores en el formulario',
+              'error'
+            );
+          }
     };
 
     const handleClickDelete = () => setOpenDialogDelete(true);

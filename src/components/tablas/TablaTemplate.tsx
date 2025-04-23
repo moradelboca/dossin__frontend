@@ -1,3 +1,4 @@
+// src/components/TablaTemplate.tsx
 import BorderColorIcon from "@mui/icons-material/BorderColor";
 import {
   Box,
@@ -7,12 +8,11 @@ import {
   useMediaQuery,
 } from "@mui/material";
 import { GridColDef } from "@mui/x-data-grid";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useMemo, useState } from "react";
 import { ContextoGeneral } from "../Contexto";
 import CreadorEntidad from "../dialogs/CreadorEntidad";
 import { GridTemplate } from "../grid/GridTemplate";
 import MobileCardList from "../mobile/MobileCardList";
-//import { dataPruebas } from "./dataauthURL";
 
 interface TablaTemplateProps {
   titulo: string;
@@ -22,10 +22,23 @@ interface TablaTemplateProps {
   headerNames: string[];
   FormularioCreador: React.ComponentType<any>;
   usarAuthURL?: boolean;
-  renderFullScreen?: boolean; // Activa el modo pantalla completa
-  // Props extras para la vista mobile
+  renderFullScreen?: boolean;
   tituloField?: string;
   subtituloField?: string;
+}
+
+function limpiarNoEspecificados<T extends Record<string, any>>(obj: T | null): T | null {
+  if (!obj) return null;
+  const clean: any = {};
+  Object.entries(obj).forEach(([key, val]) => {
+    // si es exactamente la cadena "No especificado", lo pasamos a null
+    if (typeof val === "string" && val === "No especificado") {
+      clean[key] = null;
+    } else {
+      clean[key] = val;
+    }
+  });
+  return clean;
 }
 
 export default function TablaTemplate({
@@ -40,58 +53,35 @@ export default function TablaTemplate({
   tituloField,
   subtituloField,
 }: TablaTemplateProps) {
-  // Uso de media query para detectar dispositivos móviles
   const isMobile = useMediaQuery("(max-width:768px)");
-
-  // Estados compartidos para la edición/creación
   const [open, setOpen] = useState(false);
   const [seleccionado, setSeleccionado] = useState<any>(null);
   const { backendURL, authURL, theme } = useContext(ContextoGeneral);
   const [datos, setDatos] = useState<any[]>([]);
-  const [estadoCarga, setEstadoCarga] = useState("Cargando");
+  const [estadoCarga, setEstadoCarga] = useState<"Cargando"|"Cargado"|"Error">("Cargando");
+
+  // 1️⃣ Limpiamos el seleccionado cada vez que cambie:
+  const seleccionadoLimpio = useMemo(
+    () => limpiarNoEspecificados(seleccionado),
+    [seleccionado]
+  );
+  
 
   const apiURL = usarAuthURL ? authURL : backendURL;
   const refreshDatos = () => {
     fetch(`${apiURL}/${endpoint}`, {
       method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        "ngrok-skip-browser-warning": "true",
-      },
+      headers: { "Content-Type": "application/json", "ngrok-skip-browser-warning": "true" },
     })
-      .then((response) => {
-        if (!response.ok) throw new Error("Error en el servidor");
-        return response.json();
-      })
-      .then((data) => {
-        setDatos(data);
-        setEstadoCarga("Cargado");
-      })
-      .catch((error) => {
-        console.error(`Error al cargar datos para ${entidad}:`, error);
-        setEstadoCarga("Error");
-      });
+      .then(r => { if (!r.ok) throw new Error(); return r.json(); })
+      .then(d => { setDatos(d); setEstadoCarga("Cargado"); })
+      .catch(() => { setEstadoCarga("Error"); });
   };
+  useEffect(() => { refreshDatos(); }, [apiURL]);
 
-  useEffect(() => {
-    refreshDatos();
-    //setDatos(dataPruebas);
-    //setEstadoCarga("Cargado");
-  }, [apiURL]);
+  const handleOpen = (item: any) => { setSeleccionado(item); setOpen(true); };
+  const handleClose = () => { setSeleccionado(null); setOpen(false); refreshDatos(); };
 
-  const handleOpen = (item: any) => {
-    // Se asigna el item seleccionado (puede ser null para crear)
-    setSeleccionado(item);
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setSeleccionado(null);
-    setOpen(false);
-    refreshDatos();
-  };
-
-  // Función para transformar campos según sea necesario (para escritorio)
   const transformarCampo = (field: string, value: any) => {
     switch (field) {
       case "localidad":
@@ -126,18 +116,18 @@ export default function TablaTemplate({
           }
         }
         return value || "No especificado";
-      case "titularCartaDePorte":
-      case "remitenteProductor":
-      case "remitenteVentaPrimaria":
-      case "remitenteVentaSecundaria":
-      case "corredorVentaPrimaria":
-      case "corredorVentaSecundaria":
-      case "representanteEntregador":
-      case "representanteRecibidor":
-      case "destinatario":
-      case "destino":
-      case "intermediarioDeFlete":
-      case "fletePagador":
+        case "titularCartaDePorte":
+        case "remitenteProductor":
+        case "remitenteVentaPrimaria":
+        case "remitenteVentaSecundaria":
+        case "corredorVentaPrimaria":
+        case "corredorVentaSecundaria":
+        case "representanteEntregador":
+        case "representanteRecibidor":
+        case "destinatario":
+        case "destino":
+        case "intermediarioDeFlete":
+        case "fletePagador":
         if (value) {
           const { razonSocial, nombreFantasia } = value;
           return `${nombreFantasia} - ${razonSocial}`;
@@ -157,45 +147,56 @@ export default function TablaTemplate({
     }
   };
 
-  // Genera las columnas del grid a partir de los arrays de props (versión escritorio)
-  const columns: GridColDef[] = fields.map((field, index) => ({
-    field: field,
-    headerName: headerNames[index],
+  // Para calcular ancho mínimo basado en el contenido
+  const factorPxPorChar = 12;
+  const calcMinWidth = (field: string, header: string) => {
+    const maxLen = Math.max(
+      header.length,
+      ...datos.map(item => String(transformarCampo(field, item[field] || "")).length)
+    );
+    return maxLen * factorPxPorChar;
+  };
+
+  // Columnas con minWidth + flex + resizable
+  const columns: GridColDef[] = fields.map((field, i) => ({
+    field,
+    headerName: headerNames[i],
+    minWidth: calcMinWidth(field, headerNames[i]),
     flex: 1,
+    resizable: true,
     renderHeader: () => (
       <strong style={{ color: theme.colores.grisOscuro }}>
-        {headerNames[index]}
+        {headerNames[i]}
       </strong>
     ),
   }));
-
-  // Columna de edición
+  // Columna editar
   columns.push({
     field: "edit",
-    headerName: "Edit",
-    width: 100,
-    renderHeader: () => (
-      <strong style={{ color: theme.colores.grisOscuro }}>Editar</strong>
-    ),
-    renderCell: (params) => (
+    headerName: "Editar",
+    minWidth: 100,
+    flex: 0,           // no se expande 
+    resizable: false,  // fijo
+    renderHeader: () => <strong style={{ color: theme.colores.grisOscuro }}>Editar</strong>,
+    renderCell: params => (
       <BorderColorIcon
         onClick={() => handleOpen(params.row)}
         fontSize="small"
         style={{ cursor: "pointer", color: theme.colores.azul }}
       />
     ),
+    sortable: false,
+    filterable: false,
   });
 
-  // Transforma los datos para el grid (versión escritorio)
-  const transformedRows = datos.map((item) => {
-    const datosNormalizado = { ...item };
-    fields.forEach((field) => {
-      datosNormalizado[field] = transformarCampo(field, item[field]);
-    });
-    return datosNormalizado;
+  const rows = datos.map(item => {
+    const r: any = { ...item };
+    fields.forEach(f => r[f] = transformarCampo(f, item[f]));
+    return r;
   });
 
-  // Si es móvil, delega la renderización en MobileCardList
+  
+
   if (isMobile) {
     return (
       <MobileCardList
@@ -207,7 +208,7 @@ export default function TablaTemplate({
         FormularioCreador={FormularioCreador}
         tituloField={tituloField}
         subtituloField={subtituloField}
-        datos={datos}      
+        datos={datos}
         setDatos={setDatos}
         seleccionado={seleccionado}
         openDialog={open}
@@ -217,12 +218,10 @@ export default function TablaTemplate({
     );
   }
 
-  // Versión escritorio
   return (
     <>
       {open && renderFullScreen ? (
-        // Modo pantalla completa
-        <Box sx={{ padding: 3 }}>
+        <Box sx={{ p: 3 }}>
           <FormularioCreador
             seleccionado={seleccionado}
             handleClose={handleClose}
@@ -235,15 +234,14 @@ export default function TablaTemplate({
         <>
           <GridTemplate
             titulo={titulo}
-            rows={transformedRows}
+            rows={rows}
             columns={columns}
             loading={estadoCarga === "Cargando"}
             theme={theme}
-            getRowId={(row) => row[fields[0]]}
+            getRowId={row => row[fields[0]]}
             onAdd={() => handleOpen(null)}
             entityName={entidad}
           />
-          {/* Dialog para edición/creación */}
           {!renderFullScreen && (
             <Dialog open={open} onClose={handleClose}>
               <DialogTitle>
@@ -251,7 +249,7 @@ export default function TablaTemplate({
               </DialogTitle>
               <DialogContent>
                 <CreadorEntidad
-                  seleccionado={seleccionado}
+                  seleccionado={seleccionadoLimpio}
                   handleClose={handleClose}
                   datos={datos}
                   setDatos={setDatos}
