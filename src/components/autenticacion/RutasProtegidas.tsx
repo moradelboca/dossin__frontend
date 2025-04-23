@@ -13,13 +13,24 @@ const RutasProtegidas = ({ children, allowedRoles }: ProtectedRouteProps) => {
   const { user, login, logout } = useAuth();
   const [verificando, setVerificando] = useState(true);
   const location = useLocation();
-  const { authURL } = useContext(ContextoGeneral);
+  const { authURL, stage } = useContext(ContextoGeneral);
 
   useEffect(() => {
     const controller = new AbortController();
 
     const verificarToken = async () => {
       setVerificando(true);
+      // Si es desarrollo, loguea un usuario de prueba
+      if (stage === "development") {
+        console.log("Desarrollo, logueando usuario de prueba");
+        login({
+          id: 1,
+          email: "test@test.com",
+          rol: { id: 1, nombre: "admin" }
+        })
+        setVerificando(false);
+        return;
+      }
       const accessToken = Cookies.get("accessToken");
       if (!accessToken) {
         logout();
