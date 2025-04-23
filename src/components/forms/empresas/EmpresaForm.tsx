@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
-import { Autocomplete, Box, Button, CircularProgress, Dialog, IconButton, Stack, TextField } from "@mui/material";
+import { Autocomplete, Box, Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Stack, TextField, Typography } from "@mui/material";
 import React, { useContext, useEffect, useState } from "react";
 import { FormularioProps } from "../../../interfaces/FormularioProps";
 import { ContextoGeneral } from "../../Contexto";
@@ -9,6 +9,7 @@ import useValidation from "../../hooks/useValidation";
 import AutocompletarPais from "../../cargas/autocompletar/AutocompletarPais";
 import CuilFormat from "../formatos/CuilFormat";
 import NumeroFormat from "../formatos/NumeroFormat";
+import { useNotificacion } from "../../Notificaciones/NotificacionSnackbar";
 
 const EmpresaForm: React.FC<FormularioProps> = ({
   seleccionado = {},
@@ -16,6 +17,7 @@ const EmpresaForm: React.FC<FormularioProps> = ({
   setDatos,
   handleClose,
 }) => {
+  console.log(seleccionado);
   const { backendURL } = useContext(ContextoGeneral);
   const [openDialogDelete, setOpenDialogDelete] = useState(false);
 
@@ -34,6 +36,11 @@ const EmpresaForm: React.FC<FormularioProps> = ({
   const [loadingLocalidades, setLoadingLocalidades] = useState(false);
   const [loadingRoles, setLoadingRoles] = useState(false);
 
+  // States para el tema de las notificaciones
+  const { showNotificacion } = useNotificacion();
+
+
+  // Validations
   const { data, errors, handleChange, validateAll } = useValidation(
     {
       cuit: null,
@@ -52,18 +59,28 @@ const EmpresaForm: React.FC<FormularioProps> = ({
         if (!value) {
           return "El CUIT es obligatorio";
         }
-        if (value.length !== 11 && !seleccionado?.cuit) {
+        const valStr = typeof value === "number"
+          ? value.toString()
+          : value.trim(); 
+          
+        if (valStr.length !== 11 && !seleccionado?.cuit) {
           return "El CUIT está incompleto";
         }
+        
+        const prefijosValidos = ['20', '23', '24', '27', '30', '33'];
+        const prefijo = valStr.slice(0, 2);
+        if (!prefijosValidos.includes(prefijo)) {
+          return `Prefijo inválido (‘${prefijo}’). Debe ser uno de: ${prefijosValidos.join(', ')}`;
+        }
+        
         return null;
       },
       razonSocial: (value) => (!value ? "La razón social es obligatoria" : null),
       nombreFantasia: (value) => (!value ? "El nombre de fantasía es obligatorio" : null),
       numeroCel: (value) => {
-        const numeroCompleto = `${codigoSeleccionado}-${value}`;
-        return !value || !/^\+\d{1,4}-\d{10}$/.test(numeroCompleto)
-          ? "Número de celular inválido (Ej: +54-1234567890)"
-          : null;
+          return !value || !/^\+\d{1,4}-\d{10}$/.test(`${codigoSeleccionado}-${value}`)
+              ? "Número de celular inválido (Ej: +54-1234567890)"
+              : null;
       },
       idLocalidad: () => (!localidadSeleccionada ? "Debe seleccionar una localidad" : null),
       roles: () => {
@@ -116,7 +133,12 @@ const EmpresaForm: React.FC<FormularioProps> = ({
         "ngrok-skip-browser-warning": "true",
       },
     })
-      .then((response) => response.json())
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`Error HTTP: ${response.status}`);
+        }
+        return response.json();
+      })
       .then((data) =>
         setLocalidades(
           data.map((ubicacion: any) => ({
@@ -127,7 +149,9 @@ const EmpresaForm: React.FC<FormularioProps> = ({
           }))
         )
       )
-      .catch(() => console.error("Error al obtener localidades"))
+      .catch((error) => {
+        throw new Error(`Error al obetener las localidades: ${error}`);
+      })
       .finally(() => setLoadingLocalidades(false));
   }, [backendURL]);
 
@@ -140,9 +164,16 @@ const EmpresaForm: React.FC<FormularioProps> = ({
         "ngrok-skip-browser-warning": "true",
       },
     })
-      .then((response) => response.json())
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`Error HTTP: ${response.status}`);
+        }
+        return response.json();
+      })
       .then((data) => setRoles(data))
-      .catch(() => console.error("Error al obtener las empresas"))
+      .catch((error) => {
+        throw new Error(`Error: ${error}`);
+      })
       .finally(() => setLoadingRoles(false));
   }, [backendURL]);
 
@@ -183,22 +214,11 @@ const EmpresaForm: React.FC<FormularioProps> = ({
   };
 
   const handleSubmit = () => {
-    // Si las URL vienen como "No especificado" se asigna cadena vacía
-    if (data.urlConstanciaAfip === "No especificado") {
-      data.urlConstanciaAfip = "";
-    }
-    if (data.urlConstanciaCBU === "No especificado") {
-      data.urlConstanciaCBU = "";
-    }
-
     if (validateAll()) {
       const metodo = seleccionado?.cuit ? "PUT" : "POST";
       const url = seleccionado?.cuit
         ? `${backendURL}/empresas/${data.cuit}`
         : `${backendURL}/empresas`;
-
-      const numeroCompleto = `${codigoSeleccionado}-${numeroCel}`.replace(/[^0-9]/g, "");
-      data.numeroCel = numeroCompleto;
 
       const localidadObjeto = localidades.find(
         (loc) => loc.displayName === localidadSeleccionada
@@ -211,7 +231,7 @@ const EmpresaForm: React.FC<FormularioProps> = ({
         razonSocial: data.razonSocial,
         nombreFantasia: data.nombreFantasia,
         idLocalidad: localidadObjeto?.id,
-        numeroCel: data.numeroCel,
+        numeroCel: `${codigoSeleccionado}-${numeroCel}`.replace(/[^0-9]/g, ""),
         urlConstanciaAfip: data.urlConstanciaAfip,
         urlConstanciaCBU: data.urlConstanciaCBU,
         idsRoles: rolesLista,
@@ -223,26 +243,46 @@ const EmpresaForm: React.FC<FormularioProps> = ({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       })
-        .then(async (response) => {
-          if (!response.ok) {
-            const errorMessage = await response.text();
-            throw new Error(`Error del servidor: ${errorMessage}`);
+      .then(async (response) => {
+        if (!response.ok) {
+          let errorMessage = await response.text();
+          try {
+            const errorData = JSON.parse(errorMessage);
+            errorMessage = errorData.message || errorMessage;
+          } catch (e) {
+            // Si no es JSON, quedarse con el texto plano
           }
-          return response.json();
-        })
+          throw new Error(errorMessage);
+        }
+        return response.json();
+      })
         .then((newData) => {
           if (metodo === "POST") {
             setDatos([...datos, newData]);
+            showNotificacion('Empresa creada exitosamente', 'success');
           } else {
             setDatos(
               datos.map((empresa: { cuit: any }) =>
                 empresa.cuit === data.cuit ? newData : empresa
               )
             );
+            showNotificacion('Empresa actualizada exitosamente', 'success');
           }
           handleClose();
         })
-        .catch((error) => console.error(`Error: ${error.message}`));
+        .catch((error) => {
+          console.error('Error:', error);
+          showNotificacion(
+            `Error al procesar la solicitud: ${error.message}`,
+            'error'
+          );
+        });
+    } else {
+      // Mostrar error de validación
+      showNotificacion(
+        'Por favor corrija los errores en el formulario',
+        'error'
+      );
     }
   };
 
@@ -250,67 +290,72 @@ const EmpresaForm: React.FC<FormularioProps> = ({
   const handleCloseDialog = () => setOpenDialogDelete(false);
 
   return (
-    <>
+    <Stack spacing={3} sx={{ p: 2 }}>
+      {/* CUIT */}
       <TextField
-        margin="dense"
         label="CUIT"
         name="cuit"
         variant="outlined"
-        slotProps={{
-          input: {
-            inputComponent: CuilFormat as any,
-          },
-        }}
+        size="small"
         fullWidth
+        InputProps={{
+          inputComponent: CuilFormat as any,
+        }}
         value={data.cuit}
         onChange={handleChange("cuit")}
         error={!!errors.cuit}
         helperText={errors.cuit}
         disabled={!!seleccionado?.cuit}
+        sx={{ mb: 1 }}
       />
-      <TextField
-        margin="dense"
-        label="Razón Social"
-        name="razonSocial"
-        variant="outlined"
-        fullWidth
-        value={data.razonSocial}
-        onChange={handleChange("razonSocial")}
-        error={!!errors.razonSocial}
-        helperText={errors.razonSocial}
-      />
-      <TextField
-        margin="dense"
-        label="Nombre Fantasía"
-        name="nombreFantasia"
-        variant="outlined"
-        fullWidth
-        value={data.nombreFantasia}
-        onChange={handleChange("nombreFantasia")}
-        error={!!errors.nombreFantasia}
-        helperText={errors.nombreFantasia}
-      />
+  
+      {/* Razón Social y Nombre Fantasía */}
+      <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
+        <TextField
+          label="Razón Social"
+          name="razonSocial"
+          variant="outlined"
+          size="small"
+          fullWidth
+          value={data.razonSocial}
+          onChange={handleChange("razonSocial")}
+          error={!!errors.razonSocial}
+          helperText={errors.razonSocial}
+        />
+        <TextField
+          label="Nombre Fantasía"
+          name="nombreFantasia"
+          variant="outlined"
+          size="small"
+          fullWidth
+          value={data.nombreFantasia}
+          onChange={handleChange("nombreFantasia")}
+          error={!!errors.nombreFantasia}
+          helperText={errors.nombreFantasia}
+        />
+      </Stack>
+  
+      {/* Localidad */}
       <Autocomplete
         disablePortal
         options={localidades}
         getOptionLabel={(option) => option.displayName}
         value={localidades.find((loc) => loc.displayName === localidadSeleccionada) || null}
-        onChange={(_, newValue) =>
-          setlocalidadSeleccionada(newValue ? newValue.displayName : null)
-        }
+        onChange={(_, newValue) => setlocalidadSeleccionada(newValue?.displayName || null)}
         loading={loadingLocalidades}
         renderInput={(params) => (
           <TextField
             {...params}
             label="Localidad"
             variant="outlined"
+            size="small"
             error={!!errors.idLocalidad}
             helperText={errors.idLocalidad}
             InputProps={{
               ...params.InputProps,
               endAdornment: (
                 <>
-                  {loadingLocalidades ? <CircularProgress size={20} /> : null}
+                  {loadingLocalidades && <CircularProgress color="inherit" size={20} />}
                   {params.InputProps.endAdornment}
                 </>
               ),
@@ -318,46 +363,38 @@ const EmpresaForm: React.FC<FormularioProps> = ({
           />
         )}
       />
-      <Box
-        display="flex"
-        flexDirection="row"
-        gap={2}
-        alignContent={"center"}
-        alignItems={"center"}
-        marginTop={2}
-        marginBottom={1}
-      >
-        <Box width={"100px"}>
+  
+      {/* Teléfono */}
+      <Box display="flex" alignItems="center" gap={1}>
+        <Box sx={{ width: 120, flexShrink: 0 }}>
           <AutocompletarPais
             setCodigoSeleccionado={setCodigoSeleccionado}
             error={!!errors.numeroCel}
             defaultPhone={codigoSeleccionado}
           />
         </Box>
-        <>-</>
-        <Stack width="400px" direction="row" spacing={2}>
-          <TextField
-            margin="dense"
-            label="Número de Celular"
-            variant="outlined"
-            fullWidth
-            slotProps={{
-              input: {
-                inputComponent: NumeroFormat as any,
-              },
-            }}
-            value={numeroCel}
-            onChange={handleNumeroCelularChange}
-            error={!!errors.numeroCel}
-            helperText={errors.numeroCel}
-          />
-        </Stack>
+        <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+          -
+        </Typography>
+        <TextField
+          label="Número de Celular"
+          variant="outlined"
+          size="small"
+          fullWidth
+          InputProps={{
+            inputComponent: NumeroFormat as any,
+          }}
+          value={numeroCel}
+          onChange={handleNumeroCelularChange}
+          error={!!errors.numeroCel}
+          helperText={errors.numeroCel}
+        />
       </Box>
-
+  
+      {/* Roles */}
       <Autocomplete
         multiple
-        limitTags={2}
-        id="roles-autocomplete"
+        limitTags={3}
         options={roles}
         getOptionLabel={(option) => option.nombre}
         value={rolesSeleccionados}
@@ -368,13 +405,15 @@ const EmpresaForm: React.FC<FormularioProps> = ({
             {...params}
             label="Roles"
             placeholder="Selecciona roles"
+            variant="outlined"
+            size="small"
             error={!!errors.roles}
             helperText={errors.roles}
             InputProps={{
               ...params.InputProps,
               endAdornment: (
                 <>
-                  {loadingRoles ? <CircularProgress size={20} /> : null}
+                  {loadingRoles && <CircularProgress color="inherit" size={20} />}
                   {params.InputProps.endAdornment}
                 </>
               ),
@@ -382,60 +421,102 @@ const EmpresaForm: React.FC<FormularioProps> = ({
           />
         )}
       />
-
-      <TextField
-        margin="dense"
-        label="URL Constancia Afip"
-        variant="outlined"
-        fullWidth
-        value={data.urlConstanciaAfip}
-        onChange={handleChange("urlConstanciaAfip")}
-        error={!!errors.urlConstanciaAfip}
-        helperText={errors.urlConstanciaAfip}
-      />
-
-      <TextField
-        margin="dense"
-        label="URL Constancia CBU"
-        variant="outlined"
-        fullWidth
-        value={data.urlConstanciaCBU}
-        onChange={handleChange("urlConstanciaCBU")}
-        error={!!errors.urlConstanciaCBU}
-        helperText={errors.urlConstanciaCBU}
-      />
-
-      <TextField
-        margin="dense"
-        label="Email"
-        name="email"
-        variant="outlined"
-        fullWidth
-        value={data.email}
-        onChange={handleChange("email")}
-        error={!!errors.email}
-        helperText={errors.email}
-      />
-      <Button onClick={handleClose} color="primary">
-        Cancelar
-      </Button>
-      <Button onClick={handleSubmit} color="primary">
-        Guardar
-      </Button>
-      <IconButton onClick={handleClickDeleteCarga}>
-        <DeleteOutlineIcon sx={{ fontSize: 20, color: "#d68384" }} />
-      </IconButton>
-      <Dialog open={openDialogDelete} onClose={handleCloseDialog}>
-        <DeleteEntidad
-          idEntidad={Number(data.cuit)}
-          endpointEntidad="empresas"
-          handleCloseDialog={handleCloseDialog}
-          handleClose={handleClose}
-          datos={datos}
-          setDatos={setDatos}
+  
+      {/* URLs y Email */}
+      <Stack spacing={2}>
+        <TextField
+          label="URL Constancia Afip"
+          variant="outlined"
+          size="small"
+          fullWidth
+          value={data.urlConstanciaAfip}
+          onChange={handleChange("urlConstanciaAfip")}
+          error={!!errors.urlConstanciaAfip}
+          helperText={errors.urlConstanciaAfip}
         />
+        <TextField
+          label="URL Constancia CBU"
+          variant="outlined"
+          size="small"
+          fullWidth
+          value={data.urlConstanciaCBU}
+          onChange={handleChange("urlConstanciaCBU")}
+          error={!!errors.urlConstanciaCBU}
+          helperText={errors.urlConstanciaCBU}
+        />
+        <TextField
+          label="Email"
+          name="email"
+          variant="outlined"
+          size="small"
+          fullWidth
+          value={data.email}
+          onChange={handleChange("email")}
+          error={!!errors.email}
+          helperText={errors.email}
+        />
+      </Stack>
+  
+      {/* Acciones */}
+      <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mt: 3 }}>
+        <IconButton 
+          onClick={handleClickDeleteCarga} 
+          sx={{ color: 'error.main', mr: 'auto' }}
+          title="Eliminar entidad"
+        >
+          <DeleteOutlineIcon />
+        </IconButton>
+        
+        <Button 
+          onClick={handleClose} 
+          variant="outlined" 
+          color="inherit"
+        >
+          Cancelar
+        </Button>
+        <Button 
+          onClick={handleSubmit} 
+          variant="contained" 
+          color="primary"
+        >
+          Guardar
+        </Button>
+      </Box>
+  
+      {/* Diálogo de Confirmación */}
+      <Dialog 
+        open={openDialogDelete} 
+        onClose={handleCloseDialog}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle variant="h6" sx={{ borderBottom: '1px solid', borderColor: 'divider' }}>
+          Confirmar Eliminación
+        </DialogTitle>
+        <DialogContent sx={{ py: 3 }}>
+          <DeleteEntidad
+            idEntidad={Number(data.cuit)}
+            endpointEntidad="empresas"
+            handleCloseDialog={handleCloseDialog}
+            handleClose={handleClose}
+            datos={datos}
+            setDatos={setDatos}
+          />
+        </DialogContent>
+        <DialogActions sx={{ px: 3, py: 2 }}>
+          <Button onClick={handleCloseDialog} color="inherit">
+            Cancelar
+          </Button>
+          <Button 
+            onClick={() => {/* Lógica de confirmación aquí */}} 
+            color="error"
+            variant="contained"
+          >
+            Confirmar
+          </Button>
+        </DialogActions>
       </Dialog>
-    </>
+    </Stack>
   );
 };
 

@@ -1,6 +1,7 @@
-// GridTemplate.tsx
+// src/components/grid/GridTemplate.tsx
 import { Box, Typography, CircularProgress } from "@mui/material";
-import { DataGrid, GridColDef} from "@mui/x-data-grid";
+import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import { esES } from "@mui/x-data-grid/locales";
 import { EditToolbar } from "../botones/EditToolbar";
 
 interface GridTemplateProps {
@@ -30,50 +31,43 @@ export function GridTemplate({
         backgroundColor: theme.colores.grisClaro,
         height: "91vh",
         width: "100%",
-        padding: 3,
+        p: 3,
+        display: "flex",
+        flexDirection: "column",
       }}
     >
       <Typography
         variant="h5"
-        component="div"
         sx={{
           color: theme.colores.azul,
           fontWeight: "bold",
           mb: 2,
           fontSize: "2rem",
-          pb: 1,
-          marginLeft: 1,
+          ml: 1,
         }}
       >
         {titulo}
       </Typography>
-      <Box margin="10px" sx={{ height: "90%", width: "100%" }}>
-        {loading ? (
-          <Box
-            display="flex"
-            flexDirection="row"
-            width="100%"
-            height="100%"
-            justifyContent="center"
-            alignItems="center"
-            gap={3}
-          >
-            <CircularProgress
-              sx={{
-                padding: "5px",
-                width: "30px",
-                height: "30px",
-              }}
-            />
-            <Typography variant="h5">
-              <b>Cargando...</b>
-            </Typography>
-          </Box>
-        ) : (
+
+      {loading ? (
+        <Box
+          flex={1}
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+        >
+          <CircularProgress size={30} sx={{ p: 0.5 }} />
+          <Typography variant="h5" sx={{ ml: 2 }}>
+            Cargando...
+          </Typography>
+        </Box>
+      ) : (
+        <Box flex={1} sx={{ width: "100%" }}>
           <DataGrid
             rows={rows}
             columns={columns}
             getRowId={getRowId}
+            localeText={esES.components.MuiDataGrid.defaultProps.localeText}
             sx={{
               "& .MuiDataGrid-columnHeader": {
                 backgroundColor: theme.colores.grisClaro,
@@ -84,17 +78,17 @@ export function GridTemplate({
               wordBreak: "break-word",
             }}
             slots={{
-              toolbar: (props) => (
+              toolbar: props => (
                 <EditToolbar setRows={function (): void {
-                        throw new Error("Function not implemented.");
-                    } } setRowModesModel={function (): void {
-                        throw new Error("Function not implemented.");
-                    } } {...props} onAdd={onAdd} name={entityName} />
+                  throw new Error("Function not implemented.");
+              } } setRowModesModel={function (): void {
+                  throw new Error("Function not implemented.");
+              } } {...props} onAdd={onAdd} name={entityName} />
               ),
             }}
           />
-        )}
-      </Box>
+        </Box>
+      )}
     </Box>
   );
 }

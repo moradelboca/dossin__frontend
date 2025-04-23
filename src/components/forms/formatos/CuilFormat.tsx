@@ -11,13 +11,11 @@ const CuilFormat = React.forwardRef<any, CustomProps>((props, ref) => {
             {...other}
             getInputRef={ref}
             format="##-########-#"
-            mask="_" // Puedes personalizar la máscara que desees
+            mask="-"
             onValueChange={(values) => {
-                // Verifica si el valor es negativo
                 if (Number(values.value) < 0) {
-                    return; // No hacer nada si el valor es negativo
+                    return; 
                 }
-
                 onChange({
                     target: {
                         name: props.name,
