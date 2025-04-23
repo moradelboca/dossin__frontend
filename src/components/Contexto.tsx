@@ -4,6 +4,7 @@ export const ValoresContexto = {
     backendURL: import.meta.env.VITE_BACKEND_URL,
     authURL: import.meta.env.VITE_AUTH_URL,
     dashboardURL: import.meta.env.VITE_DASHBOARD_URL,
+    stage: import.meta.env.VITE_STAGE,
     theme: {
         colores: {
             texto: "#000",
