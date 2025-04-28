@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
 import Avatar from "@mui/material/Avatar";
@@ -11,6 +11,7 @@ import { Logout } from "@mui/icons-material";
 import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import { useAuth } from "../autenticacion/ContextoAuth";
+import { ContextoGeneral } from "../Contexto";
 
 const CustomToolbar = styled(Toolbar)<{ transicion: string }>(
   ({ transicion }) => ({
@@ -38,7 +39,7 @@ interface NavbarProps {
 export default function Navbar(props: NavbarProps) {
   const { navAbierto, transicion, handleClickToggleNav } = props;
   const { user, logout } = useAuth();
-
+  const { theme } = useContext(ContextoGeneral);
   const [anchorMenuUsuario, setAnchorMenuUsuario] =
     useState<null | HTMLElement>(null);
 
@@ -51,7 +52,6 @@ export default function Navbar(props: NavbarProps) {
   const handleClickCerrarMenuUsuario = () => {
     setAnchorMenuUsuario(null);
   };
-
   return (
     <>
       <CustomToolbar transicion={transicion}>
@@ -59,7 +59,7 @@ export default function Navbar(props: NavbarProps) {
           {/* Botón hamburguesa para abrir/cerrar el Navside */}
           <IconButton
             onClick={handleClickToggleNav}
-            sx={{ mr: 2, color: "#163660" }}
+            sx={{ mr: 2, color: theme.colores.azul }}
           >
             {navAbierto ? <ChevronLeftIcon /> : <MenuIcon />}
           </IconButton>
@@ -115,7 +115,7 @@ export default function Navbar(props: NavbarProps) {
         >
           <MenuItem onClick={() => logout()}>
             <ListItemIcon>
-              <Logout sx={{ color: "#163660" }} fontSize="small" />
+              <Logout sx={{ color: theme.colores.azul }} fontSize="small" />
             </ListItemIcon>
             Logout
           </MenuItem>

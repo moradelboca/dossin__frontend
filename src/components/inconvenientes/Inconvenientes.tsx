@@ -44,12 +44,24 @@ const getTipoStyles = (nombre: string) => {
   switch (nombre.toLowerCase()) {
     case "turno con errores":
     case "generado por chofer":
-      return { backgroundColor: "#C2DCF0", color: "#307FA6", borderColor: "#307FA6" };
+      return {
+        backgroundColor: "#C2DCF0",
+        color: "#307FA6",
+        borderColor: "#307FA6",
+      };
     case "lluvias":
     case "clima":
-      return { backgroundColor: "#BFE4DC", color: "#418C75", borderColor: "#418C75" };
+      return {
+        backgroundColor: "#BFE4DC",
+        color: "#418C75",
+        borderColor: "#418C75",
+      };
     default:
-      return { backgroundColor: "transparent", color: "black", borderColor: "#CB723A" };
+      return {
+        backgroundColor: "transparent",
+        color: "black",
+        borderColor: "#CB723A",
+      };
   }
 };
 
@@ -77,9 +89,10 @@ const getUrgenciaStyles = (nombre: string) => {
   }
 };
 
-
-
-const Row: React.FC<{ row: Inconveniente; handleEstadoChange: (id: number, nuevoEstado: number) => void }> = ({ row, handleEstadoChange }) => {
+const Row: React.FC<{
+  row: Inconveniente;
+  handleEstadoChange: (id: number, nuevoEstado: number) => void;
+}> = ({ row, handleEstadoChange }) => {
   const [open, setOpen] = useState(false);
 
   // Función para manejar el cambio de estado
@@ -123,14 +136,20 @@ const Row: React.FC<{ row: Inconveniente; handleEstadoChange: (id: number, nuevo
         <TableCell>{row.fechaCreacion}</TableCell>
         <TableCell>
           <Stack direction="row" spacing={2} alignItems="center">
-            <Avatar src={row.creadoPor.imagen || undefined} alt={row.creadoPor.email} />
+            <Avatar
+              src={row.creadoPor.imagen || undefined}
+              alt={row.creadoPor.email}
+            />
             <Typography variant="body2">{row.creadoPor.email}</Typography>
           </Stack>
         </TableCell>
         <TableCell>
           {row.asignadoA ? (
             <Stack direction="row" spacing={2} alignItems="center">
-              <Avatar src={row.asignadoA.imagen || undefined} alt={row.asignadoA.email} />
+              <Avatar
+                src={row.asignadoA.imagen || undefined}
+                alt={row.asignadoA.email}
+              />
               <Typography variant="body2">{row.asignadoA.email}</Typography>
             </Stack>
           ) : (
@@ -157,7 +176,8 @@ const Row: React.FC<{ row: Inconveniente; handleEstadoChange: (id: number, nuevo
                   color={row.estado.nombre === "RESUELTO" ? "error" : "success"}
                   onClick={handleCambioEstado}
                 >
-                  Cambiar a {row.estado.nombre === "RESUELTO" ? "Pendiente" : "Resuelto"}
+                  Cambiar a{" "}
+                  {row.estado.nombre === "RESUELTO" ? "Pendiente" : "Resuelto"}
                 </Button>
               </Box>
             </Box>
@@ -168,14 +188,11 @@ const Row: React.FC<{ row: Inconveniente; handleEstadoChange: (id: number, nuevo
   );
 };
 
-
-
 const Inconvenientes: React.FC = () => {
   const { theme, backendURL } = useContext(ContextoGeneral);
   const [inconvenientes, setInconvenientes] = useState<Inconveniente[]>([]);
   const [open, setOpen] = useState(false);
   const selectedInconveniente = null;
-
 
   useEffect(() => {
     const fetchData = async () => {
@@ -196,15 +213,14 @@ const Inconvenientes: React.FC = () => {
     fetchData();
   }, []);
 
-
   const handleEstadoChange = (inconvenienteId: number, nuevoEstado: number) => {
     const metodo = "PUT";
     const url = `${backendURL}/inconvenientes/${inconvenienteId}`;
-  
+
     const payload = {
       estado: nuevoEstado,
     };
-  
+
     fetch(url, {
       method: metodo,
       headers: {
@@ -246,8 +262,8 @@ const Inconvenientes: React.FC = () => {
       >
         Inconvenientes
       </Typography>
-      <Button variant="contained" color="primary" onClick={() => setOpen(true)}>
-        Agregar Inconveniente
+      <Button sx={{ color: theme.colores.azul }} onClick={() => setOpen(true)}>
+        + Agregar Inconveniente
       </Button>
       <TableContainer component={Paper}>
         <Table>
@@ -265,12 +281,16 @@ const Inconvenientes: React.FC = () => {
           </TableHead>
           <TableBody>
             {inconvenientes.map((inconveniente) => (
-              <Row key={inconveniente.id} row={inconveniente} handleEstadoChange={handleEstadoChange} />
+              <Row
+                key={inconveniente.id}
+                row={inconveniente}
+                handleEstadoChange={handleEstadoChange}
+              />
             ))}
           </TableBody>
         </Table>
       </TableContainer>
-      
+
       {open && (
         <CreadorEntidad
           seleccionado={selectedInconveniente}
