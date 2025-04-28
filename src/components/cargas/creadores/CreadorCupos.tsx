@@ -14,7 +14,7 @@ import { useState, useContext } from "react";
 import { ContextoGeneral } from "../../Contexto";
 
 // Tema personalizado
-const theme = createTheme({
+const tema = createTheme({
   palette: {
     primary: {
       main: "#163660",
@@ -74,7 +74,7 @@ export function CreadorCupos(props: any) {
   const [cupoSeleccionado, setCupoSeleccionado] = useState<number | null>(null);
   const [error, setError] = useState(false);
   const [errorFecha, setErrorFecha] = useState(false);
-
+  const { theme } = useContext(ContextoGeneral);
   const handleClickGuardar = () => {
     setError(false);
     setErrorFecha(false);
@@ -153,7 +153,7 @@ export function CreadorCupos(props: any) {
         padding={2}
         alignItems={"center"}
       >
-        <ThemeProvider theme={theme}>
+        <ThemeProvider theme={tema}>
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DateCalendar
               value={null}
@@ -193,7 +193,12 @@ export function CreadorCupos(props: any) {
                 Debes seleccionar al menos una fecha
               </Typography>
             )}
-            <Button onClick={handleClickGuardar}>Guardar</Button>
+            <Button
+              onClick={handleClickGuardar}
+              sx={{ color: theme.colores.azul }}
+            >
+              Guardar
+            </Button>
           </Box>
         </Stack>
       </Box>
