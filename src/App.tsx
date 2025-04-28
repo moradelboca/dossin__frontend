@@ -21,6 +21,7 @@ import Inconvenientes from "./components/inconvenientes/Inconvenientes";
 import PaginaNoDisponible from "./components/inconvenientes/PaginaNoDisponible";
 import { MapaMain } from "./components/mapa/MapaMain";
 import { Nav } from "./components/nav/Nav";
+import WebSocketComponent from "./components/Websocket";
 
 function App() {
   const [navAbierto, setNavAbierto] = useState(false);
@@ -33,6 +34,7 @@ function App() {
       <AuthProvider>
         <NotificacionProvider>
           <ContextoGeneral.Provider value={ValoresContexto}>
+            <WebSocketComponent />
             <Box
               sx={{
                 display: "flex",
