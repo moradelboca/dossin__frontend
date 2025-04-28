@@ -31,6 +31,7 @@ const EstadoTurnoForm: React.FC<EstadoTurnoFormProps> = ({
   // Si no hay estado inicial se toma el primero de la lista
   const [selectedEstado, setSelectedEstado] = useState(initialEstado || estados[0]);
   const [error, setError] = useState<string | null>(null);
+  const {theme} = useContext(ContextoGeneral);
 
   const handleSubmit = async () => {
     if (!selectedEstado) {
@@ -80,10 +81,10 @@ const EstadoTurnoForm: React.FC<EstadoTurnoFormProps> = ({
         )}
       />
       <Stack direction="row" spacing={2} justifyContent="flex-end" sx={{ marginTop: 2 }}>
-        <Button color="secondary" onClick={onCancel}>
+        <Button color="error" onClick={onCancel}>
           Cancelar
         </Button>
-        <Button color="primary" onClick={handleSubmit}>
+        <Button sx={{color: theme.colores.azul}} onClick={handleSubmit}>
           Guardar Estado
         </Button>
       </Stack>

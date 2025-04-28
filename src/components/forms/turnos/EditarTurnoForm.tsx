@@ -24,6 +24,8 @@ import FacturaForm from "./tabs/FacturaForm";
 import OrdenPagoForm from "./tabs/OrdenPagoForm";
 import PesajeForm from "./tabs/PesajeForm";
 import TaraForm from "./tabs/TaraForm";
+import { useContext } from "react";
+import { ContextoGeneral } from "../../Contexto";
 
 const ROLES_PERMITIDOS_ADELANTOS = [1, 2 ];
 
@@ -69,6 +71,7 @@ const EditarTurnoForm: React.FC<EditarTurnoFormProps> = ({
   const { borrarTurno } = useBorrarTurno();
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [filteredTabs, setFilteredTabs] = useState<string[]>([]);
+  const { theme } = useContext(ContextoGeneral);
 
   const baseTabs = [
     "Datos Principales",
@@ -236,7 +239,7 @@ const EditarTurnoForm: React.FC<EditarTurnoFormProps> = ({
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setOpenDeleteDialog(false)} color="primary">
+          <Button onClick={() => setOpenDeleteDialog(false)} sx={{ color: theme.colores.azul }}>
             Cancelar
           </Button>
           <Button onClick={handleConfirmDelete} color="error">

@@ -1,5 +1,5 @@
 // components/tabs/AdelantoGasoilForm.tsx
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext } from "react";
 import {
   TextField,
   Button,
@@ -11,9 +11,9 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-} from '@mui/material';
-import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
-import { ContextoGeneral } from '../../../../Contexto';
+} from "@mui/material";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+import { ContextoGeneral } from "../../../../Contexto";
 
 interface TipoCombustible {
   id: number;
@@ -43,25 +43,35 @@ const AdelantoGasoilForm: React.FC<AdelantoGasoilFormProps> = ({
 }) => {
   const { backendURL } = useContext(ContextoGeneral);
   const headers = {
-    'Content-Type': 'application/json',
-    'ngrok-skip-browser-warning': 'true',
+    "Content-Type": "application/json",
+    "ngrok-skip-browser-warning": "true",
   };
+  const { theme } = useContext(ContextoGeneral);
 
   // Estado para el adelanto actualmente seleccionado
-  const [adelanto, setAdelanto] = useState<AdelantoGasoil | undefined>(initialAdelanto);
+  const [adelanto, setAdelanto] = useState<AdelantoGasoil | undefined>(
+    initialAdelanto
+  );
   // Estado para el listado de adelantos del turno
   const [adelantos, setAdelantos] = useState<AdelantoGasoil[]>([]);
   // Estados para el formulario
-  const [tipoCombustible, setTipoCombustible] = useState<TipoCombustible | null>(null);
-  const [cantLitros, setCantLitros] = useState<number | ''>(initialAdelanto?.cantLitros || '');
-  const [precioLitros, setPrecioLitros] = useState<number | ''>(initialAdelanto?.precioLitros || '');
+  const [tipoCombustible, setTipoCombustible] =
+    useState<TipoCombustible | null>(null);
+  const [cantLitros, setCantLitros] = useState<number | "">(
+    initialAdelanto?.cantLitros || ""
+  );
+  const [precioLitros, setPrecioLitros] = useState<number | "">(
+    initialAdelanto?.precioLitros || ""
+  );
   const [errors, setErrors] = useState<{
     tipoCombustible?: string;
     cantLitros?: string;
     precioLitros?: string;
   }>({});
 
-  const [tiposCombustibleOptions, setTiposCombustibleOptions] = useState<TipoCombustible[]>([]);
+  const [tiposCombustibleOptions, setTiposCombustibleOptions] = useState<
+    TipoCombustible[]
+  >([]);
   // Estado para controlar la apertura del dialog de eliminación
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
 
@@ -70,10 +80,11 @@ const AdelantoGasoilForm: React.FC<AdelantoGasoilFormProps> = ({
     const fetchTiposCombustible = async () => {
       try {
         const response = await fetch(`${backendURL}/adelantos/gasoil/tipos`, {
-          method: 'GET',
+          method: "GET",
           headers,
         });
-        if (!response.ok) throw new Error('Error al obtener los tipos de gasoil');
+        if (!response.ok)
+          throw new Error("Error al obtener los tipos de gasoil");
         const data = await response.json();
         setTiposCombustibleOptions(data);
       } catch (error) {
@@ -89,10 +100,11 @@ const AdelantoGasoilForm: React.FC<AdelantoGasoilFormProps> = ({
     const fetchAdelantos = async () => {
       try {
         const response = await fetch(`${backendURL}/adelantos/gasoil`, {
-          method: 'GET',
+          method: "GET",
           headers,
         });
-        if (!response.ok) throw new Error('Error al obtener los adelantos de gasoil');
+        if (!response.ok)
+          throw new Error("Error al obtener los adelantos de gasoil");
         const data = await response.json();
         const filtered = data
           .filter((item: any) => item.turnoDeCarga?.id === Number(turnoId))
@@ -144,13 +156,15 @@ const AdelantoGasoilForm: React.FC<AdelantoGasoilFormProps> = ({
     } = {};
 
     if (!tipoCombustible) {
-      newErrors.tipoCombustible = 'El tipo de combustible es obligatorio';
+      newErrors.tipoCombustible = "El tipo de combustible es obligatorio";
     }
-    if (cantLitros === '' || Number(cantLitros) <= 0) {
-      newErrors.cantLitros = 'La cantidad de litros es obligatoria y debe ser mayor a 0';
+    if (cantLitros === "" || Number(cantLitros) <= 0) {
+      newErrors.cantLitros =
+        "La cantidad de litros es obligatoria y debe ser mayor a 0";
     }
-    if (precioLitros === '' || Number(precioLitros) <= 0) {
-      newErrors.precioLitros = 'El precio por litro es obligatorio y debe ser mayor a 0';
+    if (precioLitros === "" || Number(precioLitros) <= 0) {
+      newErrors.precioLitros =
+        "El precio por litro es obligatorio y debe ser mayor a 0";
     }
 
     setErrors(newErrors);
@@ -161,29 +175,29 @@ const AdelantoGasoilForm: React.FC<AdelantoGasoilFormProps> = ({
   const handleSubmit = async () => {
     if (!validate()) return;
     if (!tipoCombustible) return;
-    
+
     if (!turnoId) {
       console.error("El id del turno no está definido");
       return;
     }
-    
+
     const payload: AdelantoGasoil = {
       idTurnoDeCarga: Number(turnoId),
       idTipoCombustible: tipoCombustible.id,
       cantLitros: Number(cantLitros),
       precioLitros: Number(precioLitros),
     };
-  
+
     try {
       let url = `${backendURL}/adelantos/gasoil`;
-      let method = 'POST';
-      
+      let method = "POST";
+
       // Si ya existe un adelanto, se actualiza mediante PUT
       if (adelanto && adelanto.id) {
         url = `${backendURL}/adelantos/gasoil/${adelanto.id}`;
-        method = 'PUT';
+        method = "PUT";
       }
-      
+
       const response = await fetch(url, {
         method,
         headers,
@@ -196,7 +210,7 @@ const AdelantoGasoilForm: React.FC<AdelantoGasoilFormProps> = ({
       onSuccess(data);
       // (Opcional) Actualizar la lista de adelantos tras el cambio
     } catch (error) {
-      console.error('Error al procesar el adelanto de gasoil:', error);
+      console.error("Error al procesar el adelanto de gasoil:", error);
     }
   };
 
@@ -212,10 +226,13 @@ const AdelantoGasoilForm: React.FC<AdelantoGasoilFormProps> = ({
   const handleDelete = async () => {
     if (!adelanto || !adelanto.id) return;
     try {
-      const response = await fetch(`${backendURL}/adelantos/gasoil/${adelanto.id}`, {
-        method: 'DELETE',
-        headers,
-      });
+      const response = await fetch(
+        `${backendURL}/adelantos/gasoil/${adelanto.id}`,
+        {
+          method: "DELETE",
+          headers,
+        }
+      );
       if (!response.ok) {
         throw new Error(await response.text());
       }
@@ -223,17 +240,17 @@ const AdelantoGasoilForm: React.FC<AdelantoGasoilFormProps> = ({
       onSuccess({ deleted: true, id: adelanto.id });
       // Limpiar el formulario
       setAdelanto(undefined);
-      setCantLitros('');
-      setPrecioLitros('');
+      setCantLitros("");
+      setPrecioLitros("");
       setTipoCombustible(null);
     } catch (error) {
-      console.error('Error al eliminar el adelanto de gasoil:', error);
+      console.error("Error al eliminar el adelanto de gasoil:", error);
     }
     setOpenDeleteDialog(false);
   };
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+    <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
       {/* Selector de adelantos existentes, botón para agregar y botón para eliminar */}
       <Stack direction="row" spacing={2} alignItems="center">
         <Autocomplete
@@ -254,8 +271,8 @@ const AdelantoGasoilForm: React.FC<AdelantoGasoilFormProps> = ({
             } else {
               // Si se deselecciona, se limpian los campos para crear uno nuevo
               setAdelanto(undefined);
-              setCantLitros('');
-              setPrecioLitros('');
+              setCantLitros("");
+              setPrecioLitros("");
               setTipoCombustible(null);
             }
           }}
@@ -266,11 +283,12 @@ const AdelantoGasoilForm: React.FC<AdelantoGasoilFormProps> = ({
         />
         <Button
           variant="contained"
+          sx={{ backgroundColor: theme.colores.azul }}
           onClick={() => {
             // Al hacer click en '+' se limpian los campos para agregar un nuevo adelanto
             setAdelanto(undefined);
-            setCantLitros('');
-            setPrecioLitros('');
+            setCantLitros("");
+            setPrecioLitros("");
             setTipoCombustible(null);
           }}
         >
@@ -279,7 +297,7 @@ const AdelantoGasoilForm: React.FC<AdelantoGasoilFormProps> = ({
         <IconButton
           onClick={handleOpenDeleteDialog}
           disabled={!adelanto}
-          sx={{ color: adelanto ? '#d32f2f' : 'grey' }}
+          sx={{ color: adelanto ? "#d32f2f" : "grey" }}
         >
           <DeleteOutlineIcon />
         </IconButton>
@@ -305,7 +323,7 @@ const AdelantoGasoilForm: React.FC<AdelantoGasoilFormProps> = ({
         type="number"
         value={cantLitros}
         onChange={(e) =>
-          setCantLitros(e.target.value ? Number(e.target.value) : '')
+          setCantLitros(e.target.value ? Number(e.target.value) : "")
         }
         error={!!errors.cantLitros}
         helperText={errors.cantLitros}
@@ -315,15 +333,17 @@ const AdelantoGasoilForm: React.FC<AdelantoGasoilFormProps> = ({
         type="number"
         value={precioLitros}
         onChange={(e) =>
-          setPrecioLitros(e.target.value ? Number(e.target.value) : '')
+          setPrecioLitros(e.target.value ? Number(e.target.value) : "")
         }
         error={!!errors.precioLitros}
         helperText={errors.precioLitros}
       />
       <Stack direction="row" spacing={2} justifyContent="flex-end">
-        <Button onClick={onCancel}>Cancelar</Button>
-        <Button onClick={handleSubmit} color="primary" variant="contained">
-          {adelanto && adelanto.id ? 'Actualizar Adelanto' : 'Crear Adelanto'}
+        <Button onClick={onCancel} color="error">
+          Cancelar
+        </Button>
+        <Button onClick={handleSubmit} sx={{ color: theme.colores.azul }}>
+          {adelanto && adelanto.id ? "Actualizar Adelanto" : "Crear Adelanto"}
         </Button>
       </Stack>
 

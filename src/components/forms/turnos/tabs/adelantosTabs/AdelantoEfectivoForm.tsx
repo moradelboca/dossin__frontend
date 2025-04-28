@@ -1,5 +1,5 @@
 // components/tabs/AdelantoEfectivoForm.tsx
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext } from "react";
 import {
   TextField,
   Button,
@@ -11,9 +11,9 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-} from '@mui/material';
-import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
-import { ContextoGeneral } from '../../../../Contexto';
+} from "@mui/material";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+import { ContextoGeneral } from "../../../../Contexto";
 
 interface TipoMedioPago {
   id: number;
@@ -43,22 +43,32 @@ const AdelantoEfectivoForm: React.FC<AdelantoEfectivoFormProps> = ({
 }) => {
   const { backendURL } = useContext(ContextoGeneral);
   const headers = {
-    'Content-Type': 'application/json',
-    'ngrok-skip-browser-warning': 'true',
+    "Content-Type": "application/json",
+    "ngrok-skip-browser-warning": "true",
   };
+  const { theme } = useContext(ContextoGeneral);
 
   // Estado para el adelanto efectivo seleccionado
-  const [adelanto, setAdelanto] = useState<AdelantoEfectivo | undefined>(initialAdelanto);
+  const [adelanto, setAdelanto] = useState<AdelantoEfectivo | undefined>(
+    initialAdelanto
+  );
   // Estado para la lista de adelantos que coinciden con el turno
   const [adelantos, setAdelantos] = useState<AdelantoEfectivo[]>([]);
   // Estados para los campos del formulario
-  const [tipoMedioPago, setTipoMedioPago] = useState<TipoMedioPago | null>(null);
-  const [montoAdelantado, setMontoAdelantado] = useState<number | ''>(
-    initialAdelanto?.montoAdelantado || ''
+  const [tipoMedioPago, setTipoMedioPago] = useState<TipoMedioPago | null>(
+    null
   );
-  const [errors, setErrors] = useState<{ tipoMedioPago?: string; montoAdelantado?: string }>({});
+  const [montoAdelantado, setMontoAdelantado] = useState<number | "">(
+    initialAdelanto?.montoAdelantado || ""
+  );
+  const [errors, setErrors] = useState<{
+    tipoMedioPago?: string;
+    montoAdelantado?: string;
+  }>({});
 
-  const [tiposMedioPagoOptions, setTiposMedioPagoOptions] = useState<TipoMedioPago[]>([]);
+  const [tiposMedioPagoOptions, setTiposMedioPagoOptions] = useState<
+    TipoMedioPago[]
+  >([]);
   // Estado para controlar la apertura del diálogo de eliminación
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
 
@@ -67,10 +77,11 @@ const AdelantoEfectivoForm: React.FC<AdelantoEfectivoFormProps> = ({
     const fetchTiposMedioPago = async () => {
       try {
         const response = await fetch(`${backendURL}/adelantos/efectivo/tipos`, {
-          method: 'GET',
+          method: "GET",
           headers,
         });
-        if (!response.ok) throw new Error('Error al obtener los tipos de medio de pago');
+        if (!response.ok)
+          throw new Error("Error al obtener los tipos de medio de pago");
         const data = await response.json();
         setTiposMedioPagoOptions(data);
       } catch (error) {
@@ -86,10 +97,11 @@ const AdelantoEfectivoForm: React.FC<AdelantoEfectivoFormProps> = ({
     const fetchAdelantos = async () => {
       try {
         const response = await fetch(`${backendURL}/adelantos/efectivo`, {
-          method: 'GET',
+          method: "GET",
           headers,
         });
-        if (!response.ok) throw new Error('Error al obtener los adelantos efectivos');
+        if (!response.ok)
+          throw new Error("Error al obtener los adelantos efectivos");
         const data = await response.json();
         const filtered = data
           .filter((item: any) => item.turnoDeCarga?.id === Number(turnoId))
@@ -134,10 +146,11 @@ const AdelantoEfectivoForm: React.FC<AdelantoEfectivoFormProps> = ({
   const validate = () => {
     const newErrors: { tipoMedioPago?: string; montoAdelantado?: string } = {};
     if (!tipoMedioPago) {
-      newErrors.tipoMedioPago = 'El tipo de medio de pago es obligatorio';
+      newErrors.tipoMedioPago = "El tipo de medio de pago es obligatorio";
     }
-    if (montoAdelantado === '' || Number(montoAdelantado) <= 0) {
-      newErrors.montoAdelantado = 'El monto adelantado es obligatorio y debe ser mayor a 0';
+    if (montoAdelantado === "" || Number(montoAdelantado) <= 0) {
+      newErrors.montoAdelantado =
+        "El monto adelantado es obligatorio y debe ser mayor a 0";
     }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -160,12 +173,12 @@ const AdelantoEfectivoForm: React.FC<AdelantoEfectivoFormProps> = ({
 
     try {
       let url = `${backendURL}/adelantos/efectivo`;
-      let method = 'POST';
+      let method = "POST";
 
       // Si ya existe un adelanto, se actualiza mediante PUT
       if (adelanto && adelanto.id) {
         url = `${backendURL}/adelantos/efectivo/${adelanto.id}`;
-        method = 'PUT';
+        method = "PUT";
       }
 
       const response = await fetch(url, {
@@ -179,7 +192,7 @@ const AdelantoEfectivoForm: React.FC<AdelantoEfectivoFormProps> = ({
       const data = await response.json();
       onSuccess(data);
     } catch (error) {
-      console.error('Error al procesar el adelanto efectivo:', error);
+      console.error("Error al procesar el adelanto efectivo:", error);
     }
   };
 
@@ -195,10 +208,13 @@ const AdelantoEfectivoForm: React.FC<AdelantoEfectivoFormProps> = ({
   const handleDelete = async () => {
     if (!adelanto || !adelanto.id) return;
     try {
-      const response = await fetch(`${backendURL}/adelantos/efectivo/${adelanto.id}`, {
-        method: 'DELETE',
-        headers,
-      });
+      const response = await fetch(
+        `${backendURL}/adelantos/efectivo/${adelanto.id}`,
+        {
+          method: "DELETE",
+          headers,
+        }
+      );
       if (!response.ok) {
         throw new Error(await response.text());
       }
@@ -206,16 +222,16 @@ const AdelantoEfectivoForm: React.FC<AdelantoEfectivoFormProps> = ({
       onSuccess({ deleted: true, id: adelanto.id });
       // Limpiar los campos del formulario
       setAdelanto(undefined);
-      setMontoAdelantado('');
+      setMontoAdelantado("");
       setTipoMedioPago(null);
     } catch (error) {
-      console.error('Error al eliminar el adelanto efectivo:', error);
+      console.error("Error al eliminar el adelanto efectivo:", error);
     }
     setOpenDeleteDialog(false);
   };
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+    <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
       {/* Selector de adelantos existentes, botón para agregar nuevo y botón de eliminar */}
       <Stack direction="row" spacing={2} alignItems="center">
         <Autocomplete
@@ -235,7 +251,7 @@ const AdelantoEfectivoForm: React.FC<AdelantoEfectivoFormProps> = ({
             } else {
               // Si se deselecciona, se limpian los campos para crear uno nuevo
               setAdelanto(undefined);
-              setMontoAdelantado('');
+              setMontoAdelantado("");
               setTipoMedioPago(null);
             }
           }}
@@ -246,10 +262,11 @@ const AdelantoEfectivoForm: React.FC<AdelantoEfectivoFormProps> = ({
         />
         <Button
           variant="contained"
+          sx={{ backgroundColor: theme.colores.azul }}
           onClick={() => {
             // Limpia la selección para crear un nuevo adelanto
             setAdelanto(undefined);
-            setMontoAdelantado('');
+            setMontoAdelantado("");
             setTipoMedioPago(null);
           }}
         >
@@ -258,7 +275,7 @@ const AdelantoEfectivoForm: React.FC<AdelantoEfectivoFormProps> = ({
         <IconButton
           onClick={handleOpenDeleteDialog}
           disabled={!adelanto}
-          sx={{ color: adelanto ? '#d32f2f' : 'grey' }}
+          sx={{ color: adelanto ? "#d32f2f" : "grey" }}
         >
           <DeleteOutlineIcon />
         </IconButton>
@@ -285,15 +302,17 @@ const AdelantoEfectivoForm: React.FC<AdelantoEfectivoFormProps> = ({
         type="number"
         value={montoAdelantado}
         onChange={(e) =>
-          setMontoAdelantado(e.target.value ? Number(e.target.value) : '')
+          setMontoAdelantado(e.target.value ? Number(e.target.value) : "")
         }
         error={!!errors.montoAdelantado}
         helperText={errors.montoAdelantado}
       />
       <Stack direction="row" spacing={2} justifyContent="flex-end">
-        <Button onClick={onCancel}>Cancelar</Button>
-        <Button onClick={handleSubmit} color="primary" variant="contained">
-          {adelanto && adelanto.id ? 'Actualizar Adelanto' : 'Crear Adelanto'}
+        <Button onClick={onCancel} color="error">
+          Cancelar
+        </Button>
+        <Button onClick={handleSubmit} sx={{ color: theme.colores.azul }}>
+          {adelanto && adelanto.id ? "Actualizar Adelanto" : "Crear Adelanto"}
         </Button>
       </Stack>
 

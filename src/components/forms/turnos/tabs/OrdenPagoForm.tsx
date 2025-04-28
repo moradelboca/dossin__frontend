@@ -12,7 +12,7 @@ interface OrdenPagoFormProps {
 const OrdenPagoForm: React.FC<OrdenPagoFormProps> = ({ turnoId, initialData, onSuccess, onCancel }) => {
   const [numeroOrdenPago, setNumeroOrdenPago] = useState<number | null>(initialData || null);
   const [error, setError] = useState<string | null>(null);
-
+  const {theme} = useContext(ContextoGeneral);
   const { backendURL } = useContext(ContextoGeneral);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -55,10 +55,10 @@ const OrdenPagoForm: React.FC<OrdenPagoFormProps> = ({ turnoId, initialData, onS
         helperText={error}
       />
       <Stack direction="row" spacing={2} justifyContent="flex-end" sx={{ marginTop: 2 }}>
-        <Button color="secondary" onClick={onCancel}>
+        <Button color="error" onClick={onCancel}>
           Cancelar
         </Button>
-        <Button color="primary" onClick={handleSubmit}>
+        <Button sx={{color: theme.colores.azul }} onClick={handleSubmit}>
           Guardar Número de Orden de Pago
         </Button>
       </Stack>
