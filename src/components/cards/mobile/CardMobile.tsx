@@ -134,15 +134,24 @@ const CardMobile: React.FC<CardMobileProps> = ({
           ))}
           {/* Botón primario de Editar */}
           {mostrarBotonEditar && (
-            <Button
-              variant="outlined"
-              startIcon={<EditIcon />}
-              fullWidth
-              sx={{ marginTop: 2 }}
-              onClick={() => handleOpenDialog(item)}
-            >
-              Editar
-            </Button>
+           <Button
+           variant="outlined"
+           startIcon={<EditIcon />}
+           fullWidth
+           onClick={() => handleOpenDialog(item)}
+           sx={{ 
+             marginTop: 2, 
+             color: theme.colores.azul,
+             borderColor: theme.colores.azul,
+             '&:hover': {
+               borderColor: theme.colores.azul,
+               backgroundColor: 'rgba(0, 0, 255, 0.04)', // opcional, cambia si querés el hover
+             }
+           }}
+         >
+           Editar
+         </Button>
+             
           )}
           {/* Botón secundario condicional */}
           {textoSecondaryButton && handleSecondButton && (
