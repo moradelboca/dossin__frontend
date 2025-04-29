@@ -64,7 +64,7 @@ export default function Navbar(props: NavbarProps) {
             {navAbierto ? <ChevronLeftIcon /> : <MenuIcon />}
           </IconButton>
           <img
-            src="https://i.imgur.com/nmMpZzl.png"
+            src="https://imgur.com/a/21CONyp.png"
             alt="Logo"
             style={{ height: "40px" }}
           />
