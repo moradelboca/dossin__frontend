@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { TextField, Button, Stack, Box, IconButton, Dialog, DialogTitle, DialogContent, DialogActions } from "@mui/material";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import useTaraHandler from "../../../hooks/turnos/useTaraHandler";
+import { ContextoGeneral } from "../../../Contexto";
 
 interface TaraFormProps {
   turnoId: string;
@@ -25,6 +26,7 @@ const TaraForm: React.FC<TaraFormProps> = ({
   const [errors, setErrors] = useState<{ pesoTara?: string; pesoBruto?: string }>({});
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);  // Estado para manejar el diálogo de eliminación
   const { handleTaraSubmission, handleTaraDeletion } = useTaraHandler();
+  const {theme} = useContext(ContextoGeneral);
 
   useEffect(() => {
     if (initialTara) {
@@ -97,14 +99,14 @@ const TaraForm: React.FC<TaraFormProps> = ({
         fullWidth
       />
       <Stack direction="row" spacing={2} justifyContent="flex-end">
-        <Button onClick={onCancel}>Cancelar</Button>
+        <Button onClick={onCancel} color="error">Cancelar</Button>
         {/* Mostrar el botón de eliminar solo si existe una tara */}
         {initialTara?.id && (
           <IconButton onClick={handleOpenDeleteDialog} sx={{ color: "#d32f2f" }}>
             <DeleteOutlineIcon />
           </IconButton>
         )}
-        <Button onClick={handleSubmit} color="primary" variant="contained">
+        <Button onClick={handleSubmit} sx={{color: theme.colores.azul}} >
           {initialTara?.id ? "Actualizar Tara" : "Crear Tara"}
         </Button>
       </Stack>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   TextField,
   Button,
@@ -12,6 +12,7 @@ import {
 } from "@mui/material";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import useCartaPorteHandler from "../../../hooks/turnos/useCartaPorteHandler";
+import { ContextoGeneral } from "../../../Contexto";
 
 interface CartaPorteFormProps {
   turnoId: string;
@@ -42,7 +43,7 @@ const CartaPorteForm: React.FC<CartaPorteFormProps> = ({
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
 
   const { handleCartaPorteSubmission, handleCartaPorteDeletion } = useCartaPorteHandler();
-
+  const {theme} = useContext(ContextoGeneral);
   // Actualizar estados cuando cambie initialData
   useEffect(() => {
     setNumeroCartaPorte(
@@ -132,13 +133,13 @@ const CartaPorteForm: React.FC<CartaPorteFormProps> = ({
         fullWidth
       />
       <Stack direction="row" spacing={2} justifyContent="flex-end">
-        <Button onClick={onCancel}>Cancelar</Button>
+        <Button onClick={onCancel} color="error">Cancelar</Button>
         {initialData?.numeroCartaPorte !== undefined && (
           <IconButton onClick={handleOpenDeleteDialog} sx={{ color: "#d32f2f" }}>
             <DeleteOutlineIcon />
           </IconButton>
         )}
-        <Button onClick={handleSubmit} color="primary" variant="contained">
+        <Button onClick={handleSubmit} sx={{color:theme.colores.azul}}>
           {isUpdate ? "Actualizar Carta" : "Crear Carta"}
         </Button>
       </Stack>
