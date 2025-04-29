@@ -22,20 +22,20 @@ const CargasSection: React.FC<CargasSectionProps> = ({
   const fields = [
     "id",
     "tarifa",
-    "tipoTarifa",
+    "tipoTarifa.nombre",       
     "incluyeIVA",
     "cantidadKm",
-    "cargamento",
+    "cargamento.nombre",       
     "tiposAcoplados",
     "horaInicioCarga",
     "horaFinCarga",
-    "ubicacionCarga",
+    "ubicacionCarga.nombre",   
     "horaInicioDescarga",
     "horaFinDescarga",
-    "ubicacionDescarga",
+    "ubicacionDescarga.nombre",
     "horaInicioBalanza",
     "horaFinBalanza",
-    "ubicacionBalanza",
+    "ubicacionBalanza.nombre", 
     "tolerancia",
     "creadoPor",
     "descripcion",
@@ -50,18 +50,18 @@ const CargasSection: React.FC<CargasSectionProps> = ({
     "Cantidad Km",
     "Cargamento",
     "Tipos Acoplados",
-    "Hora InicioCarga",
+    "Hora Inicio Carga",
     "Hora Fin Carga",
-    "Ubicacion Carga",
+    "Ubicación Carga",
     "Hora Inicio Descarga",
     "Hora Fin Descarga",
-    "Ubicacion Descarga",
+    "Ubicación Descarga",
     "Hora Inicio Balanza",
     "Hora Fin Balanza",
-    "Ubicacion Balanza",
+    "Ubicación Balanza",
     "Tolerancia",
     "Creado Por",
-    "Descripcion",
+    "Descripción",
     "Planta Procedencia Ruca",
     "Destino Ruca", 
   ];
@@ -72,7 +72,6 @@ const CargasSection: React.FC<CargasSectionProps> = ({
         <IconButton
           color="primary"
           onClick={() => {
-            // Para agregar una carga nueva, se puede enviar null o un objeto vacío
             handleOpenDialog(null);
           }}
         >
@@ -93,7 +92,7 @@ const CargasSection: React.FC<CargasSectionProps> = ({
             handleExpandClick={handleExpandClick}
             handleOpenDialog={handleOpenDialog}
             tituloField="ubicacionCarga.nombre"
-            subtituloField="tarifa"
+            subtituloField="id"
             mostrarBotonEditar={true}
             textoSecondaryButton="Eliminar"
             handleSecondButton={handleDeleteCarga}

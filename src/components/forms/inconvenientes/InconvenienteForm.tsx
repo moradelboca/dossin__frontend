@@ -6,39 +6,26 @@ import { ContextoGeneral } from "../../Contexto";
 import { FormularioProps } from "../../../interfaces/FormularioProps";
 import { useAuth } from "../../autenticacion/ContextoAuth";
 
-interface Usuario {
-  id: number;
-  email: string;
-  // Puedes agregar otros campos si los devuelven en el GET
-}
 
 const InconvenienteForm: React.FC<FormularioProps> = ({
   datos,
   setDatos,
   handleClose,
 }) => {
-  const { backendURL } = useContext(ContextoGeneral);
-  const { user } = useAuth(); // Obtenemos el usuario del contexto
+  const { backendURL, authURL } = useContext(ContextoGeneral);
+  const { user } = useAuth();
 
   const [tipoInconveniente, setTipoInconveniente] = useState<string | null>(null);
   const [urgencia, setUrgencia] = useState<string | null>(null);
-  const [asignadoA, setAsignadoA] = useState<Usuario | null>(null);
-  const [usuarios, setUsuarios] = useState<Usuario[]>([]);
-
-  // Opciones fijas
-  const tiposInconvenientes = [
-    { id: 1, nombre: "Turno con errores" },
-    { id: 2, nombre: "Generado por chofer" },
-  ];
-  const nivelesUrgencia = [
-    { id: 1, nombre: "Leve" },
-    { id: 2, nombre: "Media" },
-    { id: 3, nombre: "Urgente" },
-  ];
+  const [asignadoA, setAsignadoA] = useState<any>(null);
+  const [usuarios, setUsuarios] = useState<any[]>([]);
+  const [tiposInconvenientes, setTiposInconvenientes] = useState<any[]>([]);
+  const [nivelesUrgencia, setNivelesUrgencia] = useState<any[]>([]);
 
   // Fetch para obtener los usuarios
+  console.log(`${authURL}/auth/usuarios`)
   useEffect(() => {
-    fetch(`${backendURL}/auth/usuarios/roles`, {
+    fetch(`${authURL}/auth/usuarios`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -46,9 +33,9 @@ const InconvenienteForm: React.FC<FormularioProps> = ({
       },
     })
       .then((response) => response.json())
-      .then((data: Usuario[]) => setUsuarios(data))
+      .then((data) => setUsuarios(data))
       .catch(() => console.error("Error al obtener los usuarios"));
-  }, [backendURL]);
+  }, [authURL]);
 
   // Si en datos ya viene asignadoA (por ejemplo en un PUT), autocompletamos el campo
   useEffect(() => {
@@ -59,6 +46,32 @@ const InconvenienteForm: React.FC<FormularioProps> = ({
       }
     }
   }, [usuarios, datos.asignadoA]);
+
+  useEffect(() => {
+    fetch(`${backendURL}/inconvenientes/tiposinconvenientes`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "ngrok-skip-browser-warning": "true",
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => setTiposInconvenientes(data))
+      .catch((error) => {console.error("Error al obtener los Tipos de Inconvenientes: \n", error);});
+  }, [backendURL]);
+
+  useEffect(() => {
+    fetch(`${backendURL}/inconvenientes/urgenciainconvenientes`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "ngrok-skip-browser-warning": "true",
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => setNivelesUrgencia(data))
+      .catch((error) => {console.error("Error al obtener los Niveles de Urgencia: \n", error);});
+  }, [backendURL]);
 
   const { data, errors, handleChange, validateAll } = useValidation(
     {
@@ -169,7 +182,6 @@ const InconvenienteForm: React.FC<FormularioProps> = ({
           />
         )}
       />
-      {/* Campo "Creado Por" ya no es editable, se muestra el email del usuario */}
       <TextField
         margin="dense"
         label="Creado Por"
@@ -181,7 +193,6 @@ const InconvenienteForm: React.FC<FormularioProps> = ({
       <Autocomplete
         options={usuarios}
         value={asignadoA}
-        // La propiedad "getOptionLabel" define que se muestre el email del usuario
         getOptionLabel={(option) => option.email}
         onChange={(_, newValue) => setAsignadoA(newValue)}
         renderInput={(params) => (

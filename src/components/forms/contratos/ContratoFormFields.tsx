@@ -1,16 +1,11 @@
 import React from "react";
 import { Autocomplete, TextField } from "@mui/material";
 
-interface Rol {
-  nombre: string;
-  id: number;
-}
-
 export interface Empresa {
-  cuit: string;
+  cuit: number | string;
   razonSocial: string;
   nombreFantasia: string;
-  roles?: Rol[];
+  roles?: { nombre: string; id: number }[];
 }
 
 type EmpresaField = {
@@ -38,18 +33,45 @@ const ContratoFormFields: React.FC<FormFieldsProps> = ({
     <>
       {empresaFields.map((field) => {
         const empresasDelRol = sorteredEmpresasSegunRol[field.rol] || [];
-        const selectedEmpresa = empresasDelRol.find(emp => emp.cuit === data[field.key]);
+
+        // 1. Detectar el valor seleccionado en base al tipo de `data[field.key]`
+        const selectedEmpresa = empresasDelRol.find(emp => {
+          const val = data[field.key];
+          if (!val) return false;
+
+          // Caso: viene un objeto Empresa
+          if (typeof val === "object" && val.cuit) {
+            return emp.cuit.toString() === val.cuit.toString();
+          }
+
+          // Caso: viene un string
+          if (typeof val === "string") {
+            // 1a. Igual por CUIT
+            if (emp.cuit.toString() === val) return true;
+            // 1b. Igual por etiqueta
+            const etiqueta = `${emp.razonSocial} - ${emp.nombreFantasia}`;
+            if (etiqueta === val) return true;
+          }
+
+          return false;
+        }) || null;
+
         return (
           <Autocomplete
             key={field.key}
             disablePortal
             options={empresasDelRol}
-            getOptionLabel={(option: Empresa) => 
+            getOptionLabel={(option: Empresa) =>
               `${option.razonSocial} - ${option.nombreFantasia}`
             }
-            value={selectedEmpresa || null}
+            // 2. Asignamos el objeto encontrado (o null)
+            value={selectedEmpresa}
             onChange={(_, newValue) => {
-              setData({ ...data, [field.key]: newValue?.cuit || null });
+              // 3. Normalizamos al CUIT en string (o null)
+              const nuevo = newValue
+                ? newValue.cuit.toString()
+                : null;
+              setData({ ...data, [field.key]: nuevo });
             }}
             renderInput={(params) => (
               <TextField
@@ -58,7 +80,6 @@ const ContratoFormFields: React.FC<FormFieldsProps> = ({
                 variant="outlined"
                 error={!!errors[field.key]}
                 helperText={errors[field.key] || ""}
-                InputProps={{ ...params.InputProps }}
               />
             )}
           />

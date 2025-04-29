@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useContext, useState,useMemo, useEffect } from "react";
+import React, { useContext, useState, useMemo, useEffect } from "react";
 import {
   Button,
   Dialog,
@@ -37,7 +37,7 @@ const ContratoForm: React.FC<FormularioProps> = ({
 }) => {
   const safeSeleccionado = seleccionado || {};
   const { backendURL } = useContext(ContextoGeneral);
-
+  console.log(safeSeleccionado);
   // Estados para eliminación de contrato y cargas
   const [openDialogDelete, setOpenDialogDelete] = useState(false);
   const [openDialogCargasWarning, setOpenDialogCargasWarning] = useState(false);
@@ -47,6 +47,7 @@ const ContratoForm: React.FC<FormularioProps> = ({
   const [selectedCarga, setSelectedCarga] = useState<any>(null);
   const [expandedCard, setExpandedCard] = useState<number | null>(null);
   const [listaCargasCreadas, setListaCargasCreadas] = useState<any[]>([]);
+  const [listaCargasModificadas, setListaCargasModificadas] = useState<any[]>([]);
 
   // Estado para notificación emergente en caso de carga con cupos
   const [snackbarOpen, setSnackbarOpen] = useState(false);
@@ -62,6 +63,8 @@ const ContratoForm: React.FC<FormularioProps> = ({
   // Empresas y sus roles
   const [allEmpresas, setAllEmpresas] = useState<any[]>([]);
   const [roles, setRoles] = useState<any[]>([]);
+  
+  
 
   // Fetch empresas
   useEffect(() => {
@@ -120,12 +123,9 @@ const ContratoForm: React.FC<FormularioProps> = ({
       ...safeSeleccionado,
     },
     {
-      titularCartaDePorte: (value) => (!value ? "Campo requerido" : null),
+      titularCartaDePorte: (value) => ((!value && !seleccionado) ? "Campo requerido" : null),
     }
-  );
-
-   // Buscar empresas
-  
+  );  
 
   // Generar payload optimizado
   const getOptimizedPayload = () => {
@@ -138,13 +138,46 @@ const ContratoForm: React.FC<FormularioProps> = ({
       }
     });
     
-    const originalCargasIds = safeSeleccionado.cargas?.map((c: any) => c.id) || [];
+    const originalCargasIds = Array.isArray(safeSeleccionado.cargas) 
+    ? safeSeleccionado.cargas.map((c: any) => c.id)
+    : [];
     const nuevasCargasIds = [...cargas, ...listaCargasCreadas].map(c => c.id);
     if (JSON.stringify(originalCargasIds) !== JSON.stringify(nuevasCargasIds)) {
       payload.idsCargas = nuevasCargasIds;
     }
     
     return payload;
+  };
+
+
+  const handleCargaCreated = (nuevaCarga: any) => {
+    setListaCargasCreadas(prev => [...prev, nuevaCarga]);
+  };
+
+  const handleCargaUpdated = (cargaActualizada: any) => {
+    if (cargaActualizada.id) {
+      // Si es una carga existente, actualiza en listaCargasModificadas
+      setListaCargasModificadas(prev => {
+        const existingIndex = prev.findIndex(c => c.id === cargaActualizada.id);
+        if (existingIndex !== -1) {
+          const newList = [...prev];
+          newList[existingIndex] = cargaActualizada;
+          return newList;
+        }
+        return [...prev, cargaActualizada];
+      });
+    } else {
+      // Si es una carga nueva aún no guardada, actualiza en listaCargasCreadas
+      setListaCargasCreadas(prev => {
+        const existingIndex = prev.findIndex(c => c.tempId === cargaActualizada.tempId);
+        if (existingIndex !== -1) {
+          const newList = [...prev];
+          newList[existingIndex] = cargaActualizada;
+          return newList;
+        }
+        return [...prev, cargaActualizada];
+      });
+    }
   };
 
   const handleExpandClick = (index: number) => {
@@ -156,50 +189,94 @@ const ContratoForm: React.FC<FormularioProps> = ({
     setOpenAddCarga(true);
   };
 
-  const handleSubmit = () => {
-    if (validateAll()) {
-      const todasLasCargas = [...cargas, ...listaCargasCreadas];
-      if (todasLasCargas.length === 0) {
-        alert("Debe crear al menos una carga.");
-        return;
-      }
+  const handleSubmit = async () => {
+    if (!validateAll()) return;
   
+    if (seleccionado && allCargas.length === 0) {
+      setSnackbarMessage("Debe crear al menos una carga.");
+      setSnackbarOpen(true);
+      return;
+    }
+  
+    try {
+      // 1) Crear cargas nuevas
+      const nuevasCargas = await Promise.all(
+        listaCargasCreadas.map(carga =>
+          fetch(`${backendURL}/cargas`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(carga),
+          }).then(res => {
+            if (!res.ok) throw new Error(`Error al crear carga: ${res.status}`);
+            return res.json();
+          })
+        )
+      );
+      const nuevasCargasIds = nuevasCargas.map(c => c.id);
+  
+      // 2) Actualizar cargas existentes
+      await Promise.all(
+        listaCargasModificadas.map(carga =>
+          fetch(`${backendURL}/cargas/${carga.id}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(carga),
+          }).then(res => {
+            if (!res.ok) throw new Error(`Error al actualizar carga ${carga.id}: ${res.status}`);
+          })
+        )
+      );
+  
+      // 3) Armar lista definitiva de IDs
+      const existingIds = cargas.map(c => c.id);
+      const allIds = [...existingIds, ...nuevasCargasIds];
+  
+      // 4) Enviar contrato
       const metodo = safeSeleccionado.id ? "PUT" : "POST";
       const url = safeSeleccionado.id
-        ? `${backendURL}/contratos/${data.id || safeSeleccionado.id}`
+        ? `${backendURL}/contratos/${safeSeleccionado.id}`
         : `${backendURL}/contratos`;
+      const payload = {
+        ...getOptimizedPayload(),
+        idsCargas: allIds,
+      };
   
-      const payload = getOptimizedPayload();
-      
-      fetch(url, {
+      const resp = await fetch(url, {
         method: metodo,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
-      })
-        .then((response) => {
-          if (!response.ok) {
-            return response.text().then((text) => {
-              throw new Error(`Error ${response.status}: ${text}`);
-            });
-          }
-          return response.json();
-        })
-        .then((newData) => {
-          if (metodo === "POST") {
-            setDatos([...datos, newData]);
-          } else {
-            const datosActualizados = datos.map((contrato: any) =>
-              contrato.id === (data.id || safeSeleccionado.id) ? newData : contrato
-            );
-            setDatos(datosActualizados);
-          }
-          handleClose();
-        })
-        .catch((error) =>
-          console.error("Error al guardar el contrato: ", error.message)
+      });
+      if (!resp.ok) {
+        const text = await resp.text();
+        throw new Error(`Error ${resp.status}: ${text}`);
+      }
+      const contratoGuardado = await resp.json();
+  
+      // 5) Actualizar lista de contratos en el padre
+      if (metodo === "POST") {
+        setDatos((prev: any) => [...prev, contratoGuardado]);
+      } else {
+        setDatos((prev: any[]) =>
+          prev.map(ct =>
+            ct.id === contratoGuardado.id ? contratoGuardado : ct
+          )
         );
+      }
+  
+      // 6) Limpiar estado local de cargas
+      setListaCargasCreadas([]);
+      setListaCargasModificadas([]);
+      setCargas(contratoGuardado.cargas || []);
+  
+      // 7) Cerrar formulario
+      handleClose();
+    } catch (error: any) {
+      console.error("Error al guardar el contrato:", error);
+      setSnackbarMessage(error.message);
+      setSnackbarOpen(true);
     }
   };
+  
   
   // Agrega esta función dentro del componente ContratoForm
   const handleCancel = () => {
@@ -298,13 +375,16 @@ const ContratoForm: React.FC<FormularioProps> = ({
         sorteredEmpresasSegunRol={sorteredEmpresasSegunRol}
       />
 
-      <CargasSection
-        cargas={allCargas}
-        expandedCard={expandedCard}
-        handleExpandClick={handleExpandClick}
-        handleOpenDialog={handleOpenDialog}
-        handleDeleteCarga={handleDeleteCarga}
-      />
+      {/* Mostrar CargasSection solo en edición */}
+      {seleccionado && (
+        <CargasSection
+          cargas={allCargas}
+          expandedCard={expandedCard}
+          handleExpandClick={handleExpandClick}
+          handleOpenDialog={handleOpenDialog}
+          handleDeleteCarga={handleDeleteCarga}
+        />
+      )}
 
       {/* Diálogo para crear/editar carga */}
       <Dialog open={openAddCarga} onClose={() => setOpenAddCarga(false)} maxWidth="lg" fullWidth>
@@ -317,6 +397,8 @@ const ContratoForm: React.FC<FormularioProps> = ({
             creando={!selectedCarga}
             refreshCargas={() => { /* actualizar cargas si es necesario */ }}
             listaCargasCreadas={listaCargasCreadas}
+            onCargaCreated={handleCargaCreated}
+            onCargaUpdated={handleCargaUpdated}
           />
         </DialogContent>
       </Dialog>
@@ -347,7 +429,7 @@ const ContratoForm: React.FC<FormularioProps> = ({
         />
       </Dialog>
 
-      {/* Ejemplo: Diálogo de advertencia */}
+      {/*Diálogo de advertencia */}
       <Dialog open={openDialogCargasWarning} onClose={() => setOpenDialogCargasWarning(false)} maxWidth="sm" fullWidth>
         <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", p: 3 }}>
           <Typography variant="h6" align="center">

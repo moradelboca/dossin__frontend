@@ -56,8 +56,9 @@ interface CrearCargaStepperProps {
   handleCloseDialog: () => void;
   creando: boolean;
   refreshCargas: () => void;
-  // Prop opcional para almacenar las cargas creadas en el parent
   listaCargasCreadas?: any[];
+  onCargaCreated?: (payload: any) => void;
+  onCargaUpdated?: (payload: any) => void;
 }
 
 interface ContextoStepperProps {
@@ -80,7 +81,9 @@ const CrearCargaStepper: React.FC<CrearCargaStepperProps> = ({
   handleCloseDialog,
   creando,
   refreshCargas,
-  listaCargasCreadas, // nuevo prop opcional
+  listaCargasCreadas,
+  onCargaCreated,
+  onCargaUpdated,
 }) => {
   const initialCargaData = creando ? null : datosCarga;
   const { user } = useAuth();
@@ -197,12 +200,6 @@ const CrearCargaStepper: React.FC<CrearCargaStepperProps> = ({
     }
 
     if (pasoActivo === pasos.length - 1) {
-      const metodo = creando ? "POST" : "PUT";
-      const url = creando
-        ? `${backendURL}/cargas`
-        : `${backendURL}/cargas/${datosCarga?.id}`;
-
-      // Se eliminan propiedades que no deben enviarse
       const {
         nombreUbicacionCarga,
         nombreUbicacionDescarga,
@@ -211,40 +208,14 @@ const CrearCargaStepper: React.FC<CrearCargaStepperProps> = ({
         nombreCargamento,
         requiereBalanza,
         ...body
-      } = {
-        ...datosNuevaCarga,
-        creadoPor: user?.email,
-      };
+      } = datosNuevaCarga;
 
-      setEstadoCarga("Cargando");
-      console.log("el body: \n", body);
-      (async () => {
-        try {
-          const response = await fetch(url, {
-            method: metodo,
-            headers: {
-              "Content-Type": "application/json",
-              "ngrok-skip-browser-warning": "true",
-            },
-            body: JSON.stringify(body),
-          });
-          if (!response.ok) {
-            throw new Error("Error al crear la carga");
-          }
-          const dataResponse = await response.json();
-          
-          if (listaCargasCreadas) {
-            listaCargasCreadas.push(dataResponse);
-          }
-          
-          refreshCargas();
-          setEstadoCarga("Creado");
-          setTimeout(handleCloseDialog, 1000);
-        } catch (error) {
-          console.log("Error:", error)
-          setEstadoCarga("Error");
-        }
-      })();
+      if (creando) {
+        onCargaCreated?.(body);
+      } else {
+        onCargaUpdated?.(body);
+      }
+      handleCloseDialog();
     } else {
       setPasoActivo((prev) => prev + 1);
     }
@@ -253,12 +224,10 @@ const CrearCargaStepper: React.FC<CrearCargaStepperProps> = ({
     pasos.length,
     datosNuevaCarga,
     creando,
-    backendURL,
-    datosCarga,
-    isStepValid,
-    refreshCargas,
+    onCargaCreated,
+    onCargaUpdated,
     handleCloseDialog,
-    listaCargasCreadas,
+    isStepValid,
   ]);
 
   const handleAnteriorPaso = useCallback(() => {
