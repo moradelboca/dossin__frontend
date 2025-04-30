@@ -83,7 +83,7 @@ export function ContainerTarjetasCargas({
 
   const handleDeleteSuccess = useCallback(() => {
     onRefresh();
-    setCargaSeleccionada(null);
+    setCargaSeleccionada(null); // Limpiar selección
   }, [onRefresh]);
 
   return (

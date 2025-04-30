@@ -13,6 +13,7 @@ import DeleteEntidad from "../../dialogs/DeleteEntidad";
 import useValidation from "../../hooks/useValidation";
 import { ContextoGeneral } from "../../Contexto";
 import { FormularioProps } from "../../../interfaces/FormularioProps";
+import { useNotificacion } from "../../Notificaciones/NotificacionSnackbar";
 
 const CamionForm: React.FC<FormularioProps> = ({
   seleccionado = {},
@@ -22,10 +23,9 @@ const CamionForm: React.FC<FormularioProps> = ({
 }) => {
   const { backendURL } = useContext(ContextoGeneral);
   const [openDialogDelete, setOpenDialogDelete] = useState(false);
-  const [camionExistente, setCamionExistente] = useState(false);
-
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const { showNotificacion } = useNotificacion();
 
   const { data, errors, handleChange, validateAll } = useValidation(
     {
@@ -55,63 +55,51 @@ const CamionForm: React.FC<FormularioProps> = ({
     }
   );
 
-  // Verificar si ya existe un camión con la patente ingresada
-  const checkIfCamionExists = () => {
-    if (!data.patente || seleccionado?.patente) return;
-    fetch(`${backendURL}/camiones/${data.patente}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-      .then(response => {
-        if (response.ok) {
-          setCamionExistente(true);
-        } else {
-          setCamionExistente(false);
-        }
-      })
-      .catch(() => setCamionExistente(false));
-  };
-
-  const handleSubmit = () => {
-    if (camionExistente) {
-      alert("Ya existe un camión con esta patente.");
+  const handleSubmit = async () => {
+    if (!validateAll()) {
+      showNotificacion('Por favor corrija los errores en el formulario', 'error');
       return;
     }
-    if (validateAll()) {
+
+    try {
       const metodo = seleccionado?.patente ? "PUT" : "POST";
       const url = seleccionado?.patente
         ? `${backendURL}/camiones/${data.patente}`
         : `${backendURL}/camiones`;
 
-      fetch(url, {
+      const response = await fetch(url, {
         method: metodo,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
-      })
-        .then((response) => {
-          if (!response.ok) {
-            return response.text().then((text) => {
-              throw new Error(`Error ${response.status}: ${text}`);
-            });
-          }
-          return response.json();
-        })
-        .then((newData) => {
-          if (metodo === "POST") {
-            setDatos([...datos, newData]);
-          } else {
-            const datosActualizados = datos.map((camion: { patente: string }) =>
-              camion.patente === data.patente ? newData : camion
-            );
-            setDatos(datosActualizados);
-          }
-          handleClose();
-        })
-        .catch((error) =>
-          console.error(`Error al guardar el camión: ${error.message}`)
+      });
+
+      if (!response.ok) {
+        const errorMessage = await response.text();
+        throw new Error(errorMessage);
+      }
+
+      const newData = await response.json();
+      
+      if (metodo === "POST") {
+        setDatos([...datos, newData]);
+        showNotificacion('Camión creado exitosamente', 'success');
+      } else {
+        const datosActualizados = datos.map((camion: { patente: string }) =>
+          camion.patente === data.patente ? newData : camion
         );
+        setDatos(datosActualizados);
+        showNotificacion('Camión actualizado exitosamente', 'success');
+      }
+      
+      handleClose();
+    } catch (error) {
+      console.error('Error:', error);
+      showNotificacion(
+        error instanceof Error 
+          ? error.message 
+          : 'Error al procesar la solicitud',
+        'error'
+      );
     }
   };
 
@@ -129,11 +117,8 @@ const CamionForm: React.FC<FormularioProps> = ({
           fullWidth
           value={data.patente}
           onChange={handleChange("patente")}
-          onBlur={checkIfCamionExists}
-          error={!!errors.patente || camionExistente}
-          helperText={
-            camionExistente ? "Ya existe un camión con esta patente" : errors.patente
-          }
+          error={!!errors.patente}
+          helperText={errors.patente}
           disabled={!!seleccionado?.patente}
         />
 

@@ -34,8 +34,8 @@ const Sidebar: React.FC<SidebarProps> = ({
   const { provinciasCarga, provinciasDescarga } = useProvincias(cargas);
 
   useEffect(() => {
-    handleFilterChange('sin-filtro', null);
     setFilteredCargas(cargas);
+    handleFilterChange('sin-filtro', null);
   }, [cargas]);
   
   const handleFilterChange = (filterType: string, filterValue: any) => {
@@ -65,7 +65,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         break;
     }
     
-    setFilteredCargas(filtered || cargas); // Asegurar que nunca sea undefined
+    setFilteredCargas(filtered);
   };
 
   const provinciasOptions = provinciasCarga.map(p => ({
@@ -133,9 +133,9 @@ const Sidebar: React.FC<SidebarProps> = ({
           gap: 2,
           pb: 2
         }}>
-          {filteredCargas.map((carga, i) => (
+          {filteredCargas.map((carga) => (
             <TarjetaCarga 
-              key={i} 
+              key={carga.id} 
               datosCarga={carga} 
               isSelected={carga.id === cargaSeleccionada?.id} 
               onClick={() => onCardClick(carga)} 

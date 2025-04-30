@@ -25,21 +25,26 @@ export default function DeleteCarga(props: any) {
             return;
         }
 
-        // Si no hay cupos asociados, proceder con la eliminación
+        // Si no hay cupos asociados ELIMINAMOS la carga
         fetch(`${backendURL}/cargas/${cargaSeleccionada.id}`, {
             method: "DELETE",
             headers: {
-                "Content-Type": "application/json",
-                "ngrok-skip-browser-warning": "true",
+              "Content-Type": "application/json",
+              "ngrok-skip-browser-warning": "true",
             },
-        })
-        .then(() => {
+          })
+          .then(response => {
+            if (!response.ok) throw new Error('Error en la eliminación');
+            return response.json();
+          })
+          .then(() => {
             handleCloseDialog();
-            onDeleteSuccess(); // Llamar después de eliminar
-        })
-        .catch((error) => {
+            onDeleteSuccess();
+          })
+          .catch((error) => {
             console.error("Error al borrar la carga", error);
-        });
+            setErrorMessage("Error al eliminar la carga");
+          });
 
         handleCloseDialog();
     };
