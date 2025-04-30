@@ -5,7 +5,7 @@ import { ContextoGeneral } from "../../Contexto";
 import ClearSharpIcon from "@mui/icons-material/ClearSharp";
 
 export default function DeleteCarga(props: any) {
-    const { handleCloseDialog } = props;
+    const { handleCloseDialog, onDeleteSuccess } = props;
     const { backendURL, theme } = useContext(ContextoGeneral);
     const { cargaSeleccionada } = useContext(ContextoCargas);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -33,10 +33,13 @@ export default function DeleteCarga(props: any) {
                 "ngrok-skip-browser-warning": "true",
             },
         })
-            .then((response) => response.json())
-            .catch((error) => {
-                console.error("Error al borrar la carga", error);
-            });
+        .then(() => {
+            handleCloseDialog();
+            onDeleteSuccess(); // Llamar después de eliminar
+        })
+        .catch((error) => {
+            console.error("Error al borrar la carga", error);
+        });
 
         handleCloseDialog();
     };

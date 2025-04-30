@@ -22,6 +22,7 @@ import { useAuth } from "../../autenticacion/ContextoAuth";
 
 // Interfaces para tipar el estado y las props
 interface DatosNuevaCarga {
+  id?: number;
   idsTiposAcoplados?: number[];
   incluyeIVA?: boolean;
   nombreTipoTarifa?: string;
@@ -55,8 +56,6 @@ interface CrearCargaStepperProps {
   datosCarga?: any; // Se recomienda definir un tipo más específico según la estructura
   handleCloseDialog: () => void;
   creando: boolean;
-  refreshCargas: () => void;
-  listaCargasCreadas?: any[];
   onCargaCreated?: (payload: any) => void;
   onCargaUpdated?: (payload: any) => void;
 }
@@ -80,8 +79,6 @@ const CrearCargaStepper: React.FC<CrearCargaStepperProps> = ({
   datosCarga,
   handleCloseDialog,
   creando,
-  refreshCargas,
-  listaCargasCreadas,
   onCargaCreated,
   onCargaUpdated,
 }) => {
@@ -89,6 +86,7 @@ const CrearCargaStepper: React.FC<CrearCargaStepperProps> = ({
   const { user } = useAuth();
 
   const [datosNuevaCarga, setDatosNuevaCarga] = useState<DatosNuevaCarga>({
+    id: initialCargaData?.id,
     idsTiposAcoplados:
       initialCargaData?.tiposAcoplados?.map((acoplado: any) => acoplado.id) || [],
     incluyeIVA: initialCargaData?.incluyeIVA || false,
@@ -122,7 +120,7 @@ const CrearCargaStepper: React.FC<CrearCargaStepperProps> = ({
   const [pasoActivo, setPasoActivo] = useState<number>(pasoSeleccionado);
   const [estadoCarga, setEstadoCarga] = useState<string>("Creando");
 
-  const { backendURL, theme } = useContext(ContextoGeneral);
+  const { theme } = useContext(ContextoGeneral);
 
   useEffect(() => {
     setEstadoCarga(creando ? "Creando" : "Actualizando");
@@ -209,11 +207,50 @@ const CrearCargaStepper: React.FC<CrearCargaStepperProps> = ({
         requiereBalanza,
         ...body
       } = datosNuevaCarga;
+      const fullCarga = {
+        id: datosNuevaCarga.id,
+        idsTiposAcoplados: datosNuevaCarga.idsTiposAcoplados,
+        incluyeIVA: datosNuevaCarga.incluyeIVA,
+        tipoTarifa: {
+          id: datosNuevaCarga.idTipoTarifa,
+          nombre: datosNuevaCarga.nombreTipoTarifa
+        },
+        tarifa: datosNuevaCarga.tarifa,
+        descripcion: datosNuevaCarga.descripcion,
+        plantaProcedenciaRuca: datosNuevaCarga.plantaProcedenciaRuca,
+        destinoRuca: datosNuevaCarga.destinoRuca,
+        cargamento: {
+          id: datosNuevaCarga.idCargamento,
+          nombre: datosNuevaCarga.nombreCargamento
+        },
+        ubicacionCarga: {
+          id: datosNuevaCarga.idUbicacionCarga,
+          nombre: datosNuevaCarga.nombreUbicacionCarga
+        },
+        ubicacionDescarga: {
+          id: datosNuevaCarga.idUbicacionDescarga,
+          nombre: datosNuevaCarga.nombreUbicacionDescarga
+        },
+        ubicacionBalanza: datosNuevaCarga.idUbicacionBalanza ? {
+          id: datosNuevaCarga.idUbicacionBalanza,
+          nombre: datosNuevaCarga.nombreUbicacionBalanza
+        } : null,
+        cantidadKm: datosNuevaCarga.cantidadKm,
+        horaInicioCarga: datosNuevaCarga.horaInicioCarga,
+        horaFinCarga: datosNuevaCarga.horaFinCarga,
+        horaInicioDescarga: datosNuevaCarga.horaInicioDescarga,
+        horaFinDescarga: datosNuevaCarga.horaFinDescarga,
+        horaInicioBalanza: datosNuevaCarga.horaInicioBalanza,
+        horaFinBalanza: datosNuevaCarga.horaFinBalanza,
+        tolerancia: datosNuevaCarga.tolerancia,
+        creadoPor: datosNuevaCarga.creadoPor,
+        payload: body
+      };
 
       if (creando) {
-        onCargaCreated?.(body);
+        onCargaCreated?.(fullCarga);
       } else {
-        onCargaUpdated?.(body);
+        onCargaUpdated?.(fullCarga);
       }
       handleCloseDialog();
     } else {

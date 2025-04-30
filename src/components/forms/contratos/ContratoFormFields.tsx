@@ -34,44 +34,51 @@ const ContratoFormFields: React.FC<FormFieldsProps> = ({
       {empresaFields.map((field) => {
         const empresasDelRol = sorteredEmpresasSegunRol[field.rol] || [];
 
-        // 1. Detectar el valor seleccionado en base al tipo de `data[field.key]`
-        const selectedEmpresa = empresasDelRol.find(emp => {
+        const getEmpresaValue = () => {
           const val = data[field.key];
-          if (!val) return false;
-
-          // Caso: viene un objeto Empresa
-          if (typeof val === "object" && val.cuit) {
-            return emp.cuit.toString() === val.cuit.toString();
+          
+          if (!val) return null;
+          
+          // Si ya es un objeto empresa
+          if (typeof val === 'object') {
+            return empresasDelRol.find(e => e.cuit === val.cuit) || null;
           }
-
-          // Caso: viene un string
-          if (typeof val === "string") {
-            // 1a. Igual por CUIT
-            if (emp.cuit.toString() === val) return true;
-            // 1b. Igual por etiqueta
-            const etiqueta = `${emp.razonSocial} - ${emp.nombreFantasia}`;
-            if (etiqueta === val) return true;
+          
+          // Si es string, buscar por formato o CUIT
+          if (typeof val === 'string') {
+            const empresaPorCuit = empresasDelRol.find(e => e.cuit.toString() === val);
+            if (empresaPorCuit) return empresaPorCuit;
+            
+            const [nombre, razon] = val.split(' - ');
+            return empresasDelRol.find(e => 
+              e.nombreFantasia === nombre && 
+              e.razonSocial === razon
+            ) || null;
           }
-
-          return false;
-        }) || null;
+          
+          return null;
+        };
 
         return (
           <Autocomplete
             key={field.key}
-            disablePortal
             options={empresasDelRol}
             getOptionLabel={(option: Empresa) =>
-              `${option.razonSocial} - ${option.nombreFantasia}`
+              `${option.nombreFantasia} - ${option.razonSocial}`
             }
-            // 2. Asignamos el objeto encontrado (o null)
-            value={selectedEmpresa}
+            isOptionEqualToValue={(option, value) => {
+              if (!value) return false;
+              if (typeof value === 'string') {
+                return `${option.nombreFantasia} - ${option.razonSocial}` === value;
+              }
+              return option.cuit === value.cuit;
+            }}
+            value={getEmpresaValue()}
             onChange={(_, newValue) => {
-              // 3. Normalizamos al CUIT en string (o null)
-              const nuevo = newValue
-                ? newValue.cuit.toString()
-                : null;
-              setData({ ...data, [field.key]: nuevo });
+              setData({ 
+                ...data, 
+                [field.key]: newValue || null // Guardar objeto completo
+              });
             }}
             renderInput={(params) => (
               <TextField

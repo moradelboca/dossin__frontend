@@ -26,19 +26,21 @@ export const ContextoCargas = createContext<{
 interface ContainerTarjetasCargasProps {
   cargas: any[];
   estadoCarga: string;
-  refreshCargas: () => void;
   cargaSeleccionada: any;
   setCargaSeleccionada: React.Dispatch<React.SetStateAction<any>>;
   cupos: any[];
+  onCargaUpdated?: (carga: any) => void;
+  onRefresh: () => void; // Añadir esta prop
 }
 
 export function ContainerTarjetasCargas({
   cargas,
   estadoCarga,
-  refreshCargas,
   cargaSeleccionada,
   setCargaSeleccionada,
   cupos,
+  onCargaUpdated,
+  onRefresh
 }: ContainerTarjetasCargasProps) {
 
   // Estados locales para diálogos, creación, filtros y menú
@@ -78,6 +80,11 @@ export function ContainerTarjetasCargas({
   const handleMenuClose = () => {
     setAnchorEl(null);
   };
+
+  const handleDeleteSuccess = useCallback(() => {
+    onRefresh();
+    setCargaSeleccionada(null);
+  }, [onRefresh]);
 
   return (
     <ContextoCargas.Provider
@@ -127,9 +134,13 @@ export function ContainerTarjetasCargas({
           cargaSeleccionada={cargaSeleccionada}
           pasoSeleccionado={pasoSeleccionado}
           onClose={handleCloseDialog}
-          refreshCargas={refreshCargas}
+          onCargaUpdated={onCargaUpdated}
         />
-        <DeleteCargaDialog open={openDialogDelete} onClose={handleCloseDialog} />
+        <DeleteCargaDialog 
+          open={openDialogDelete} 
+          onClose={handleCloseDialog}
+          onDeleteSuccess={handleDeleteSuccess}
+        />
       </Box>
     </ContextoCargas.Provider>
   );
@@ -141,7 +152,7 @@ interface CrearCargaDialogProps {
   cargaSeleccionada: any;
   pasoSeleccionado: any;
   onClose: () => void;
-  refreshCargas: () => void;
+  onCargaUpdated?: (carga: any) => void;
 }
 
 const CrearCargaDialog: React.FC<CrearCargaDialogProps> = ({
@@ -150,7 +161,7 @@ const CrearCargaDialog: React.FC<CrearCargaDialogProps> = ({
   cargaSeleccionada,
   pasoSeleccionado,
   onClose,
-  refreshCargas,
+  onCargaUpdated
 }) => {
   return (
     <Dialog open={open} onClose={onClose} maxWidth="lg" fullWidth>
@@ -163,7 +174,7 @@ const CrearCargaDialog: React.FC<CrearCargaDialogProps> = ({
           pasoSeleccionado={pasoSeleccionado}
           handleCloseDialog={onClose}
           creando={creando}
-          refreshCargas={refreshCargas}
+          onCargaUpdated={onCargaUpdated}
         />
       </DialogContent>
     </Dialog>
@@ -173,15 +184,20 @@ const CrearCargaDialog: React.FC<CrearCargaDialogProps> = ({
 interface DeleteCargaDialogProps {
   open: boolean;
   onClose: () => void;
+  onDeleteSuccess?: () => void;
 }
 
 const DeleteCargaDialog: React.FC<DeleteCargaDialogProps> = ({
   open,
   onClose,
+  onDeleteSuccess
 }) => {
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-      <DeleteCarga handleCloseDialog={onClose} />
+      <DeleteCarga 
+        handleCloseDialog={onClose}
+        onDeleteSuccess={onDeleteSuccess}
+      />
     </Dialog>
   );
 };

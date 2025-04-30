@@ -5,19 +5,27 @@ import AddIcon from "@mui/icons-material/Add";
 import CardMobile from "../../cards/mobile/CardMobile";
 
 interface CargasSectionProps {
-  cargas: any[];
+  cargasOriginales: any[];
+  cargasACrear: any[];
+  cargasAActualizar: any[];
   expandedCard: number | null;
   handleExpandClick: (index: number) => void;
   handleOpenDialog: (carga: any) => void;
   handleDeleteCarga: (carga: any) => void;
+  handleDeleteCargaACrear: (carga: any) => void;
+  handleDeleteCargaAActualizar: (carga: any) => void;
 }
 
 const CargasSection: React.FC<CargasSectionProps> = ({
-  cargas,
+  cargasOriginales,
+  cargasACrear,
+  cargasAActualizar,
   expandedCard,
   handleExpandClick,
   handleOpenDialog,
   handleDeleteCarga,
+  handleDeleteCargaACrear,
+  handleDeleteCargaAActualizar,
 }) => {
   const fields = [
     "id",
@@ -69,36 +77,96 @@ const CargasSection: React.FC<CargasSectionProps> = ({
     <Box mt={4}>
       <Box display="flex" justifyContent="space-between" alignItems="center">
         <Typography variant="h6">Cargas</Typography>
-        <IconButton
-          color="primary"
-          onClick={() => {
-            handleOpenDialog(null);
-          }}
-        >
+        <IconButton color="primary" onClick={() => handleOpenDialog(null)}>
           <AddIcon />
         </IconButton>
       </Box>
-      {cargas.length === 0 ? (
+
+      {/* Sección de Cargas a Crear */}
+      {cargasACrear.length > 0 && (
+        <Box mt={2}>
+          <Typography variant="subtitle1" color="primary" gutterBottom>
+            Cargas a Crear
+          </Typography>
+          {cargasACrear.map((carga) => (
+            <CardMobile
+              key={carga.tempId}
+              item={{ ...carga, id: carga.tempId }}
+              index={carga.tempId}
+              fields={fields}
+              headerNames={headerNames}
+              expandedCard={expandedCard}
+              handleExpandClick={handleExpandClick}
+              handleOpenDialog={handleOpenDialog}
+              tituloField="ubicacionCarga.nombre"
+              mostrarBotonEditar={false}
+              textoSecondaryButton="Eliminar"
+              handleSecondButton={handleDeleteCargaACrear}
+              colorSecondaryButton="#d68384"
+              
+            />
+          ))}
+        </Box>
+      )}
+
+      {/* Sección de Cargas a Actualizar */}
+      {cargasAActualizar.length > 0 && (
+        <Box mt={2}>
+          <Typography variant="subtitle1" color="secondary" gutterBottom>
+            Cargas a Actualizar
+          </Typography>
+          {cargasAActualizar.map((carga) => (
+            <CardMobile
+              key={carga.id}
+              item={carga}
+              index={carga.id}
+              fields={fields}
+              headerNames={headerNames}
+              expandedCard={expandedCard}
+              handleExpandClick={handleExpandClick}
+              handleOpenDialog={handleOpenDialog}
+              tituloField="ubicacionCarga.nombre"
+              subtituloField="id"
+              mostrarBotonEditar={false}
+              textoSecondaryButton="Eliminar"
+              handleSecondButton={handleDeleteCargaAActualizar}
+              colorSecondaryButton="#d68384"
+            />
+          ))}
+        </Box>
+      )}
+
+      {/* Sección de Cargas Originales */}
+      {cargasOriginales.length > 0 && (
+        <Box mt={2}>
+          <Typography variant="subtitle1" gutterBottom>
+            Cargas del Contrato
+          </Typography>
+          {cargasOriginales.map((carga) => (
+            <CardMobile
+              key={carga.id}
+              item={carga}
+              index={carga.id}
+              fields={fields}
+              headerNames={headerNames}
+              expandedCard={expandedCard}
+              handleExpandClick={handleExpandClick}
+              handleOpenDialog={handleOpenDialog}
+              tituloField="ubicacionCarga.nombre"
+              subtituloField="id"
+              mostrarBotonEditar={true}
+              textoSecondaryButton="Eliminar"
+              handleSecondButton={handleDeleteCarga}
+              colorSecondaryButton="#d68384"
+            />
+          ))}
+        </Box>
+      )}
+
+      {cargasACrear.length === 0 && 
+       cargasAActualizar.length === 0 && 
+       cargasOriginales.length === 0 && (
         <Typography>No hay cargas registradas.</Typography>
-      ) : (
-        cargas.map((carga, index) => (
-          <CardMobile
-            key={carga.id || index}
-            item={carga}
-            index={index}
-            fields={fields}
-            headerNames={headerNames}
-            expandedCard={expandedCard}
-            handleExpandClick={handleExpandClick}
-            handleOpenDialog={handleOpenDialog}
-            tituloField="ubicacionCarga.nombre"
-            subtituloField="id"
-            mostrarBotonEditar={true}
-            textoSecondaryButton="Eliminar"
-            handleSecondButton={handleDeleteCarga}
-            colorSecondaryButton="#d68384"
-          />
-        ))
       )}
     </Box>
   );

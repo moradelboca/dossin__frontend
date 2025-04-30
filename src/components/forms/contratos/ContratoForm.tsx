@@ -37,11 +37,10 @@ const ContratoForm: React.FC<FormularioProps> = ({
 }) => {
   const safeSeleccionado = seleccionado || {};
   const { backendURL } = useContext(ContextoGeneral);
-  console.log(safeSeleccionado);
   // Estados para eliminación de contrato y cargas
   const [openDialogDelete, setOpenDialogDelete] = useState(false);
   const [openDialogCargasWarning, setOpenDialogCargasWarning] = useState(false);
-
+  console.log(seleccionado);
   // Estados para cargas y diálogo de cargas
   const [openAddCarga, setOpenAddCarga] = useState(false);
   const [selectedCarga, setSelectedCarga] = useState<any>(null);
@@ -129,54 +128,84 @@ const ContratoForm: React.FC<FormularioProps> = ({
 
   // Generar payload optimizado
   const getOptimizedPayload = () => {
-    if (!safeSeleccionado.id) return data;
-    
-    const payload: any = {};
-    Object.keys(data).forEach(key => {
-      if (data[key] !== safeSeleccionado[key]) {
-        payload[key] = data[key];
+    // Procesar campos de empresas para enviar solo CUIT
+    const procesarEmpresas = (dataObj: any) => {
+      const processed = { ...dataObj };
+      empresaFields.forEach((field) => {
+        const value = processed[field.key];
+        if (value && typeof value === 'object' && value.cuit) {
+          processed[field.key] = value.cuit;  // Extraer CUIT
+        } else if (value === null) {
+          processed[field.key] = null;        // Mantener null si no hay valor
+        }
+      });
+      return processed;
+    };
+  
+    const processedData = procesarEmpresas(data);
+  
+    if (!safeSeleccionado.id) {
+      return {
+        ...processedData,
+        idsCargas: [
+          ...cargas.map((c) => c.id),
+          ...listaCargasCreadas.map((c) => c.id),
+          ...listaCargasModificadas.map((c) => c.id),
+        ],
+      };
+    } else {
+      const payload: any = {};
+      const originalProcesado = procesarEmpresas(safeSeleccionado);
+  
+      Object.keys(processedData).forEach((key) => {
+        if (processedData[key] !== originalProcesado[key]) {
+          payload[key] = processedData[key];
+        }
+      });
+  
+      // Manejamos IDs de cargas
+      const originalCargasIds = Array.isArray(safeSeleccionado.cargas)
+        ? safeSeleccionado.cargas.map((c: any) => c.id)
+        : [];
+      const nuevasCargasIds = [
+        ...cargas.map((c) => c.id),
+        ...listaCargasCreadas.map((c) => c.id),
+        ...listaCargasModificadas.map((c) => c.id),
+      ];
+  
+      if (JSON.stringify(originalCargasIds) !== JSON.stringify(nuevasCargasIds)) {
+        payload.idsCargas = nuevasCargasIds;
       }
-    });
-    
-    const originalCargasIds = Array.isArray(safeSeleccionado.cargas) 
-    ? safeSeleccionado.cargas.map((c: any) => c.id)
-    : [];
-    const nuevasCargasIds = [...cargas, ...listaCargasCreadas].map(c => c.id);
-    if (JSON.stringify(originalCargasIds) !== JSON.stringify(nuevasCargasIds)) {
-      payload.idsCargas = nuevasCargasIds;
+  
+      return payload;
     }
-    
-    return payload;
   };
 
 
   const handleCargaCreated = (nuevaCarga: any) => {
     setListaCargasCreadas(prev => [...prev, nuevaCarga]);
   };
-
+  
   const handleCargaUpdated = (cargaActualizada: any) => {
     if (cargaActualizada.id) {
-      // Si es una carga existente, actualiza en listaCargasModificadas
-      setListaCargasModificadas(prev => {
-        const existingIndex = prev.findIndex(c => c.id === cargaActualizada.id);
-        if (existingIndex !== -1) {
-          const newList = [...prev];
-          newList[existingIndex] = cargaActualizada;
-          return newList;
-        }
-        return [...prev, cargaActualizada];
-      });
+      // Guardar estado original
+      const original = cargas.find(c => c.id === cargaActualizada.id);
+      const cargaConOriginal = { ...cargaActualizada, original };
+      
+      setListaCargasModificadas(prev => 
+        prev.some(c => c.id === cargaActualizada.id) 
+          ? prev.map(c => c.id === cargaActualizada.id ? cargaConOriginal : c) 
+          : [...prev, cargaConOriginal]
+      );
+      
+      // Eliminar de cargas originales
+      setCargas(prev => prev.filter(c => c.id !== cargaActualizada.id));
     } else {
-      // Si es una carga nueva aún no guardada, actualiza en listaCargasCreadas
-      setListaCargasCreadas(prev => {
-        const existingIndex = prev.findIndex(c => c.tempId === cargaActualizada.tempId);
-        if (existingIndex !== -1) {
-          const newList = [...prev];
-          newList[existingIndex] = cargaActualizada;
-          return newList;
-        }
-        return [...prev, cargaActualizada];
-      });
+      setListaCargasCreadas(prev => 
+        prev.some(c => c.tempId === cargaActualizada.tempId) 
+          ? prev.map(c => c.tempId === cargaActualizada.tempId ? cargaActualizada : c) 
+          : [...prev, cargaActualizada]
+      );
     }
   };
 
@@ -198,121 +227,125 @@ const ContratoForm: React.FC<FormularioProps> = ({
       return;
     }
   
-    try {
-      // 1) Crear cargas nuevas
-      const nuevasCargas = await Promise.all(
+    try {  
+      // 1. Crear nuevas cargas (usar carga.payload y URL con /api)
+      const nuevasCargasResponses = await Promise.all(
         listaCargasCreadas.map(carga =>
           fetch(`${backendURL}/cargas`, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(carga),
-          }).then(res => {
-            if (!res.ok) throw new Error(`Error al crear carga: ${res.status}`);
-            return res.json();
-          })
+            headers: {
+              'Content-Type': 'application/json',
+              'ngrok-skip-browser-warning': 'true'
+            },
+            body: JSON.stringify(carga.payload)
+          }).then(res => res.json())
         )
       );
-      const nuevasCargasIds = nuevasCargas.map(c => c.id);
   
-      // 2) Actualizar cargas existentes
-      await Promise.all(
+      // 2. Actualizar cargas existentes
+      const cargasActualizadas = await Promise.all(
         listaCargasModificadas.map(carga =>
           fetch(`${backendURL}/cargas/${carga.id}`, {
             method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(carga),
-          }).then(res => {
-            if (!res.ok) throw new Error(`Error al actualizar carga ${carga.id}: ${res.status}`);
-          })
+            headers: {
+              'Content-Type': 'application/json',
+              'ngrok-skip-browser-warning': 'true'
+            },
+            body: JSON.stringify(carga.payload)
+          }).then(res => res.json())
         )
       );
   
-      // 3) Armar lista definitiva de IDs
-      const existingIds = cargas.map(c => c.id);
-      const allIds = [...existingIds, ...nuevasCargasIds];
+      // 3. Actualizar estado local de cargas
+      const cargasActualizadasIds = new Set(cargasActualizadas.map(c => c.id));
+      const cargasNoModificadas = cargas.filter(c => !cargasActualizadasIds.has(c.id));
+      
+      // Combinar cargas manteniendo referencias temporales
+    setCargas([
+      ...cargasNoModificadas,
+      ...listaCargasModificadas,
+      ...nuevasCargasResponses.map(nc => ({
+        ...nc
+      }))
+    ]);
   
-      // 4) Enviar contrato
+      // 4. Preparar IDs para el contrato
+      const idsCargas = [
+        ...cargasNoModificadas.map(c => c.id),
+        ...cargasActualizadas.map(c => c.id),
+        ...nuevasCargasResponses.map(c => c.id)
+      ];
+  
+      // 5. Guardar contrato
       const metodo = safeSeleccionado.id ? "PUT" : "POST";
-      const url = safeSeleccionado.id
+      const url = safeSeleccionado.id 
         ? `${backendURL}/contratos/${safeSeleccionado.id}`
         : `${backendURL}/contratos`;
-      const payload = {
-        ...getOptimizedPayload(),
-        idsCargas: allIds,
-      };
   
-      const resp = await fetch(url, {
+      const payloadContrato = {
+        ...getOptimizedPayload(),
+        idsCargas
+      };
+      
+      console.log(payloadContrato)
+      const resContrato = await fetch(url, {
         method: metodo,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        body: JSON.stringify(payloadContrato)
       });
-      if (!resp.ok) {
-        const text = await resp.text();
-        throw new Error(`Error ${resp.status}: ${text}`);
-      }
-      const contratoGuardado = await resp.json();
-  
-      // 5) Actualizar lista de contratos en el padre
-      if (metodo === "POST") {
-        setDatos((prev: any) => [...prev, contratoGuardado]);
-      } else {
-        setDatos((prev: any[]) =>
-          prev.map(ct =>
-            ct.id === contratoGuardado.id ? contratoGuardado : ct
-          )
-        );
+      
+      if (!resContrato.ok) {
+        const errorData = await resContrato.json();
+        throw new Error(errorData.message || "Error guardando contrato");
       }
   
-      // 6) Limpiar estado local de cargas
+      // 6. Actualizar estado global
+      const contratoActualizado = await resContrato.json();
+      setDatos((prev: any[]) => 
+        metodo === "POST" 
+          ? [...prev, contratoActualizado] 
+          : prev.map(ct => ct.id === contratoActualizado.id ? contratoActualizado : ct)
+      );
+  
+      // 7. Limpiar estados y cerrar
       setListaCargasCreadas([]);
       setListaCargasModificadas([]);
-      setCargas(contratoGuardado.cargas || []);
-  
-      // 7) Cerrar formulario
       handleClose();
+  
     } catch (error: any) {
-      console.error("Error al guardar el contrato:", error);
-      setSnackbarMessage(error.message);
+      console.error("Error en el proceso:", error);
+      setSnackbarMessage(error.message || "Error desconocido");
       setSnackbarOpen(true);
     }
   };
   
   
-  // Agrega esta función dentro del componente ContratoForm
   const handleCancel = () => {
-    // Si es creación y hay cargas nuevas, se eliminan
-    if (!safeSeleccionado.id && listaCargasCreadas.length > 0) {
-      Promise.all(
-        listaCargasCreadas.map((carga) => {
-          // Si la carga tiene id, se asume que se persistió y se debe borrar.
-          if (carga.id) {
-            return fetch(`${backendURL}/cargas/${carga.id}`, {
-              method: "DELETE",
-              headers: {
-                "Content-Type": "application/json",
-                "ngrok-skip-browser-warning": "true",
-              },
-            });
-          }
-          return Promise.resolve();
-        })
-      )
-        .then(() => {
-          // Limpiamos la lista y cerramos el formulario
-          setListaCargasCreadas([]);
-          handleClose();
-        })
-        .catch((error) => {
-          console.error("Error al borrar las cargas creadas:", error);
-          handleClose();
-        });
-    } else {
-      handleClose();
+    // Restaurar cargas originales si hay modificaciones
+    if (listaCargasModificadas.length > 0) {
+      const originalesRestaurados = listaCargasModificadas
+        .filter(c => c.original)
+        .map(c => c.original);
+        
+      setCargas(prev => [
+        ...prev.filter(c => !listaCargasModificadas.some(m => m.id === c.id)),
+        ...originalesRestaurados
+      ]);
     }
+  
+    // Limpiar todos los estados temporales
+    setListaCargasCreadas([]);
+    setListaCargasModificadas([]);
+    
+    handleClose();
   };
 
   // Combina todas las cargas: las obtenidas y las creadas en el form.
-  const allCargas = [...cargas, ...listaCargasCreadas];
+  const allCargas = [
+    ...cargas,
+    ...listaCargasModificadas,
+    ...listaCargasCreadas
+  ];
 
   // Función para iniciar la eliminación de una carga.
   const handleDeleteCarga = (carga: any) => {
@@ -329,32 +362,51 @@ const ContratoForm: React.FC<FormularioProps> = ({
   // Eliminamos la carga con esta func
   const handleConfirmDeleteCarga = () => {
     if (!cargaAEliminar) return;
-    if (cargaAEliminar.id) {
-      fetch(`${backendURL}/cargas/${cargaAEliminar.id}`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          "ngrok-skip-browser-warning": "true",
-        },
+    
+    // Solo para cargas originales
+    fetch(`${backendURL}/cargas/${cargaAEliminar.id}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        "ngrok-skip-browser-warning": "true",
+      },
+    })
+      .then((response) => response.json())
+      .then(() => {
+        setCargas((prev) => prev.filter((c) => c.id !== cargaAEliminar.id));
       })
-        .then((response) => response.json())
-        .then(() => {
-          setCargas((prev) => prev.filter((c) => c.id !== cargaAEliminar.id));
-          setListaCargasCreadas((prev) => prev.filter((c) => c.id !== cargaAEliminar.id));
-        })
-        .catch((error) =>
-          console.error("Error al borrar la carga", error)
-        );
-    } else {
-      setListaCargasCreadas((prev) => prev.filter((c) => c !== cargaAEliminar));
-    }
+      .catch((error) => console.error("Error al borrar la carga", error));
+    
     setOpenDeleteCarga(false);
     setCargaAEliminar(null);
   };
 
+  // Función para eliminar cargas a crear
+  const handleDeleteCargaACrear = (carga: any) => {
+    setListaCargasCreadas(prev => 
+      prev.filter(c => c.tempId !== carga.tempId)
+    );
+  };
+
+  // Función para eliminar cargas a actualizar
+  const handleDeleteCargaAActualizar = (carga: any) => {
+    setListaCargasModificadas(prev => 
+      prev.filter(c => c.id !== carga.id)
+    );
+
+    // Si existe una versión original, restaurarla
+    if (carga.original) {
+      setCargas(prev => [...prev, carga.original]);
+    }
+  };
+
   // Función para eliminar el contrato (verifica que no tenga cargas asociadas)
   const handleClickDeleteContrato = () => {
-    if (allCargas.length > 0) {
+    const tieneCargasAsociadas = cargas.length > 0 || 
+                                listaCargasModificadas.length > 0 || 
+                                listaCargasCreadas.length > 0;
+  
+    if (tieneCargasAsociadas) {
       setOpenDialogCargasWarning(true);
     } else {
       setOpenDialogDelete(true);
@@ -377,12 +429,18 @@ const ContratoForm: React.FC<FormularioProps> = ({
 
       {/* Mostrar CargasSection solo en edición */}
       {seleccionado && (
-        <CargasSection
-          cargas={allCargas}
+      <CargasSection
+          cargasOriginales={cargas.filter(c => 
+            !listaCargasModificadas.some(m => m.id === c.id)
+          )}
+          cargasACrear={listaCargasCreadas}
+          cargasAActualizar={listaCargasModificadas}
           expandedCard={expandedCard}
           handleExpandClick={handleExpandClick}
           handleOpenDialog={handleOpenDialog}
           handleDeleteCarga={handleDeleteCarga}
+          handleDeleteCargaACrear={handleDeleteCargaACrear}
+          handleDeleteCargaAActualizar={handleDeleteCargaAActualizar}
         />
       )}
 
@@ -395,8 +453,6 @@ const ContratoForm: React.FC<FormularioProps> = ({
             pasoSeleccionado={0}
             handleCloseDialog={() => setOpenAddCarga(false)}
             creando={!selectedCarga}
-            refreshCargas={() => { /* actualizar cargas si es necesario */ }}
-            listaCargasCreadas={listaCargasCreadas}
             onCargaCreated={handleCargaCreated}
             onCargaUpdated={handleCargaUpdated}
           />
