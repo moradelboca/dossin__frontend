@@ -17,7 +17,6 @@ import DrawerCargaMobile from "./DrawerCargaMobile";
 interface CargasMobileProps {
   cargas: any[];
   estadoCarga: string;
-  refreshCargas: () => void;
   cargaSeleccionada: any;
   setCargaSeleccionada: React.Dispatch<React.SetStateAction<any>>;
   cupos: any[];

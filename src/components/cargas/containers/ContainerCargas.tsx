@@ -81,6 +81,29 @@ export function ContainerCargas() {
     }
   }, [backendURL, cargaSeleccionada]);
 
+  const handleCargaUpdated = useCallback(async (fullCarga: any) => {
+    try {
+      if (!fullCarga.id) return;
+      
+      const response = await fetch(`${backendURL}/cargas/${fullCarga.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': 'true'
+        },
+        body: JSON.stringify(fullCarga.payload)
+      });
+      
+      if (response.ok) {
+        refreshCargas();
+        const updatedCarga = await response.json();
+        setCargaSeleccionada(updatedCarga);
+      }
+    } catch (error) {
+      console.error('Error actualizando carga:', error);
+    }
+  }, [backendURL, refreshCargas]);
+
   return (
     <Box
       sx={{
@@ -96,7 +119,6 @@ export function ContainerCargas() {
         <CargasMobile
           cargas={cargas}
           estadoCarga={estadoCarga}
-          refreshCargas={refreshCargas}
           cargaSeleccionada={cargaSeleccionada}
           setCargaSeleccionada={setCargaSeleccionada}
           cupos={cupos}
@@ -105,10 +127,11 @@ export function ContainerCargas() {
         <ContainerTarjetasCargas
           cargas={cargas}
           estadoCarga={estadoCarga}
-          refreshCargas={refreshCargas}
           cargaSeleccionada={cargaSeleccionada}
           setCargaSeleccionada={setCargaSeleccionada}
           cupos={cupos}
+          onCargaUpdated={handleCargaUpdated}
+          onRefresh={refreshCargas}
         />
       )}
       {idCarga ? <CargaDialog /> : null}

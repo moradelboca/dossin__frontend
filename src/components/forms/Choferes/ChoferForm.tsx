@@ -462,7 +462,6 @@ const ChoferForm: React.FC<FormularioProps> = ({
                 )}
             />
 
-
             <Autocomplete
                 value={rolSeleccionado}
                 onChange={(_, newValue) => setRolSeleccionado(newValue)}

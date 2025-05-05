@@ -14,6 +14,7 @@ import DeleteEntidad from "../../dialogs/DeleteEntidad";
 import useValidation from "../../hooks/useValidation";
 import { ContextoGeneral } from "../../Contexto";
 import { FormularioProps } from "../../../interfaces/FormularioProps";
+import { useNotificacion } from "../../Notificaciones/NotificacionSnackbar";
 
 const AcopladoForm: React.FC<FormularioProps> = ({
   seleccionado = {},
@@ -25,10 +26,11 @@ const AcopladoForm: React.FC<FormularioProps> = ({
   const [openDialogDelete, setOpenDialogDelete] = useState(false);
   const [tiposAcoplados, setTiposAcoplados] = useState<any[]>([]);
   const [tipoSeleccionado, setTipoSeleccionado] = useState<string | null>(seleccionado?.tipoAcoplado || null);
-  const [acopladoExistente, setAcopladoExistente] = useState(false);
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
+  const { showNotificacion } = useNotificacion();
 
   const { data, errors, handleChange, validateAll } = useValidation(
     {
@@ -73,45 +75,23 @@ const AcopladoForm: React.FC<FormularioProps> = ({
       .catch(() => console.error("Error al obtener los tipos de acoplados disponibles"));
   }, [backendURL]);
 
-  // Función para verificar si ya existe un acoplado con la patente ingresada
-  const checkIfAcopladoExists = () => {
-    // Solo verificar si la patente tiene un formato válido y no es en modo edición
-    if (!data.patente || seleccionado?.patente) return;
-    fetch(`${backendURL}/acoplados/${data.patente}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-      .then((response) => {
-        if (response.ok) {
-          setAcopladoExistente(true);
-        } else {
-          setAcopladoExistente(false);
-        }
-      })
-      .catch(() => {
-        setAcopladoExistente(false);
-      });
-  };
-
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     // Si ya existe, notificar al usuario y detener el envío
-    if (acopladoExistente) {
-      alert("Ya existe un acoplado con esta patente.");
+    if (!validateAll()) {
+      showNotificacion('Por favor corrija los errores en el formulario', 'error');
       return;
     }
 
-    if (validateAll()) {
+    try {
       const metodo = seleccionado?.patente ? "PUT" : "POST";
       const url = seleccionado?.patente
         ? `${backendURL}/acoplados/${data.patente}`
         : `${backendURL}/acoplados`;
-
+  
       const idTipoAcoplado = tiposAcoplados.find(
         (tipo) => tipo.nombre === tipoSeleccionado
       )?.id;
-
+  
       const payload = {
         patente: data.patente,
         urlRTO: data.urlRTO,
@@ -119,32 +99,40 @@ const AcopladoForm: React.FC<FormularioProps> = ({
         urlRuta: data.urlRuta,
         idTipoAcoplado,
       };
-
-      fetch(url, {
+  
+      const response = await fetch(url, {
         method: metodo,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
-      })
-        .then(async (response) => {
-          if (!response.ok) {
-            const errorMessage = await response.text();
-            throw new Error(`Error del servidor: ${errorMessage}`);
-          }
-          return response.json();
-        })
-        .then((newData) => {
-          if (metodo === "POST") {
-            setDatos([...datos, newData]);
-          } else {
-            setDatos(
-              datos.map((acoplado: { patente: any }) =>
-                acoplado.patente === data.patente ? newData : acoplado
-              )
-            );
-          }
-          handleClose();
-        })
-        .catch((error) => console.error(`Error: ${error.message}`));
+      });
+  
+      if (!response.ok) {
+        const errorMessage = await response.text();
+        throw new Error(errorMessage);
+      }
+  
+      const newData = await response.json();
+      
+      if (metodo === "POST") {
+        setDatos([...datos, newData]);
+        showNotificacion('Acoplado creado exitosamente', 'success');
+      } else {
+        setDatos(
+          datos.map((acoplado: { patente: any }) =>
+            acoplado.patente === data.patente ? newData : acoplado
+        ));
+        showNotificacion('Acoplado actualizado exitosamente', 'success');
+      }
+      
+      handleClose();
+    } catch (error) {
+      console.error('Error:', error);
+      showNotificacion(
+        error instanceof Error 
+          ? error.message 
+          : 'Error al procesar la solicitud',
+        'error'
+      );
     }
   };
 
@@ -162,13 +150,8 @@ const AcopladoForm: React.FC<FormularioProps> = ({
           fullWidth
           value={data.patente}
           onChange={handleChange("patente")}
-          onBlur={checkIfAcopladoExists}
-          error={!!errors.patente || acopladoExistente}
-          helperText={
-            acopladoExistente
-              ? "Ya existe un acoplado con esta patente"
-              : errors.patente
-          }
+          error={!!errors.patente}
+          helperText={errors.patente}
           disabled={!!seleccionado?.patente}
         />
 
