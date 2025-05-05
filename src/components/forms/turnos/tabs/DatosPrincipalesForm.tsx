@@ -23,6 +23,7 @@ const DatosPrincipalesForm: React.FC<DatosPrincipalesFormProps> = ({
   tieneBitren,
 }) => {
   const { backendURL } = useContext(ContextoGeneral);
+  const { theme } = useContext(ContextoGeneral);
 
   // Estados locales para cada uno de los campos
   const [colaboradorSeleccionado, setColaboradorSeleccionado] = useState<any | null>(
@@ -143,10 +144,10 @@ const DatosPrincipalesForm: React.FC<DatosPrincipalesFormProps> = ({
         justifyContent="flex-end"
         sx={{ marginTop: 2 }}
       >
-        <Button color="secondary" onClick={handleClose}>
+        <Button color="error" onClick={handleClose}>
           Cancelar
         </Button>
-        <Button color="primary" onClick={handleSubmit}>
+        <Button sx={{ color: theme.colores.azul }} onClick={handleSubmit}>
           Guardar Datos Principales
         </Button>
       </Stack>

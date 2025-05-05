@@ -50,7 +50,7 @@ const NumericFormatCustom = React.forwardRef<NumericFormatProps, CustomProps>(
 );
 
 export default function SelectorTarifa() {
-    const { datosNuevaCarga, datosSinCompletar } = useContext(ContextoStepper);
+    const { datosNuevaCarga, setDatosNuevaCarga, datosSinCompletar } = useContext(ContextoStepper);
     const { backendURL } = useContext(ContextoGeneral);
     const [tarifas, setTarifas] = useState<any[]>([]);
     const [tarifaSeleccionada, setTarifaSeleccionada] = useState<any>(
@@ -76,20 +76,22 @@ export default function SelectorTarifa() {
             );
     }, []);
 
-    const seleccionarTiposTarifas = (_event: any, seleccionado: any | null) => {
-        if (seleccionado) {
-            const tarifasStrings = tarifas.map((tarifas) => tarifas.nombre);
-            const index = tarifasStrings.indexOf(seleccionado);
-            const tarifasIds = tarifas.map((tarifas) => tarifas.id);
-            datosNuevaCarga["idTipoTarifa"] = tarifasIds[index];
-            datosNuevaCarga["nombreTipoTarifa"] = seleccionado;
-            setTarifaSeleccionada(seleccionado);
-        }
-    };
+    const seleccionarTiposTarifas = (_event: any, seleccionado: string | null) => {
+                if (!seleccionado) return;
+                const tarifaObj = tarifas.find((t) => t.nombre === seleccionado);
+                if (!tarifaObj) return;
+                setDatosNuevaCarga(prev => ({
+                    ...prev,
+                    idTipoTarifa: tarifaObj.id,
+                    nombreTipoTarifa: tarifaObj.nombre
+                }));
+                setTarifaSeleccionada(seleccionado);
+            };
 
-    const seleccionarTarifa = (event: React.ChangeEvent<HTMLInputElement>) => {
-        datosNuevaCarga["tarifa"] = Number(event.target.value);
-    };
+            const seleccionarTarifa = (event: React.ChangeEvent<HTMLInputElement>) => {
+                const value = Number(event.target.value);
+                setDatosNuevaCarga(prev => ({ ...prev, tarifa: value }));
+            };
 
     return (
         <Box display="flex" flexDirection="column">

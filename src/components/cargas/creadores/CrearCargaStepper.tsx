@@ -22,6 +22,7 @@ import { useAuth } from "../../autenticacion/ContextoAuth";
 
 // Interfaces para tipar el estado y las props
 interface DatosNuevaCarga {
+  id?: number;
   idsTiposAcoplados?: number[];
   incluyeIVA?: boolean;
   nombreTipoTarifa?: string;
@@ -55,9 +56,8 @@ interface CrearCargaStepperProps {
   datosCarga?: any; // Se recomienda definir un tipo más específico según la estructura
   handleCloseDialog: () => void;
   creando: boolean;
-  refreshCargas: () => void;
-  // Prop opcional para almacenar las cargas creadas en el parent
-  listaCargasCreadas?: any[];
+  onCargaCreated?: (payload: any) => void;
+  onCargaUpdated?: (payload: any) => void;
 }
 
 interface ContextoStepperProps {
@@ -79,13 +79,14 @@ const CrearCargaStepper: React.FC<CrearCargaStepperProps> = ({
   datosCarga,
   handleCloseDialog,
   creando,
-  refreshCargas,
-  listaCargasCreadas, // nuevo prop opcional
+  onCargaCreated,
+  onCargaUpdated,
 }) => {
   const initialCargaData = creando ? null : datosCarga;
   const { user } = useAuth();
 
   const [datosNuevaCarga, setDatosNuevaCarga] = useState<DatosNuevaCarga>({
+    id: initialCargaData?.id,
     idsTiposAcoplados:
       initialCargaData?.tiposAcoplados?.map((acoplado: any) => acoplado.id) || [],
     incluyeIVA: initialCargaData?.incluyeIVA || false,
@@ -119,7 +120,7 @@ const CrearCargaStepper: React.FC<CrearCargaStepperProps> = ({
   const [pasoActivo, setPasoActivo] = useState<number>(pasoSeleccionado);
   const [estadoCarga, setEstadoCarga] = useState<string>("Creando");
 
-  const { backendURL, theme } = useContext(ContextoGeneral);
+  const { theme } = useContext(ContextoGeneral);
 
   useEffect(() => {
     setEstadoCarga(creando ? "Creando" : "Actualizando");
@@ -197,12 +198,6 @@ const CrearCargaStepper: React.FC<CrearCargaStepperProps> = ({
     }
 
     if (pasoActivo === pasos.length - 1) {
-      const metodo = creando ? "POST" : "PUT";
-      const url = creando
-        ? `${backendURL}/cargas`
-        : `${backendURL}/cargas/${datosCarga?.id}`;
-
-      // Se eliminan propiedades que no deben enviarse
       const {
         nombreUbicacionCarga,
         nombreUbicacionDescarga,
@@ -211,40 +206,53 @@ const CrearCargaStepper: React.FC<CrearCargaStepperProps> = ({
         nombreCargamento,
         requiereBalanza,
         ...body
-      } = {
-        ...datosNuevaCarga,
-        creadoPor: user?.email,
+      } = datosNuevaCarga;
+      const fullCarga = {
+        id: datosNuevaCarga.id,
+        idsTiposAcoplados: datosNuevaCarga.idsTiposAcoplados,
+        incluyeIVA: datosNuevaCarga.incluyeIVA,
+        tipoTarifa: {
+          id: datosNuevaCarga.idTipoTarifa,
+          nombre: datosNuevaCarga.nombreTipoTarifa
+        },
+        tarifa: datosNuevaCarga.tarifa,
+        descripcion: datosNuevaCarga.descripcion,
+        plantaProcedenciaRuca: datosNuevaCarga.plantaProcedenciaRuca,
+        destinoRuca: datosNuevaCarga.destinoRuca,
+        cargamento: {
+          id: datosNuevaCarga.idCargamento,
+          nombre: datosNuevaCarga.nombreCargamento
+        },
+        ubicacionCarga: {
+          id: datosNuevaCarga.idUbicacionCarga,
+          nombre: datosNuevaCarga.nombreUbicacionCarga
+        },
+        ubicacionDescarga: {
+          id: datosNuevaCarga.idUbicacionDescarga,
+          nombre: datosNuevaCarga.nombreUbicacionDescarga
+        },
+        ubicacionBalanza: datosNuevaCarga.idUbicacionBalanza ? {
+          id: datosNuevaCarga.idUbicacionBalanza,
+          nombre: datosNuevaCarga.nombreUbicacionBalanza
+        } : null,
+        cantidadKm: datosNuevaCarga.cantidadKm,
+        horaInicioCarga: datosNuevaCarga.horaInicioCarga,
+        horaFinCarga: datosNuevaCarga.horaFinCarga,
+        horaInicioDescarga: datosNuevaCarga.horaInicioDescarga,
+        horaFinDescarga: datosNuevaCarga.horaFinDescarga,
+        horaInicioBalanza: datosNuevaCarga.horaInicioBalanza,
+        horaFinBalanza: datosNuevaCarga.horaFinBalanza,
+        tolerancia: datosNuevaCarga.tolerancia,
+        creadoPor: datosNuevaCarga.creadoPor,
+        payload: body
       };
 
-      setEstadoCarga("Cargando");
-      console.log("el body: \n", body);
-      (async () => {
-        try {
-          const response = await fetch(url, {
-            method: metodo,
-            headers: {
-              "Content-Type": "application/json",
-              "ngrok-skip-browser-warning": "true",
-            },
-            body: JSON.stringify(body),
-          });
-          if (!response.ok) {
-            throw new Error("Error al crear la carga");
-          }
-          const dataResponse = await response.json();
-          
-          if (listaCargasCreadas) {
-            listaCargasCreadas.push(dataResponse);
-          }
-          
-          refreshCargas();
-          setEstadoCarga("Creado");
-          setTimeout(handleCloseDialog, 1000);
-        } catch (error) {
-          console.log("Error:", error)
-          setEstadoCarga("Error");
-        }
-      })();
+      if (creando) {
+        onCargaCreated?.(fullCarga);
+      } else {
+        onCargaUpdated?.(fullCarga);
+      }
+      handleCloseDialog();
     } else {
       setPasoActivo((prev) => prev + 1);
     }
@@ -253,12 +261,10 @@ const CrearCargaStepper: React.FC<CrearCargaStepperProps> = ({
     pasos.length,
     datosNuevaCarga,
     creando,
-    backendURL,
-    datosCarga,
-    isStepValid,
-    refreshCargas,
+    onCargaCreated,
+    onCargaUpdated,
     handleCloseDialog,
-    listaCargasCreadas,
+    isStepValid,
   ]);
 
   const handleAnteriorPaso = useCallback(() => {

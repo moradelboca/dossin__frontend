@@ -9,6 +9,11 @@ const useTransformarCampo = () => {
 
     const value = resolveNestedField(field, item);
 
+    if (value && typeof value === "object" &&
+        "nombreFantasia" in value && "razonSocial" in value) {
+      return `${value.nombreFantasia} - ${value.razonSocial}`;
+    }
+
     switch (field) {
       case "localidad":
         return value
@@ -46,14 +51,6 @@ const useTransformarCampo = () => {
           }
         }
         return value || "No especificado";
-      case "titularCartaDePorte":
-      case "destino":
-      case "remitente":
-        if (value) {
-          const { razonSocial, nombreFantasia } = value;
-          return `${nombreFantasia} - ${razonSocial}`;
-        }
-        return "No especificado";
       case "cargas":
         if (Array.isArray(value)) {
           return value.map((carga: any) => `${carga.id}`).join(", ");

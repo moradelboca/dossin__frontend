@@ -22,19 +22,22 @@ import PaginaNoDisponible from "./components/inconvenientes/PaginaNoDisponible";
 import { MapaMain } from "./components/mapa/MapaMain";
 import { Nav } from "./components/nav/Nav";
 import WebSocketComponent from "./components/Websocket";
+import PantallaLogin from "./components/login/PantallaLogin";
+import Cookies from "js-cookie";
 
 function App() {
   const [navAbierto, setNavAbierto] = useState(false);
   const anchoAbierto = 200;
   const anchoCerrado = 60;
   const isMobile = useMediaQuery("(max-width:768px)");
+  // Get accessToken
+  const accessToken = Cookies.get("accessToken");
 
   return (
     <BrowserRouter>
       <AuthProvider>
         <NotificacionProvider>
           <ContextoGeneral.Provider value={ValoresContexto}>
-            <WebSocketComponent />
             <Box
               sx={{
                 display: "flex",
@@ -43,153 +46,164 @@ function App() {
               }}
             >
               <CssBaseline>
-                <Nav
-                  navAbierto={navAbierto}
-                  setNavAbierto={setNavAbierto}
-                  anchoAbierto={anchoAbierto}
-                  anchoCerrado={anchoCerrado}
-                />
-                <Box
-                  sx={{
-                    marginTop: "65px",
-                    marginLeft: isMobile ? 0 : `${anchoCerrado}px`,
-                    width: isMobile ? "100%" : `calc(100% - ${anchoCerrado}px)`,
-                    overflowX: "hidden",
-                  }}
-                >
+                {!accessToken ? (
                   <Routes>
-                    <Route
-                      path="/"
-                      element={
-                        <RutasProtegidas allowedRoles={[1]}>
-                          <Dashboard />
-                        </RutasProtegidas>
-                      }
-                    />
-  
-                    <Route
-                      path="/cargas"
-                      element={
-                        <RutasProtegidas allowedRoles={[1, 2, 3]}>
-                          <ContainerCargas />
-                        </RutasProtegidas>
-                      }
-                    />
-  
-                    <Route
-                      path="/cargas/:idCarga"
-                      element={
-                        <RutasProtegidas allowedRoles={[1, 2, 3]}>
-                          <ContainerCargas />
-                        </RutasProtegidas>
-                      }
-                    />
-  
-                    <Route
-                      path="cargas/:idCarga/cupos"
-                      element={
-                        <RutasProtegidas allowedRoles={[1, 2, 3]}>
-                          <ContainerCupos />
-                        </RutasProtegidas>
-                      }
-                    />
-  
-                    <Route
-                      path="/contratos"
-                      element={
-                        <RutasProtegidas allowedRoles={[1, 2, 3]}>
-                          <Contratos />
-                        </RutasProtegidas>
-                      }
-                    />
-  
-                    <Route
-                      path="/colaboradores"
-                      element={
-                        <RutasProtegidas allowedRoles={[1, 2, 3]}>
-                          <Choferes />
-                        </RutasProtegidas>
-                      }
-                    />
-  
-                    <Route
-                      path="/ubicaciones"
-                      element={
-                        <RutasProtegidas allowedRoles={[1, 2, 3]}>
-                          <MapaMain />
-                        </RutasProtegidas>
-                      }
-                    />
-  
-                    <Route
-                      path="/empresas"
-                      element={
-                        <RutasProtegidas allowedRoles={[1, 2, 3]}>
-                          <Empresas />
-                        </RutasProtegidas>
-                      }
-                    />
-  
-                    <Route
-                      path="/camiones"
-                      element={
-                        <RutasProtegidas allowedRoles={[1, 2]}>
-                          <TabCamiones />
-                        </RutasProtegidas>
-                      }
-                    />
-  
-                    <Route
-                      path="/inconvenientes"
-                      element={
-                        <RutasProtegidas allowedRoles={[1, 2]}>
-                          <Inconvenientes />
-                        </RutasProtegidas>
-                      }
-                    />
-  
-                    <Route
-                      path="/clima"
-                      element={
-                        <RutasProtegidas allowedRoles={[1, 2]}>
-                          <Clima />
-                        </RutasProtegidas>
-                      }
-                    />
-  
-                    <Route
-                      path="/calculadora"
-                      element={
-                        <RutasProtegidas allowedRoles={[1, 2]}>
-                          <TarifaApp />
-                        </RutasProtegidas>
-                      }
-                    />
-  
-                    <Route
-                      path="/admin"
-                      element={
-                        <RutasProtegidas allowedRoles={[1]}>
-                          <Usuarios />
-                        </RutasProtegidas>
-                      }
-                    />
-  
-                    <Route
-                      path="/no-autorizado"
-                      element={<PaginaNoDisponible />}
-                    />
-  
-                    <Route
-                      path="*"
-                      element={
-                        <RutasProtegidas>
-                          <PaginaNoDisponible />
-                        </RutasProtegidas>
-                      }
-                    />
+                    <Route path="/login" element={<PantallaLogin />} />
                   </Routes>
-                </Box>
+                ) : (
+                  <>
+                    <WebSocketComponent />
+                    <Nav
+                      navAbierto={navAbierto}
+                      setNavAbierto={setNavAbierto}
+                      anchoAbierto={anchoAbierto}
+                      anchoCerrado={anchoCerrado}
+                    />
+                    <Box
+                      sx={{
+                        marginTop: "65px",
+                        marginLeft: isMobile ? 0 : `${anchoCerrado}px`,
+                        width: isMobile
+                          ? "100%"
+                          : `calc(100% - ${anchoCerrado}px)`,
+                        overflowX: "hidden",
+                      }}
+                    >
+                      <Routes>
+                        <Route
+                          path="/"
+                          element={
+                            <RutasProtegidas allowedRoles={[1]}>
+                              <Dashboard />
+                            </RutasProtegidas>
+                          }
+                        />
+
+                        <Route
+                          path="/cargas"
+                          element={
+                            <RutasProtegidas allowedRoles={[1, 2, 3]}>
+                              <ContainerCargas />
+                            </RutasProtegidas>
+                          }
+                        />
+
+                        <Route
+                          path="/cargas/:idCarga"
+                          element={
+                            <RutasProtegidas allowedRoles={[1, 2, 3]}>
+                              <ContainerCargas />
+                            </RutasProtegidas>
+                          }
+                        />
+
+                        <Route
+                          path="cargas/:idCarga/cupos"
+                          element={
+                            <RutasProtegidas allowedRoles={[1, 2, 3]}>
+                              <ContainerCupos />
+                            </RutasProtegidas>
+                          }
+                        />
+
+                        <Route
+                          path="/contratos"
+                          element={
+                            <RutasProtegidas allowedRoles={[1, 2, 3]}>
+                              <Contratos />
+                            </RutasProtegidas>
+                          }
+                        />
+
+                        <Route
+                          path="/colaboradores"
+                          element={
+                            <RutasProtegidas allowedRoles={[1, 2, 3]}>
+                              <Choferes />
+                            </RutasProtegidas>
+                          }
+                        />
+
+                        <Route
+                          path="/ubicaciones"
+                          element={
+                            <RutasProtegidas allowedRoles={[1, 2, 3]}>
+                              <MapaMain />
+                            </RutasProtegidas>
+                          }
+                        />
+
+                        <Route
+                          path="/empresas"
+                          element={
+                            <RutasProtegidas allowedRoles={[1, 2, 3]}>
+                              <Empresas />
+                            </RutasProtegidas>
+                          }
+                        />
+
+                        <Route
+                          path="/camiones"
+                          element={
+                            <RutasProtegidas allowedRoles={[1, 2]}>
+                              <TabCamiones />
+                            </RutasProtegidas>
+                          }
+                        />
+
+                        <Route
+                          path="/inconvenientes"
+                          element={
+                            <RutasProtegidas allowedRoles={[1, 2]}>
+                              <Inconvenientes />
+                            </RutasProtegidas>
+                          }
+                        />
+
+                        <Route
+                          path="/clima"
+                          element={
+                            <RutasProtegidas allowedRoles={[1, 2]}>
+                              <Clima />
+                            </RutasProtegidas>
+                          }
+                        />
+
+                        <Route
+                          path="/calculadora"
+                          element={
+                            <RutasProtegidas allowedRoles={[1, 2]}>
+                              <TarifaApp />
+                            </RutasProtegidas>
+                          }
+                        />
+
+                        <Route
+                          path="/admin"
+                          element={
+                            <RutasProtegidas allowedRoles={[1]}>
+                              <Usuarios />
+                            </RutasProtegidas>
+                          }
+                        />
+
+                        <Route
+                          path="/no-autorizado"
+                          element={<PaginaNoDisponible />}
+                        />
+
+                        <Route
+                          path="*"
+                          element={
+                            <RutasProtegidas>
+                              <PaginaNoDisponible />
+                            </RutasProtegidas>
+                          }
+                        />
+                      </Routes>
+                    </Box>
+                  </>
+                )}
               </CssBaseline>
             </Box>
           </ContextoGeneral.Provider>

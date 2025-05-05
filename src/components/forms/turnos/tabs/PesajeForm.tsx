@@ -30,7 +30,7 @@ const PesajeForm: React.FC<PesajeFormProps> = ({
     initialData?.precioPorKilogramo ?? ""
   );
   const [errors, setErrors] = useState<{ [key: string]: string | null }>({});
-
+  const {theme} = useContext(ContextoGeneral);
   const validate = () => {
     const newErrors: { [key: string]: string | null } = {};
 
@@ -132,10 +132,10 @@ const PesajeForm: React.FC<PesajeFormProps> = ({
         justifyContent="flex-end"
         sx={{ marginTop: 2 }}
       >
-        <Button color="secondary" onClick={onCancel}>
+        <Button color="error" onClick={onCancel}>
           Cancelar
         </Button>
-        <Button color="primary" onClick={handleSubmit}>
+        <Button sx={{color:theme.colores.azul}} onClick={handleSubmit}>
           Guardar Pesaje
         </Button>
       </Stack>

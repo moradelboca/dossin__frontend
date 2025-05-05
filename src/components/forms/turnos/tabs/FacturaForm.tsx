@@ -60,6 +60,7 @@ const FacturaForm: React.FC<FacturaFormProps> = ({
 }) => {
   const { backendURL } = useContext(ContextoGeneral);
   const isUpdateMode = Boolean(initialFactura);
+  const {theme} = useContext(ContextoGeneral);
 
   // Estados para opciones (tipos de factura y, en creación, turnos disponibles)
   const [tiposFacturaOptions, setTiposFacturaOptions] = useState<TipoFactura[]>([]);
@@ -422,12 +423,12 @@ const FacturaForm: React.FC<FacturaFormProps> = ({
       )}
 
       <Stack direction="row" spacing={2} justifyContent="flex-end">
-        <Button onClick={onCancel}>Cancelar</Button>
-        <Button onClick={handleSubmit} color="primary" variant="contained">
+        <Button onClick={onCancel} color="error" >Cancelar</Button>
+        <Button onClick={handleSubmit} sx={{color:theme.colores.azul}} >
           {isUpdateMode ? 'Actualizar Factura' : 'Crear Factura'}
         </Button>
         {isUpdateMode && (
-          <Button onClick={handleOpenDeleteDialog} color="error" variant="outlined">
+          <Button onClick={handleOpenDeleteDialog} color="error" >
             Eliminar Factura
           </Button>
         )}

@@ -1,16 +1,11 @@
 import React from "react";
 import { Autocomplete, TextField } from "@mui/material";
 
-interface Rol {
-  nombre: string;
-  id: number;
-}
-
 export interface Empresa {
-  cuit: string;
+  cuit: number | string;
   razonSocial: string;
   nombreFantasia: string;
-  roles?: Rol[];
+  roles?: { nombre: string; id: number }[];
 }
 
 type EmpresaField = {
@@ -38,18 +33,52 @@ const ContratoFormFields: React.FC<FormFieldsProps> = ({
     <>
       {empresaFields.map((field) => {
         const empresasDelRol = sorteredEmpresasSegunRol[field.rol] || [];
-        const selectedEmpresa = empresasDelRol.find(emp => emp.cuit === data[field.key]);
+
+        const getEmpresaValue = () => {
+          const val = data[field.key];
+          
+          if (!val) return null;
+          
+          // Si ya es un objeto empresa
+          if (typeof val === 'object') {
+            return empresasDelRol.find(e => e.cuit === val.cuit) || null;
+          }
+          
+          // Si es string, buscar por formato o CUIT
+          if (typeof val === 'string') {
+            const empresaPorCuit = empresasDelRol.find(e => e.cuit.toString() === val);
+            if (empresaPorCuit) return empresaPorCuit;
+            
+            const [nombre, razon] = val.split(' - ');
+            return empresasDelRol.find(e => 
+              e.nombreFantasia === nombre && 
+              e.razonSocial === razon
+            ) || null;
+          }
+          
+          return null;
+        };
+
         return (
           <Autocomplete
             key={field.key}
-            disablePortal
             options={empresasDelRol}
-            getOptionLabel={(option: Empresa) => 
-              `${option.razonSocial} - ${option.nombreFantasia}`
+            getOptionLabel={(option: Empresa) =>
+              `${option.nombreFantasia} - ${option.razonSocial}`
             }
-            value={selectedEmpresa || null}
+            isOptionEqualToValue={(option, value) => {
+              if (!value) return false;
+              if (typeof value === 'string') {
+                return `${option.nombreFantasia} - ${option.razonSocial}` === value;
+              }
+              return option.cuit === value.cuit;
+            }}
+            value={getEmpresaValue()}
             onChange={(_, newValue) => {
-              setData({ ...data, [field.key]: newValue?.cuit || null });
+              setData({ 
+                ...data, 
+                [field.key]: newValue || null // Guardar objeto completo
+              });
             }}
             renderInput={(params) => (
               <TextField
@@ -58,7 +87,6 @@ const ContratoFormFields: React.FC<FormFieldsProps> = ({
                 variant="outlined"
                 error={!!errors[field.key]}
                 helperText={errors[field.key] || ""}
-                InputProps={{ ...params.InputProps }}
               />
             )}
           />

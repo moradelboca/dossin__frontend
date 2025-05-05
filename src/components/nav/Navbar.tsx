@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
 import Avatar from "@mui/material/Avatar";
@@ -10,6 +10,8 @@ import { ListItemIcon, Box } from "@mui/material";
 import { Logout } from "@mui/icons-material";
 import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import { useAuth } from "../autenticacion/ContextoAuth";
+import { ContextoGeneral } from "../Contexto";
 
 const CustomToolbar = styled(Toolbar)<{ transicion: string }>(
   ({ transicion }) => ({
@@ -36,7 +38,8 @@ interface NavbarProps {
 
 export default function Navbar(props: NavbarProps) {
   const { navAbierto, transicion, handleClickToggleNav } = props;
-
+  const { user, logout } = useAuth();
+  const { theme } = useContext(ContextoGeneral);
   const [anchorMenuUsuario, setAnchorMenuUsuario] =
     useState<null | HTMLElement>(null);
 
@@ -49,24 +52,28 @@ export default function Navbar(props: NavbarProps) {
   const handleClickCerrarMenuUsuario = () => {
     setAnchorMenuUsuario(null);
   };
-
   return (
     <>
       <CustomToolbar transicion={transicion}>
         <Box sx={{ display: "flex", alignItems: "center" }}>
           {/* Botón hamburguesa para abrir/cerrar el Navside */}
-          <IconButton onClick={handleClickToggleNav} sx={{ mr: 2, color: "#163660" }}>
+          <IconButton
+            onClick={handleClickToggleNav}
+            sx={{ mr: 2, color: theme.colores.azul }}
+          >
             {navAbierto ? <ChevronLeftIcon /> : <MenuIcon />}
           </IconButton>
           <img
-            src="https://i.imgur.com/nmMpZzl.png"
+            src="https://imgur.com/a/21CONyp.png"
             alt="Logo"
             style={{ height: "40px" }}
           />
         </Box>
         <Tooltip title="Ajustes">
           <IconButton onClick={handleClickAbrirMenuUsuario}>
-            <Avatar sx={{ width: 32, height: 32 }}>M</Avatar>
+            <Avatar sx={{ width: 32, height: 32 }}>
+              {user?.email[0].toUpperCase()}
+            </Avatar>
           </IconButton>
         </Tooltip>
         <Menu
@@ -106,9 +113,9 @@ export default function Navbar(props: NavbarProps) {
           transformOrigin={{ horizontal: "right", vertical: "top" }}
           anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
         >
-          <MenuItem onClick={handleClickCerrarMenuUsuario}>
+          <MenuItem onClick={() => logout()}>
             <ListItemIcon>
-              <Logout fontSize="small" />
+              <Logout sx={{ color: theme.colores.azul }} fontSize="small" />
             </ListItemIcon>
             Logout
           </MenuItem>
