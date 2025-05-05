@@ -3,22 +3,6 @@ import TablaTemplate from "../tablas/TablaTemplate";
 import ContratoForm from "../forms/contratos/ContratoForm";
 
 export default function Choferes() {
-  /*
-  
-      case "titularCartaDePorte":
-      case "remitenteProductor":
-      case "remitenteVentaPrimaria":
-
-      case "remitenteVentaSecundaria":
-      case "corredorVentaPrimaria":
-      case "corredorVentaSecundaria":
-      case "representanteEntregador":
-      case "representanteRecibidor":
-      case "destinatario":
-      case "destino":
-      case "intermediarioDeFlete":
-      case "fletePagador":
-  */
   const fields = [
     "id",
     "titularCartaDePorte",
@@ -61,7 +45,7 @@ export default function Choferes() {
     FormularioCreador={ContratoForm} 
     tituloField="titularCartaDePorte"
     subtituloField="destino"
-    renderFullScreen={true} // Activa el modo pantalla completa
+    renderFullScreen={true} // Activa el modo pantalla completa para el 
     />
   );
 }
