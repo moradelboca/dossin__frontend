@@ -9,9 +9,8 @@ const WebSocketComponent = () => {
   const { showNotificacion } = useNotificacion();
   
   useEffect(() => {
-    console.log("intentando conectar a:", backendURL);
-    console.log(backendURL.replace("/api", ""));
-    socketRef.current = io(backendURL.replace("/api", ""), {
+    // Sacamos el /api del final
+    socketRef.current = io(backendURL.slice(0, -4), {
       path: "/socket",
       transports: ["websocket"],
     });
