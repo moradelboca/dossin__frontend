@@ -21,6 +21,7 @@ import Inconvenientes from "./components/inconvenientes/Inconvenientes";
 import PaginaNoDisponible from "./components/inconvenientes/PaginaNoDisponible";
 import { MapaMain } from "./components/mapa/MapaMain";
 import { Nav } from "./components/nav/Nav";
+import WebSocketComponent from "./components/Websocket";
 import PantallaLogin from "./components/login/PantallaLogin";
 import Cookies from "js-cookie";
 
@@ -51,6 +52,7 @@ function App() {
                   </Routes>
                 ) : (
                   <>
+                    <WebSocketComponent />
                     <Nav
                       navAbierto={navAbierto}
                       setNavAbierto={setNavAbierto}
@@ -73,14 +75,6 @@ function App() {
                           element={
                             <RutasProtegidas allowedRoles={[1]}>
                               <Dashboard />
-                            </RutasProtegidas>
-                          }
-                        />
-                        <Route
-                          path="/login"
-                          element={
-                            <RutasProtegidas allowedRoles={[1]}>
-                              <PantallaLogin />
                             </RutasProtegidas>
                           }
                         />
