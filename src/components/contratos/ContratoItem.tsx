@@ -1,0 +1,139 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useContext, useState } from "react";
+import { ContextoGeneral } from "../Contexto";
+import CardMobile from "../cards/mobile/CardMobile";
+import { Box, Card, CardContent, Divider, Grid, Typography } from "@mui/material";
+import { CustomButtom } from "../botones/CustomButtom";
+import { DialogCarga } from "./DialogCarga";
+
+interface ContratoItemProps {
+    contrato: any;
+    onEditContrato: (contrato: any) => void;
+    refreshContratos: () => void;
+  }
+  
+  export const ContratoItem = ({ contrato, onEditContrato, refreshContratos }: ContratoItemProps) => {
+    const { theme } = useContext(ContextoGeneral);
+
+    const cargas = contrato.cargas || [];
+
+    const [openCargaDialog, setOpenCargaDialog] = useState(false);
+    const [selectedCarga, setSelectedCarga] = useState<any>(null);
+  
+    const handleOpenCargaDialog = (carga?: any) => {
+      setSelectedCarga(carga || null);
+      setOpenCargaDialog(true);
+    };
+  
+    const fields = ["cargamento.id"];
+    const headerNames = ["Cargamento"];
+  
+    const renderCards = () => {
+        return (contrato.cargas || []).map((carga: any, index: number) => (
+            <CardMobile
+                key={carga.id || index}
+                item={carga}
+                index={index}
+                fields={fields}
+                headerNames={headerNames}
+                expandedCard={null}
+                handleExpandClick={() => {}}
+                handleOpenDialog={() => handleOpenCargaDialog(carga)}
+                tituloField="remitenteProductor.nombreFantasia"
+                subtituloField="remitenteProductor.cuit"
+                usarSinDesplegable={true}
+            />
+        ));
+    };
+    console.log("Cargas: \n",cargas);
+  
+    return (
+      <Grid
+        container
+        direction="row"
+        key={contrato.id}
+        width={"90%"}
+        flexWrap={"nowrap"}
+        gap={5}
+        marginLeft={"50px"}
+        alignItems={"center"}
+        justifyContent={"center"}
+      >
+        <Card sx={{ maxWidth: 300, minWidth: 300 }}>
+            <CardContent>
+              <Typography
+                variant="h5"
+                color={theme.colores.azul}
+                textAlign="center"
+              >
+                {contrato.titularCartaDePorte?.razonSocial || "Sin titular"}
+              </Typography>
+
+              <Divider
+                orientation="horizontal"
+                flexItem
+                sx={{ bgcolor: theme.colores.azul, my: 2 }}
+              />
+
+              <Grid
+                container
+                spacing="10px"
+                justifyContent="center"
+                padding="28px 0px"
+              >
+                <Grid item width="100%">
+                    <Typography
+                        variant="body1"
+                        textAlign="center"
+                        color={theme.colores.azul}
+                    >
+                        Destinatario:
+                    </Typography>
+                    <Typography variant="h6" textAlign="center" color={theme.colores. azul}>
+                        {contrato.destinatario?.razonSocial || "Sin destinatario"}
+                    </Typography>
+                </Grid>
+              </Grid>
+
+              <Box display="flex" justifyContent="center" gap={2}>
+                <CustomButtom
+                  onClick={() => handleOpenCargaDialog()} // Sin parámetros
+                  title="Crear carga +"
+                />
+                <CustomButtom
+                  onClick={() => onEditContrato(contrato)}
+                  title="Editar contrato
+                  "
+                />
+              </Box>
+            </CardContent>
+          </Card>
+          <Grid
+            container
+            spacing={5}
+            flexWrap={"nowrap"}
+            sx={{ 
+                overflowX: "scroll",
+                gap: "16px",
+                padding: "35px",
+                width: "80%",
+                minHeight: "380px",
+                alignItems: "center"
+              }}
+          >
+            {renderCards()}
+          </Grid>
+        
+          <DialogCarga 
+              open={openCargaDialog}
+              onClose={() => {
+                setOpenCargaDialog(false);
+                refreshContratos();
+              }}
+              contrato={contrato}
+              selectedCarga={selectedCarga}
+              refreshContratos={refreshContratos}
+            />
+      </Grid>
+    );
+  };
