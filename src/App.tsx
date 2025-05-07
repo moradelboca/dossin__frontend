@@ -2,7 +2,7 @@
 import { CssBaseline, useMediaQuery } from "@mui/material";
 import Box from "@mui/material/Box";
 import { useState } from "react";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
 import Usuarios from "./components/admin/Usuarios";
 import { AuthProvider } from "./components/autenticacion/ContextoAuth";
 import { NotificacionProvider } from "./components/Notificaciones/NotificacionSnackbar";
@@ -30,7 +30,6 @@ function App() {
   const anchoAbierto = 200;
   const anchoCerrado = 60;
   const isMobile = useMediaQuery("(max-width:768px)");
-  // Get accessToken
   const accessToken = Cookies.get("accessToken");
 
   return (
@@ -49,6 +48,10 @@ function App() {
                 {!accessToken ? (
                   <Routes>
                     <Route path="/login" element={<PantallaLogin />} />
+                    <Route
+                      path="*"
+                      element={<Navigate to="/login" replace />}
+                    />
                   </Routes>
                 ) : (
                   <>

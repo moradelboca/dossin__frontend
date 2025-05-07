@@ -12,6 +12,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import { useAuth } from "../autenticacion/ContextoAuth";
 import { ContextoGeneral } from "../Contexto";
+import hermex from "../../assets/hermex.png";
 
 const CustomToolbar = styled(Toolbar)<{ transicion: string }>(
   ({ transicion }) => ({
@@ -63,11 +64,7 @@ export default function Navbar(props: NavbarProps) {
           >
             {navAbierto ? <ChevronLeftIcon /> : <MenuIcon />}
           </IconButton>
-          <img
-            src="https://imgur.com/a/21CONyp.png"
-            alt="Logo"
-            style={{ height: "40px" }}
-          />
+          <img src={hermex} alt="Logo" style={{ height: "40px" }} />
         </Box>
         <Tooltip title="Ajustes">
           <IconButton onClick={handleClickAbrirMenuUsuario}>

@@ -57,7 +57,6 @@ export function ContainerCupos() {
       .then((cupos) => {
         setCupos(cupos);
         setEstadoCarga("Cargado");
-        console.log(cupos);
       })
       .catch(() => {
         console.error("Error al obtener los cupos disponibles");
@@ -88,29 +87,17 @@ export function ContainerCupos() {
   const fields = [
     "estado.nombre",
     "empresa.cuit",
-    "tara.pesoNeto",
     "camion.patente",
     "acoplado.patente",
     "acopladoExtra.patente",
-    "cartaDePorte.CTG",
-    "kgCargados",
-    "kgDescargados",
-    "precioGrano",
-    "numeroOrdenPago",
   ];
 
   const headerNames = [
     "Estado",
-    "Camión",
-    "Tara",
+    "Empresa",
     "Patente Camion",
     "Patente Acoplado",
     "Patente Acoplado Extra",
-    "CTG",
-    "Kg Cargados",
-    "Kg Descargados",
-    "Precio Grano",
-    "Nro Orden de Pago",
   ];
 
   const isMobile = useMediaQuery("(max-width:768px)");
