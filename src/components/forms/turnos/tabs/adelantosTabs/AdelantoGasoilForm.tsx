@@ -11,9 +11,12 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  useTheme,
+  useMediaQuery,
 } from "@mui/material";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { ContextoGeneral } from "../../../../Contexto";
+import MainButton from "../../../../botones/MainButtom";
 
 interface TipoCombustible {
   id: number;
@@ -47,6 +50,9 @@ const AdelantoGasoilForm: React.FC<AdelantoGasoilFormProps> = ({
     "ngrok-skip-browser-warning": "true",
   };
   const { theme } = useContext(ContextoGeneral);
+
+  const tema = useTheme();
+  const isMobile = useMediaQuery(tema.breakpoints.down("sm"));
 
   // Estado para el adelanto actualmente seleccionado
   const [adelanto, setAdelanto] = useState<AdelantoGasoil | undefined>(
@@ -338,14 +344,40 @@ const AdelantoGasoilForm: React.FC<AdelantoGasoilFormProps> = ({
         error={!!errors.precioLitros}
         helperText={errors.precioLitros}
       />
-      <Stack direction="row" spacing={2} justifyContent="flex-end">
-        <Button onClick={onCancel} color="error">
-          Cancelar
-        </Button>
-        <Button onClick={handleSubmit} sx={{ color: theme.colores.azul }}>
-          {adelanto && adelanto.id ? "Actualizar Adelanto" : "Crear Adelanto"}
-        </Button>
-      </Stack>
+
+      {/* Botones de guardado */}
+      <Box
+          sx={{
+            display: "flex",
+            flexDirection: isMobile ? "column" : "row",
+            gap: 1,
+            justifyContent: "flex-end",
+            alignItems: "center",
+            position: 'relative',
+            mt: 2
+          }}
+        >
+          <MainButton
+            onClick={onCancel}
+            text="Cancelar"
+            backgroundColor="transparent"
+            textColor={theme.colores.azul}
+            width={isMobile ? '100%' : 'auto'}
+            borderRadius="8px"
+            hoverBackgroundColor="rgba(22, 54, 96, 0.1)"
+            divWidth={isMobile ? '100%' : 'auto'}
+          />
+          <MainButton
+            onClick={handleSubmit}
+            text={adelanto && adelanto.id ? "Actualizar Adelanto" : "Crear Adelanto"}
+            backgroundColor={theme.colores.azul}
+            textColor="#fff"
+            width={isMobile ? '100%' : 'auto'}
+            borderRadius="8px"
+            hoverBackgroundColor={theme.colores.azulOscuro}
+            divWidth={isMobile ? '100%' : 'auto'}
+          />
+      </Box>
 
       {/* Dialog de confirmación para eliminar */}
       <Dialog open={openDeleteDialog} onClose={handleCloseDeleteDialog}>

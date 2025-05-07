@@ -2,17 +2,19 @@ import React, { useState, useEffect, useContext } from "react";
 import {
   TextField,
   Button,
-  Stack,
   Box,
   IconButton,
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
+  useTheme,
+  useMediaQuery,
 } from "@mui/material";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import useCartaPorteHandler from "../../../hooks/turnos/useCartaPorteHandler";
 import { ContextoGeneral } from "../../../Contexto";
+import MainButton from "../../../botones/MainButtom";
 
 interface CartaPorteFormProps {
   turnoId: string;
@@ -44,6 +46,10 @@ const CartaPorteForm: React.FC<CartaPorteFormProps> = ({
 
   const { handleCartaPorteSubmission, handleCartaPorteDeletion } = useCartaPorteHandler();
   const {theme} = useContext(ContextoGeneral);
+  
+  const tema = useTheme();
+  const isMobile = useMediaQuery(tema.breakpoints.down("sm"));
+
   // Actualizar estados cuando cambie initialData
   useEffect(() => {
     setNumeroCartaPorte(
@@ -132,17 +138,44 @@ const CartaPorteForm: React.FC<CartaPorteFormProps> = ({
         helperText={errors.ctg}
         fullWidth
       />
-      <Stack direction="row" spacing={2} justifyContent="flex-end">
-        <Button onClick={onCancel} color="error">Cancelar</Button>
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: isMobile ? "column" : "row",
+          gap: 1,
+          justifyContent: "flex-end",
+          alignItems: "center",
+          position: 'relative',
+        }}
+      >
+        <MainButton
+          onClick={onCancel}
+          text="Cancelar"
+          backgroundColor="transparent"
+          textColor={theme.colores.azul}
+          width={isMobile ? '100%' : 'auto'}
+          borderRadius="8px"
+          hoverBackgroundColor="rgba(22, 54, 96, 0.1)"
+          divWidth={isMobile ? '100%' : 'auto'}
+        />
+
+        <MainButton
+          onClick={handleSubmit}
+          text={isUpdate ? 'Actualizar' : 'Crear'}
+          backgroundColor={theme.colores.azul}
+          textColor="#fff"
+          width={isMobile ? '100%' : 'auto'}
+          borderRadius="8px"
+          hoverBackgroundColor={theme.colores.azulOscuro}
+          divWidth={isMobile ? '100%' : 'auto'}
+        />
+
         {initialData?.numeroCartaPorte !== undefined && (
           <IconButton onClick={handleOpenDeleteDialog} sx={{ color: "#d32f2f" }}>
             <DeleteOutlineIcon />
           </IconButton>
         )}
-        <Button onClick={handleSubmit} sx={{color:theme.colores.azul}}>
-          {isUpdate ? "Actualizar Carta" : "Crear Carta"}
-        </Button>
-      </Stack>
+      </Box>
       <Dialog open={openDeleteDialog} onClose={handleCloseDeleteDialog}>
         <DialogTitle>Eliminar Carta de Porte</DialogTitle>
         <DialogContent>

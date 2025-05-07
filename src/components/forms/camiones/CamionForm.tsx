@@ -1,6 +1,5 @@
 import React, { useContext, useState } from "react";
 import { 
-  Button, 
   Dialog, 
   IconButton, 
   TextField, 
@@ -14,6 +13,7 @@ import useValidation from "../../hooks/useValidation";
 import { ContextoGeneral } from "../../Contexto";
 import { FormularioProps } from "../../../interfaces/FormularioProps";
 import { useNotificacion } from "../../Notificaciones/NotificacionSnackbar";
+import MainButton from "../../botones/MainButtom";
 
 const CamionForm: React.FC<FormularioProps> = ({
   seleccionado = {},
@@ -21,10 +21,10 @@ const CamionForm: React.FC<FormularioProps> = ({
   setDatos,
   handleClose,
 }) => {
-  const { backendURL } = useContext(ContextoGeneral);
+  const { backendURL, theme } = useContext(ContextoGeneral);
   const [openDialogDelete, setOpenDialogDelete] = useState(false);
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const tema = useTheme();
+  const isMobile = useMediaQuery(tema.breakpoints.down("sm"));
   const { showNotificacion } = useNotificacion();
 
   const { data, errors, handleChange, validateAll } = useValidation(
@@ -157,17 +157,33 @@ const CamionForm: React.FC<FormularioProps> = ({
           sx={{
             display: "flex",
             flexDirection: isMobile ? "column" : "row",
-            gap: isMobile ? 1 : 2,
-            justifyContent: "space-between",
+            gap: 2,
+            justifyContent: "flex-end",
             alignItems: "center",
+            mt: 4,
+            position: 'relative'
           }}
         >
-          <Button onClick={handleClose} color="primary" variant="outlined" fullWidth={isMobile}>
-            Cancelar
-          </Button>
-          <Button onClick={handleSubmit} color="primary" variant="contained" fullWidth={isMobile}>
-            Guardar
-          </Button>
+          <MainButton
+              onClick={handleClose}
+              text="Cancelar"
+              backgroundColor="transparent"
+              textColor={theme.colores.azul}
+              width={isMobile ? '100%' : 'auto'}
+              borderRadius="8px"
+              hoverBackgroundColor="rgba(22, 54, 96, 0.1)"
+              divWidth={isMobile ? '100%' : 'auto'}
+            />
+          <MainButton
+              onClick={handleSubmit}
+              text="Guardar"
+              backgroundColor={theme.colores.azul}
+              textColor="#fff"
+              width={isMobile ? '100%' : 'auto'}
+              borderRadius="8px"
+              hoverBackgroundColor={theme.colores.azulOscuro}
+              divWidth={isMobile ? '100%' : 'auto'}
+            />
           {seleccionado && (
             <IconButton onClick={handleClickDeleteCarga}>
               <DeleteOutlineIcon sx={{ fontSize: 20, color: "#d68384" }} />

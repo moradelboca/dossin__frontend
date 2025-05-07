@@ -27,6 +27,7 @@ const AdelantosTurnoForm: React.FC<AdelantosTurnoFormProps> = ({
   const handleChange = (_event: React.SyntheticEvent, newValue: number) => {
     setTabIndex(newValue);
   };
+
   if (!rolPermitido) {
     return (
       <Box sx={{ p: 3, textAlign: "center" }}>

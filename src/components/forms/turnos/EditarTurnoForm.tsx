@@ -12,6 +12,8 @@ import {
   IconButton,
   Popper,
   TextField,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useAllowed } from "../../hooks/auth/useAllowed";
@@ -45,6 +47,8 @@ interface TabPanelProps {
 }
 
 function TabPanel(props: TabPanelProps) {
+  const tema = useTheme();
+  const isMobile = useMediaQuery(tema.breakpoints.down("sm"));
   const { children, value, index, ...other } = props;
   return (
     <div
@@ -54,7 +58,7 @@ function TabPanel(props: TabPanelProps) {
       aria-labelledby={`simple-tab-${index}`}
       {...other}
     >
-      {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
+      {value === index && <Box sx={{ p: (!isMobile ? 3 : 0) }}>{children}</Box>}
     </div>
   );
 }
@@ -72,6 +76,9 @@ const EditarTurnoForm: React.FC<EditarTurnoFormProps> = ({
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [filteredTabs, setFilteredTabs] = useState<string[]>([]);
   const { theme } = useContext(ContextoGeneral);
+
+  const tema = useTheme();
+  const isMobile = useMediaQuery(tema.breakpoints.down("sm"));
 
   const baseTabs = [
     "Datos Principales",
@@ -146,7 +153,7 @@ const EditarTurnoForm: React.FC<EditarTurnoFormProps> = ({
   };
 
   return (
-    <Box sx={{ bgcolor: "background.paper", borderRadius: 2, p: 2 }}>
+    <Box sx={{ bgcolor: "background.paper", borderRadius: 2, p: (!isMobile ? 2 : 0) }}>
       {/* Encabezado con Autocomplete y botón de eliminación (bote de basura rojo) */}
       <Box
         sx={{
@@ -166,7 +173,7 @@ const EditarTurnoForm: React.FC<EditarTurnoFormProps> = ({
             width: 300,
             "& .MuiAutocomplete-inputRoot": {
               padding: "4px 8px",
-              marginLeft: "24px",
+              marginLeft:  (!isMobile ? "24px" : "0px"),
               borderRadius: "10px",
               backgroundColor: "background.paper",
               transition: "all 0.3s ease",

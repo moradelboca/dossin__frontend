@@ -7,15 +7,20 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  IconButton,
   MenuItem,
   Stack,
   TextField,
   Typography,
+  useMediaQuery,
+  useTheme,
 } from '@mui/material';
 import React, { useContext, useEffect, useState } from 'react';
 import { ContextoGeneral } from '../../../Contexto';
 import useFacturaHandler from '../../../hooks/turnos/useFacturaHandler';
 import useValidation from '../../../hooks/useValidation';
+import MainButton from '../../../botones/MainButtom';
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 
 interface TipoFactura {
   id: number;
@@ -61,6 +66,9 @@ const FacturaForm: React.FC<FacturaFormProps> = ({
   const { backendURL } = useContext(ContextoGeneral);
   const isUpdateMode = Boolean(initialFactura);
   const {theme} = useContext(ContextoGeneral);
+
+  const tema = useTheme();
+  const isMobile = useMediaQuery(tema.breakpoints.down("sm"));
 
   // Estados para opciones (tipos de factura y, en creación, turnos disponibles)
   const [tiposFacturaOptions, setTiposFacturaOptions] = useState<TipoFactura[]>([]);
@@ -265,7 +273,7 @@ const FacturaForm: React.FC<FacturaFormProps> = ({
   };
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
       {/* Tipo de Factura */}
       <Autocomplete
         options={tiposFacturaOptions}
@@ -421,18 +429,42 @@ const FacturaForm: React.FC<FacturaFormProps> = ({
           </Typography>
         </>
       )}
-
-      <Stack direction="row" spacing={2} justifyContent="flex-end">
-        <Button onClick={onCancel} color="error" >Cancelar</Button>
-        <Button onClick={handleSubmit} sx={{color:theme.colores.azul}} >
-          {isUpdateMode ? 'Actualizar Factura' : 'Crear Factura'}
-        </Button>
-        {isUpdateMode && (
-          <Button onClick={handleOpenDeleteDialog} color="error" >
-            Eliminar Factura
-          </Button>
-        )}
-      </Stack>
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: isMobile ? "column" : "row",
+            gap: 1,
+            justifyContent: "flex-end",
+            alignItems: "center",
+            position: 'relative'
+          }}
+        >
+          <MainButton
+            onClick={onCancel}
+            text="Cancelar"
+            backgroundColor="transparent"
+            textColor={theme.colores.azul}
+            width={isMobile ? '100%' : 'auto'}
+            borderRadius="8px"
+            hoverBackgroundColor="rgba(22, 54, 96, 0.1)"
+            divWidth={isMobile ? '100%' : 'auto'}
+          />
+          <MainButton
+            onClick={handleSubmit}
+            text={isUpdateMode ? 'Actualizar' : 'Crear'}
+            backgroundColor={theme.colores.azul}
+            textColor="#fff"
+            width={isMobile ? '100%' : 'auto'}
+            borderRadius="8px"
+            hoverBackgroundColor={theme.colores.azulOscuro}
+            divWidth={isMobile ? '100%' : 'auto'}
+          />
+          {isUpdateMode && (
+            <IconButton onClick={handleOpenDeleteDialog}>
+            <DeleteOutlineIcon sx={{ fontSize: 20, color: "#d68384" }} />
+          </IconButton>
+          )}
+      </Box>
 
       {/* Diálogo de confirmación para eliminar */}
       <Dialog open={deleteDialogOpen} onClose={handleCloseDeleteDialog}>

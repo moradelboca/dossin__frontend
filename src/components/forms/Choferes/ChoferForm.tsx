@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Autocomplete, Box, Button, CircularProgress, Dialog, IconButton, Stack, TextField } from "@mui/material";
+import { Autocomplete, Box, CircularProgress, Dialog, IconButton, Stack, TextField, useMediaQuery, useTheme } from "@mui/material";
 import React, { useContext, useEffect, useState } from "react";
 import { ContextoGeneral } from "../../Contexto";
 import useValidation from "../../hooks/useValidation";
@@ -11,6 +11,7 @@ import AutocompletarPais from "../../cargas/autocompletar/AutocompletarPais";
 import CuilFormat from "../formatos/CuilFormat";
 import { useMemo } from 'react';
 import { useNotificacion } from "../../Notificaciones/NotificacionSnackbar";
+import MainButton from "../../botones/MainButtom";
 
 const ChoferForm: React.FC<FormularioProps> = ({ 
     seleccionado = {}, 
@@ -18,7 +19,7 @@ const ChoferForm: React.FC<FormularioProps> = ({
     setDatos, 
     handleClose 
 }) => {
-    const { backendURL } = useContext(ContextoGeneral);
+    const { backendURL, theme } = useContext(ContextoGeneral);
     // States para el tema de las notificaciones
     const { showNotificacion } = useNotificacion();
 
@@ -29,6 +30,9 @@ const ChoferForm: React.FC<FormularioProps> = ({
 
     const [codigoSeleccionado, setCodigoSeleccionado] = useState<string>("");
     const [numeroCel, setNumeroCel] = useState<string>("");
+
+    const tema = useTheme();
+    const isMobile = useMediaQuery(tema.breakpoints.down("sm"));
 
     const roles = useMemo(() => [
       { id: 1, nombre: "Camionero" },
@@ -473,19 +477,44 @@ const ChoferForm: React.FC<FormularioProps> = ({
                 )}
             />
 
-            <Box display="flex" justifyContent="space-between" mt={2}>
-                <Button onClick={handleClose} color="primary">
-                    Cancelar
-                </Button>
-                <Button onClick={handleSubmit} color="primary">
-                    Guardar
-                </Button>
-                {seleccionado && (
-                    <IconButton onClick={handleClickDelete}>
-                        <DeleteOutlineIcon sx={{ fontSize: 20, color: "#d68384" }} />
-                    </IconButton>
-                )}
-            </Box>
+<Box
+          sx={{
+            display: "flex",
+            flexDirection: isMobile ? "column" : "row",
+            gap: 2,
+            justifyContent: "flex-end",
+            alignItems: "center",
+            mt: 4,
+            position: 'relative'
+          }}
+        >
+            <MainButton
+              onClick={handleClose}
+              text="Cancelar"
+              backgroundColor="transparent"
+              textColor={theme.colores.azul}
+              width={isMobile ? '100%' : 'auto'}
+              borderRadius="8px"
+              hoverBackgroundColor="rgba(22, 54, 96, 0.1)"
+              divWidth={isMobile ? '100%' : 'auto'}
+            />
+
+            <MainButton
+              onClick={handleSubmit}
+              text="Guardar"
+              backgroundColor={theme.colores.azul}
+              textColor="#fff"
+              width={isMobile ? '100%' : 'auto'}
+              borderRadius="8px"
+              hoverBackgroundColor={theme.colores.azulOscuro}
+              divWidth={isMobile ? '100%' : 'auto'}
+            />
+          {seleccionado && (
+            <IconButton onClick={handleClickDelete}>
+              <DeleteOutlineIcon sx={{ fontSize: 20, color: "#d68384" }} />
+            </IconButton>
+          )}
+        </Box>
 
             <Dialog 
                 open={openDialogDelete} 

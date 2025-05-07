@@ -11,9 +11,12 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { ContextoGeneral } from "../../../../Contexto";
+import MainButton from "../../../../botones/MainButtom";
 
 interface TipoMedioPago {
   id: number;
@@ -47,6 +50,9 @@ const AdelantoEfectivoForm: React.FC<AdelantoEfectivoFormProps> = ({
     "ngrok-skip-browser-warning": "true",
   };
   const { theme } = useContext(ContextoGeneral);
+
+  const tema = useTheme();
+  const isMobile = useMediaQuery(tema.breakpoints.down("sm"));
 
   // Estado para el adelanto efectivo seleccionado
   const [adelanto, setAdelanto] = useState<AdelantoEfectivo | undefined>(
@@ -307,14 +313,39 @@ const AdelantoEfectivoForm: React.FC<AdelantoEfectivoFormProps> = ({
         error={!!errors.montoAdelantado}
         helperText={errors.montoAdelantado}
       />
-      <Stack direction="row" spacing={2} justifyContent="flex-end">
-        <Button onClick={onCancel} color="error">
-          Cancelar
-        </Button>
-        <Button onClick={handleSubmit} sx={{ color: theme.colores.azul }}>
-          {adelanto && adelanto.id ? "Actualizar Adelanto" : "Crear Adelanto"}
-        </Button>
-      </Stack>
+
+      <Box
+          sx={{
+            display: "flex",
+            flexDirection: isMobile ? "column" : "row",
+            gap: 1,
+            justifyContent: "flex-end",
+            alignItems: "center",
+            position: 'relative',
+            mt: 2
+          }}
+        >
+          <MainButton
+            onClick={onCancel}
+            text="Cancelar"
+            backgroundColor="transparent"
+            textColor={theme.colores.azul}
+            width={isMobile ? '100%' : 'auto'}
+            borderRadius="8px"
+            hoverBackgroundColor="rgba(22, 54, 96, 0.1)"
+            divWidth={isMobile ? '100%' : 'auto'}
+          />
+          <MainButton
+            onClick={handleSubmit}
+            text={adelanto && adelanto.id ? "Actualizar Adelanto" : "Crear Adelanto"}
+            backgroundColor={theme.colores.azul}
+            textColor="#fff"
+            width={isMobile ? '100%' : 'auto'}
+            borderRadius="8px"
+            hoverBackgroundColor={theme.colores.azulOscuro}
+            divWidth={isMobile ? '100%' : 'auto'}
+          />
+      </Box>
 
       {/* Diálogo de confirmación para eliminar el adelanto */}
       <Dialog open={openDeleteDialog} onClose={handleCloseDeleteDialog}>

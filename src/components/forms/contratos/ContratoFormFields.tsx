@@ -63,6 +63,7 @@ const ContratoFormFields: React.FC<FormFieldsProps> = ({
           <Autocomplete
             key={field.key}
             options={empresasDelRol}
+            sx={{mt:2}}
             getOptionLabel={(option: Empresa) =>
               `${option.nombreFantasia} - ${option.razonSocial}`
             }

@@ -1,6 +1,7 @@
 import React, { useContext, useState } from "react";
-import { Box, Button, TextField, Stack } from "@mui/material";
+import { Box, TextField, useTheme, useMediaQuery } from "@mui/material";
 import { ContextoGeneral } from "../../../Contexto";
+import MainButton from "../../../botones/MainButtom";
 
 interface PesajeFormProps {
   turnoId: number;
@@ -29,8 +30,13 @@ const PesajeForm: React.FC<PesajeFormProps> = ({
   const [precioPorKilogramo, setPrecioPorKilogramo] = useState<number | string>(
     initialData?.precioPorKilogramo ?? ""
   );
+  
   const [errors, setErrors] = useState<{ [key: string]: string | null }>({});
   const {theme} = useContext(ContextoGeneral);
+
+  const tema = useTheme();
+  const isMobile = useMediaQuery(tema.breakpoints.down("sm"));
+
   const validate = () => {
     const newErrors: { [key: string]: string | null } = {};
 
@@ -89,7 +95,7 @@ const PesajeForm: React.FC<PesajeFormProps> = ({
   };
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
+    <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
       <TextField
         margin="dense"
         label="Kilogramos Cargados"
@@ -126,19 +132,39 @@ const PesajeForm: React.FC<PesajeFormProps> = ({
         helperText={errors.precioPorKilogramo}
         inputProps={{ inputMode: 'numeric', pattern: '[0-9]*', min: 0 }}
       />
-      <Stack
-        direction="row"
-        spacing={2}
-        justifyContent="flex-end"
-        sx={{ marginTop: 2 }}
-      >
-        <Button color="error" onClick={onCancel}>
-          Cancelar
-        </Button>
-        <Button sx={{color:theme.colores.azul}} onClick={handleSubmit}>
-          Guardar Pesaje
-        </Button>
-      </Stack>
+      <Box
+              sx={{
+                display: "flex",
+                flexDirection: isMobile ? "column" : "row",
+                gap: 1,
+                justifyContent: "flex-end",
+                alignItems: "center",
+                position: 'relative',
+                mt: 1,
+              }}
+            >
+        <MainButton
+          onClick={onCancel}
+          text="Cancelar"
+          backgroundColor="transparent"
+          textColor={theme.colores.azul}
+          width={isMobile ? '100%' : 'auto'}
+          borderRadius="8px"
+          hoverBackgroundColor="rgba(22, 54, 96, 0.1)"
+          divWidth={isMobile ? '100%' : 'auto'}
+        />
+
+        <MainButton
+          onClick={handleSubmit}
+          text='Guardar'
+          backgroundColor={theme.colores.azul}
+          textColor="#fff"
+          width={isMobile ? '100%' : 'auto'}
+          borderRadius="8px"
+          hoverBackgroundColor={theme.colores.azulOscuro}
+          divWidth={isMobile ? '100%' : 'auto'}
+        />
+      </Box>
     </Box>
   );
 };

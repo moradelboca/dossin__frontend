@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useContext } from "react";
-import { TextField, Button, Stack, Box, IconButton, Dialog, DialogTitle, DialogContent, DialogActions } from "@mui/material";
+import { TextField, Button, Box, IconButton, Dialog, DialogTitle, DialogContent, DialogActions, useTheme, useMediaQuery } from "@mui/material";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import useTaraHandler from "../../../hooks/turnos/useTaraHandler";
 import { ContextoGeneral } from "../../../Contexto";
+import MainButton from "../../../botones/MainButtom";
 
 interface TaraFormProps {
   turnoId: string;
@@ -27,6 +28,9 @@ const TaraForm: React.FC<TaraFormProps> = ({
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);  // Estado para manejar el diálogo de eliminación
   const { handleTaraSubmission, handleTaraDeletion } = useTaraHandler();
   const {theme} = useContext(ContextoGeneral);
+  
+  const tema = useTheme();
+  const isMobile = useMediaQuery(tema.breakpoints.down("sm"));
 
   useEffect(() => {
     if (initialTara) {
@@ -98,18 +102,46 @@ const TaraForm: React.FC<TaraFormProps> = ({
         helperText={errors.pesoBruto}
         fullWidth
       />
-      <Stack direction="row" spacing={2} justifyContent="flex-end">
-        <Button onClick={onCancel} color="error">Cancelar</Button>
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: isMobile ? "column" : "row",
+          gap: 1,
+          justifyContent: "flex-end",
+          alignItems: "center",
+          position: 'relative',
+        }}
+      >
+
+        <MainButton
+          onClick={onCancel}
+          text="Cancelar"
+          backgroundColor="transparent"
+          textColor={theme.colores.azul}
+          width={isMobile ? '100%' : 'auto'}
+          borderRadius="8px"
+          hoverBackgroundColor="rgba(22, 54, 96, 0.1)"
+          divWidth={isMobile ? '100%' : 'auto'}
+        />
+
+        <MainButton
+          onClick={handleSubmit}
+          text={initialTara?.id ? 'Actualizar' : 'Crear'}
+          backgroundColor={theme.colores.azul}
+          textColor="#fff"
+          width={isMobile ? '100%' : 'auto'}
+          borderRadius="8px"
+          hoverBackgroundColor={theme.colores.azulOscuro}
+          divWidth={isMobile ? '100%' : 'auto'}
+        />
+
         {/* Mostrar el botón de eliminar solo si existe una tara */}
         {initialTara?.id && (
-          <IconButton onClick={handleOpenDeleteDialog} sx={{ color: "#d32f2f" }}>
-            <DeleteOutlineIcon />
+          <IconButton onClick={handleOpenDeleteDialog}>
+            <DeleteOutlineIcon sx={{ fontSize: 20, color: "#d68384" }} />
           </IconButton>
         )}
-        <Button onClick={handleSubmit} sx={{color: theme.colores.azul}} >
-          {initialTara?.id ? "Actualizar Tara" : "Crear Tara"}
-        </Button>
-      </Stack>
+      </Box>
       
       {/* Diálogo de confirmación para eliminar la Tara */}
       <Dialog open={openDeleteDialog} onClose={handleCloseDeleteDialog}>

@@ -11,6 +11,7 @@ interface MainButtonProps {
   borderRadius?: string;
   hoverBackgroundColor?: string;
   padding?:string;
+  divWidth?:string;
 }
 
 const MainButton: React.FC<MainButtonProps> = ({
@@ -22,11 +23,13 @@ const MainButton: React.FC<MainButtonProps> = ({
   borderRadius = '8px',
   hoverBackgroundColor = backgroundColor, 
   padding = '6px 16px',
+  divWidth = 'auto',
+  
 }) => {
     const { theme } = useContext(ContextoGeneral);
     const resolvedTextColor = textColor || theme.colores.azul;
   return (
-    <Box display="flex" justifyContent="center" mb={2}>
+    <Box display="flex" justifyContent="center" width={divWidth}>
       <Button
         onClick={onClick}
         sx={{

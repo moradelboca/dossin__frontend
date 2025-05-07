@@ -44,7 +44,7 @@ export default function Choferes() {
     headerNames={headerNames}
     FormularioCreador={ContratoForm} 
     tituloField="titularCartaDePorte"
-    subtituloField="destino"
+    subtituloField="id"
     renderFullScreen={true} // Activa el modo pantalla completa para el 
     />
   );
