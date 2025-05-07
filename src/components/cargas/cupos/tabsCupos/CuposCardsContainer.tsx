@@ -1,4 +1,10 @@
-import { Box, Typography, Dialog, DialogContent, DialogTitle } from "@mui/material";
+import {
+  Box,
+  Typography,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+} from "@mui/material";
 import { Grid2 as Grid } from "@mui/material";
 import { TarjetaCupos } from "../TarjetaCupos";
 import CardMobile from "../../../cards/mobile/CardMobile";
@@ -55,7 +61,8 @@ export function CuposCardsContainer({
   };
   return (
     <>
-      {Array.isArray(cupos) && cupos.map((cupo, index) => (
+      {Array.isArray(cupos) &&
+        cupos.map((cupo, index) => (
           <Grid
             container
             direction="row"
@@ -115,8 +122,15 @@ export function CuposCardsContainer({
         </Box>
       )}
 
-      <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="md" fullWidth>
-        <DialogTitle>{selectedTurno ? "Editar Turno" : "Crear Turno"}</DialogTitle>
+      <Dialog
+        open={openDialog}
+        onClose={handleCloseDialog}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogTitle>
+          {selectedTurno ? "Editar Turno" : "Crear Turno"}
+        </DialogTitle>
         <DialogContent>
           <TurnoForm
             seleccionado={selectedTurno}

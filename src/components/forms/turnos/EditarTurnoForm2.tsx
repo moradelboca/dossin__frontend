@@ -71,21 +71,18 @@ const EditarTurnoForm: React.FC<EditarTurnoFormProps> = ({
   const [filteredTabs, setFilteredTabs] = useState<string[]>([]);
   const { theme } = useContext(ContextoGeneral);
 
-  const estados = {
-    validado: { nombre: "Validado", numero: 1 },
-    autorizado: { nombre: "Autorizado", numero: 2 },
-    tarado: { nombre: "Tarado", numero: 3 },
-    cargado: { nombre: "Cargado", numero: 4 },
-    enViaje: { nombre: "En Viaje", numero: 5 },
-    descargado: { nombre: "Descargado", numero: 6 },
-    facturado: { nombre: "Facturado", numero: 7 },
-    pagado: { nombre: "Pagado", numero: 8 },
-    adelanto: { nombre: "Adelantos", numero: 9 },
-  };
+  const baseTabs = [
+    "Datos Principales",
+    "Estado",
+    "Tara",
+    "Factura",
+    "Carta de Porte",
+    "Pesaje",
+    "Orden Pago",
+  ];
 
   useEffect(() => {
-    const newTabs = [seleccionado.estado.nombre]; // solo un tab dinámico basado en estado
-
+    const newTabs = [...baseTabs];
     if (isAllowed) {
       newTabs.push("Adelantos");
     }
@@ -95,7 +92,7 @@ const EditarTurnoForm: React.FC<EditarTurnoFormProps> = ({
     if (activeTab >= newTabs.length) {
       setActiveTab(0);
     }
-  }, [isAllowed, seleccionado]);
+  }, [isAllowed]);
 
   const handleTabChange = (_event: any, newValue: string | null) => {
     if (newValue !== null) {
@@ -145,11 +142,7 @@ const EditarTurnoForm: React.FC<EditarTurnoFormProps> = ({
       console.error("No se pudo eliminar el turno:", error);
     }
   };
-  const estadoActual = Object.values(estados).find(
-    (estado) => estado.nombre === filteredTabs[activeTab]
-  );
 
-  const numeroEstadoActual = estadoActual ? estadoActual.numero : 0;
   return (
     <Box sx={{ bgcolor: "background.paper", borderRadius: 2, p: 2 }}>
       {/* Encabezado con Autocomplete y botón de eliminación (bote de basura rojo) */}
@@ -257,8 +250,7 @@ const EditarTurnoForm: React.FC<EditarTurnoFormProps> = ({
       </Dialog>
 
       {/* Sección Datos Principales */}
-
-      <TabPanel value={numeroEstadoActual} index={1}>
+      <TabPanel value={activeTab} index={0}>
         <DatosPrincipalesForm
           seleccionado={seleccionado}
           datos={datos}
@@ -268,8 +260,7 @@ const EditarTurnoForm: React.FC<EditarTurnoFormProps> = ({
         />
       </TabPanel>
 
-      {/* Sección Estado */}
-      <TabPanel value={numeroEstadoActual} index={3}>
+      <TabPanel value={activeTab} index={1}>
         <EstadoTurnoForm
           turnoId={seleccionado.id}
           initialEstado={seleccionado.estado}
@@ -288,8 +279,7 @@ const EditarTurnoForm: React.FC<EditarTurnoFormProps> = ({
       </TabPanel>
 
       {/* Sección Tara */}
-
-      <TabPanel value={numeroEstadoActual} index={2}>
+      <TabPanel value={activeTab} index={2}>
         <TaraForm
           turnoId={seleccionado.id}
           initialTara={seleccionado.tara}
@@ -308,7 +298,7 @@ const EditarTurnoForm: React.FC<EditarTurnoFormProps> = ({
       </TabPanel>
 
       {/* Factura */}
-      <TabPanel value={numeroEstadoActual} index={4}>
+      <TabPanel value={activeTab} index={3}>
         <FacturaForm
           turnoId={seleccionado.id}
           cuitEmpresa={seleccionado.empresa?.cuit}
@@ -328,7 +318,7 @@ const EditarTurnoForm: React.FC<EditarTurnoFormProps> = ({
       </TabPanel>
 
       {/* Carta de Porte */}
-      <TabPanel value={numeroEstadoActual} index={5}>
+      <TabPanel value={activeTab} index={4}>
         <CartaPorteForm
           turnoId={seleccionado.id}
           initialData={seleccionado.cartaDePorte}
@@ -347,7 +337,7 @@ const EditarTurnoForm: React.FC<EditarTurnoFormProps> = ({
       </TabPanel>
 
       {/* Pesaje */}
-      <TabPanel value={numeroEstadoActual} index={6}>
+      <TabPanel value={activeTab} index={5}>
         <PesajeForm
           turnoId={seleccionado.id}
           initialData={{
@@ -370,7 +360,7 @@ const EditarTurnoForm: React.FC<EditarTurnoFormProps> = ({
       </TabPanel>
 
       {/* Orden Pago */}
-      <TabPanel value={numeroEstadoActual} index={7}>
+      <TabPanel value={activeTab} index={6}>
         <OrdenPagoForm
           turnoId={seleccionado.id}
           initialData={seleccionado.numeroOrdenPago}
@@ -390,7 +380,7 @@ const EditarTurnoForm: React.FC<EditarTurnoFormProps> = ({
 
       {/* Pestaña Adelantos condicional */}
       {filteredTabs.includes("Adelantos") && (
-        <TabPanel value={numeroEstadoActual} index={9}>
+        <TabPanel value={activeTab} index={7}>
           <AdelantosTurnoForm
             turnoId={seleccionado.id}
             onSuccess={handleClose}

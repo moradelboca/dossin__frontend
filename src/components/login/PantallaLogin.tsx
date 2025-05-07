@@ -1,6 +1,6 @@
 import { Box, Grid, Button, Typography } from "@mui/material";
 import hermes from "../../assets/hermes1.jpg";
-import hermex from "../../assets/hermex.svg";
+import hermex from "../../assets/hermex.png";
 import { Google } from "@mui/icons-material";
 import { useContext } from "react";
 import { ContextoGeneral } from "../Contexto";
