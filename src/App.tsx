@@ -1,7 +1,7 @@
 // App.tsx
 import { CssBaseline, useMediaQuery } from "@mui/material";
 import Box from "@mui/material/Box";
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
 import Usuarios from "./components/admin/Usuarios";
 import { AuthProvider } from "./components/autenticacion/ContextoAuth";
@@ -31,6 +31,7 @@ function App() {
   const anchoCerrado = 60;
   const isMobile = useMediaQuery("(max-width:768px)");
   const accessToken = Cookies.get("accessToken");
+  const { stage } = useContext(ContextoGeneral);
 
   return (
     <BrowserRouter>
@@ -45,7 +46,7 @@ function App() {
               }}
             >
               <CssBaseline>
-                {!accessToken ? (
+              {(!accessToken && stage === "production") ? (
                   <Routes>
                     <Route path="/login" element={<PantallaLogin />} />
                     <Route
