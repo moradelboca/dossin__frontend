@@ -3,86 +3,55 @@ import { ContextoGeneral } from "../Contexto";
 import {
   Box,
   Button,
-  Card,
-  CardContent,
   Dialog,
   DialogContent,
   DialogTitle,
-  Divider,
-  Grid,
   Typography,
 } from "@mui/material";
-import { CustomButtom } from "../botones/CustomButtom";
-import CardMobile from "../cards/mobile/CardMobile";
 import ContratoForm from "../forms/contratos/ContratoForm";
+import { ContratoItem } from "./ContratoItem";
+import useContratosConCargas from "../hooks/contratos/useContratosConCargas";
 
-export default function Choferes() {
-  const { backendURL } = useContext(ContextoGeneral);
-  const [contratos, setContratos] = useState<any[]>([]);
-  const { theme } = useContext(ContextoGeneral);
-  const [cargas, setCargas] = useState<any[]>([]);
-  const [open, setOpen] = useState(false);
-  const [seleccionado, setSeleccionado] = useState<any>(null);
+const DialogContrato = ({ open, onClose, seleccionado }: { 
+  open: boolean; 
+  onClose: () => void; 
+  seleccionado: any 
+}) => {
   const [datos, setDatos] = useState<any[]>([]);
 
-  const refreshContratos = () => {
-    fetch(`${backendURL}/contratos`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        "ngrok-skip-browser-warning": "true",
-      },
-    })
-      .then((response) => response.json())
-      .then((contratos) => {
-        setContratos(contratos);
-      })
-      .catch(() => {
-        console.error("Error al obtener los cupos disponibles");
-      });
+  return (
+    <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
+      <DialogTitle>Editar Contrato</DialogTitle>
+      <DialogContent>
+        <ContratoForm
+          seleccionado={seleccionado}
+          datos={datos}
+          setDatos={setDatos}
+          handleClose={onClose}
+        />
+      </DialogContent>
+    </Dialog>
+  );
+};
 
-    fetch(`${backendURL}/cargas`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        "ngrok-skip-browser-warning": "true",
-      },
-    })
-      .then((response) => response.json())
-      .then((cargas) => {
-        setCargas(cargas);
-      })
-      .catch(() => {
-        console.error("Error al obtener los cupos disponibles");
-      });
-  };
+export default function Contratos() {
+  const { backendURL } = useContext(ContextoGeneral);
+  const { theme } = useContext(ContextoGeneral);
+  
+  const { contratosConCargas, refreshContratos } = useContratosConCargas(backendURL);
+  const [open, setOpen] = useState(false);
+  const [seleccionado, setSeleccionado] = useState<any>(null);
+
   useEffect(() => {
     refreshContratos();
   }, []);
 
-  const handleOpenDialog = (item: any) => { setSeleccionado(item); setOpen(true); };
-  const fields = ["cargamento.id"];
-  const headerNames = ["Cargamento"];
-
-  const renderCards = (cargas: any[]) => {
-    return cargas?.map((carga, index) => (
-      <CardMobile
-        key={carga.id || index}
-        item={carga}
-        index={index}
-        fields={fields}
-        headerNames={headerNames}
-        expandedCard={null}
-        handleExpandClick={() => {}}
-        handleOpenDialog={() => handleOpenDialog(carga)}
-        tituloField="remitenteProductor.nombreFantasia"
-        subtituloField="remitenteProductor.cuit"
-        usarSinDesplegable={true}
-      />
-    ));
+  const handleOpenDialog = (item: any) => {
+    setSeleccionado(item);
+    setOpen(true);
   };
+
   const handleClose = () => {
-    setSeleccionado(null);
     setOpen(false);
     refreshContratos();
   };
@@ -109,97 +78,20 @@ export default function Choferes() {
         </Box>
       </Box>
 
-      {contratos.map((contrato) => (
-        <Grid
-          container
-          direction="row"
-          key={contrato.id}
-          width={"90%"}
-          flexWrap={"nowrap"}
-          gap={5}
-          marginLeft={"50px"}
-          alignItems={"center"}
-          justifyContent={"center"}
-        >
-          <Card sx={{ maxWidth: 300, minWidth: 300 }}>
-            <CardContent>
-              <Typography
-                variant="h5"
-                color={theme.colores.azul}
-                textAlign="center"
-              >
-                {contrato.titularCartaDePorte?.razonSocial || "Sin titular"}
-              </Typography>
-
-              <Divider
-                orientation="horizontal"
-                flexItem
-                sx={{ bgcolor: theme.colores.azul, my: 2 }}
-              />
-
-              <Grid
-                container
-                spacing="10px"
-                justifyContent="center"
-                padding="28px 0px"
-              >
-                <Grid item width="100%">
-                  <Typography
-                    variant="body1"
-                    textAlign="center"
-                    color={theme.colores.azul}
-                  >
-                    Destinatario:
-                  </Typography>
-                  <Typography
-                    variant="h6"
-                    textAlign="center"
-                    color={theme.colores.azul}
-                  >
-                    {contrato.destinatario?.razonSocial || "Sin destinatario"}
-                  </Typography>
-                </Grid>
-              </Grid>
-
-              <Box display="flex" justifyContent="center" gap={2}>
-                <CustomButtom
-                  //onClick={() => }
-                  title="Crear carga +"
-                />
-                <CustomButtom
-                  onClick={() => handleOpenDialog(contrato)}
-                  title="Editar contrato
-                  "
-                />
-              </Box>
-            </CardContent>
-          </Card>
-          <Grid
-            container
-            spacing={5}
-            flexWrap={"nowrap"}
-            sx={{ overflowX: "scroll" }}
-            width={"80%"}
-            minHeight={"380px"}
-            alignItems={"center"}
-            padding={"35px"}
-          >
-            {renderCards(cargas)}
-          </Grid>
-          <Dialog open={open} fullWidth maxWidth="md">
-            <DialogTitle>asasa</DialogTitle>
-            <DialogContent>
-              <ContratoForm
-                seleccionado={seleccionado}
-                datos={datos}
-                setDatos={setDatos}
-                handleClose={handleClose}
-              />
-            </DialogContent>
-          </Dialog>
-          
-        </Grid>
+      {contratosConCargas.map((contrato) => (
+        <ContratoItem 
+          key={contrato.id} 
+          contrato={contrato}
+          onEditContrato={handleOpenDialog}
+          refreshContratos={refreshContratos}
+        />
       ))}
+      
+      <DialogContrato 
+        open={open}
+        onClose={handleClose}
+        seleccionado={seleccionado}
+      />
     </Box>
   );
 }
