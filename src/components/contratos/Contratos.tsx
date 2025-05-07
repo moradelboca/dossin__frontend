@@ -50,6 +50,27 @@ export default function Contratos() {
     setSeleccionado(item);
     setOpen(true);
   };
+  const fields = ["cargamento.id"];
+  const headerNames = ["Cargamento"];
+
+  const renderCards = (cargas: any[]) => {
+    return cargas?.map((carga, index) => (
+      <CardMobile
+        key={carga.id || index}
+        item={carga}
+        index={index}
+        fields={fields}
+        headerNames={headerNames}
+        expandedCard={null}
+        handleExpandClick={() => {}}
+        handleOpenDialog={() => handleOpenDialog(carga)}
+        tituloField="remitenteProductor.nombreFantasia"
+        subtituloField="remitenteProductor.cuit"
+        usarSinDesplegable={true}
+        mostrarBotonEditar={false}
+      />
+    ));
+  };
 
   const handleClose = () => {
     setOpen(false);
