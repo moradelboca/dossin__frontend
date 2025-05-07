@@ -74,7 +74,7 @@ const CargasSection: React.FC<CargasSectionProps> = ({
     "Destino Ruca", 
   ];
   return (
-    <Box mt={4}>
+    <Box mt={5}>
       <Box display="flex" justifyContent="space-between" alignItems="center">
         <Typography variant="h6">Cargas</Typography>
         <IconButton color="primary" onClick={() => handleOpenDialog(null)}>

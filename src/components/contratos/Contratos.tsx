@@ -40,6 +40,7 @@ export default function Choferes() {
       .catch(() => {
         console.error("Error al obtener los cupos disponibles");
       });
+
     fetch(`${backendURL}/cargas`, {
       method: "GET",
       headers: {
@@ -59,7 +60,7 @@ export default function Choferes() {
     refreshContratos();
   }, []);
 
-  const handleOpenDialog = () => {};
+  const handleOpenDialog = (item: any) => { setSeleccionado(item); setOpen(true); };
   const fields = ["cargamento.id"];
   const headerNames = ["Cargamento"];
 
@@ -73,7 +74,7 @@ export default function Choferes() {
         headerNames={headerNames}
         expandedCard={null}
         handleExpandClick={() => {}}
-        handleOpenDialog={() => handleOpenDialog()}
+        handleOpenDialog={() => handleOpenDialog(carga)}
         tituloField="remitenteProductor.nombreFantasia"
         subtituloField="remitenteProductor.cuit"
         usarSinDesplegable={true}
@@ -166,10 +167,7 @@ export default function Choferes() {
                   title="Crear carga +"
                 />
                 <CustomButtom
-                  onClick={() => {
-                    setDatos(contrato);
-                    setOpen(true);
-                  }}
+                  onClick={() => handleOpenDialog(contrato)}
                   title="Editar contrato
                   "
                 />
@@ -199,6 +197,7 @@ export default function Choferes() {
               />
             </DialogContent>
           </Dialog>
+          
         </Grid>
       ))}
     </Box>

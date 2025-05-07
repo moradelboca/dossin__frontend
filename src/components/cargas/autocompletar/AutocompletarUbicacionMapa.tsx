@@ -1,5 +1,6 @@
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
+import { SxProps, Theme } from "@mui/material";
 
 interface AutocompletarProps {
     title?: string;
@@ -10,10 +11,11 @@ interface AutocompletarProps {
     setUbicacionSeleccionada?: any;
     handleMarkerClick?: any;
     onSelectLocation?: any;
+    sx?: SxProps<Theme>;
 }
 
 export default function AutocompletarUbicacionMapa(props: AutocompletarProps) {
-    let {
+    const {
         title,
         ubicaciones,
         filtro,
@@ -52,6 +54,7 @@ export default function AutocompletarUbicacionMapa(props: AutocompletarProps) {
                 background: "white",
                 borderRadius: "6px",
                 zIndex: 1000,
+                ...props.sx,
             }}
             onChange={(event, seleccionado) => {
                 seleccionarUbicacion(event, seleccionado);

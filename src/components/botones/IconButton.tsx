@@ -46,9 +46,9 @@ export function BotonIcon(props: IconButtonWithLabelProps) {
             <Button
                 variant="contained"
                 color="primary"
-                startIcon={icon} // Aquí se coloca el ícono a la izquierda del texto
+                startIcon={icon}
                 onClick={onClick}
-                sx={{ marginRight: 5, ...(open && { display: "none" }) }}
+                sx={{  ...(open && { display: "none" }) }}
             >
                 {title}
             </Button>

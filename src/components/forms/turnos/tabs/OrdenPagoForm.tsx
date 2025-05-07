@@ -1,6 +1,7 @@
 import React, { useContext, useState } from "react";
-import { Button, TextField, Stack } from "@mui/material";
+import { TextField, Box, useTheme, useMediaQuery } from "@mui/material";
 import { ContextoGeneral } from "../../../Contexto";
+import MainButton from "../../../botones/MainButtom";
 
 interface OrdenPagoFormProps {
   turnoId: number;
@@ -14,6 +15,9 @@ const OrdenPagoForm: React.FC<OrdenPagoFormProps> = ({ turnoId, initialData, onS
   const [error, setError] = useState<string | null>(null);
   const {theme} = useContext(ContextoGeneral);
   const { backendURL } = useContext(ContextoGeneral);
+  
+    const tema = useTheme();
+    const isMobile = useMediaQuery(tema.breakpoints.down("sm"));
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setNumeroOrdenPago(Number(event.target.value));
@@ -54,14 +58,38 @@ const OrdenPagoForm: React.FC<OrdenPagoFormProps> = ({ turnoId, initialData, onS
         error={!!error}
         helperText={error}
       />
-      <Stack direction="row" spacing={2} justifyContent="flex-end" sx={{ marginTop: 2 }}>
-        <Button color="error" onClick={onCancel}>
-          Cancelar
-        </Button>
-        <Button sx={{color: theme.colores.azul }} onClick={handleSubmit}>
-          Guardar Número de Orden de Pago
-        </Button>
-      </Stack>
+      <Box
+          sx={{
+            display: "flex",
+            flexDirection: isMobile ? "column" : "row",
+            gap: 1,
+            justifyContent: "flex-end",
+            alignItems: "center",
+            position: 'relative',
+            mt: 2
+          }}
+        >
+          <MainButton
+            onClick={onCancel}
+            text="Cancelar"
+            backgroundColor="transparent"
+            textColor={theme.colores.azul}
+            width={isMobile ? '100%' : 'auto'}
+            borderRadius="8px"
+            hoverBackgroundColor="rgba(22, 54, 96, 0.1)"
+            divWidth={isMobile ? '100%' : 'auto'}
+          />
+          <MainButton
+            onClick={handleSubmit}
+            text='Actualizar'
+            backgroundColor={theme.colores.azul}
+            textColor="#fff"
+            width={isMobile ? '100%' : 'auto'}
+            borderRadius="8px"
+            hoverBackgroundColor={theme.colores.azulOscuro}
+            divWidth={isMobile ? '100%' : 'auto'}
+          />
+      </Box>
     </div>
   );
 };

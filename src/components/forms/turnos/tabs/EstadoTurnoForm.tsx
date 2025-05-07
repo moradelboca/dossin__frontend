@@ -1,6 +1,7 @@
 import React, { useContext, useState } from "react";
-import { Autocomplete, TextField, Button, Stack } from "@mui/material";
+import { Autocomplete, TextField, useTheme, useMediaQuery, Box } from "@mui/material";
 import { ContextoGeneral } from "../../../Contexto";
+import MainButton from "../../../botones/MainButtom";
 
 interface EstadoTurnoFormProps {
   turnoId: number;
@@ -32,6 +33,9 @@ const EstadoTurnoForm: React.FC<EstadoTurnoFormProps> = ({
   const [selectedEstado, setSelectedEstado] = useState(initialEstado || estados[0]);
   const [error, setError] = useState<string | null>(null);
   const {theme} = useContext(ContextoGeneral);
+  
+  const tema = useTheme();
+  const isMobile = useMediaQuery(tema.breakpoints.down("sm"));
 
   const handleSubmit = async () => {
     if (!selectedEstado) {
@@ -80,14 +84,38 @@ const EstadoTurnoForm: React.FC<EstadoTurnoFormProps> = ({
           />
         )}
       />
-      <Stack direction="row" spacing={2} justifyContent="flex-end" sx={{ marginTop: 2 }}>
-        <Button color="error" onClick={onCancel}>
-          Cancelar
-        </Button>
-        <Button sx={{color: theme.colores.azul}} onClick={handleSubmit}>
-          Guardar Estado
-        </Button>
-      </Stack>
+      <Box
+          sx={{
+            display: "flex",
+            flexDirection: isMobile ? "column" : "row",
+            gap: 1,
+            justifyContent: "flex-end",
+            alignItems: "center",
+            position: 'relative',
+            mt: 2
+          }}
+        >
+          <MainButton
+            onClick={onCancel}
+            text="Cancelar"
+            backgroundColor="transparent"
+            textColor={theme.colores.azul}
+            width={isMobile ? '100%' : 'auto'}
+            borderRadius="8px"
+            hoverBackgroundColor="rgba(22, 54, 96, 0.1)"
+            divWidth={isMobile ? '100%' : 'auto'}
+          />
+          <MainButton
+            onClick={handleSubmit}
+            text='Actualizar'
+            backgroundColor={theme.colores.azul}
+            textColor="#fff"
+            width={isMobile ? '100%' : 'auto'}
+            borderRadius="8px"
+            hoverBackgroundColor={theme.colores.azulOscuro}
+            divWidth={isMobile ? '100%' : 'auto'}
+          />
+      </Box>
     </div>
   );
 };

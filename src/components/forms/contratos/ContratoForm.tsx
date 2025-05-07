@@ -10,6 +10,7 @@ import {
   Typography,
   Snackbar,
   Alert,
+  useMediaQuery,
 } from "@mui/material";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import DeleteEntidad from "../../dialogs/DeleteEntidad";
@@ -36,7 +37,10 @@ const ContratoForm: React.FC<FormularioProps> = ({
   handleClose,
 }) => {
   const safeSeleccionado = seleccionado || {};
-  const { backendURL } = useContext(ContextoGeneral);
+  const { backendURL} = useContext(ContextoGeneral);
+
+  const isMobile = useMediaQuery("(max-width:768px)");
+
   // Estados para eliminación de contrato y cargas
   const [openDialogDelete, setOpenDialogDelete] = useState(false);
   const [openDialogCargasWarning, setOpenDialogCargasWarning] = useState(false);
@@ -454,10 +458,11 @@ const ContratoForm: React.FC<FormularioProps> = ({
 
   return (
     <>
+      {!isMobile && (
       <Typography variant="h6" mb={2}>
         {safeSeleccionado.id ? "Editar Contrato" : "Crear Contrato"}
       </Typography>
-
+      )}
       <ContratoFormFields
         data={data}
         errors={errors}

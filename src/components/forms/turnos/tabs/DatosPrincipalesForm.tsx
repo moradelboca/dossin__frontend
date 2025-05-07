@@ -1,11 +1,12 @@
 import React, { useState, useContext } from "react";
-import { Box, Button, Stack } from "@mui/material";
+import { Box, useMediaQuery, useTheme } from "@mui/material";
 import { ContextoGeneral } from "../../../Contexto";
 import AutocompleteColaboradores from "../../autocompletes/AutocompleteColaboradores";
 import AutocompleteEmpresas from "../../autocompletes/AutocompleteEmpresas";
 import AutocompleteCamiones from "../../autocompletes/AutocompleteCamiones";
 import AutocompleteAcoplados from "../../autocompletes/AutocompleteAcoplados";
 import useValidationStepper from "../../../hooks/useValidationStepper";
+import MainButton from "../../../botones/MainButtom";
 
 interface DatosPrincipalesFormProps {
   seleccionado?: any;
@@ -24,6 +25,9 @@ const DatosPrincipalesForm: React.FC<DatosPrincipalesFormProps> = ({
 }) => {
   const { backendURL } = useContext(ContextoGeneral);
   const { theme } = useContext(ContextoGeneral);
+
+  const tema = useTheme();
+    const isMobile = useMediaQuery(tema.breakpoints.down("sm"));
 
   // Estados locales para cada uno de los campos
   const [colaboradorSeleccionado, setColaboradorSeleccionado] = useState<any | null>(
@@ -106,7 +110,7 @@ const DatosPrincipalesForm: React.FC<DatosPrincipalesFormProps> = ({
   };
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
+    <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
       <AutocompleteColaboradores
         value={colaboradorSeleccionado}
         onChange={setColaboradorSeleccionado}
@@ -138,19 +142,37 @@ const DatosPrincipalesForm: React.FC<DatosPrincipalesFormProps> = ({
           tituloOpcional="Patente Acoplado Extra"
         />
       )}
-      <Stack
-        direction="row"
-        spacing={2}
-        justifyContent="flex-end"
-        sx={{ marginTop: 2 }}
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: isMobile ? "column" : "row",
+          gap: 1,
+          justifyContent: "flex-end",
+          alignItems: "center",
+          position: 'relative'
+        }}
       >
-        <Button color="error" onClick={handleClose}>
-          Cancelar
-        </Button>
-        <Button sx={{ color: theme.colores.azul }} onClick={handleSubmit}>
-          Guardar Datos Principales
-        </Button>
-      </Stack>
+        <MainButton
+            onClick={handleClose}
+            text="Cancelar"
+            backgroundColor="transparent"
+            textColor={theme.colores.azul}
+            width={isMobile ? '100%' : 'auto'}
+            borderRadius="8px"
+            hoverBackgroundColor="rgba(22, 54, 96, 0.1)"
+            divWidth={isMobile ? '100%' : 'auto'}
+          />
+          <MainButton
+            onClick={handleSubmit}
+            text='Actualizar'
+            backgroundColor={theme.colores.azul}
+            textColor="#fff"
+            width={isMobile ? '100%' : 'auto'}
+            borderRadius="8px"
+            hoverBackgroundColor={theme.colores.azulOscuro}
+            divWidth={isMobile ? '100%' : 'auto'}
+          />
+      </Box>
     </Box>
   );
 };

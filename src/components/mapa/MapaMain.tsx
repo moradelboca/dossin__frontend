@@ -20,7 +20,7 @@ import {
 import "leaflet/dist/leaflet.css";
 import { ContextoGeneral } from "../Contexto";
 import AutocompletarUbicacionMapa from "../cargas/autocompletar/AutocompletarUbicacionMapa";
-import { AddLocationAltOutlined } from "@mui/icons-material";
+import { AddLocationAltOutlined, Search } from "@mui/icons-material";
 import { CreadorUbicacion } from "./CreadorUbicacion";
 import React from "react";
 
@@ -74,6 +74,17 @@ export function MapaMain() {
     const [tipoUbicacionSeleccionado, setTipoUbicacionSeleccionado] = useState<string>("Todas");
     const [estadoCarga, setEstadoCarga] = useState(true);
 
+    const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+const [showSearch, setShowSearch] = useState(false);
+
+useEffect(() => {
+  const handleResize = () => {
+    setIsMobile(window.innerWidth < 768);
+  };
+  window.addEventListener('resize', handleResize);
+  return () => window.removeEventListener('resize', handleResize);
+}, []);
+
     const refreshUbicaciones = () => {
         fetch(`${backendURL}/ubicaciones`, {
             method: "GET",
@@ -108,59 +119,170 @@ export function MapaMain() {
     const tipoUbicacionOptions = ["Todas", "Carga", "Descarga", "Balanza"];
     return (
         <Box position={"relative"}>
-            <Box
-                width={"fit-content"}
-                height={"fit-content"}
-                sx={{
-                    zIndex: 1000,
-                    position: "absolute",
-                    top: 10,
-                    left: 80,
-                    display: "flex",
-                    gap: "10px",
-                }}
-            >
-                <AutocompletarUbicacionMapa
-                    ubicaciones={ubicaciones}
-                    title="Ubicación de Carga"
-                    filtro={tipoUbicacionSeleccionado}
-                    estadoCarga={estadoCarga}
-                    setUbicacionSeleccionada={setUbicacionSeleccionada}
-                    ubicacionSeleccionada={ubicacionSeleccionada}
-                    handleMarkerClick={handleMarkerClick}
-                />
-                <Autocomplete
-                    options={tipoUbicacionOptions}
-                    renderInput={(params) => (
-                        <TextField {...params} label="Tipo" />
-                    )}
-                    sx={{
-                        width: 100,
-                        background: "white",
-                        borderRadius: "6px",
-                    }}
-                    onChange={(_event, value) => {
-                        setTipoUbicacionSeleccionado(value || "Todas");
-                    }}
-                    defaultValue={tipoUbicacionOptions[0]}
-                />
-                <IconButton
-                    sx={{
-                        backgroundColor: theme.colores.azul,
-                        color: theme.colores.gris,
-                        width: "55px",
-                        "&:hover": {
-                            backgroundColor: theme.colores.azulOscuro,
-                        },
-                    }}
-                    onClick={() => {
-                        setUbicacionSeleccionada(null);
-                        handleMarkerClick(null);
-                    }}
-                >
-                    <AddLocationAltOutlined />
-                </IconButton>
+            {/* Controles */}
+            <Box>
+                {isMobile ? (
+                    /* Vista Mobile */
+                    <>
+                        {/* Botón de búsqueda (mobile) */}
+                        <IconButton
+                            sx={{
+                                backgroundColor: theme.colores.azul,
+                                color: theme.colores.gris,
+                                position: 'fixed',
+                                left: 10,
+                                bottom: 70, // ajustado para quedar arriba del botón de agregar
+                                zIndex: 1001,
+                                '&:hover': {
+                                    backgroundColor: theme.colores.azulOscuro,
+                                }
+                            }}
+                            onClick={() => setShowSearch(!showSearch)}
+                        >
+                            <Search />
+                        </IconButton>
+    
+                        {showSearch && (
+      <Box
+        sx={{
+          position: 'absolute',
+          top: 60,
+          right: 10,
+          zIndex: 1001,
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 1,
+          // 🎨 fondo azul + texto gris
+          backgroundColor: "white",
+          color: theme.colores.gris,
+          padding: 2,
+          borderRadius: 2,
+          boxShadow: 3,
+          minWidth: 220,
+        }}
+      >
+
+        {/* Autocompletar (mantiene fondo blanco para inputs) */}
+        <AutocompletarUbicacionMapa
+          ubicaciones={ubicaciones}
+          title="Buscar ubicación"
+          filtro={tipoUbicacionSeleccionado}
+          estadoCarga={estadoCarga}
+          setUbicacionSeleccionada={setUbicacionSeleccionada}
+          ubicacionSeleccionada={ubicacionSeleccionada}
+          handleMarkerClick={handleMarkerClick}
+          sx={{ width: 200, backgroundColor: 'white', borderRadius: 1 }}
+        />
+
+        <Autocomplete
+          options={tipoUbicacionOptions}
+          renderInput={(params) => (
+            <TextField {...params} label="Filtrar por tipo" />
+          )}
+          sx={{
+            width: 200,
+            backgroundColor: 'white',
+            borderRadius: '6px',
+          }}
+          onChange={(_e, value) =>
+            setTipoUbicacionSeleccionado(value || 'Todas')
+          }
+          defaultValue={tipoUbicacionOptions[0]}
+        />
+        {/* Botón Cerrar */}
+        <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+          <Button
+            size="small"
+            variant="text"
+            sx={{ color: "black" }}
+            onClick={() => setShowSearch(false)}
+          >
+            Cerrar
+          </Button>
+        </Box>
+      </Box>
+    )}
+    
+                        {/* Botón Agregar (mobile) */}
+                        <IconButton
+                            sx={{
+                                backgroundColor: theme.colores.azul,
+                                color: theme.colores.gris,
+                                position: 'fixed',
+                                left: 10,
+                                bottom: 10,
+                                zIndex: 1001,
+                                '&:hover': {
+                                    backgroundColor: theme.colores.azulOscuro,
+                                }
+                            }}
+                            onClick={() => {
+                                setUbicacionSeleccionada(null);
+                                handleMarkerClick(null);
+                            }}
+                        >
+                            <AddLocationAltOutlined />
+                        </IconButton>
+                    </>
+                ) : (
+                    /* Vista Desktop */
+                    <Box
+                        width={"fit-content"}
+                        height={"fit-content"}
+                        sx={{
+                            zIndex: 1000,
+                            position: "absolute",
+                            top: 10,
+                            left: 80,
+                            display: "flex",
+                            gap: "10px",
+                        }}
+                    >
+                        <AutocompletarUbicacionMapa
+                            ubicaciones={ubicaciones}
+                            title="Ubicación de Carga"
+                            filtro={tipoUbicacionSeleccionado}
+                            estadoCarga={estadoCarga}
+                            setUbicacionSeleccionada={setUbicacionSeleccionada}
+                            ubicacionSeleccionada={ubicacionSeleccionada}
+                            handleMarkerClick={handleMarkerClick}
+                        />
+                        <Autocomplete
+                            options={tipoUbicacionOptions}
+                            renderInput={(params) => (
+                                <TextField {...params} label="Tipo" />
+                            )}
+                            sx={{
+                                width: 100,
+                                background: "white",
+                                borderRadius: "6px",
+                            }}
+                            onChange={(_event, value) => {
+                                setTipoUbicacionSeleccionado(value || "Todas");
+                            }}
+                            defaultValue={tipoUbicacionOptions[0]}
+                        />
+                        <IconButton
+                            sx={{
+                                backgroundColor: theme.colores.azul,
+                                color: theme.colores.gris,
+                                width: "55px",
+                                "&:hover": {
+                                    backgroundColor: theme.colores.azulOscuro,
+                                },
+                            }}
+                            onClick={() => {
+                                setUbicacionSeleccionada(null);
+                                handleMarkerClick(null);
+                            }}
+                        >
+                            <AddLocationAltOutlined />
+                        </IconButton>
+                    </Box>
+                )}
             </Box>
+    
+            {/* Mapa */}
             <MapContainer
                 center={[-33.099765, -64.3654802]}
                 zoom={5}
@@ -171,7 +293,7 @@ export function MapaMain() {
                     lat={ubicacionSeleccionada?.latitud}
                     lng={ubicacionSeleccionada?.longitud}
                 />
-
+    
                 <LayersControl position="topright">
                     <BaseLayer checked name="CartoDB Positron">
                         <TileLayer
@@ -186,7 +308,7 @@ export function MapaMain() {
                     <BaseLayer name="OpenStreetMap">
                         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
                     </BaseLayer>
-
+    
                     {ubicaciones.map((ubi, index) => (
                         <Overlay
                             key={index}
@@ -198,10 +320,9 @@ export function MapaMain() {
                                 icon={
                                     ubi.tipoUbicacion.nombre === "Balanza"
                                         ? balanzaIcon
-                                        : ubi.tipoUbicacion.nombre ===
-                                            "Descarga"
-                                          ? okIcon
-                                          : pinIcon
+                                        : ubi.tipoUbicacion.nombre === "Descarga"
+                                        ? okIcon
+                                        : pinIcon
                                 }
                             >
                                 <Popup>
@@ -225,7 +346,8 @@ export function MapaMain() {
                     ))}
                 </LayersControl>
             </MapContainer>
-
+    
+            {/* Diálogo */}
             <Dialog open={openDialog} onClose={handleClose}>
                 <DialogTitle>Detalles del Punto</DialogTitle>
                 <CreadorUbicacion
@@ -238,4 +360,5 @@ export function MapaMain() {
             </Dialog>
         </Box>
     );
+    
 }

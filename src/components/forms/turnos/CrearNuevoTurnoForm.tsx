@@ -1,11 +1,12 @@
 import React, { useContext, useState } from "react";
-import { Box, Button, Typography } from "@mui/material";
+import { Box, Typography, useMediaQuery, useTheme } from "@mui/material";
 import { ContextoGeneral } from "../../Contexto";
 import AutocompleteColaboradores from "../autocompletes/AutocompleteColaboradores";
 import AutocompleteEmpresas from "../autocompletes/AutocompleteEmpresas";
 import AutocompleteCamiones from "../autocompletes/AutocompleteCamiones";
 import AutocompleteAcoplados from "../autocompletes/AutocompleteAcoplados";
 import useValidation from "../../hooks/useValidation";
+import MainButton from "../../botones/MainButtom";
 
 interface CrearNuevoTurnoFormProps {
   setDatos: (datos: any) => void;
@@ -20,9 +21,12 @@ const CrearNuevoTurnoForm: React.FC<CrearNuevoTurnoFormProps> = ({
   handleClose,
   idCarga,
   fechaCupo,
-  tieneBitren,  // Recibimos el prop
+  tieneBitren,
 }) => {
-  const { backendURL } = useContext(ContextoGeneral);
+  const { backendURL, theme } = useContext(ContextoGeneral);
+
+  const tema = useTheme();
+  const isMobile = useMediaQuery(tema.breakpoints.down("sm"));
 
   // Estados locales para los autocompletes.
   const [colaboradorSeleccionado, setColaboradorSeleccionado] = useState<any | null>(null);
@@ -130,13 +134,37 @@ const CrearNuevoTurnoForm: React.FC<CrearNuevoTurnoFormProps> = ({
         )}
       </Box>
 
-      <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 1, mt: 2 }}>
-        <Button color="secondary" onClick={handleClose}>
-          Cancelar
-        </Button>
-        <Button color="primary" onClick={handleSubmit}>
-          Guardar
-        </Button>
+      <Box
+          sx={{
+            display: "flex",
+            flexDirection: isMobile ? "column" : "row",
+            gap: 1,
+            justifyContent: "flex-end",
+            alignItems: "center",
+            position: 'relative',
+            mt: 2
+          }}
+        >
+          <MainButton
+            onClick={handleClose}
+            text="Cancelar"
+            backgroundColor="transparent"
+            textColor={theme.colores.azul}
+            width={isMobile ? '100%' : 'auto'}
+            borderRadius="8px"
+            hoverBackgroundColor="rgba(22, 54, 96, 0.1)"
+            divWidth={isMobile ? '100%' : 'auto'}
+          />
+          <MainButton
+            onClick={handleSubmit}
+            text='Guardar'
+            backgroundColor={theme.colores.azul}
+            textColor="#fff"
+            width={isMobile ? '100%' : 'auto'}
+            borderRadius="8px"
+            hoverBackgroundColor={theme.colores.azulOscuro}
+            divWidth={isMobile ? '100%' : 'auto'}
+          />
       </Box>
     </Box>
   );

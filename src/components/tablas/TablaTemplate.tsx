@@ -172,22 +172,37 @@ export default function TablaTemplate({
   }));
   // Columna editar
   columns.push({
-    field: "edit",
-    headerName: "Editar",
-    minWidth: 100,
-    flex: 0,           // no se expande 
-    resizable: false,  // fijo
-    renderHeader: () => <strong style={{ color: theme.colores.grisOscuro }}>Editar</strong>,
-    renderCell: params => (
+  field: "edit",
+  headerName: "Editar",
+  width: 120, // Ancho fijo
+  renderHeader: () => (
+    <strong style={{ color: theme.colores.grisOscuro }}>Editar</strong>
+  ),
+  renderCell: params => (
+    <div style={{ 
+      position: 'sticky',
+      right: 0,
+      backgroundColor: theme.colores.grisClaro,
+      padding: '0 16px',
+      margin: '0 -16px 0 0',
+      width: '100%',
+      height: '100%',
+      display: 'flex',
+      alignItems: 'center'
+    }}>
       <BorderColorIcon
         onClick={() => handleOpen(params.row)}
         fontSize="small"
         style={{ cursor: "pointer", color: theme.colores.azul }}
       />
-    ),
-    sortable: false,
-    filterable: false,
-  });
+    </div>
+  ),
+  sortable: false,
+  filterable: false,
+  disableColumnMenu: true,
+  headerClassName: 'sticky-header-right',
+  cellClassName: 'sticky-cell-right'
+});
 
   const rows = datos.map(item => {
     const r: any = { ...item };

@@ -34,6 +34,7 @@ export function GridTemplate({
         p: 3,
         display: "flex",
         flexDirection: "column",
+        overflow: 'hidden', // 1. Contenedor principal sin overflow
       }}
     >
       <Typography
@@ -62,7 +63,13 @@ export function GridTemplate({
           </Typography>
         </Box>
       ) : (
-        <Box flex={1} sx={{ width: "100%" }}>
+        <Box flex={1} sx={{ 
+          width: "100%",
+          position: 'relative',
+          '& .MuiDataGrid-virtualScroller': {
+            overflowX: 'scroll'
+          }
+        }}>
           <DataGrid
             rows={rows}
             columns={columns}
@@ -76,7 +83,50 @@ export function GridTemplate({
               border: "none",
               whiteSpace: "normal",
               wordBreak: "break-word",
+              // Nuevos estilos
+              '& .MuiDataGrid-virtualScroller': {
+                overflowX: 'auto !important',
+                maxWidth: '100% !important',
+              },
+              '& .MuiDataGrid-columnHeaders': {
+                position: 'relative',
+                overflow: 'visible !important',
+                width: 'fit-content !important' // 6. Ancho header según contenido
+              },
+              '& .sticky-header-right': {
+                position: 'sticky !important',
+                right: 0,
+                zIndex: 4,
+                backgroundColor: `${theme.colores.grisClaro} !important`,
+                '&::after': {
+                  content: '""',
+                  position: 'absolute',
+                  top: 0,
+                  left: '-50px', // Reducir extensión del pseudoelemento
+                  width: '60px', // Ancho suficiente para cubrir espacio
+                  height: '100%',
+                  backgroundColor: theme.colores.grisClaro,
+                  zIndex: -1
+                }
+              },
+              '& .sticky-cell-right': {
+                position: 'sticky !important',
+                right: 0,
+                zIndex: 3,
+                backgroundColor: `${theme.colores.grisClaro} !important`,
+                '&::after': {
+                  content: '""',
+                  position: 'absolute',
+                  top: 0,
+                  left: '-50px',
+                  width: '200vw',
+                  height: '100%',
+                  backgroundColor: theme.colores.grisClaro,
+                  zIndex: -1
+                }
+              },
             }}
+            disableVirtualization={true}
             slots={{
               toolbar: props => (
                 <EditToolbar setRows={function (): void {
