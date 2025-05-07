@@ -60,7 +60,10 @@ export default function Choferes() {
     refreshContratos();
   }, []);
 
-  const handleOpenDialog = (item: any) => { setSeleccionado(item); setOpen(true); };
+  const handleOpenDialog = (item: any) => {
+    setSeleccionado(item);
+    setOpen(true);
+  };
   const fields = ["cargamento.id"];
   const headerNames = ["Cargamento"];
 
@@ -78,6 +81,7 @@ export default function Choferes() {
         tituloField="remitenteProductor.nombreFantasia"
         subtituloField="remitenteProductor.cuit"
         usarSinDesplegable={true}
+        mostrarBotonEditar={false}
       />
     ));
   };
@@ -197,7 +201,6 @@ export default function Choferes() {
               />
             </DialogContent>
           </Dialog>
-          
         </Grid>
       ))}
     </Box>

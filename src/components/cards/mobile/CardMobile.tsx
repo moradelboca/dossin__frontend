@@ -1,11 +1,5 @@
-import React, { useContext } from "react"; 
-import {
-  Box,
-  Button,
-  Collapse,
-  IconButton,
-  Typography,
-} from "@mui/material";
+import React, { useContext } from "react";
+import { Box, Button, Collapse, IconButton, Typography } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import EditIcon from "@mui/icons-material/Edit";
 import { ContextoGeneral } from "../../Contexto";
@@ -29,6 +23,7 @@ interface CardMobileProps {
   textoSecondaryButton?: string;
   handleSecondButton?: (item: any) => void;
   colorSecondaryButton?: string;
+  textoBoton?: string;
 }
 
 const CardMobile: React.FC<CardMobileProps> = ({
@@ -47,6 +42,7 @@ const CardMobile: React.FC<CardMobileProps> = ({
   textoSecondaryButton,
   handleSecondButton,
   colorSecondaryButton,
+  textoBoton,
 }) => {
   const { theme } = useContext(ContextoGeneral);
   const transformarCampo = useTransformarCampo();
@@ -90,7 +86,9 @@ const CardMobile: React.FC<CardMobileProps> = ({
                 style={{ width: "80%", height: "80%", objectFit: "contain" }}
               />
             ) : (
-              <LocalShippingIcon sx={{ width: "80%", height: "80%", color:"#ffffff" }} />
+              <LocalShippingIcon
+                sx={{ width: "80%", height: "80%", color: "#ffffff" }}
+              />
             )}
           </Box>
           <Box>
@@ -105,7 +103,8 @@ const CardMobile: React.FC<CardMobileProps> = ({
         {!usarSinDesplegable && (
           <IconButton
             sx={{
-              transform: expandedCard === index ? "rotate(180deg)" : "rotate(0deg)",
+              transform:
+                expandedCard === index ? "rotate(180deg)" : "rotate(0deg)",
               transition: "0.3s",
             }}
           >
@@ -114,7 +113,11 @@ const CardMobile: React.FC<CardMobileProps> = ({
         )}
       </Box>
 
-      <Collapse in={usarSinDesplegable || expandedCard === index} timeout="auto" unmountOnExit>
+      <Collapse
+        in={usarSinDesplegable || expandedCard === index}
+        timeout="auto"
+        unmountOnExit
+      >
         <Box sx={{ padding: 2, backgroundColor: "#ffffff" }}>
           {fields.map((field, idx) => (
             <Box
@@ -124,7 +127,11 @@ const CardMobile: React.FC<CardMobileProps> = ({
               justifyContent={usarSinDesplegable ? "space-between" : "normal"}
               alignItems="center"
             >
-              <Typography variant="body2" fontWeight="bold" sx={usarSinDesplegable ? { marginRight: 1 } : {}}>
+              <Typography
+                variant="body2"
+                fontWeight="bold"
+                sx={usarSinDesplegable ? { marginRight: 1 } : {}}
+              >
                 {headerNames[idx]}:
               </Typography>
               <Typography variant="body2">
@@ -134,24 +141,23 @@ const CardMobile: React.FC<CardMobileProps> = ({
           ))}
           {/* Botón primario de Editar */}
           {mostrarBotonEditar && (
-           <Button
-           variant="outlined"
-           startIcon={<EditIcon />}
-           fullWidth
-           onClick={() => handleOpenDialog(item)}
-           sx={{ 
-             marginTop: 2, 
-             color: theme.colores.azul,
-             borderColor: theme.colores.azul,
-             '&:hover': {
-               borderColor: theme.colores.azul,
-               backgroundColor: 'rgba(0, 0, 255, 0.04)', // opcional, cambia si querés el hover
-             }
-           }}
-         >
-           Editar
-         </Button>
-             
+            <Button
+              variant="outlined"
+              startIcon={<EditIcon />}
+              fullWidth
+              onClick={() => handleOpenDialog(item)}
+              sx={{
+                marginTop: 2,
+                color: theme.colores.azul,
+                borderColor: theme.colores.azul,
+                "&:hover": {
+                  borderColor: theme.colores.azul,
+                  backgroundColor: "rgba(0, 0, 255, 0.04)", // opcional, cambia si querés el hover
+                },
+              }}
+            >
+              {textoBoton || "Editar"}
+            </Button>
           )}
           {/* Botón secundario condicional */}
           {textoSecondaryButton && handleSecondButton && (
@@ -160,8 +166,12 @@ const CardMobile: React.FC<CardMobileProps> = ({
               fullWidth
               sx={{
                 marginTop: 2,
-                borderColor: colorSecondaryButton ? colorSecondaryButton : theme.colores.azul,
-                color: colorSecondaryButton ? colorSecondaryButton : theme.colores.azul,
+                borderColor: colorSecondaryButton
+                  ? colorSecondaryButton
+                  : theme.colores.azul,
+                color: colorSecondaryButton
+                  ? colorSecondaryButton
+                  : theme.colores.azul,
               }}
               onClick={() => handleSecondButton(item)}
             >

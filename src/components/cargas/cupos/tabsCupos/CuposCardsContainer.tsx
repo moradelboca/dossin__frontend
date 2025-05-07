@@ -43,22 +43,33 @@ export function CuposCardsContainer({
   };
 
   const renderCards = (turnos: any[], cupo: any) => {
-    return turnos?.map((turno, index) => (
-      <CardMobile
-        key={turno.id || index}
-        item={turno}
-        index={index}
-        fields={fields}
-        headerNames={headerNames}
-        expandedCard={null}
-        handleExpandClick={() => {}}
-        handleOpenDialog={() => handleOpenDialog(turno, cupo)}
-        tituloField="colaborador.nombre"
-        subtituloField="colaborador.cuil"
-        usarSinDesplegable={true}
-      />
-    ));
+    return turnos?.map((turno, index) => {
+      const textoBoton =
+        turno.estado.nombre === "Validado"
+          ? "Validar turno"
+          : turno.estado.nombre === "conErrores"
+            ? "Corregir turno"
+            : "";
+
+      return (
+        <CardMobile
+          key={turno.id || index}
+          item={turno}
+          index={index}
+          fields={fields}
+          headerNames={headerNames}
+          expandedCard={null}
+          handleExpandClick={() => {}}
+          handleOpenDialog={() => handleOpenDialog(turno, cupo)}
+          tituloField="colaborador.nombre"
+          subtituloField="colaborador.cuil"
+          usarSinDesplegable={true}
+          textoBoton={textoBoton}
+        />
+      );
+    });
   };
+
   return (
     <>
       {Array.isArray(cupos) &&
