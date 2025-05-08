@@ -12,10 +12,14 @@ import ContratoForm from "../forms/contratos/ContratoForm";
 import { ContratoItem } from "./ContratoItem";
 import useContratosConCargas from "../hooks/contratos/useContratosConCargas";
 
-const DialogContrato = ({ open, onClose, seleccionado }: { 
-  open: boolean; 
-  onClose: () => void; 
-  seleccionado: any 
+const DialogContrato = ({
+  open,
+  onClose,
+  seleccionado,
+}: {
+  open: boolean;
+  onClose: () => void;
+  seleccionado: any;
 }) => {
   const [datos, setDatos] = useState<any[]>([]);
 
@@ -37,8 +41,9 @@ const DialogContrato = ({ open, onClose, seleccionado }: {
 export default function Contratos() {
   const { backendURL } = useContext(ContextoGeneral);
   const { theme } = useContext(ContextoGeneral);
-  
-  const { contratosConCargas, refreshContratos } = useContratosConCargas(backendURL);
+
+  const { contratosConCargas, refreshContratos } =
+    useContratosConCargas(backendURL);
   const [open, setOpen] = useState(false);
   const [seleccionado, setSeleccionado] = useState<any>(null);
 
@@ -49,27 +54,6 @@ export default function Contratos() {
   const handleOpenDialog = (item: any) => {
     setSeleccionado(item);
     setOpen(true);
-  };
-  const fields = ["cargamento.id"];
-  const headerNames = ["Cargamento"];
-
-  const renderCards = (cargas: any[]) => {
-    return cargas?.map((carga, index) => (
-      <CardMobile
-        key={carga.id || index}
-        item={carga}
-        index={index}
-        fields={fields}
-        headerNames={headerNames}
-        expandedCard={null}
-        handleExpandClick={() => {}}
-        handleOpenDialog={() => handleOpenDialog(carga)}
-        tituloField="remitenteProductor.nombreFantasia"
-        subtituloField="remitenteProductor.cuit"
-        usarSinDesplegable={true}
-        mostrarBotonEditar={false}
-      />
-    ));
   };
 
   const handleClose = () => {
@@ -100,15 +84,15 @@ export default function Contratos() {
       </Box>
 
       {contratosConCargas.map((contrato) => (
-        <ContratoItem 
-          key={contrato.id} 
+        <ContratoItem
+          key={contrato.id}
           contrato={contrato}
           onEditContrato={handleOpenDialog}
           refreshContratos={refreshContratos}
         />
       ))}
-      
-      <DialogContrato 
+
+      <DialogContrato
         open={open}
         onClose={handleClose}
         seleccionado={seleccionado}
