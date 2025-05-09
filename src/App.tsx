@@ -32,6 +32,7 @@ function App() {
   const isMobile = useMediaQuery("(max-width:768px)");
   const accessToken = Cookies.get("accessToken");
   const { stage } = useContext(ContextoGeneral);
+  console.log(stage);
 
   return (
     <BrowserRouter>
@@ -46,7 +47,7 @@ function App() {
               }}
             >
               <CssBaseline>
-              {(!accessToken && stage === "production") ? (
+              {(!accessToken) ? (
                   <Routes>
                     <Route path="/login" element={<PantallaLogin />} />
                     <Route
