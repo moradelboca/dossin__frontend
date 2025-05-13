@@ -11,6 +11,7 @@ interface User {
   id: number;
   email: string;
   rol: RolUsuario;
+  profileImage?: string; 
 }
 
 interface AuthContextProps {

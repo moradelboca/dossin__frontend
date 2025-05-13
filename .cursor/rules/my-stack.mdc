@@ -1,0 +1,12 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Technical stack
+
+- React adn typescript
+- Use Material UI 
+- Elasticsearch for search, using elastic.co hosting
+- Elastic.co will have indexes
+
