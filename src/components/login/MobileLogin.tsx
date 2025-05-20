@@ -1,4 +1,4 @@
-import { Box, Button, Typography, Paper, Fade, Dialog, DialogContent } from "@mui/material";
+import { Box, Button, Typography, Dialog, DialogContent } from "@mui/material";
 import hermes from "../../assets/hermes.jpg";
 import hermes1 from "../../assets/hermes1.jpg";
 import hermes3 from "../../assets/hermes3.jpg";
