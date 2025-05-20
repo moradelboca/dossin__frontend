@@ -68,8 +68,16 @@ export default function Navbar(props: NavbarProps) {
         </Box>
         <Tooltip title="Ajustes">
           <IconButton onClick={handleClickAbrirMenuUsuario}>
-            <Avatar sx={{ width: 32, height: 32 }}>
-              {user?.email[0].toUpperCase()}
+            <Avatar 
+              sx={{ 
+                width: 36, 
+                height: 36, 
+                bgcolor: user?.profileImage ? 'transparent' : theme.colores.azul,
+                boxShadow: '0 2px 5px rgba(0,0,0,0.1)'
+              }}
+              src={user?.profileImage}
+            >
+              {!user?.profileImage && user?.email[0].toUpperCase()}
             </Avatar>
           </IconButton>
         </Tooltip>
