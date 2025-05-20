@@ -1,9 +1,0 @@
----
-description: 
-globs: 
-alwaysApply: false
----
-# Technical stack
-
-- Typescript for the frontend
-- React and Material UI 
