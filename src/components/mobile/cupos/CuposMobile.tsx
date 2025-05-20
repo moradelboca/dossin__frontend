@@ -70,9 +70,7 @@ export default function CuposMobile({
   const [openDialogError, setOpenDialogError] = useState(false);
   const [selectedError, setSelectedError] = useState<any>(null);
 
-  // 1) Fechas únicas
-  console.log(cupos)
-  console.log(idCarga)
+
   const availableDates = Array.from(new Set(cupos?.map((c) => c.fecha)));
   const [selectedDate, setSelectedDate] = useState<string>(availableDates[0] || "");
   const [filteredCupos, setFilteredCupos] = useState<Cupo[]>([]);
@@ -200,13 +198,17 @@ export default function CuposMobile({
           handleOpenDialog={() => handleOpenDialogTurno(turno, cupo)}
           tituloField="colaborador.nombre"
           subtituloField="colaborador.cuil"
+          onActionSuccess={refreshCupos}
+          cupo={cupo}
         />
       </Box>
     ));
   };
 
   // Render de turnos con errores (lista vertical)
-  const renderErrores = (errores: any[]) => {
+  const renderErrores = (errores: any[], cupo: Cupo) => {
+    // Filtrar solo los turnos con estado.nombre === 'con errores'
+    const filteredErrores = errores.filter((error) => error.estado && error.estado.nombre === 'con errores');
     const errorFields = [
       "id",
       "cuilColaborador",
@@ -230,14 +232,14 @@ export default function CuposMobile({
       "Nro Orden de Pago",
     ];
 
-    if (!errores || errores.length === 0) {
+    if (!filteredErrores || filteredErrores.length === 0) {
       return (
         <Box padding={2}>
           <Typography variant="body2">No hay turnos con errores para este cupo</Typography>
         </Box>
       );
     }
-    return errores.map((error, index) => (
+    return filteredErrores.map((error, index) => (
       <Box key={error.id || index}>
         <CardMobile
           item={error}
@@ -249,6 +251,8 @@ export default function CuposMobile({
           handleOpenDialog={() => handleOpenDialogError(error)}
           tituloField="id"
           subtituloField="fechaCreacion"
+          onActionSuccess={refreshCupos}
+          cupo={cupo}
         />
       </Box>
     ));
@@ -401,19 +405,11 @@ export default function CuposMobile({
                     {filteredCupos.map((cupo, idx) =>
                       cupo.turnosConErrores && cupo.turnosConErrores.length > 0 ? (
                         <Box key={idx} mb={4} p={2} sx={{ backgroundColor: "#fff" }}>
-                            <Box sx={{ marginBottom: 2 }}>
-                              <Typography variant="h6">Fecha: {cupo.fecha}</Typography>
-                            </Box>
-                          {/* Lista vertical de turnos con errores */}
-                          <Box
-                            mt={2}
-                            sx={{
-                              display: "flex",
-                              flexDirection: "column",
-                              gap: 2,
-                            }}
-                          >
-                            {renderErrores(cupo.turnosConErrores)}
+                          <Box sx={{ marginBottom: 2 }}>
+                            <Typography variant="h6">Fecha: {cupo.fecha}</Typography>
+                          </Box>
+                          <Box mt={2} sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                            {renderErrores(cupo.turnosConErrores, cupo)}
                           </Box>
                         </Box>
                       ) : null

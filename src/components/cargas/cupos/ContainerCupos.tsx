@@ -46,6 +46,7 @@ export function ContainerCupos() {
   });
 
   const refreshCupos = () => {
+    setEstadoCarga("Cargando");
     fetch(`${backendURL}/cargas/${idCarga}/cupos`, {
       method: "GET",
       headers: {
@@ -55,10 +56,17 @@ export function ContainerCupos() {
     })
       .then((response) => response.json())
       .then((cupos) => {
-        setCupos(cupos);
+        // Forzar nueva referencia de objetos internos y arrays internos
+        const cuposClonados = cupos.map((cupo: any) => ({
+          ...cupo,
+          turnos: Array.isArray(cupo.turnos) ? [...cupo.turnos] : [],
+          turnosConErrores: Array.isArray(cupo.turnosConErrores) ? [...cupo.turnosConErrores] : [],
+        }));
+        setCupos(cuposClonados);
         setEstadoCarga("Cargado");
       })
       .catch(() => {
+        setEstadoCarga("Cargado");
         console.error("Error al obtener los cupos disponibles");
       });
   };
