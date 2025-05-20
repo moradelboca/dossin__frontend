@@ -48,7 +48,6 @@ const AutocompleteEmpresas: React.FC<AutocompleteEmpresasProps> = ({
       .then((data: Empresa[]) => setAllEmpresas(data))
       .catch(err => console.error('Error al obtener las empresas', err));
   }, [backendURL]);
-  console.log(value)
   // Filtra las empresas según el rol (si se pasa)
   const empresas = useMemo(() => {
     if (rolEmpresa) {

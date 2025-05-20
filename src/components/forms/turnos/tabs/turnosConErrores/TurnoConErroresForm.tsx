@@ -21,7 +21,7 @@ const TurnoConErroresForm: React.FC<TurnoConErroresFormProps> = ({
   handleClose,
   idCarga,
 }) => {
-  const { backendURL } = useContext(ContextoGeneral);
+  const { backendURL, theme } = useContext(ContextoGeneral);
 
   // Estado para saber si se requiere el bitren
   const [tieneBitren, setTieneBitren] = useState<boolean | null>(null);
@@ -156,10 +156,30 @@ const TurnoConErroresForm: React.FC<TurnoConErroresFormProps> = ({
         />
       )}
       <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 2, mt: 2 }}>
-        <Button variant="contained" onClick={handleClose}>
+        <Button
+          variant="contained"
+          onClick={handleClose}
+          sx={{
+            backgroundColor: theme.colores.azul,
+            color: '#fff',
+            borderRadius: '8px',
+            boxShadow: 'none',
+            '&:hover': { backgroundColor: theme.colores.azul, opacity: 0.9 },
+          }}
+        >
           Cancelar
         </Button>
-        <Button variant="contained" color="primary" onClick={handleSubmit}>
+        <Button
+          variant="contained"
+          onClick={handleSubmit}
+          sx={{
+            backgroundColor: theme.colores.azul,
+            color: '#fff',
+            borderRadius: '8px',
+            boxShadow: 'none',
+            '&:hover': { backgroundColor: theme.colores.azul, opacity: 0.9 },
+          }}
+        >
           Guardar Datos Principales
         </Button>
       </Box>
