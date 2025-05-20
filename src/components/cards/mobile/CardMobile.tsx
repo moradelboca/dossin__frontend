@@ -98,10 +98,10 @@ const CardMobile: React.FC<CardMobileProps> = ({
 
   // Remove 'estado' from fields/headerNames for display
   const filteredFields = fields.filter(f => f !== 'estado.nombre');
-  const filteredHeaderNames = headerNames.filter((h, i) => fields[i] !== 'estado.nombre');
+  const filteredHeaderNames = headerNames.filter((_, i) => fields[i] !== 'estado.nombre');
 
   // Success handler for all forms
-  const handleFormSuccess = (data?: any) => {
+  const handleFormSuccess = () => {
     if (onActionSuccess) onActionSuccess();
     setOpenCorregir(false);
     setOpenAutorizar(false);
@@ -654,7 +654,7 @@ const CardMobile: React.FC<CardMobileProps> = ({
                 { label: 'Tarifa', value: cartaPorteData.carga?.tarifa },
                 { label: 'Peso tara', value: cartaPorteData.turno?.tara?.pesoTara },
                 { label: 'Peso bruto', value: cartaPorteData.turno?.tara?.pesoBruto },
-              ].filter(row => row.value !== undefined && row.value !== null).map((row, idx) => (
+              ].filter(row => row.value !== undefined && row.value !== null).map((row) => (
                 <Box key={row.label} sx={{ display: 'flex', alignItems: 'center', gap: 2, borderBottom: '1px solid #eee', pb: 1 }}>
                   <Typography sx={{ minWidth: 260, fontWeight: 500 }}>{row.label}</Typography>
                   <Typography sx={{ flex: 1 }}>{row.value}</Typography>
