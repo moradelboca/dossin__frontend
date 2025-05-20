@@ -9,6 +9,7 @@ lerna-debug.log*
 
 .env
 *.mdc
+package-lock.json
 
 node_modules
 dist
