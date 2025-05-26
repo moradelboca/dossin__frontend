@@ -1,9 +1,11 @@
 import { Box, TextField } from "@mui/material";
 import { useState, useContext } from "react";
 import { ContextoStepper } from "../creadores/CrearCargaStepper";
+import { ContextoGeneral } from "../../Contexto";
 
 export default function SelectorMasInfo() {
   const { datosNuevaCarga, setDatosNuevaCarga } = useContext(ContextoStepper);
+  const { theme } = useContext(ContextoGeneral);
   const [focused, setFocused] = useState(false);
 
   // Actualizar descripción
@@ -31,6 +33,15 @@ export default function SelectorMasInfo() {
     }));
   };
 
+  const azulStyles = {
+    '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
+      borderColor: theme.colores.azul,
+    },
+    '& .MuiInputLabel-root.Mui-focused': {
+      color: theme.colores.azul,
+    },
+  };
+
   return (
     <Box display="flex" flexDirection="column" gap={2} width="800px">
       {/* Sección Descripción */}
@@ -49,6 +60,7 @@ export default function SelectorMasInfo() {
         onChange={handleDescripcionChange}
         fullWidth
         required
+        sx={azulStyles}
       />
       
       {/* Nuevos Campos */}
@@ -59,6 +71,7 @@ export default function SelectorMasInfo() {
         onChange={handlePlantaRucaChange}
         fullWidth
         required
+        sx={azulStyles}
       />
       
       <TextField
@@ -68,6 +81,7 @@ export default function SelectorMasInfo() {
         onChange={handleDestinoRucaChange}
         fullWidth
         required
+        sx={azulStyles}
       />
 
       {/* Campo Tolerancia */}
@@ -80,6 +94,7 @@ export default function SelectorMasInfo() {
         fullWidth
         required
         helperText="Ingrese el valor de tolerancia para la carga"
+        sx={azulStyles}
       />
     </Box>
   );

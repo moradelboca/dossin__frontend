@@ -8,6 +8,7 @@ import { CustomBotonCamion } from "../CustomBotonCamion";
 import { useState, useEffect, useContext } from "react";
 import { ContextoGeneral } from "../../Contexto";
 import { ContextoStepper } from "../creadores/CrearCargaStepper";
+import React from "react";
 
 export default function SelectorDeAcoplados() {
     const { backendURL } = useContext(ContextoGeneral);
@@ -59,7 +60,7 @@ export default function SelectorDeAcoplados() {
                     );
 
                     return (
-                        <>
+                        <React.Fragment key={tipoAcoplado.id}>
                             {estadoCarga === "Cargando" && (
                                 <Box
                                     display={"flex"}
@@ -84,7 +85,6 @@ export default function SelectorDeAcoplados() {
                             )}
                             {estadoCarga === "Cargado" && (
                                 <CustomBotonCamion
-                                    key={tipoAcoplado.id}
                                     imageSrc={
                                         imagenSeleccionada
                                             ? imagenSeleccionada.imagen
@@ -94,7 +94,7 @@ export default function SelectorDeAcoplados() {
                                     id={tipoAcoplado.id}
                                 />
                             )}
-                        </>
+                        </React.Fragment>
                     );
                 })}
             </Grid>

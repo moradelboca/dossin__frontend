@@ -6,6 +6,8 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
 import AutocompletarUbicacion from "../autocompletar/AutocompletarUbicacion";
 import { ContextoStepper } from "../creadores/CrearCargaStepper";
+import Dialog from '@mui/material/Dialog';
+import { CreadorUbicacion } from '../../mapa/CreadorUbicacion';
 
 export default function SelectorDeUbicacion() {
     const { datosNuevaCarga, datosSinCompletar } = useContext(ContextoStepper);
@@ -16,6 +18,7 @@ export default function SelectorDeUbicacion() {
         datosNuevaCarga["requiereBalanza"] ?? false
     );
     const [estadoCarga, setEstadoCarga] = useState(true);
+    const [openCreador, setOpenCreador] = useState(false);
 
     useEffect(() => {
         fetch(`${backendURL}/ubicaciones`, {
@@ -35,7 +38,28 @@ export default function SelectorDeUbicacion() {
                 console.error("Error al obtener las Ubicaciones disponibles: ", error)
             );
     }, []);
-    console.log(ubicaciones)
+
+    const refreshUbicaciones = () => {
+        setEstadoCarga(true);
+        fetch(`${backendURL}/ubicaciones`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "ngrok-skip-browser-warning": "true",
+            },
+        })
+            .then((response) => response.json())
+            .then((ubicaciones) => {
+                setUbicaciones(ubicaciones);
+                setEstadoCarga(false);
+            })
+            .catch((error) =>
+                console.error("Error al obtener las Ubicaciones disponibles: ", error)
+            );
+    };
+
+    const handleAgregarUbicacion = () => setOpenCreador(true);
+    const handleCloseCreador = () => setOpenCreador(false);
 
     return (
         <>
@@ -57,6 +81,7 @@ export default function SelectorDeUbicacion() {
                             title="Ubicación de Carga"
                             filtro="Carga"
                             estadoCarga={estadoCarga}
+                            onAgregarUbicacion={handleAgregarUbicacion}
                         />
                         <Box display="flex" flexDirection="row" gap={2}>
                             <Box display="column" gap={2}>
@@ -85,6 +110,7 @@ export default function SelectorDeUbicacion() {
                             title="Ubicación de Descarga"
                             filtro="Descarga"
                             estadoCarga={estadoCarga}
+                            onAgregarUbicacion={handleAgregarUbicacion}
                         />
                         <Box display="flex" flexDirection="row" gap={2}>
                             <Box display="column">
@@ -135,6 +161,7 @@ export default function SelectorDeUbicacion() {
                             title="Ubicación de Balanza"
                             filtro="Balanza"
                             estadoCarga={estadoCarga}
+                            onAgregarUbicacion={handleAgregarUbicacion}
                         />
                         <Box display="flex" flexDirection="row" gap={2}>
                             <Box display="column">
@@ -154,6 +181,18 @@ export default function SelectorDeUbicacion() {
                     </Typography>
                 )}
             </Box>
+            <Dialog open={openCreador} onClose={handleCloseCreador} maxWidth="md" fullWidth>
+                <CreadorUbicacion
+                    handleClose={() => {
+                        handleCloseCreador();
+                        refreshUbicaciones();
+                    }}
+                    ubicacionSeleccionada={null}
+                    ubicaciones={ubicaciones}
+                    setUbicaciones={setUbicaciones}
+                    refreshUbicaciones={refreshUbicaciones}
+                />
+            </Dialog>
         </>
     );
 }
