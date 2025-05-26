@@ -3,7 +3,9 @@ import Button from "@mui/material/Button";
 import { useContext, useState } from "react";
 import { ContextoStepper } from "../cargas/creadores/CrearCargaStepper";
 
-const StyledBoton = styled(Button)<{ isPressed: boolean }>(({ isPressed }) => ({
+const StyledBoton = styled(Button, {
+    shouldForwardProp: (prop) => prop !== 'isPressed',
+})<{ isPressed: boolean }>(({ isPressed }) => ({
     background: isPressed ? "#347ad6" : "#163660", // Cambia el color según el estado
     textTransform: "none",
     color: "#ffffff",
@@ -19,7 +21,9 @@ const StyledBoton = styled(Button)<{ isPressed: boolean }>(({ isPressed }) => ({
     },
 }));
 
-const StyledTypography = styled(Typography)<{ isPressed: boolean }>(
+const StyledTypography = styled(Typography, {
+    shouldForwardProp: (prop) => prop !== 'isPressed',
+})<{ isPressed: boolean }>(
     ({ isPressed }) => ({
         transition: "font-size 0.3s ease", // Transición para el cambio en el tamaño de fuente
         fontSize: isPressed ? "1rem" : "1.25rem", // Tamaño de fuente cuando está presionado o no

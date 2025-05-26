@@ -23,6 +23,7 @@ import ContratoFormFields from "./ContratoFormFields";
 import CargasSection from "./CargasSection";
 import DeleteCarga from "../../dialogs/contratos/DeleteCarga";
 import useSortEmpresasPorRol from "../../hooks/contratos/useSortEmpresasPorRol";
+import EmpresaForm from "../empresas/EmpresaForm";
 
 type EmpresaField = {
   key: string;
@@ -38,6 +39,7 @@ const ContratoForm: React.FC<FormularioProps> = ({
 }) => {
   const safeSeleccionado = seleccionado || {};
   const { backendURL} = useContext(ContextoGeneral);
+  const { theme } = useContext(ContextoGeneral);
 
   const isMobile = useMediaQuery("(max-width:768px)");
 
@@ -67,6 +69,11 @@ const ContratoForm: React.FC<FormularioProps> = ({
   // Empresas y sus roles
   const [allEmpresas, setAllEmpresas] = useState<any[]>([]);
   const [roles, setRoles] = useState<any[]>([]);
+
+  // Estados para el modal de EmpresaForm
+  const [openEmpresaForm, setOpenEmpresaForm] = useState(false);
+  const [empresaFieldKey, setEmpresaFieldKey] = useState<string | null>(null);
+  const [nuevaEmpresaSeleccionada, setNuevaEmpresaSeleccionada] = useState<any>(null);
 
   // Fetch empresas
   useEffect(() => {
@@ -257,7 +264,8 @@ const ContratoForm: React.FC<FormularioProps> = ({
   const handleSubmit = async () => {
     if (!validateAll()) return;
 
-    if (seleccionado && allCargas.length === 0) {
+    // Solo bloquear si es un contrato nuevo y no hay cargas
+    if (!safeSeleccionado.id && allCargas.length === 0) {
       setSnackbarMessage("Debe crear al menos una carga.");
       setSnackbarOpen(true);
       return;
@@ -327,7 +335,6 @@ const ContratoForm: React.FC<FormularioProps> = ({
         idsCargas,
       };
 
-      console.log(payloadContrato);
       const resContrato = await fetch(url, {
         method: metodo,
         headers: { "Content-Type": "application/json" },
@@ -456,6 +463,33 @@ const ContratoForm: React.FC<FormularioProps> = ({
     }
   };
 
+  // Callback para abrir el modal de empresa
+  const handleAgregarEmpresa = (fieldKey: string) => {
+    setEmpresaFieldKey(fieldKey);
+    setOpenEmpresaForm(true);
+  };
+
+  // Cuando se crea una nueva empresa desde el modal
+  const handleEmpresaCreada = (empresasActualizadas: any[]) => {
+    // La última empresa agregada es la nueva
+    const nuevaEmpresa = empresasActualizadas[empresasActualizadas.length - 1];
+    setAllEmpresas(empresasActualizadas);
+    setNuevaEmpresaSeleccionada(nuevaEmpresa);
+    setOpenEmpresaForm(false);
+  };
+
+  // Efecto para seleccionar la nueva empresa en el autocomplete correspondiente
+  useEffect(() => {
+    if (nuevaEmpresaSeleccionada && empresaFieldKey) {
+      setData((prev: any) => ({
+        ...prev,
+        [empresaFieldKey]: nuevaEmpresaSeleccionada
+      }));
+      setNuevaEmpresaSeleccionada(null);
+      setEmpresaFieldKey(null);
+    }
+  }, [nuevaEmpresaSeleccionada, empresaFieldKey, setData]);
+
   return (
     <>
       {!isMobile && (
@@ -469,6 +503,7 @@ const ContratoForm: React.FC<FormularioProps> = ({
         setData={setData}
         empresaFields={empresaFields}
         sorteredEmpresasSegunRol={sorteredEmpresasSegunRol}
+        onAgregarEmpresa={handleAgregarEmpresa}
       />
 
       {/* Mostrar CargasSection solo en edición */}
@@ -511,10 +546,38 @@ const ContratoForm: React.FC<FormularioProps> = ({
       </Dialog>
 
       <Box display="flex" justifyContent="space-between" mt={2}>
-        <Button onClick={handleCancel} color="primary">
+        <Button
+          onClick={handleCancel}
+          sx={{
+            backgroundColor: theme.colores.azul,
+            color: '#fff',
+            borderRadius: '8px',
+            px: 3,
+            py: 1,
+            fontWeight: 100,
+            '&:hover': {
+              backgroundColor: theme.colores.azulOscuro,
+              color: '#fff',
+            },
+          }}
+        >
           Cancelar
         </Button>
-        <Button onClick={handleSubmit} color="primary">
+        <Button
+          onClick={handleSubmit}
+          sx={{
+            backgroundColor: theme.colores.azul,
+            color: '#fff',
+            borderRadius: '8px',
+            px: 3,
+            py: 1,
+            fontWeight: 100,
+            '&:hover': {
+              backgroundColor: theme.colores.azulOscuro,
+              color: '#fff',
+            },
+          }}
+        >
           Guardar
         </Button>
         {safeSeleccionado.id && (
@@ -593,6 +656,17 @@ const ContratoForm: React.FC<FormularioProps> = ({
           {snackbarMessage}
         </Alert>
       </Snackbar>
+
+      <Dialog open={openEmpresaForm} onClose={() => setOpenEmpresaForm(false)} maxWidth="md" fullWidth>
+        <DialogTitle>Agregar nueva empresa</DialogTitle>
+        <DialogContent>
+          <EmpresaForm
+            datos={allEmpresas}
+            setDatos={handleEmpresaCreada}
+            handleClose={() => setOpenEmpresaForm(false)}
+          />
+        </DialogContent>
+      </Dialog>
     </>
   );
 };

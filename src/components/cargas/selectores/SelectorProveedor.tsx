@@ -125,6 +125,14 @@ export default function SelectorProveedor() {
                                 },
                             }}
                             variant="outlined"
+                            sx={{
+                                '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                    borderColor: '#163660',
+                                },
+                                '& .MuiInputLabel-root.Mui-focused': {
+                                    color: '#163660',
+                                },
+                            }}
                         />
                     </Stack>
                 </Box>
@@ -137,7 +145,18 @@ export default function SelectorProveedor() {
                         value={valueCargamentos}
                         defaultValue={valueCargamentos}
                         onChange={seleccionarCargamento}
-                        sx={{ width: 300 }}
+                        sx={{
+                            width: 300,
+                            '& .MuiAutocomplete-option': {
+                                fontWeight: 400,
+                            },
+                            '& .Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                borderColor: '#163660',
+                            },
+                            '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                borderColor: '#163660',
+                            },
+                        }}
                         loading={estadoCarga}
                         renderInput={(params) => (
                             <TextField
@@ -148,6 +167,15 @@ export default function SelectorProveedor() {
                                         : false
                                 }
                                 label="Cargamento"
+                                variant="outlined"
+                                sx={{
+                                    '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                        borderColor: '#163660',
+                                    },
+                                    '& .MuiInputLabel-root.Mui-focused': {
+                                        color: '#163660',
+                                    },
+                                }}
                             />
                         )}
                     />

@@ -15,8 +15,6 @@ interface ContratoItemProps {
   export const ContratoItem = ({ contrato, onEditContrato, refreshContratos }: ContratoItemProps) => {
     const { theme } = useContext(ContextoGeneral);
 
-    const cargas = contrato.cargas || [];
-
     const [openCargaDialog, setOpenCargaDialog] = useState(false);
     const [selectedCarga, setSelectedCarga] = useState<any>(null);
   
@@ -45,7 +43,6 @@ interface ContratoItemProps {
             />
         ));
     };
-    console.log("Cargas: \n",cargas);
   
     return (
       <Grid

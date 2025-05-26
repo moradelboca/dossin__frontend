@@ -5,7 +5,6 @@ import {
   Button,
   Dialog,
   DialogContent,
-  DialogTitle,
   Typography,
 } from "@mui/material";
 import ContratoForm from "../forms/contratos/ContratoForm";
@@ -25,7 +24,6 @@ const DialogContrato = ({
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
-      <DialogTitle>Editar Contrato</DialogTitle>
       <DialogContent>
         <ContratoForm
           seleccionado={seleccionado}
@@ -77,7 +75,7 @@ export default function Contratos() {
         </Typography>
         <Box
           sx={{ display: "flex", justifyContent: "flex-end", mt: 1, mr: 3 }}
-          onClick={() => setOpen(true)}
+          onClick={() => { setSeleccionado(null); setOpen(true); }}
         >
           <Button sx={{ color: theme.colores.azul }}>Agregar contrato +</Button>
         </Box>

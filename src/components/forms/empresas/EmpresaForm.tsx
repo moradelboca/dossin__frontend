@@ -18,7 +18,6 @@ const EmpresaForm: React.FC<FormularioProps> = ({
   setDatos,
   handleClose,
 }) => {
-  console.log(seleccionado);
   const { backendURL } = useContext(ContextoGeneral);
   const [openDialogDelete, setOpenDialogDelete] = useState(false);
 
