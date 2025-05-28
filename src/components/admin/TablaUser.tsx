@@ -159,13 +159,17 @@ export default function TablaUser() {
         ...(field === "imagen"
             ? {
                   renderCell: (params: any) => {
-                    console.log('Avatar admin params.value:', params.value);
+                    const imageUrl = typeof params.value === 'string' && params.value.startsWith("http") ? params.value : undefined;
+                    const email = params.row.email || "";
                     return (
-                      params.value && typeof params.value === 'string' && params.value.startsWith("http") ? (
-                          <Avatar src={params.value} alt="avatar" imgProps={{ referrerPolicy: "no-referrer" }} />
-                      ) : (
-                          <Avatar />
-                      )
+                      <Avatar
+                        src={imageUrl}
+                        alt={email}
+                        imgProps={{ referrerPolicy: "no-referrer" }}
+                        sx={{ bgcolor: imageUrl ? 'transparent' : theme.colores.azul }}
+                      >
+                        {!imageUrl && email ? email[0].toUpperCase() : null}
+                      </Avatar>
                     );
                   },
               }
