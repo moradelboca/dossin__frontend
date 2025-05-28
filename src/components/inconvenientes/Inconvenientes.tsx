@@ -103,16 +103,16 @@ const Row: React.FC<{
     actionButton = (
       <Button
         sx={{ color: theme.colores.azul, background: "transparent", boxShadow: "none", textTransform: "none" }}
-        onClick={() => handleEstadoChange(row.id, 4)} // 4 = Atendiendo
+        onClick={() => handleEstadoChange(row.id, 2)} // 2 = Activo
       >
         Atender
       </Button>
     );
-  } else if (row.estado.nombre.toLowerCase() === "atendiendo") {
+  } else if (row.estado.nombre.toLowerCase() === "activo") {
     actionButton = (
       <Button
         sx={{ color: theme.colores.azul, background: "transparent", boxShadow: "none", textTransform: "none" }}
-        onClick={() => handleEstadoChange(row.id, 2)} // 2 = Resuelto
+        onClick={() => handleEstadoChange(row.id, 3)} // 3 = Resuelto
       >
         Resolver
       </Button>
@@ -223,6 +223,7 @@ const Inconvenientes: React.FC = () => {
         });
         if (!response.ok) throw new Error("Error en el servidor");
         const data = await response.json();
+        console.log('GET inconvenientes:', data);
         setInconvenientes(data);
       } catch (error) {
         console.error("Error fetching inconvenientes:", error);
