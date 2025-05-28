@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
 import Avatar from "@mui/material/Avatar";
@@ -40,9 +40,25 @@ interface NavbarProps {
 export default function Navbar(props: NavbarProps) {
   const { navAbierto, transicion, handleClickToggleNav } = props;
   const { user, logout } = useAuth();
-  const { theme } = useContext(ContextoGeneral);
+  const { theme, authURL } = useContext(ContextoGeneral);
   const [anchorMenuUsuario, setAnchorMenuUsuario] =
     useState<null | HTMLElement>(null);
+  const [profileImage, setProfileImage] = useState<string | undefined>(user?.profileImage);
+
+  useEffect(() => {
+    if (user && !user.profileImage && user.email) {
+      fetch(`${authURL}/auth/usuarios?email=${encodeURIComponent(user.email)}`)
+        .then(res => res.json())
+        .then(data => {
+          if (Array.isArray(data) && data.length > 0 && data[0].imagen && data[0].imagen.startsWith("http")) {
+            setProfileImage(data[0].imagen);
+          }
+        })
+        .catch(() => {});
+    } else if (user?.profileImage) {
+      setProfileImage(user.profileImage);
+    }
+  }, [user, authURL]);
 
   const handleClickAbrirMenuUsuario = (
     event: React.MouseEvent<HTMLElement>
@@ -72,12 +88,13 @@ export default function Navbar(props: NavbarProps) {
               sx={{ 
                 width: 36, 
                 height: 36, 
-                bgcolor: user?.profileImage ? 'transparent' : theme.colores.azul,
+                bgcolor: profileImage ? 'transparent' : theme.colores.azul,
                 boxShadow: '0 2px 5px rgba(0,0,0,0.1)'
               }}
-              src={user?.profileImage}
+              src={profileImage}
+              imgProps={{ referrerPolicy: "no-referrer" }}
             >
-              {!user?.profileImage && user?.email[0].toUpperCase()}
+              {!profileImage && user?.email[0].toUpperCase()}
             </Avatar>
           </IconButton>
         </Tooltip>

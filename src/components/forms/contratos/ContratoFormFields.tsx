@@ -10,65 +10,38 @@ export interface Empresa {
   roles?: { nombre: string; id: number }[];
 }
 
-type EmpresaField = {
-  key: string;
-  label: string;
-  rol: number;
-};
-
 interface FormFieldsProps {
   data: any;
   errors: any;
   setData: (data: any) => void;
-  empresaFields: EmpresaField[];
-  sorteredEmpresasSegunRol: Empresa[][];
+  roles: any[];
+  empresas: Empresa[];
+  empresasPorRol: { [rolId: number]: Empresa | null };
+  erroresEmpresas: { [rolId: number]: boolean };
+  onEmpresaChange: (rolId: number, empresa: Empresa | null) => void;
   onAgregarEmpresa: (fieldKey: string) => void;
 }
 
 const ContratoFormFields: React.FC<FormFieldsProps> = ({
-  data,
-  errors,
-  setData,
-  empresaFields,
-  sorteredEmpresasSegunRol,
+  roles,
+  empresas,
+  empresasPorRol,
+  erroresEmpresas,
+  onEmpresaChange,
   onAgregarEmpresa
 }) => {
   const { theme } = useContext(ContextoGeneral);
   return (
     <>
-      {empresaFields.map((field) => {
-        const empresasDelRol = sorteredEmpresasSegunRol[field.rol] || [];
+      {roles.filter((rol) => rol.nombre !== "Transportista").map((rol) => {
+        // Filtrar empresas que tengan este rol
+        const empresasDelRol = empresas.filter(e => e.roles?.some(r => r.id === rol.id));
         // Opción especial para agregar empresa
         const opciones = [...empresasDelRol, { cuit: '__add__', nombreFantasia: '', razonSocial: '' }];
-
-        const getEmpresaValue = () => {
-          const val = data[field.key];
-          
-          if (!val) return null;
-          
-          // Si ya es un objeto empresa
-          if (typeof val === 'object') {
-            return empresasDelRol.find(e => e.cuit === val.cuit) || null;
-          }
-          
-          // Si es string, buscar por formato o CUIT
-          if (typeof val === 'string') {
-            const empresaPorCuit = empresasDelRol.find(e => e.cuit.toString() === val);
-            if (empresaPorCuit) return empresaPorCuit;
-            
-            const [nombre, razon] = val.split(' - ');
-            return empresasDelRol.find(e => 
-              e.nombreFantasia === nombre && 
-              e.razonSocial === razon
-            ) || null;
-          }
-          
-          return null;
-        };
-
+        const value = empresasPorRol[rol.id] || null;
         return (
           <Autocomplete
-            key={field.key}
+            key={rol.id}
             options={opciones}
             sx={{ mt: 2,
               '& .MuiAutocomplete-option': {
@@ -84,26 +57,22 @@ const ContratoFormFields: React.FC<FormFieldsProps> = ({
             getOptionLabel={(option: Empresa) =>
               option.cuit === '__add__'
                 ? 'Agregar una empresa'
-                : `${option.nombreFantasia} - ${option.razonSocial}`
+                : `${option.razonSocial} - ${option.cuit}`
             }
             isOptionEqualToValue={(option, value) => {
               if (!value) return false;
               if (typeof value === 'string') {
-                return `${option.nombreFantasia} - ${option.razonSocial}` === value;
+                return `${option.razonSocial} - ${option.cuit}` === value;
               }
               return option.cuit === value.cuit;
             }}
-            value={getEmpresaValue()}
+            value={value}
             onChange={(_, newValue) => {
               if (newValue && newValue.cuit === '__add__') {
-                // Disparar callback para abrir modal
-                if (typeof onAgregarEmpresa === 'function') onAgregarEmpresa(field.key);
+                if (typeof onAgregarEmpresa === 'function') onAgregarEmpresa(rol.id.toString());
                 return;
               }
-              setData({ 
-                ...data, 
-                [field.key]: newValue || null // Guardar objeto completo
-              });
+              onEmpresaChange(rol.id, newValue || null);
             }}
             renderOption={(props, option) => {
               const { key, ...rest } = props;
@@ -117,17 +86,17 @@ const ContratoFormFields: React.FC<FormFieldsProps> = ({
               }
               return (
                 <li key={key} {...rest}>
-                  {`${option.nombreFantasia} - ${option.razonSocial}`}
+                  {`${option.razonSocial} - ${option.cuit}`}
                 </li>
               );
             }}
             renderInput={(params) => (
               <TextField
                 {...params}
-                label={field.label}
+                label={rol.nombre}
                 variant="outlined"
-                error={!!errors[field.key]}
-                helperText={errors[field.key] || ""}
+                error={!!erroresEmpresas[rol.id]}
+                helperText={erroresEmpresas[rol.id] ? "Campo obligatorio" : ""}
                 sx={{
                   '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
                     borderColor: theme.colores.azul,

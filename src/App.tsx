@@ -32,7 +32,6 @@ function App() {
   const isMobile = useMediaQuery("(max-width:768px)");
   const accessToken = Cookies.get("accessToken");
   const { stage } = useContext(ContextoGeneral);
-  console.log(stage);
 
   return (
     <BrowserRouter>

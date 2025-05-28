@@ -75,9 +75,12 @@ export function CreadorCupos(props: any) {
   const [error, setError] = useState(false);
   const [errorFecha, setErrorFecha] = useState(false);
   const { theme } = useContext(ContextoGeneral);
+  const [mensajeError, setMensajeError] = useState<string | null>(null);
+
   const handleClickGuardar = () => {
     setError(false);
     setErrorFecha(false);
+    setMensajeError(null);
     if (cupoSeleccionado == 0 || cupoSeleccionado == null) {
       setError(true);
       return;
@@ -100,15 +103,21 @@ export function CreadorCupos(props: any) {
       })
         .then((response) => {
           if (!response.ok) {
-            throw new Error("Error al crear la carga");
+            return response.text().then((text) => {
+              throw new Error(text || "Error al crear la carga");
+            });
           }
-          response.json();
+          return response.json();
         })
         .then(() => {
           handleCloseDialog();
           refreshCupos();
         })
-        .catch(() => {});
+        .catch((error) => {
+          setMensajeError(
+            `Error al crear el cupo: ${error.message || "Error desconocido"}`
+          );
+        });
     }
   };
 
@@ -199,6 +208,11 @@ export function CreadorCupos(props: any) {
             >
               Guardar
             </Button>
+            {mensajeError && (
+              <Typography color="#ff3333" mt={1}>
+                {mensajeError}
+              </Typography>
+            )}
           </Box>
         </Stack>
       </Box>

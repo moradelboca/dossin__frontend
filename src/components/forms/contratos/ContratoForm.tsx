@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useContext, useState, useMemo, useEffect } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import {
   Button,
   Dialog,
@@ -22,14 +22,7 @@ import useCargas from "../../hooks/contratos/useCargas";
 import ContratoFormFields from "./ContratoFormFields";
 import CargasSection from "./CargasSection";
 import DeleteCarga from "../../dialogs/contratos/DeleteCarga";
-import useSortEmpresasPorRol from "../../hooks/contratos/useSortEmpresasPorRol";
 import EmpresaForm from "../empresas/EmpresaForm";
-
-type EmpresaField = {
-  key: string;
-  label: string;
-  rol: number;
-};
 
 const ContratoForm: React.FC<FormularioProps> = ({
   seleccionado,
@@ -75,6 +68,43 @@ const ContratoForm: React.FC<FormularioProps> = ({
   const [empresaFieldKey, setEmpresaFieldKey] = useState<string | null>(null);
   const [nuevaEmpresaSeleccionada, setNuevaEmpresaSeleccionada] = useState<any>(null);
 
+  // Estados para los valores seleccionados por rol
+  const [empresasPorRol, setEmpresasPorRol] = useState<{ [rolId: number]: any | null }>({});
+  // Estados de error para autocompletes obligatorios
+  const [erroresEmpresas, setErroresEmpresas] = useState<{ [rolId: number]: boolean }>({});
+
+  // Helper para obtener el ID de un rol por nombre
+  const getRolIdByName = (nombre: string) => {
+    const found = roles.find((r: any) => r.nombre.trim().toLowerCase() === nombre.trim().toLowerCase());
+    return found ? found.id : undefined;
+  };
+
+  // IDs de roles obligatorios robusto
+  const ROLES_OBLIGATORIOS = [
+    getRolIdByName("Titular Carta de Porte"),
+    getRolIdByName("Destino"),
+    getRolIdByName("Destinatario"),
+  ].filter((id) => id !== undefined);
+
+  // Validación de empresas obligatorias SOLO al guardar
+  const validarEmpresasObligatorias = () => {
+    const nuevosErrores: { [rolId: number]: boolean } = {};
+    let faltan = false;
+    ROLES_OBLIGATORIOS.forEach(rolId => {
+      if (!empresasPorRol[rolId] || empresasPorRol[rolId] === null || empresasPorRol[rolId] === undefined) {
+        nuevosErrores[rolId] = true;
+        faltan = true;
+      }
+    });
+    setErroresEmpresas(nuevosErrores);
+    return !faltan;
+  };
+
+  const handleEmpresaChange = (rolId: number, empresa: any | null) => {
+    setEmpresasPorRol(prev => ({ ...prev, [rolId]: empresa }));
+    setErroresEmpresas(prev => ({ ...prev, [rolId]: false }));
+  };
+
   // Fetch empresas
   useEffect(() => {
     fetch(`${backendURL}/empresas`, {
@@ -102,58 +132,8 @@ const ContratoForm: React.FC<FormularioProps> = ({
       .catch((err) => console.error("Error al obtener los roles", err));
   }, [backendURL]);
 
-  const sorteredEmpresasSegunRol = useSortEmpresasPorRol(allEmpresas, roles);
-
-  // Lista de campos de empresas con sus configuraciones
-  const empresaFields: EmpresaField[] = useMemo(
-    () => [
-      { key: "titularCartaDePorte", label: "Titular Carta de Porte", rol: 1 },
-      { key: "remitenteProductor", label: "Remitente Productor", rol: 1 },
-      {
-        key: "remitenteVentaPrimaria",
-        label: "Remitente Venta Primaria",
-        rol: 1,
-      },
-      {
-        key: "remitenteVentaSecundaria",
-        label: "Remitente Venta Secundaria",
-        rol: 1,
-      },
-      {
-        key: "remitenteVentaSecundaria2",
-        label: "Remitente Venta Secundaria 2",
-        rol: 1,
-      },
-      {
-        key: "corredorVentaPrimaria",
-        label: "Corredor Venta Primaria",
-        rol: 1,
-      },
-      {
-        key: "corredorVentaSecundaria",
-        label: "Corredor Venta Secundaria",
-        rol: 1,
-      },
-      {
-        key: "representanteEntregador",
-        label: "Representante Entregador",
-        rol: 1,
-      },
-      {
-        key: "representanteRecibidor",
-        label: "Representante Recibidor",
-        rol: 1,
-      },
-      { key: "destinatario", label: "Destinatario", rol: 1 },
-      { key: "destino", label: "Destino", rol: 1 },
-      { key: "intermediarioDeFlete", label: "Intermediario de Flete", rol: 1 },
-      { key: "fletePagador", label: "Flete Pagador", rol: 1 },
-    ],
-    []
-  );
-
   // Configuración de validación del formulario
-  const { data, errors, validateAll, setData } = useValidation(
+  const { data, errors, setData } = useValidation(
     {
       titularCartaDePorte: "",
       ...safeSeleccionado,
@@ -166,21 +146,7 @@ const ContratoForm: React.FC<FormularioProps> = ({
 
   // Generar payload optimizado
   const getOptimizedPayload = () => {
-    // Procesar campos de empresas para enviar solo CUIT
-    const procesarEmpresas = (dataObj: any) => {
-      const processed = { ...dataObj };
-      empresaFields.forEach((field) => {
-        const value = processed[field.key];
-        if (value && typeof value === "object" && value.cuit) {
-          processed[field.key] = value.cuit; // Extraer CUIT
-        } else if (value === null) {
-          processed[field.key] = null; // Mantener null si no hay valor
-        }
-      });
-      return processed;
-    };
-
-    const processedData = procesarEmpresas(data);
+    const processedData = { ...data };
 
     if (!safeSeleccionado.id) {
       return {
@@ -193,7 +159,7 @@ const ContratoForm: React.FC<FormularioProps> = ({
       };
     } else {
       const payload: any = {};
-      const originalProcesado = procesarEmpresas(safeSeleccionado);
+      const originalProcesado = { ...processedData };
 
       Object.keys(processedData).forEach((key) => {
         if (processedData[key] !== originalProcesado[key]) {
@@ -260,17 +226,25 @@ const ContratoForm: React.FC<FormularioProps> = ({
     setSelectedCarga(carga);
     setOpenAddCarga(true);
   };
-
   const handleSubmit = async () => {
-    if (!validateAll()) return;
-
-    // Solo bloquear si es un contrato nuevo y no hay cargas
-    if (!safeSeleccionado.id && allCargas.length === 0) {
-      setSnackbarMessage("Debe crear al menos una carga.");
+    if (!validarEmpresasObligatorias()) {
+      setSnackbarMessage("Debe seleccionar Titular Carta de Porte, Destino y Destinatario.");
       setSnackbarOpen(true);
       return;
     }
-
+    // Validar que los campos obligatorios estén en el payload antes de postear
+    let faltanObligatorios = false;
+    ROLES_OBLIGATORIOS.forEach(rolId => {
+      if (!empresasPorRol[rolId] || empresasPorRol[rolId] === null || empresasPorRol[rolId] === undefined) {
+        faltanObligatorios = true;
+      }
+    });
+    if (faltanObligatorios) {
+      setSnackbarMessage("Debe seleccionar Titular Carta de Porte, Destino y Destinatario.");
+      setSnackbarOpen(true);
+      return;
+    }
+    
     try {
       // 1. Crear nuevas cargas (usar carga.payload y URL con /api)
       const nuevasCargasResponses = await Promise.all(
@@ -329,18 +303,33 @@ const ContratoForm: React.FC<FormularioProps> = ({
       const url = safeSeleccionado.id
         ? `${backendURL}/contratos/${safeSeleccionado.id}`
         : `${backendURL}/contratos`;
-
+      // Construir el payload con los campos de empresa en camelCase
+      const empresasPayload: { [key: string]: string | number | null } = {};
+      roles.forEach((rol: any) => {
+        if (rol.nombre !== "Transportista") {
+          const empresa = empresasPorRol[rol.id];
+          if (empresa && empresa.cuit) {
+            // Convertir el nombre del rol a camelCase
+            const camelCaseKey = rol.nombre
+              .replace(/\s(.)/g, (_: any, group1: any) => group1.toUpperCase())
+              .replace(/^(.)/, function(_: any, group1: any) {
+                return group1.toLowerCase();
+              })
+              .replace(/[^a-zA-Z0-9]/g, '');
+            empresasPayload[camelCaseKey] = empresa.cuit;
+          }
+        }
+      });
       const payloadContrato = {
         ...getOptimizedPayload(),
+        ...empresasPayload,
         idsCargas,
       };
-
       const resContrato = await fetch(url, {
         method: metodo,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payloadContrato),
       });
-
       if (!resContrato.ok) {
         const errorData = await resContrato.json();
         throw new Error(errorData.message || "Error guardando contrato");
@@ -388,13 +377,6 @@ const ContratoForm: React.FC<FormularioProps> = ({
 
     handleClose();
   };
-
-  // Combina todas las cargas: las obtenidas y las creadas en el form.
-  const allCargas = [
-    ...cargas,
-    ...listaCargasModificadas,
-    ...listaCargasCreadas,
-  ];
 
   // Función para iniciar la eliminación de una carga.
   const handleDeleteCarga = (carga: any) => {
@@ -490,6 +472,37 @@ const ContratoForm: React.FC<FormularioProps> = ({
     }
   }, [nuevaEmpresaSeleccionada, empresaFieldKey, setData]);
 
+  // Inicializar empresasPorRol al editar un contrato
+  useEffect(() => {
+    if (safeSeleccionado && roles.length > 0 && safeSeleccionado.id) {
+      // Mapeo de nombre de campo a nombre de rol
+      const mapping = [
+        { rol: "Titular Carta de Porte", field: "titularCartaDePorte" },
+        { rol: "Destino", field: "destino" },
+        { rol: "Destinatario", field: "destinatario" },
+      ];
+      const nuevasEmpresasPorRol: { [rolId: number]: any | null } = {};
+      mapping.forEach(({ rol, field }) => {
+        const rolId = getRolIdByName(rol);
+        if (rolId !== undefined && safeSeleccionado[field]) {
+          nuevasEmpresasPorRol[rolId] = safeSeleccionado[field];
+        }
+      });
+      // Para otros roles dinámicos
+      roles.forEach((rolObj: any) => {
+        if (
+          !nuevasEmpresasPorRol[rolObj.id] &&
+          safeSeleccionado[rolObj.nombre]
+        ) {
+          nuevasEmpresasPorRol[rolObj.id] = safeSeleccionado[rolObj.nombre];
+        }
+      });
+      setEmpresasPorRol(nuevasEmpresasPorRol);
+    } else if (!safeSeleccionado || !safeSeleccionado.id) {
+      setEmpresasPorRol({}); // Crear: vacíos
+    }
+  }, [safeSeleccionado, roles]);
+
   return (
     <>
       {!isMobile && (
@@ -501,8 +514,11 @@ const ContratoForm: React.FC<FormularioProps> = ({
         data={data}
         errors={errors}
         setData={setData}
-        empresaFields={empresaFields}
-        sorteredEmpresasSegunRol={sorteredEmpresasSegunRol}
+        roles={roles}
+        empresas={allEmpresas}
+        empresasPorRol={empresasPorRol}
+        erroresEmpresas={erroresEmpresas}
+        onEmpresaChange={handleEmpresaChange}
         onAgregarEmpresa={handleAgregarEmpresa}
       />
 

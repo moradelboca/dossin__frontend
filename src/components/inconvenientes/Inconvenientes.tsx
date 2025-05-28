@@ -20,6 +20,7 @@ import {
 import { KeyboardArrowDown, KeyboardArrowUp } from "@mui/icons-material";
 import CreadorEntidad from "../dialogs/CreadorEntidad";
 import InconvenienteForm from "../forms/inconvenientes/InconvenienteForm";
+import { inconvenientesPruebas } from "./inconvenientePruebas";
 
 interface Usuario {
   id: number;
@@ -27,7 +28,7 @@ interface Usuario {
   imagen: string | null;
 }
 
-interface Inconveniente {
+export interface Inconveniente {
   id: number;
   titulo: string;
   descripcion: string;
@@ -92,14 +93,40 @@ const getUrgenciaStyles = (nombre: string) => {
 const Row: React.FC<{
   row: Inconveniente;
   handleEstadoChange: (id: number, nuevoEstado: number) => void;
-}> = ({ row, handleEstadoChange }) => {
+  theme: any;
+}> = ({ row, handleEstadoChange, theme }) => {
   const [open, setOpen] = useState(false);
 
-  // Función para manejar el cambio de estado
-  const handleCambioEstado = () => {
-    const nuevoEstado = row.estado.nombre === "RESUELTO" ? 1 : 3;
-    handleEstadoChange(row.id, nuevoEstado);
-  };
+  // Determinar el próximo estado y texto del botón
+  let actionButton = null;
+  if (row.estado.nombre.toLowerCase() === "pendiente") {
+    actionButton = (
+      <Button
+        sx={{ color: theme.colores.azul, background: "transparent", boxShadow: "none", textTransform: "none" }}
+        onClick={() => handleEstadoChange(row.id, 4)} // 4 = Atendiendo
+      >
+        Atender
+      </Button>
+    );
+  } else if (row.estado.nombre.toLowerCase() === "atendiendo") {
+    actionButton = (
+      <Button
+        sx={{ color: theme.colores.azul, background: "transparent", boxShadow: "none", textTransform: "none" }}
+        onClick={() => handleEstadoChange(row.id, 2)} // 2 = Resuelto
+      >
+        Resolver
+      </Button>
+    );
+  }
+
+  // Función para renderizar Avatar correctamente
+  const renderAvatar = (usuario: Usuario) => (
+    <Avatar
+      src={usuario.imagen && usuario.imagen.startsWith("http") ? usuario.imagen : undefined}
+      alt={usuario.email}
+      imgProps={{ referrerPolicy: "no-referrer" }}
+    />
+  );
 
   return (
     <>
@@ -136,25 +163,22 @@ const Row: React.FC<{
         <TableCell>{row.fechaCreacion}</TableCell>
         <TableCell>
           <Stack direction="row" spacing={2} alignItems="center">
-            <Avatar
-              src={row.creadoPor.imagen || undefined}
-              alt={row.creadoPor.email}
-            />
+            {renderAvatar(row.creadoPor)}
             <Typography variant="body2">{row.creadoPor.email}</Typography>
           </Stack>
         </TableCell>
         <TableCell>
           {row.asignadoA ? (
             <Stack direction="row" spacing={2} alignItems="center">
-              <Avatar
-                src={row.asignadoA.imagen || undefined}
-                alt={row.asignadoA.email}
-              />
+              {renderAvatar(row.asignadoA)}
               <Typography variant="body2">{row.asignadoA.email}</Typography>
             </Stack>
           ) : (
             <Typography variant="body2">Sin asignar</Typography>
           )}
+        </TableCell>
+        <TableCell>
+          {actionButton}
         </TableCell>
         <TableCell>
           <IconButton size="small" onClick={() => setOpen(!open)}>
@@ -163,23 +187,13 @@ const Row: React.FC<{
         </TableCell>
       </TableRow>
       <TableRow>
-        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={8}>
+        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={9}>
           <Collapse in={open} timeout="auto" unmountOnExit>
             <Box margin={2}>
               <Typography variant="h6" gutterBottom>
                 Descripción
               </Typography>
               <Typography>{row.descripcion}</Typography>
-              <Box mt={2}>
-                <Button
-                  variant="contained"
-                  color={row.estado.nombre === "RESUELTO" ? "error" : "success"}
-                  onClick={handleCambioEstado}
-                >
-                  Cambiar a{" "}
-                  {row.estado.nombre === "RESUELTO" ? "Pendiente" : "Resuelto"}
-                </Button>
-              </Box>
             </Box>
           </Collapse>
         </TableCell>
@@ -189,12 +203,16 @@ const Row: React.FC<{
 };
 
 const Inconvenientes: React.FC = () => {
-  const { theme, backendURL } = useContext(ContextoGeneral);
+  const { theme, backendURL, stage } = useContext(ContextoGeneral);
   const [inconvenientes, setInconvenientes] = useState<Inconveniente[]>([]);
   const [open, setOpen] = useState(false);
   const selectedInconveniente = null;
 
   useEffect(() => {
+    if (stage === "development") {
+      setInconvenientes(inconvenientesPruebas);
+      return;
+    }
     const fetchData = async () => {
       try {
         const response = await fetch(`${backendURL}/inconvenientes`, {
@@ -211,8 +229,9 @@ const Inconvenientes: React.FC = () => {
       }
     };
     fetchData();
-  }, []);
+  }, [backendURL, stage]);
 
+  // Cambiar el estado: 1=Pendiente, 4=Atendiendo, 2=Resuelto
   const handleEstadoChange = (inconvenienteId: number, nuevoEstado: number) => {
     const metodo = "PUT";
     const url = `${backendURL}/inconvenientes/${inconvenienteId}`;
@@ -276,6 +295,7 @@ const Inconvenientes: React.FC = () => {
               <TableCell>Fecha</TableCell>
               <TableCell>Creado Por</TableCell>
               <TableCell>Asignado A</TableCell>
+              <TableCell>Acción</TableCell>
               <TableCell />
             </TableRow>
           </TableHead>
@@ -285,6 +305,7 @@ const Inconvenientes: React.FC = () => {
                 key={inconveniente.id}
                 row={inconveniente}
                 handleEstadoChange={handleEstadoChange}
+                theme={theme}
               />
             ))}
           </TableBody>

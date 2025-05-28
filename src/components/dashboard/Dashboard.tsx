@@ -4,7 +4,6 @@ import { Box, IconButton } from "@mui/material";
 import AddIcon from '@mui/icons-material/Add';
 import { ContextoGeneral } from "../Contexto";
 import DashboardCard from "../cards/Dashboard/DashboardCard";
-import HistorialTurnos from "./HistorialTurnos";
 import DashboardGraficos from "./DashboardGraficos";
 import InconvenientesDialog from "../dialogs/dashboard/InconvenientesDialog";
 import DashboardColaboradoresDialog from "../dialogs/dashboard/DashboardColaboradoresDialog";
@@ -43,17 +42,28 @@ const Dashboard: React.FC = () => {
   };
 
   useEffect(() => {
-    // Fetch CO2
-    fetch(`${dashboardURL}/turnos/co2`, fetchOptions)
+    // Nuevo fetch único para CO2 y tarifa promedio
+    fetch(`${dashboardURL}/turnos`, fetchOptions)
       .then(r => r.ok ? r.json() : Promise.reject())
-      .then(data => setCo2Emitido(parseFloat(data.TotalCo2.split(' ')[0]) / 1000))
-      .catch(() => setCo2Emitido(0));
-
-    // Fetch Tarifa Promedio
-    fetch(`${dashboardURL}/cargas/promedio`, fetchOptions)
-      .then(r => r.ok ? r.json() : Promise.reject())
-      .then(data => setTarifaPromedio(data.promedio))
-      .catch(() => setTarifaPromedio("$0"));
+      .then(data => {
+        // data es un array de objetos por provincia y fecha
+        // Para el dashboard general, sumamos o promediamos según corresponda
+        if (Array.isArray(data) && data.length > 0) {
+          // Promedio tarifaPromedio y co2EmitidoPromedio de todos los registros
+          const totalTarifa = data.reduce((acc, curr) => acc + (curr.estadisticas?.tarifaPromedio || 0), 0);
+          const totalCO2 = data.reduce((acc, curr) => acc + (curr.estadisticas?.co2EmitidoPromedio || 0), 0);
+          const count = data.length;
+          setTarifaPromedio(`$${Math.round(totalTarifa / count)}`);
+          setCo2Emitido(Number((totalCO2 / count).toFixed(2)));
+        } else {
+          setTarifaPromedio("$0");
+          setCo2Emitido(0);
+        }
+      })
+      .catch(() => {
+        setTarifaPromedio("$0");
+        setCo2Emitido(0);
+      });
 
     // Fetch Tiempo Asignación
     fetch(`${dashboardURL}/turnos/promedio-asignacion`, fetchOptions)
@@ -63,7 +73,6 @@ const Dashboard: React.FC = () => {
       ))
       .catch(() => setTiempoAsignacion("0 min"));
 
-    
     // Fetch Tiempo Confirmación
     fetch(`${dashboardURL}/turnos/promedio-confirmacion`, fetchOptions)
       .then(r => r.ok ? r.json() : Promise.reject())
@@ -239,58 +248,37 @@ const Dashboard: React.FC = () => {
         </Box>
         
         {/* Sección de Gráficos */}
-        {/* Gráficos */}
         <Box
           gridColumn={{
             xs: "span 4",
             md: "span 6",
-            lg: "span 4"
+            lg: "span 6"
           }}
           gridRow={{
             xs: "auto",
             md: "auto",
             lg: "2 / span 2"
           }}
-          display="grid"
-          gridTemplateColumns={{
-            xs: "1fr",
-            md: "repeat(2, 1fr)",
-            lg: "repeat(2, 1fr)"
-          }}
+          display="flex"
+          flexDirection={{ xs: "column", md: "row" }}
           gap="10px"
           sx={{
             backgroundColor: theme.colores.gris,
             padding: 1,
             borderRadius: 2,
+            width: '100%',
+            height: '100%',
+            minHeight: 300,
           }}
         >
-          <DashboardGraficos opcion="cargas" />
-          <DashboardGraficos opcion="fechas" />
+          <Box flex={1} minWidth={0} height="100%">
+            <DashboardGraficos opcion="cargas" />
+          </Box>
+          <Box flex={1} minWidth={0} height="100%">
+            <DashboardGraficos opcion="fechas" />
+          </Box>
         </Box>
         
-        {/* Historial */}
-        <Box
-          gridColumn={{
-            xs: "span 4",
-            md: "span 6",
-            lg: "span 2"
-          }}
-          gridRow={{
-            xs: "auto",
-            md: "auto",
-            lg: 2
-          }}
-          sx={{
-            backgroundColor: theme.colores.gris,
-            padding: 1,
-            borderRadius: 2,
-            height: '100%',
-            display: 'flex',
-            flexDirection: 'column'
-          }}
-        >
-          <HistorialTurnos />
-        </Box>
       </Box>
 
 
