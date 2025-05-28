@@ -21,6 +21,7 @@ import { KeyboardArrowDown, KeyboardArrowUp } from "@mui/icons-material";
 import CreadorEntidad from "../dialogs/CreadorEntidad";
 import InconvenienteForm from "../forms/inconvenientes/InconvenienteForm";
 import { inconvenientesPruebas } from "./inconvenientePruebas";
+import { useUserProfileImage } from "./useUserProfileImage";
 
 interface Usuario {
   id: number;
@@ -97,6 +98,10 @@ const Row: React.FC<{
 }> = ({ row, handleEstadoChange, theme }) => {
   const [open, setOpen] = useState(false);
 
+  // Avatar hooks para creadoPor y asignadoA
+  const { profileImage: creadoPorImg } = useUserProfileImage(row.creadoPor?.email);
+  const { profileImage: asignadoAImg } = useUserProfileImage(row.asignadoA?.email);
+
   // Determinar el próximo estado y texto del botón
   let actionButton = null;
   if (row.estado.nombre.toLowerCase() === "pendiente") {
@@ -119,13 +124,16 @@ const Row: React.FC<{
     );
   }
 
-  // Función para renderizar Avatar correctamente
-  const renderAvatar = (usuario: Usuario) => (
+  // Renderizar Avatar con imagen o inicial
+  const renderAvatar = (email: string | undefined, profileImage: string | undefined) => (
     <Avatar
-      src={usuario.imagen && usuario.imagen.startsWith("http") ? usuario.imagen : undefined}
-      alt={usuario.email}
+      src={profileImage}
+      alt={email}
       imgProps={{ referrerPolicy: "no-referrer" }}
-    />
+      sx={{ bgcolor: profileImage ? 'transparent' : theme.colores.azul }}
+    >
+      {!profileImage && email ? email[0].toUpperCase() : null}
+    </Avatar>
   );
 
   return (
@@ -163,15 +171,15 @@ const Row: React.FC<{
         <TableCell>{row.fechaCreacion}</TableCell>
         <TableCell>
           <Stack direction="row" spacing={2} alignItems="center">
-            {renderAvatar(row.creadoPor)}
-            <Typography variant="body2">{row.creadoPor.email}</Typography>
+            {renderAvatar(row.creadoPor?.email, creadoPorImg)}
+            <Typography variant="body2">{row.creadoPor?.email}</Typography>
           </Stack>
         </TableCell>
         <TableCell>
           {row.asignadoA ? (
             <Stack direction="row" spacing={2} alignItems="center">
-              {renderAvatar(row.asignadoA)}
-              <Typography variant="body2">{row.asignadoA.email}</Typography>
+              {renderAvatar(row.asignadoA?.email, asignadoAImg)}
+              <Typography variant="body2">{row.asignadoA?.email}</Typography>
             </Stack>
           ) : (
             <Typography variant="body2">Sin asignar</Typography>
