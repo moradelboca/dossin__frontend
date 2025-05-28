@@ -134,7 +134,7 @@ const DashboardGraficos: React.FC<DashboardGraficosProps> = ({ opcion }) => {
   : { flex: 1, height: 400 };
 
   return (
-    <Card>
+    <Card sx={{ height: '100%' }}>
       <CardContent sx={{ 
         height: '100%', 
         display: 'flex', 

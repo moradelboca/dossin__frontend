@@ -16,6 +16,7 @@ import * as React from "react";
 import { useEffect, useState } from "react";
 import { ContextoGeneral } from "../Contexto";
 import CreadorUser from "./CreadorUser";
+import Avatar from "@mui/material/Avatar";
 
 interface EditToolbarProps {
     setRows: (newRows: (oldRows: GridRowsProp) => GridRowsProp) => void;
@@ -155,6 +156,17 @@ export default function TablaUser() {
                 {headerNames[index]}
             </strong>
         ),
+        ...(field === "imagen"
+            ? {
+                  renderCell: (params: any) => (
+                      params.value && params.value !== "No especificado" && params.value.startsWith("http") ? (
+                          <Avatar src={params.value} alt="avatar" imgProps={{ referrerPolicy: "no-referrer" }} />
+                      ) : (
+                          <Avatar />
+                      )
+                  ),
+              }
+            : {}),
     }));
     // Esta la definimos aparte porque renderiza un componente adentro.
     columns.push({
