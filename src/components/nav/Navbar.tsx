@@ -50,8 +50,9 @@ export default function Navbar(props: NavbarProps) {
       fetch(`${authURL}/auth/usuarios?email=${encodeURIComponent(user.email)}`)
         .then(res => res.json())
         .then(data => {
-          if (Array.isArray(data) && data.length > 0 && data[0].imagen && data[0].imagen.startsWith("http")) {
-            setProfileImage(data[0].imagen);
+          const found = Array.isArray(data) ? data.find((u: any) => u.email === user.email) : null;
+          if (found && found.imagen && found.imagen.startsWith("http")) {
+            setProfileImage(found.imagen);
           }
         })
         .catch(() => {});
