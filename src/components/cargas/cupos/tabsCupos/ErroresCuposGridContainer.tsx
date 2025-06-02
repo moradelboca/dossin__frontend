@@ -225,9 +225,13 @@ export const ErroresCuposGridContainer: React.FC<ErroresCuposGridContainerProps>
           <TurnoConErroresForm
             seleccionado={selectedTurno}
             datos={selectedTurno ? [selectedTurno] : []}
-            setDatos={() => refreshCupos()}
-            handleClose={handleCloseDialog} 
-            idCarga={idCarga}/>
+            setDatos={() => {
+              refreshCupos();
+              handleCloseDialog();
+            }}
+            handleClose={handleCloseDialog}
+            idCarga={idCarga}
+          />
         </DialogContent>
       </Dialog>
     </Box>

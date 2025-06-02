@@ -450,6 +450,8 @@ export default function CreadorTurno(props: CreadorProps) {
                                 >
                                     <DeleteTurno
                                         idTurno={idTurno}
+                                        idCarga={idCarga}
+                                        fecha={fecha}
                                         handleCloseDialog={handleCloseDialog}
                                         handleClose={handleClose}
                                         refreshCupos={refreshCupos}

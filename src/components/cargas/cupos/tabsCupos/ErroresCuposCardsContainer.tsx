@@ -32,7 +32,7 @@ export function ErroresCuposCardsContainer({ cupos, idCarga, refreshCupos }: Pro
     setOpenDialog(false);
   };
 
-  const renderErrorCards = (errores: any[]) => {
+  const renderErrorCards = (errores: any[], cupo: any) => {
     // Definimos los campos y nombres de cabecera para las cards de error
     const fields = [
         "idEstado.nombre",
@@ -72,6 +72,7 @@ export function ErroresCuposCardsContainer({ cupos, idCarga, refreshCupos }: Pro
         handleOpenDialog={() => handleOpenDialog(error)}
         tituloField="fechaCreacion"
         usarSinDesplegable={true}
+        cupo={cupo}
       />
     ));
   };
@@ -94,7 +95,7 @@ export function ErroresCuposCardsContainer({ cupos, idCarga, refreshCupos }: Pro
                   sx={{ overflowX: "auto", padding: "0 35px" }}
                   alignItems="center"
                 >
-                  {renderErrorCards(cupo.turnosConErrores)}
+                  {renderErrorCards(cupo.turnosConErrores, cupo)}
                 </Grid>
               </Box>
             )
@@ -134,6 +135,7 @@ export function ErroresCuposCardsContainer({ cupos, idCarga, refreshCupos }: Pro
               datos={selectedError ? [selectedError] : []}
               setDatos={() => {
                 refreshCupos();
+                handleCloseDialog();
               }}
               handleClose={handleCloseDialog}
               idCarga={idCarga}

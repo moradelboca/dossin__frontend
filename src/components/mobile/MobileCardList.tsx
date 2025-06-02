@@ -107,7 +107,6 @@ const MobileCardList: React.FC<MobileCardListProps> = ({
         headerNames={headerNames} 
         expandedCard={expandedCard} 
         handleExpandClick={handleExpandClick} 
-        // Se usa la función delegada desde el padre para abrir el diálogo
         handleOpenDialog={handleOpenDialog}
         tituloField={tituloField}
         subtituloField={subtituloField}

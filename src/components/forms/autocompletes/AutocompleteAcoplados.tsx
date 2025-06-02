@@ -1,6 +1,10 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Autocomplete, TextField } from '@mui/material';
 import { ContextoGeneral } from '../../Contexto';
+import AddIcon from '@mui/icons-material/Add';
+import Dialog from '@mui/material/Dialog';
+import AcopladoForm from '../acoplados/AcopladoForm';
+import { useTheme } from '@mui/material/styles';
 
 interface Acoplado {
   patente: string;
@@ -21,9 +25,12 @@ const AutocompleteAcoplados: React.FC<AutocompleteAcopladosProps> = ({
   helperText = '',
   tituloOpcional,
 }) => {
-  const { backendURL } = useContext(ContextoGeneral);
+  const { backendURL, theme } = useContext(ContextoGeneral);
   const [acoplados, setAcoplados] = useState<Acoplado[]>([]);
   const [localError, setLocalError] = useState<boolean>(false);
+  const [openDialog, setOpenDialog] = useState(false);
+  const handleAgregarNuevo = () => setOpenDialog(true);
+  const handleCloseDialog = () => setOpenDialog(false);
 
   useEffect(() => {
     fetch(`${backendURL}/acoplados`, {
@@ -57,23 +64,66 @@ const AutocompleteAcoplados: React.FC<AutocompleteAcopladosProps> = ({
     }
   }, [value, acoplados, tituloOpcional]);
 
+  const opciones = [...acoplados, '__add__'];
+
   return (
-    <Autocomplete
-      disablePortal
-      options={acoplados}
-      getOptionLabel={(option: Acoplado) => option.patente}
-      value={acoplados.find(a => a.patente === value) || null}
-      onChange={(_, newValue) => onChange(newValue ? newValue.patente : null)}
-      renderInput={(params) => (
-        <TextField
-          {...params}
-          label={tituloOpcional ? tituloOpcional : "Patente Acoplado"}
-          variant="outlined"
-          error={error || localError}
-          helperText={helperText || (localError ? "La patente ingresada no coincide con las disponibles" : "")}
+    <>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
+        <Autocomplete
+          disablePortal
+          options={opciones}
+          getOptionLabel={(option) =>
+            typeof option === 'string' && option === '__add__'
+              ? ''
+              : (option as Acoplado).patente
+          }
+          value={acoplados.find(a => a.patente === value) || null}
+          onChange={(_, newValue) => {
+            if (typeof newValue === 'string' && newValue === '__add__') {
+              handleAgregarNuevo();
+              return;
+            }
+            onChange(newValue ? (newValue as Acoplado).patente : null);
+          }}
+          renderOption={(props, option) => {
+            const { key, ...rest } = props;
+            if ('key' in rest) delete (rest as any).key;
+            if (typeof option === 'string' && option === '__add__') {
+              return (
+                <li key={key} {...rest} style={{ display: 'flex', alignItems: 'center', color: theme.colores.azul, fontWeight: 600 }}>
+                  <AddIcon fontSize="small" style={{ marginRight: 8, color: theme.colores.azul }} />
+                  <span>Agregar un acoplado</span>
+                </li>
+              );
+            }
+            const acoplado = option as Acoplado;
+            return <li key={key} {...rest}>{acoplado.patente}</li>;
+          }}
+          sx={{
+            width: 300,
+            '& .MuiAutocomplete-option': { fontWeight: 400 },
+            '& .Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: theme.colores.azul },
+            '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: theme.colores.azul },
+          }}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label={tituloOpcional ? tituloOpcional : "Patente Acoplado"}
+              variant="outlined"
+              error={error || localError}
+              helperText={helperText || (localError ? "La patente ingresada no coincide con las disponibles" : "")}
+              sx={{
+                '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: theme.colores.azul },
+                '& .MuiInputLabel-root.Mui-focused': { color: theme.colores.azul },
+              }}
+            />
+          )}
         />
-      )}
-    />
+      </div>
+      <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="md" fullWidth>
+        <AcopladoForm datos={acoplados} setDatos={setAcoplados} handleClose={handleCloseDialog} />
+      </Dialog>
+    </>
   );
 };
 

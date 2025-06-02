@@ -6,9 +6,7 @@ import MainButton from "../../../botones/MainButtom";
 interface PesajeFormProps {
   turnoId: number;
   initialData?: {
-    kgCargados?: number;
     kgDescargados?: number;
-    precioPorKilogramo?: number;
   };
   onSuccess: (updatedData: any) => void;
   onCancel: () => void;
@@ -21,16 +19,9 @@ const PesajeForm: React.FC<PesajeFormProps> = ({
   onCancel,
 }) => {
   const { backendURL } = useContext(ContextoGeneral);
-  const [kgCargados, setKgCargados] = useState<number | string>(
-    initialData?.kgCargados ?? ""
-  );
   const [kgDescargados, setKgDescargados] = useState<number | string>(
     initialData?.kgDescargados ?? ""
   );
-  const [precioPorKilogramo, setPrecioPorKilogramo] = useState<number | string>(
-    initialData?.precioPorKilogramo ?? ""
-  );
-  
   const [errors, setErrors] = useState<{ [key: string]: string | null }>({});
   const {theme} = useContext(ContextoGeneral);
 
@@ -39,43 +30,28 @@ const PesajeForm: React.FC<PesajeFormProps> = ({
 
   const validate = () => {
     const newErrors: { [key: string]: string | null } = {};
-
-    if (kgCargados === "" || isNaN(Number(kgCargados))) {
-      newErrors.kgCargados =
-        "Kilogramos cargados es obligatorio y debe ser un número";
-    }
     if (kgDescargados === "" || isNaN(Number(kgDescargados))) {
       newErrors.kgDescargados =
         "Kilogramos descargados es obligatorio y debe ser un número";
     }
-    if (precioPorKilogramo === "" || isNaN(Number(precioPorKilogramo))) {
-      newErrors.precioPorKilogramo =
-        "Precio por kg es obligatorio y debe ser un número";
-    }
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async () => {
     if (!validate()) {
-      console.log("Errores en la validación", errors);
       return;
     }
     try {
       const payload = {
-        kgCargados: Number(kgCargados),
         kgDescargados: Number(kgDescargados),
-        precioGrano: Number(precioPorKilogramo),
       };
-
       const url = `${backendURL}/turnos/${turnoId}`;
       const response = await fetch(url, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
-
       if (!response.ok) throw new Error(await response.text());
       const updatedData = await response.json();
       onSuccess(updatedData);
@@ -98,18 +74,6 @@ const PesajeForm: React.FC<PesajeFormProps> = ({
     <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
       <TextField
         margin="dense"
-        label="Kilogramos Cargados"
-        name="kgCargados"
-        variant="outlined"
-        fullWidth
-        value={kgCargados}
-        onChange={(e) => handleInputChange(e, setKgCargados)}
-        error={!!errors.kgCargados}
-        helperText={errors.kgCargados}
-        inputProps={{ inputMode: 'numeric', pattern: '[0-9]*', min: 0 }}
-      />
-      <TextField
-        margin="dense"
         label="Kilogramos Descargados"
         name="kgDescargados"
         variant="outlined"
@@ -118,31 +82,19 @@ const PesajeForm: React.FC<PesajeFormProps> = ({
         onChange={(e) => handleInputChange(e, setKgDescargados)}
         error={!!errors.kgDescargados}
         helperText={errors.kgDescargados}
-        inputProps={{ inputMode: 'numeric', pattern: '[0-9]*', min: 0 }} // Mismo cambio para evitar flechitas y negativos
-      />
-      <TextField
-        margin="dense"
-        label="Precio Por Kilogramo"
-        name="precioPorKilogramo"
-        variant="outlined"
-        fullWidth
-        value={precioPorKilogramo}
-        onChange={(e) => handleInputChange(e, setPrecioPorKilogramo)}
-        error={!!errors.precioPorKilogramo}
-        helperText={errors.precioPorKilogramo}
         inputProps={{ inputMode: 'numeric', pattern: '[0-9]*', min: 0 }}
       />
       <Box
-              sx={{
-                display: "flex",
-                flexDirection: isMobile ? "column" : "row",
-                gap: 1,
-                justifyContent: "flex-end",
-                alignItems: "center",
-                position: 'relative',
-                mt: 1,
-              }}
-            >
+        sx={{
+          display: "flex",
+          flexDirection: isMobile ? "column" : "row",
+          gap: 1,
+          justifyContent: "center",
+          alignItems: "center",
+          position: 'relative',
+          mt: 1,
+        }}
+      >
         <MainButton
           onClick={onCancel}
           text="Cancelar"
@@ -153,7 +105,6 @@ const PesajeForm: React.FC<PesajeFormProps> = ({
           hoverBackgroundColor="rgba(22, 54, 96, 0.1)"
           divWidth={isMobile ? '100%' : 'auto'}
         />
-
         <MainButton
           onClick={handleSubmit}
           text='Guardar'

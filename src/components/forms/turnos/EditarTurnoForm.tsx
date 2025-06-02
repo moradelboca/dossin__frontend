@@ -358,9 +358,7 @@ const EditarTurnoForm: React.FC<EditarTurnoFormProps> = ({
         <PesajeForm
           turnoId={seleccionado.id}
           initialData={{
-            kgCargados: seleccionado?.kgCargados,
-            kgDescargados: seleccionado?.kgDescargados,
-            precioPorKilogramo: seleccionado?.precioGrano,
+            kgDescargados: seleccionado?.kgDescargados
           }}
           onSuccess={(updatedData) => {
             setDatos(

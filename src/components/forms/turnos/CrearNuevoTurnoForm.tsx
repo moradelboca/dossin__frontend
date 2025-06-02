@@ -135,36 +135,36 @@ const CrearNuevoTurnoForm: React.FC<CrearNuevoTurnoFormProps> = ({
       </Box>
 
       <Box
-          sx={{
-            display: "flex",
-            flexDirection: isMobile ? "column" : "row",
-            gap: 1,
-            justifyContent: "flex-end",
-            alignItems: "center",
-            position: 'relative',
-            mt: 2
-          }}
-        >
-          <MainButton
-            onClick={handleClose}
-            text="Cancelar"
-            backgroundColor="transparent"
-            textColor={theme.colores.azul}
-            width={isMobile ? '100%' : 'auto'}
-            borderRadius="8px"
-            hoverBackgroundColor="rgba(22, 54, 96, 0.1)"
-            divWidth={isMobile ? '100%' : 'auto'}
-          />
-          <MainButton
-            onClick={handleSubmit}
-            text='Guardar'
-            backgroundColor={theme.colores.azul}
-            textColor="#fff"
-            width={isMobile ? '100%' : 'auto'}
-            borderRadius="8px"
-            hoverBackgroundColor={theme.colores.azulOscuro}
-            divWidth={isMobile ? '100%' : 'auto'}
-          />
+        sx={{
+          display: "flex",
+          flexDirection: isMobile ? "column" : "row",
+          gap: 1,
+          justifyContent: "center",
+          alignItems: "center",
+          position: 'relative',
+          mt: 2
+        }}
+      >
+        <MainButton
+          onClick={handleClose}
+          text="Cancelar"
+          backgroundColor="transparent"
+          textColor={theme.colores.azul}
+          width={isMobile ? '100%' : 'auto'}
+          borderRadius="8px"
+          hoverBackgroundColor="rgba(22, 54, 96, 0.1)"
+          divWidth={isMobile ? '100%' : 'auto'}
+        />
+        <MainButton
+          onClick={handleSubmit}
+          text='Guardar'
+          backgroundColor={theme.colores.azul}
+          textColor="#fff"
+          width={isMobile ? '100%' : 'auto'}
+          borderRadius="8px"
+          hoverBackgroundColor={theme.colores.azulOscuro}
+          divWidth={isMobile ? '100%' : 'auto'}
+        />
       </Box>
     </Box>
   );

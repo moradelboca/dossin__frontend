@@ -12,6 +12,7 @@ interface TaraFormProps {
     pesoTara?: number;
     pesoBruto?: number;
   };
+  turno?: any;
   onSuccess: (updatedData: any) => void;
   onCancel: () => void;
 }
@@ -19,6 +20,7 @@ interface TaraFormProps {
 const TaraForm: React.FC<TaraFormProps> = ({
   turnoId,
   initialTara,
+  turno,
   onSuccess,
   onCancel,
 }) => {
@@ -56,11 +58,12 @@ const TaraForm: React.FC<TaraFormProps> = ({
     if (!validate()) return;
 
     try {
-      const result = await handleTaraSubmission(turnoId, {
-        idTara: initialTara?.id,
-        pesoTara: Number(pesoTara),
-        pesoBruto: Number(pesoBruto),
-      });
+      const payload = {
+        ...(turno || {}),
+        kgTara: Number(pesoTara),
+        kgBruto: Number(pesoBruto),
+      };
+      const result = await handleTaraSubmission(turnoId, payload);
       onSuccess(result);
     } catch (error) {
       console.error("Error al procesar tara:", error);
@@ -107,12 +110,11 @@ const TaraForm: React.FC<TaraFormProps> = ({
           display: "flex",
           flexDirection: isMobile ? "column" : "row",
           gap: 1,
-          justifyContent: "flex-end",
+          justifyContent: "center",
           alignItems: "center",
           position: 'relative',
         }}
       >
-
         <MainButton
           onClick={onCancel}
           text="Cancelar"
@@ -123,7 +125,6 @@ const TaraForm: React.FC<TaraFormProps> = ({
           hoverBackgroundColor="rgba(22, 54, 96, 0.1)"
           divWidth={isMobile ? '100%' : 'auto'}
         />
-
         <MainButton
           onClick={handleSubmit}
           text={initialTara?.id ? 'Actualizar' : 'Crear'}
@@ -134,7 +135,6 @@ const TaraForm: React.FC<TaraFormProps> = ({
           hoverBackgroundColor={theme.colores.azulOscuro}
           divWidth={isMobile ? '100%' : 'auto'}
         />
-
         {/* Mostrar el botón de eliminar solo si existe una tara */}
         {initialTara?.id && (
           <IconButton onClick={handleOpenDeleteDialog}>

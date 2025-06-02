@@ -130,20 +130,20 @@ const CrearCargaStepper: React.FC<CrearCargaStepperProps> = ({
   const pasos = useMemo(
     () => [
       {
-        titulo: "Seleccionar Proveedor",
-        componente: <SelectorProveedor />,
-      },
-      {
         titulo: "Seleccionar ubicacion y horarios",
         componente: <SelectorDeUbicacion />,
       },
       {
-        titulo: "Seleccionar acoplados permitidos",
-        componente: <SelectorDeAcoplados />,
+        titulo: "Seleccionar kilometros y cargamento",
+        componente: <SelectorProveedor />,
       },
       {
         titulo: "Seleccionar tarifa",
         componente: <SelectorTarifa />,
+      },
+      {
+        titulo: "Selecciona tipos de acoplados permitidos",
+        componente: <SelectorDeAcoplados />,
       },
       {
         titulo: "Mas informacion",
