@@ -4,7 +4,6 @@ import { ContextoGeneral } from '../../Contexto';
 import AddIcon from '@mui/icons-material/Add';
 import Dialog from '@mui/material/Dialog';
 import AcopladoForm from '../acoplados/AcopladoForm';
-import { useTheme } from '@mui/material/styles';
 
 interface Acoplado {
   patente: string;
