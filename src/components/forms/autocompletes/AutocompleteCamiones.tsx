@@ -4,7 +4,6 @@ import { ContextoGeneral } from '../../Contexto';
 import AddIcon from '@mui/icons-material/Add';
 import Dialog from '@mui/material/Dialog';
 import CamionForm from '../camiones/CamionForm';
-import { useTheme } from '@mui/material/styles';
 
 interface Camion {
   patente: string;
