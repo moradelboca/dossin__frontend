@@ -73,6 +73,8 @@ const getEstadoStyles = (nombre: string) => {
       return { color: "#008000", fontWeight: "bold" };
     case "pendiente":
       return { color: "#FF0000", fontWeight: "bold" };
+    case "activo":
+      return { color: "#FFD600", fontWeight: "bold" };
     default:
       return { color: "black" };
   }
@@ -83,9 +85,11 @@ const getUrgenciaStyles = (nombre: string) => {
     case "leve":
       return { backgroundColor: "#BFE4DC", color: "#418C75" };
     case "media":
-      return { backgroundColor: "#F3D3C6", color: "#CB723A" };
+      return { backgroundColor: "#FFF9C4", color: "#FFD600" };
+    case "alta":
+      return { backgroundColor: "#F8D7DA", color: "#C62828" };
     case "urgente":
-      return { backgroundColor: "#E9BBC6", color: "#892233" };
+      return { backgroundColor: "#F8D7DA", color: "#C62828" };
     default:
       return { backgroundColor: "transparent", color: "black" };
   }

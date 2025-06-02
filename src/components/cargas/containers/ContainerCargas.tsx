@@ -72,7 +72,29 @@ export function ContainerCargas() {
       })
         .then((res) => res.json())
         .then((data) => {
-          setCupos(data);
+          // Normalizar los campos de los turnos
+          const cuposNormalizados = Array.isArray(data)
+            ? data.map((cupo: any) => ({
+                ...cupo,
+                turnos: Array.isArray(cupo.turnos)
+                  ? cupo.turnos.map((turno: any) => ({
+                      ...turno,
+                      camion: typeof turno.camion === "string" ? { patente: turno.camion } : turno.camion,
+                      acoplado: typeof turno.acoplado === "string" ? { patente: turno.acoplado } : turno.acoplado,
+                      acopladoExtra: typeof turno.acopladoExtra === "string" ? { patente: turno.acopladoExtra } : turno.acopladoExtra,
+                    }))
+                  : [],
+                turnosConErrores: Array.isArray(cupo.turnosConErrores)
+                  ? cupo.turnosConErrores.map((turno: any) => ({
+                      ...turno,
+                      camion: typeof turno.camion === "string" ? { patente: turno.camion } : turno.camion,
+                      acoplado: typeof turno.acoplado === "string" ? { patente: turno.acoplado } : turno.acoplado,
+                      acopladoExtra: typeof turno.acopladoExtra === "string" ? { patente: turno.acopladoExtra } : turno.acopladoExtra,
+                    }))
+                  : [],
+              }))
+            : [];
+          setCupos(cuposNormalizados);
         })
         .catch(() => {
           setCupos([]);

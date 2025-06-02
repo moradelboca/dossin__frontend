@@ -434,7 +434,7 @@ const FacturaForm: React.FC<FacturaFormProps> = ({
             display: "flex",
             flexDirection: isMobile ? "column" : "row",
             gap: 1,
-            justifyContent: "flex-end",
+            justifyContent: "center",
             alignItems: "center",
             position: 'relative'
           }}

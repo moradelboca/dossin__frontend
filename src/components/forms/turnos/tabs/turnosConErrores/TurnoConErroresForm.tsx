@@ -12,6 +12,7 @@ interface TurnoConErroresFormProps {
   setDatos: (data: any) => void;
   handleClose: () => void;
   idCarga: any;
+  refreshCupos?: () => void;
 }
 
 const TurnoConErroresForm: React.FC<TurnoConErroresFormProps> = ({
@@ -20,6 +21,7 @@ const TurnoConErroresForm: React.FC<TurnoConErroresFormProps> = ({
   setDatos,
   handleClose,
   idCarga,
+  refreshCupos,
 }) => {
   const { backendURL, theme } = useContext(ContextoGeneral);
 
@@ -94,7 +96,7 @@ const TurnoConErroresForm: React.FC<TurnoConErroresFormProps> = ({
 
   const handleSubmit = async () => {
     const payload = {
-      idEstado: 3,
+      idEstado: 5,
       cuilColaborador: colaboradorSeleccionado,
       cuitEmpresa: empresaSeleccionada,
       patenteCamion: patenteCamionSeleccionada,
@@ -103,7 +105,7 @@ const TurnoConErroresForm: React.FC<TurnoConErroresFormProps> = ({
     };
 
     try {
-      const response = await fetch(`${backendURL}/turnos/errores/${seleccionado.id}`, {
+      const response = await fetch(`${backendURL}/turnos/${seleccionado.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -117,6 +119,7 @@ const TurnoConErroresForm: React.FC<TurnoConErroresFormProps> = ({
         )
       );
       handleClose();
+      if (refreshCupos) refreshCupos();
     } catch (error: any) {
       console.error(`Error: ${error.message}`);
     }

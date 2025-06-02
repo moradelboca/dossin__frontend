@@ -23,25 +23,53 @@ interface ContratoItemProps {
       setOpenCargaDialog(true);
     };
   
-    const fields = ["cargamento.id"];
-    const headerNames = ["Cargamento"];
+    const fields = [
+      
+      "cantidadKm",
+      "tarifa",
+      "tipoTarifa.nombre",
+      "cargamento.nombre"
+    ];
+    const headerNames = [
+    
+      "Kilómetros",
+      "Tarifa",
+      "Unidad",
+      "Cargamento"
+    ];
   
     const renderCards = () => {
-        return (contrato.cargas || []).map((carga: any, index: number) => (
-            <CardMobile
-                key={carga.id || index}
-                item={carga}
-                index={index}
-                fields={fields}
-                headerNames={headerNames}
-                expandedCard={null}
-                handleExpandClick={() => {}}
-                handleOpenDialog={() => handleOpenCargaDialog(carga)}
-                tituloField="remitenteProductor.nombreFantasia"
-                subtituloField="remitenteProductor.cuit"
-                usarSinDesplegable={true}
-            />
-        ));
+        return (contrato.cargas || []).map((carga: any, index: number) => {
+            // Título: nombre de la ubicación y provincia
+            const ubicacion = carga.ubicacionCarga?.nombre || "No especificado";
+            const provincia = carga.ubicacionCarga?.localidad?.provincia?.nombre || "No especificado";
+            // Subtítulo: ubicación de descarga y provincia
+            const ubicacionDescarga = carga.ubicacionDescarga?.nombre || "No especificado";
+            const provinciaDescarga = carga.ubicacionDescarga?.localidad?.provincia?.nombre || "No especificado";
+            const cargaConTitulo = {
+                ...carga,
+                tituloCustom: `${ubicacion} - ${provincia}`,
+                subtituloCustom: `${ubicacionDescarga} - ${provinciaDescarga}`
+            };
+
+   
+
+            return (
+                <CardMobile
+                    key={carga.id || index}
+                    item={cargaConTitulo}
+                    index={index}
+                    fields={fields}
+                    headerNames={headerNames}
+                    expandedCard={null}
+                    handleExpandClick={() => {}}
+                    handleOpenDialog={() => handleOpenCargaDialog(carga)}
+                    tituloField="tituloCustom"
+                    subtituloField="subtituloCustom"
+                    usarSinDesplegable={true}
+                />
+            );
+        });
     };
   
     return (

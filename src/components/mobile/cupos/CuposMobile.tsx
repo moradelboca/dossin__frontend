@@ -95,10 +95,25 @@ export default function CuposMobile({
     setOpenDialogCupo(false);
   };
 
-  const handleOpenDialogTurno = (turno: Turno | null, cupo: Cupo) => {
-    setSelectedTurno(turno);
+  const handleOpenDialogTurno = async (turno: Turno | null, cupo: Cupo) => {
+    if (!turno) return;
+    setSelectedTurno(null);
     setSelectedCupo(cupo);
     setOpenDialogTurno(true);
+    try {
+      const backendURL = import.meta.env.VITE_BACKEND_URL || '';
+      const response = await fetch(`${backendURL}/cargas/${cupo.carga}/cupos/${cupo.fecha}/turnos/${turno.id}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': 'true',
+        },
+      });
+      const turnoDetalle = await response.json();
+      setSelectedTurno(turnoDetalle);
+    } catch (e) {
+      setSelectedTurno(turno); // fallback a datos básicos
+    }
   };
   const handleCloseDialogTurno = () => {
     setSelectedTurno(null);
@@ -198,7 +213,7 @@ export default function CuposMobile({
           handleOpenDialog={() => handleOpenDialogTurno(turno, cupo)}
           tituloField="colaborador.nombre"
           subtituloField="colaborador.cuil"
-          onActionSuccess={refreshCupos}
+          refreshCupos={refreshCupos}
           cupo={cupo}
         />
       </Box>
@@ -251,7 +266,7 @@ export default function CuposMobile({
           handleOpenDialog={() => handleOpenDialogError(error)}
           tituloField="id"
           subtituloField="fechaCreacion"
-          onActionSuccess={refreshCupos}
+          refreshCupos={refreshCupos}
           cupo={cupo}
         />
       </Box>
@@ -508,9 +523,10 @@ export default function CuposMobile({
             datos={selectedError ? [selectedError] : []}
             setDatos={() => {
               refreshCupos();
-            } }
-            handleClose={handleCloseDialogError} 
-            idCarga={idCarga}          
+              handleCloseDialogError();
+            }}
+            handleClose={handleCloseDialogError}
+            idCarga={idCarga}
           />
         </DialogContent>
       </Dialog>

@@ -1,6 +1,10 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Autocomplete, TextField } from '@mui/material';
 import { ContextoGeneral } from '../../Contexto';
+import AddIcon from '@mui/icons-material/Add';
+import Dialog from '@mui/material/Dialog';
+import CamionForm from '../camiones/CamionForm';
+import { useTheme } from '@mui/material/styles';
 
 interface Camion {
   patente: string;
@@ -20,9 +24,10 @@ const AutocompleteCamiones: React.FC<AutocompleteCamionesProps> = ({
   error = false,
   helperText = '',
 }) => {
-  const { backendURL } = useContext(ContextoGeneral);
+  const { backendURL, theme } = useContext(ContextoGeneral);
   const [camiones, setCamiones] = useState<Camion[]>([]);
   const [localError, setLocalError] = useState<boolean>(false);
+  const [openDialog, setOpenDialog] = useState(false);
 
   useEffect(() => {
     fetch(`${backendURL}/camiones`, {
@@ -44,23 +49,69 @@ const AutocompleteCamiones: React.FC<AutocompleteCamionesProps> = ({
     }
   }, [value, camiones]);
 
+  const handleAgregarNuevo = () => setOpenDialog(true);
+  const handleCloseDialog = () => setOpenDialog(false);
+
+  const opciones = [...camiones, '__add__'];
+
   return (
-    <Autocomplete
-      disablePortal
-      options={camiones}
-      getOptionLabel={(option: Camion) => option.patente}
-      value={camiones.find(c => c.patente === value) || null}
-      onChange={(_, newValue) => onChange(newValue ? newValue.patente : null)}
-      renderInput={(params) => (
-        <TextField
-          {...params}
-          label="Patente Camión"
-          variant="outlined"
-          error={error || localError}
-          helperText={helperText || (localError ? "La patente ingresada no coincide con las disponibles" : "")}
+    <>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
+        <Autocomplete
+          disablePortal
+          options={opciones}
+          getOptionLabel={(option) =>
+            typeof option === 'string' && option === '__add__'
+              ? ''
+              : (option as Camion).patente
+          }
+          value={camiones.find(c => c.patente === value) || null}
+          onChange={(_, newValue) => {
+            if (typeof newValue === 'string' && newValue === '__add__') {
+              handleAgregarNuevo();
+              return;
+            }
+            onChange(newValue ? (newValue as Camion).patente : null);
+          }}
+          renderOption={(props, option) => {
+            const { key, ...rest } = props;
+            if ('key' in rest) delete (rest as any).key;
+            if (typeof option === 'string' && option === '__add__') {
+              return (
+                <li key={key} {...rest} style={{ display: 'flex', alignItems: 'center', color: theme.colores.azul, fontWeight: 600 }}>
+                  <AddIcon fontSize="small" style={{ marginRight: 8, color: theme.colores.azul }} />
+                  <span>Agregar un camión</span>
+                </li>
+              );
+            }
+            const cam = option as Camion;
+            return <li key={key} {...rest}>{cam.patente}</li>;
+          }}
+          sx={{
+            width: 300,
+            '& .MuiAutocomplete-option': { fontWeight: 400 },
+            '& .Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: theme.colores.azul },
+            '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: theme.colores.azul },
+          }}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label="Patente Camión"
+              variant="outlined"
+              error={error || localError}
+              helperText={helperText || (localError ? "La patente ingresada no coincide con las disponibles" : "")}
+              sx={{
+                '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: theme.colores.azul },
+                '& .MuiInputLabel-root.Mui-focused': { color: theme.colores.azul },
+              }}
+            />
+          )}
         />
-      )}
-    />
+      </div>
+      <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="md" fullWidth>
+        <CamionForm datos={camiones} setDatos={setCamiones} handleClose={handleCloseDialog} />
+      </Dialog>
+    </>
   );
 };
 

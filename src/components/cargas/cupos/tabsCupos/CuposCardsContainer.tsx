@@ -31,10 +31,24 @@ export function CuposCardsContainer({
   const [selectedTurno, setSelectedTurno] = useState<any>(null);
   const [selectedCupo, setSelectedCupo] = useState<any>(null);
 
-  const handleOpenDialog = (turno: any, cupo: any) => {
-    setSelectedTurno(turno);
+  const handleOpenDialog = async (turno: any, cupo: any) => {
+    setSelectedTurno(null);
     setSelectedCupo(cupo);
     setOpenDialog(true);
+    try {
+      const backendURL = import.meta.env.VITE_BACKEND_URL || '';
+      const response = await fetch(`${backendURL}/cargas/${cupo.carga}/cupos/${cupo.fecha}/turnos/${turno.id}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': 'true',
+        },
+      });
+      const turnoDetalle = await response.json();
+      setSelectedTurno(turnoDetalle);
+    } catch (e) {
+      setSelectedTurno(turno); // fallback a datos básicos
+    }
   };
 
   const handleCloseDialog = () => {
@@ -45,9 +59,9 @@ export function CuposCardsContainer({
   const renderCards = (turnos: any[], cupo: any) => {
     return turnos?.map((turno, index) => {
       const textoBoton =
-        turno.estado.nombre === "Validado"
+        turno?.estado?.nombre === "Validado"
           ? "Validar turno"
-          : turno.estado.nombre === "conErrores"
+          : turno?.estado?.nombre === "conErrores"
             ? "Corregir turno"
             : "";
 
@@ -65,6 +79,8 @@ export function CuposCardsContainer({
           subtituloField="colaborador.cuil"
           usarSinDesplegable={true}
           textoBoton={textoBoton}
+          refreshCupos={refreshCupos}
+          cupo={cupo}
         />
       );
     });

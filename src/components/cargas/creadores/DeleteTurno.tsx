@@ -5,6 +5,8 @@ import ClearSharpIcon from "@mui/icons-material/ClearSharp";
 
 interface Turnos {
     idTurno: any;
+    idCarga: any;
+    fecha: any;
     handleCloseDialog: any;
     handleClose: any;
     refreshCupos: any;
@@ -19,21 +21,23 @@ export default function DeleteTurno(props: Turnos) {
 
     const borrarTurno = () => {
         fetch(`${backendURL}/turnos/${idTurno}`, {
-            method: "PUT",
-
+            method: "DELETE",
             headers: {
                 "Content-Type": "application/json",
                 "ngrok-skip-browser-warning": "true",
             },
         })
-            .then((response) => response.json())
+            .then((response) => {
+                if (!response.ok) throw new Error('Error al borrar el turno');
+                return response.json();
+            })
             .then(() => {
                 handleCloseDialog();
                 refreshCupos();
                 handleClose();
             })
             .catch((error) => {
-                console.error("Error al borrar el acoplado", error);
+                console.error("Error al borrar el turno", error);
             });
     };
 

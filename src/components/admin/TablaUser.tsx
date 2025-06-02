@@ -251,7 +251,7 @@ export default function TablaUser() {
                                     nombreDeUsuario:
                                         user?.nombreDeUsuario ||
                                         "No especificado",
-                                    imagen: user?.imagen || "No especificado",
+                                    imagen: user?.imagen || undefined,
                                     rolNombre:
                                         user?.rol.nombre || "No especificado",
                                     rolId: user?.rol.id || "No especificado",

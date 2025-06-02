@@ -56,11 +56,25 @@ export function ContainerCupos() {
     })
       .then((response) => response.json())
       .then((cupos) => {
-        // Forzar nueva referencia de objetos internos y arrays internos
+        // Forzar nueva referencia de objetos internos y arrays internos y normalizar campos
         const cuposClonados = cupos.map((cupo: any) => ({
           ...cupo,
-          turnos: Array.isArray(cupo.turnos) ? [...cupo.turnos] : [],
-          turnosConErrores: Array.isArray(cupo.turnosConErrores) ? [...cupo.turnosConErrores] : [],
+          turnos: Array.isArray(cupo.turnos)
+            ? cupo.turnos.map((turno: any) => ({
+                ...turno,
+                camion: typeof turno.camion === "string" ? { patente: turno.camion } : turno.camion,
+                acoplado: typeof turno.acoplado === "string" ? { patente: turno.acoplado } : turno.acoplado,
+                acopladoExtra: typeof turno.acopladoExtra === "string" ? { patente: turno.acopladoExtra } : turno.acopladoExtra,
+              }))
+            : [],
+          turnosConErrores: Array.isArray(cupo.turnosConErrores)
+            ? cupo.turnosConErrores.map((turno: any) => ({
+                ...turno,
+                camion: typeof turno.camion === "string" ? { patente: turno.camion } : turno.camion,
+                acoplado: typeof turno.acoplado === "string" ? { patente: turno.acoplado } : turno.acoplado,
+                acopladoExtra: typeof turno.acopladoExtra === "string" ? { patente: turno.acopladoExtra } : turno.acopladoExtra,
+              }))
+            : [],
         }));
         setCupos(cuposClonados);
         setEstadoCarga("Cargado");

@@ -475,33 +475,36 @@ const ContratoForm: React.FC<FormularioProps> = ({
   // Inicializar empresasPorRol al editar un contrato
   useEffect(() => {
     if (safeSeleccionado && roles.length > 0 && safeSeleccionado.id) {
-      // Mapeo de nombre de campo a nombre de rol
-      const mapping = [
-        { rol: "Titular Carta de Porte", field: "titularCartaDePorte" },
-        { rol: "Destino", field: "destino" },
-        { rol: "Destinatario", field: "destinatario" },
-      ];
-      const nuevasEmpresasPorRol: { [rolId: number]: any | null } = {};
-      mapping.forEach(({ rol, field }) => {
-        const rolId = getRolIdByName(rol);
-        if (rolId !== undefined && safeSeleccionado[field]) {
-          nuevasEmpresasPorRol[rolId] = safeSeleccionado[field];
-        }
-      });
-      // Para otros roles dinámicos
-      roles.forEach((rolObj: any) => {
-        if (
-          !nuevasEmpresasPorRol[rolObj.id] &&
-          safeSeleccionado[rolObj.nombre]
-        ) {
-          nuevasEmpresasPorRol[rolObj.id] = safeSeleccionado[rolObj.nombre];
-        }
-      });
-      setEmpresasPorRol(nuevasEmpresasPorRol);
+      // Solo inicializar si empresasPorRol está vacío
+      if (Object.keys(empresasPorRol).length === 0) {
+        const mapping = [
+          { rol: "Titular Carta de Porte", field: "titularCartaDePorte" },
+          { rol: "Destino", field: "destino" },
+          { rol: "Destinatario", field: "destinatario" },
+        ];
+        const nuevasEmpresasPorRol: { [rolId: number]: any | null } = {};
+        mapping.forEach(({ rol, field }) => {
+          const rolId = getRolIdByName(rol);
+          if (rolId !== undefined && safeSeleccionado[field]) {
+            nuevasEmpresasPorRol[rolId] = safeSeleccionado[field];
+          }
+        });
+        // Para otros roles dinámicos
+        roles.forEach((rolObj: any) => {
+          if (
+            !nuevasEmpresasPorRol[rolObj.id] &&
+            safeSeleccionado[rolObj.nombre]
+          ) {
+            nuevasEmpresasPorRol[rolObj.id] = safeSeleccionado[rolObj.nombre];
+          }
+        });
+        setEmpresasPorRol(nuevasEmpresasPorRol);
+      }
     } else if (!safeSeleccionado || !safeSeleccionado.id) {
       setEmpresasPorRol({}); // Crear: vacíos
     }
-  }, [safeSeleccionado, roles]);
+    // eslint-disable-next-line
+  }, [safeSeleccionado?.id, roles.length]);
 
   return (
     <>

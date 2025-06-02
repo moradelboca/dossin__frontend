@@ -14,12 +14,11 @@ export function useUserProfileImage(email?: string) {
     }
     setLoading(true);
     setError(null);
-    fetch(`${authURL}/auth/usuarios?email=${encodeURIComponent(email)}`)
+    fetch(`${authURL}/auth/usuarios/email/${encodeURIComponent(email)}`)
       .then(res => res.json())
       .then(data => {
-        const found = Array.isArray(data) ? data.find((u: any) => u.email === email) : null;
-        if (found && found.imagen && found.imagen.startsWith("http")) {
-          setProfileImage(found.imagen);
+        if (data && data.imagen && data.imagen.startsWith("http")) {
+          setProfileImage(data.imagen);
         } else {
           setProfileImage(undefined);
         }

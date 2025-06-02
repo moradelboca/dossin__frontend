@@ -1,25 +1,20 @@
 import React, { useState } from "react";
 import {
   Box,
-  Typography,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
   TableRow,
-  Collapse,
-  IconButton,
   Paper,
-  Button,
   Dialog,
   DialogTitle,
   DialogContent,
 } from "@mui/material";
-import { KeyboardArrowDown, KeyboardArrowUp } from "@mui/icons-material";
-import { TarjetaCupos } from "../TarjetaCupos";
 import TurnoForm from "../../../forms/turnos/TurnoForm";
-import useTransformarCampo from "../../../hooks/useTransformarCampo"; // Ajusta la ruta según corresponda
+import TurnoGridRow from './TurnoGridRow';
+import { TarjetaCupos } from '../TarjetaCupos';
 
 interface Turno {
   id: number;
@@ -54,23 +49,28 @@ export const CuposGridContainer: React.FC<CuposGridContainerProps> = ({
   cupos,
   refreshCupos,
 }) => {
-  const [openRows, setOpenRows] = useState<{ [key: number]: boolean }>({});
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedTurno, setSelectedTurno] = useState<any>(null);
-  const [selectedCupo, setSelectedCupo] = useState<any>(null);
 
-  // Hook para transformar campos null o vacíos en "No especificado"
-  const transformarCampo = useTransformarCampo();
-
-  const handleToggleRow = (id: number) => {
-    setOpenRows((prev) => ({ ...prev, [id]: !prev[id] }));
-  };
-
-  const handleOpenDialog = (turno: any, cupo: any) => {
-    setSelectedTurno(turno);
-    setSelectedCupo(cupo);
-    setOpenDialog(true);
-  };
+  // Definir los mismos fields y headerNames que CardMobile
+  const fields = [
+    "colaborador.nombre",
+    "colaborador.cuil",
+    "estado.nombre",
+    "empresa.cuit",
+    "tara.pesoNeto",
+    "camion.patente",
+    "acoplado.patente",
+  ];
+  const headerNames = [
+    "Nombre",
+    "Cuil",
+    "Estado",
+    "Cuit Empresa",
+    "Tara",
+    "Patente Camión",
+    "Patente Acoplado",
+  ];
 
   const handleCloseDialog = () => {
     setSelectedTurno(null);
@@ -89,8 +89,8 @@ export const CuposGridContainer: React.FC<CuposGridContainerProps> = ({
               cuposConfirmados={cupo.turnos.length}
               idCarga={cupo.carga}
               refreshCupos={refreshCupos}
-              estaEnElGrid={true} 
-              cupos={[]}            
+              estaEnElGrid={true}
+              cupos={[]}
             />
 
             {/* Tabla de turnos */}
@@ -98,159 +98,23 @@ export const CuposGridContainer: React.FC<CuposGridContainerProps> = ({
               <Table>
                 <TableHead>
                   <TableRow>
-                    <TableCell>Nombre</TableCell>
-                    <TableCell>Cuil</TableCell>
+                    {headerNames.map((header, idx) => (
+                      <TableCell key={idx}>{header}</TableCell>
+                    ))}
                     <TableCell>Estado</TableCell>
-                    <TableCell>Cuit Empresa</TableCell>
-                    <TableCell>Tara</TableCell>
-                    <TableCell>Patente Camión</TableCell>
-                    <TableCell>Patente Acoplado</TableCell>
-                    <TableCell />
+                    <TableCell>Acciones</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
                   {cupo.turnos.map((turno) => (
                     <React.Fragment key={turno.id}>
-                      <TableRow>
-                        <TableCell>
-                          <Typography variant="body2">
-                            {transformarCampo("colaborador.nombre", turno)}{" "}
-                            {transformarCampo("colaborador.apellido", turno)}
-                          </Typography>
-                        </TableCell>
-                        <TableCell>
-                          {transformarCampo("colaborador.cuil", turno)}
-                        </TableCell>
-                        <TableCell>
-                          {transformarCampo("estado.nombre", turno)}
-                        </TableCell>
-                        <TableCell>
-                          {transformarCampo("empresa.cuit", turno)}
-                        </TableCell>
-                        <TableCell>
-                          {transformarCampo("tara.pesoNeto", turno)}
-                        </TableCell>
-                        <TableCell>
-                          {transformarCampo("camion.patente", turno)}
-                        </TableCell>
-                        <TableCell>
-                          {transformarCampo("acoplado.patente", turno)}
-                        </TableCell>
-                        <TableCell>
-                          <IconButton
-                            size="small"
-                            onClick={() => handleToggleRow(turno.id)}
-                          >
-                            {openRows[turno.id] ? (
-                              <KeyboardArrowUp />
-                            ) : (
-                              <KeyboardArrowDown />
-                            )}
-                          </IconButton>
-                        </TableCell>
-                      </TableRow>
-                      <TableRow>
-                        <TableCell
-                          style={{ paddingBottom: 0, paddingTop: 0 }}
-                          colSpan={8}
-                        >
-                          <Collapse
-                            in={openRows[turno.id]}
-                            timeout="auto"
-                            unmountOnExit
-                          >
-                            <Box margin={2}>
-                              <Box display="flex" alignItems="center">
-                                <Typography
-                                  variant="body2"
-                                  fontWeight="bold"
-                                  mr={1}
-                                >
-                                  Patente Acoplado Extra:
-                                </Typography>
-                                <Typography variant="body2">
-                                  {transformarCampo("acopladoExtra.patente", turno)}
-                                </Typography>
-                              </Box>
-
-                              <Box display="flex" alignItems="center">
-                                <Typography
-                                  variant="body2"
-                                  fontWeight="bold"
-                                  mr={1}
-                                >
-                                  Número CP:
-                                </Typography>
-                                <Typography variant="body2">
-                                  {transformarCampo("numeroCP", turno)}
-                                </Typography>
-                              </Box>
-
-                              <Box display="flex" alignItems="center">
-                                <Typography
-                                  variant="body2"
-                                  fontWeight="bold"
-                                  mr={1}
-                                >
-                                  Kg Cargados:
-                                </Typography>
-                                <Typography variant="body2">
-                                  {transformarCampo("kgCargados", turno)}
-                                </Typography>
-                              </Box>
-
-                              <Box display="flex" alignItems="center">
-                                <Typography
-                                  variant="body2"
-                                  fontWeight="bold"
-                                  mr={1}
-                                >
-                                  Kg Descargados:
-                                </Typography>
-                                <Typography variant="body2">
-                                  {transformarCampo("kgDescargados", turno)}
-                                </Typography>
-                              </Box>
-
-                              <Box display="flex" alignItems="center">
-                                <Typography
-                                  variant="body2"
-                                  fontWeight="bold"
-                                  mr={1}
-                                >
-                                  Precio Grano:
-                                </Typography>
-                                <Typography variant="body2">
-                                  {transformarCampo("precioGrano", turno)}
-                                </Typography>
-                              </Box>
-
-                              <Box display="flex" alignItems="center">
-                                <Typography
-                                  variant="body2"
-                                  fontWeight="bold"
-                                  mr={1}
-                                >
-                                  Nro Orden de Pago:
-                                </Typography>
-                                <Typography variant="body2">
-                                  {transformarCampo("NumOrdenDePago", turno)}
-                                </Typography>
-                              </Box>
-
-                              {/* Botón para editar turno */}
-                              <Box display="flex" justifyContent="flex-start" mt={2}>
-                                <Button
-                                  variant="contained"
-                                  onClick={() => handleOpenDialog(turno, cupo)}
-                                >
-                                  Editar Turno
-                                </Button>
-                              </Box>
-                            </Box>
-                          </Collapse>
-                        </TableCell>
-                      </TableRow>
+                      <TurnoGridRow
+                        turno={turno}
+                        cupo={cupo}
+                        refreshCupos={refreshCupos}
+                        fields={fields}
+                      />
+                      {/* Si quieres mantener el collapse para detalles extra, puedes dejarlo aquí o quitarlo si no es necesario */}
                     </React.Fragment>
                   ))}
                 </TableBody>
@@ -264,8 +128,8 @@ export const CuposGridContainer: React.FC<CuposGridContainerProps> = ({
           <TurnoForm
             seleccionado={selectedTurno}
             handleClose={handleCloseDialog}
-            idCarga={selectedCupo?.carga}
-            fechaCupo={selectedCupo?.fecha} // Se pasa la fecha del cupo
+            idCarga={undefined}
+            fechaCupo={undefined}
             datos={cupos}
             setDatos={refreshCupos}
           />
