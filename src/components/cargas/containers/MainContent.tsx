@@ -10,12 +10,15 @@ import ContainerDetalles from "./ContainerDetalles";
 interface MainContentProps {
   cargaSeleccionada: any;
   onDeleteCarga: () => void;
+  rolId?: number;
 }
 
 const MainContent: React.FC<MainContentProps> = ({
   cargaSeleccionada,
   onDeleteCarga,
+  rolId,
 }) => {
+  const esRol3 = rolId === 3;
   return (
     <Box
       sx={{
@@ -38,9 +41,11 @@ const MainContent: React.FC<MainContentProps> = ({
               {`#${cargaSeleccionada?.id || " "}`}
             </Typography>
           </Box>
-          <IconButton disabled={!cargaSeleccionada} onClick={onDeleteCarga}>
-            <DeleteOutlineIcon sx={{ fontSize: 20, color: "#d68384" }} />
-          </IconButton>
+          {!esRol3 && (
+            <IconButton disabled={!cargaSeleccionada} onClick={onDeleteCarga}>
+              <DeleteOutlineIcon sx={{ fontSize: 20, color: "#d68384" }} />
+            </IconButton>
+          )}
         </Box>
       </Box>
 
@@ -49,16 +54,18 @@ const MainContent: React.FC<MainContentProps> = ({
         flex: 1,
         display: "flex",
         flexDirection: "column",
+        height: esRol3 ? '100%' : undefined,
       }}>
         {/* Sección superior (60%) */}
         <Box sx={{
-          flex: { lg: '0 0 60%', xs: '0 0 auto' },
+          flex: esRol3 ? 1 : { lg: '0 0 60%', xs: '0 0 auto' },
           display: "flex",
           p: 1.5,
           paddingTop: 0,
           flexDirection: { xs: "column", lg: "row" },
           gap: "0.5rem",
           minHeight: 0,
+          height: esRol3 ? '100%' : undefined,
         }}>
           {/* Mapa (60% del espacio superior) */}
           <Box sx={{
@@ -73,7 +80,7 @@ const MainContent: React.FC<MainContentProps> = ({
             <ContainerMapa />
           </Box>
           
-          {/* Cupos (40% del espacio superior) */}
+          {/* Cupos (40% del espacio superior) y Detalles */}
           <Box sx={{
             flex: 1,
             height: { lg: "100%", xs: "400px" },
@@ -89,40 +96,42 @@ const MainContent: React.FC<MainContentProps> = ({
         </Box>
 
         {/* Sección inferior (40%) */}
-        <Box sx={{
-          flex: { lg: '0 0 40%', xs: '0 0 auto' }, 
-          minHeight: 0,
-          display: "flex",
-          gap: "0.5rem",
-          p: 1.5,
-          paddingTop: 0,
-          flexDirection: { xs: "column", lg: "row" },
-        }}>
-          {/* Información (60% del espacio inferior) */}
+        {!esRol3 && (
           <Box sx={{
-            flex: 1,
-            height: { lg: "100%", xs: "auto" },
-            minWidth: { xs: "100%", lg: "60%" },
-            minHeight: { xs: "220px" },
+            flex: { lg: '0 0 40%', xs: '0 0 auto' }, 
+            minHeight: 0,
             display: "flex",
-            flexDirection: "column",
-            overflow: "hidden"
+            gap: "0.5rem",
+            p: 1.5,
+            paddingTop: 0,
+            flexDirection: { xs: "column", lg: "row" },
           }}>
-            <ContainerInformacionCarga />
+            {/* Información (60% del espacio inferior) */}
+            <Box sx={{
+              flex: 1,
+              height: { lg: "100%", xs: "auto" },
+              minWidth: { xs: "100%", lg: "60%" },
+              minHeight: { xs: "220px" },
+              display: "flex",
+              flexDirection: "column",
+              overflow: "hidden"
+            }}>
+              <ContainerInformacionCarga />
+            </Box>
+            
+            {/* Detalles (40% del espacio inferior) */}
+            <Box sx={{
+              flex: 1,
+              height: { lg: "100%", xs: "auto" },
+              minWidth: { xs: "100%", lg: "40%" },
+              display: "flex",
+              flexDirection: "column",
+              overflow: "hidden"
+            }}>
+              <ContainerDescripcion />
+            </Box>
           </Box>
-          
-          {/* Detalles (40% del espacio inferior) */}
-          <Box sx={{
-            flex: 1,
-            height: { lg: "100%", xs: "auto" },
-            minWidth: { xs: "100%", lg: "40%" },
-            display: "flex",
-            flexDirection: "column",
-            overflow: "hidden"
-          }}>
-            <ContainerDescripcion />
-          </Box>
-        </Box>
+        )}
       </Box>
     </Box>
   );

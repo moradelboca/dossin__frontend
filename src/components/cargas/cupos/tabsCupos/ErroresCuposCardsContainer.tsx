@@ -22,11 +22,6 @@ export function ErroresCuposCardsContainer({ cupos, idCarga, refreshCupos }: Pro
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedError, setSelectedError] = useState<any>(null);
 
-  const handleOpenDialog = (error: any) => {
-    setSelectedError(error);
-    setOpenDialog(true);
-  };
-
   const handleCloseDialog = () => {
     setSelectedError(null);
     setOpenDialog(false);
@@ -69,8 +64,7 @@ export function ErroresCuposCardsContainer({ cupos, idCarga, refreshCupos }: Pro
         headerNames={headerNames}
         expandedCard={null}
         handleExpandClick={() => {}}
-        handleOpenDialog={() => handleOpenDialog(error)}
-        tituloField="fechaCreacion"
+        tituloField="nombreColaborador"
         usarSinDesplegable={true}
         cupo={cupo}
       />

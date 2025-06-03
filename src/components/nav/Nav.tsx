@@ -1,5 +1,6 @@
 import Navbar from "./Navbar";
 import Navside from "./Navside";
+import { useAuth } from "../autenticacion/ContextoAuth";
 
 // Interfaz de props para Nav
 interface NavProps {
@@ -22,6 +23,9 @@ export function Nav({ navAbierto, setNavAbierto, anchoAbierto, anchoCerrado }: N
     setNavAbierto(false);
   };
 
+  const { user } = useAuth();
+  const rolId = user?.rol?.id;
+
   return (
     <nav>
       <Navbar
@@ -31,13 +35,15 @@ export function Nav({ navAbierto, setNavAbierto, anchoAbierto, anchoCerrado }: N
         transicion={transicion}
         handleClickToggleNav={handleClickToggleNav}
       />
-      <Navside
-        navAbierto={navAbierto}
-        anchoAbierto={anchoAbierto}
-        anchoCerrado={anchoCerrado}
-        transicion={transicion}
-        onClose={handleCloseNav}
-      />
+      {rolId !== 3 && (
+        <Navside
+          navAbierto={navAbierto}
+          anchoAbierto={anchoAbierto}
+          anchoCerrado={anchoCerrado}
+          transicion={transicion}
+          onClose={handleCloseNav}
+        />
+      )}
     </nav>
   );
 }

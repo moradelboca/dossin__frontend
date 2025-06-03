@@ -9,6 +9,7 @@ import CrearCargaStepper from "../creadores/CrearCargaStepper";
 import DeleteCarga from "../creadores/DeleteCarga";
 import MainContent from "./MainContent";
 import Sidebar from "./Sidebar";
+import { useAuth } from "../../autenticacion/ContextoAuth";
 
 // Contexto para compartir estados internos (ahora usa los valores pasados como props)
 export const ContextoCargas = createContext<{
@@ -51,6 +52,9 @@ export function ContainerTarjetasCargas({
   const [provincia, setProvincia] = React.useState<number | null>(null);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const menuOpen = Boolean(anchorEl);
+
+  const { user } = useAuth();
+  const rolId = user?.rol?.id;
 
   // Handler para seleccionar una carga (usa la función del padre)
   const handleCardClick = useCallback((carga: any) => {
@@ -125,6 +129,7 @@ export function ContainerTarjetasCargas({
         <MainContent
           cargaSeleccionada={cargaSeleccionada}
           onDeleteCarga={handleClickDeleteCarga}
+          rolId={rolId}
         />
 
         {/* Diálogos */}

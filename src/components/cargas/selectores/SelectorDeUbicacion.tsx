@@ -32,7 +32,6 @@ export default function SelectorDeUbicacion() {
             .then((ubicaciones) => {
                 setUbicaciones(ubicaciones);
                 setEstadoCarga(false);
-                console.log(ubicaciones);
             })
             .catch((error) =>
                 console.error("Error al obtener las Ubicaciones disponibles: ", error)

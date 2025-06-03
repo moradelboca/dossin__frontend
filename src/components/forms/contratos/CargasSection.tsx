@@ -97,13 +97,11 @@ const CargasSection: React.FC<CargasSectionProps> = ({
               headerNames={headerNames}
               expandedCard={expandedCard}
               handleExpandClick={handleExpandClick}
-              handleOpenDialog={handleOpenDialog}
               tituloField="ubicacionCarga.nombre"
               mostrarBotonEditar={false}
               textoSecondaryButton="Eliminar"
               handleSecondButton={handleDeleteCargaACrear}
               colorSecondaryButton="#d68384"
-              
             />
           ))}
         </Box>
@@ -124,7 +122,6 @@ const CargasSection: React.FC<CargasSectionProps> = ({
               headerNames={headerNames}
               expandedCard={expandedCard}
               handleExpandClick={handleExpandClick}
-              handleOpenDialog={handleOpenDialog}
               tituloField="ubicacionCarga.nombre"
               subtituloField="id"
               mostrarBotonEditar={false}
@@ -151,7 +148,6 @@ const CargasSection: React.FC<CargasSectionProps> = ({
               headerNames={headerNames}
               expandedCard={expandedCard}
               handleExpandClick={handleExpandClick}
-              handleOpenDialog={handleOpenDialog}
               tituloField="ubicacionCarga.nombre"
               subtituloField="id"
               mostrarBotonEditar={true}

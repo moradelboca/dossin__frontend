@@ -82,11 +82,6 @@ const DashboardColaboradoresDialog: React.FC<DashboardColaboradoresDialogProps> 
     setExpandedCard(expandedCard === index ? null : index);
   };
 
-  const handleOpenDialog = (item: Colaborador) => {
-    console.log("Editar colaborador", item);
-    // Aquí podrías abrir otro diálogo o realizar otra acción
-  };
-
   // Estos son los fields y headerNames para la CardMobile.
   // Puedes modificarlos si necesitas acceder a propiedades anidadas o formatear el contenido.
   const fields = [
@@ -125,7 +120,6 @@ const DashboardColaboradoresDialog: React.FC<DashboardColaboradoresDialogProps> 
         headerNames={headerNames}
         expandedCard={expandedCard}
         handleExpandClick={handleExpandClick}
-        handleOpenDialog={handleOpenDialog}
         tituloField={tituloField}
         subtituloField={subtituloField}
         customIcon={customIcon}

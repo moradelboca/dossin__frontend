@@ -15,6 +15,7 @@ interface DrawerCargaMobileProps {
   open?: boolean; 
   onClose?: () => void; 
   cargaSeleccionada: any;
+  rolId?: number;
 }
 
 const CustomTabs = styled(Tabs)(() => ({
@@ -50,6 +51,7 @@ export default function DrawerCargaMobile({
   open = true,
   onClose = () => {},
   cargaSeleccionada,
+  rolId,
 }: DrawerCargaMobileProps) {
   // Controla si el drawer está colapsado (3rem) o expandido (60vh)
   const [expanded, setExpanded] = useState(false);
@@ -67,6 +69,7 @@ export default function DrawerCargaMobile({
 
   // Si no hay cargaSeleccionada, no renderizamos nada
   if (!cargaSeleccionada) return null;
+  const esRol3 = rolId === 3;
   console.log(cargaSeleccionada)
   return (
     <SwipeableDrawer
@@ -132,7 +135,7 @@ export default function DrawerCargaMobile({
             <Box sx={{ px: 2, pb: 1 }}>
               <CustomTabs value={tabValue} onChange={handleChangeTab}>
                 <Tab label="Cupos" />
-                <Tab label="Datos" />
+                {!esRol3 && <Tab label="Datos" />}
               </CustomTabs>
             </Box>
 
@@ -140,7 +143,7 @@ export default function DrawerCargaMobile({
               {tabValue === 0 && (
                 <DrawerCuposCargaMobile cargaSeleccionada={cargaSeleccionada} />
               )}
-              {tabValue === 1 && (
+              {!esRol3 && tabValue === 1 && (
                 <DrawerDatosCargaMobile cargaSeleccionada={cargaSeleccionada} />
               )}
             </Box>

@@ -13,6 +13,7 @@ import { Mapa2 } from "../../cargas/tarjetas/Mapa2";
 import ListaCargasMobile from "./ListaCargasMobile";
 import { ContextoGeneral } from "../../Contexto";
 import DrawerCargaMobile from "./DrawerCargaMobile";
+import { useAuth } from "../../autenticacion/ContextoAuth";
 
 interface CargasMobileProps {
   cargas: any[];
@@ -33,6 +34,8 @@ export function CargasMobile({
   const [openDrawerCarga, setOpenDrawerCarga] = useState(false); // Controla el Drawer con Cupos/Datos
 
   const { handleClickAbrirDialog } = useContext(ContextoCargas);
+  const { user } = useAuth();
+  const rolId = user?.rol?.id;
 
   // Abre/cierra la lista de cargas
   const toggleDrawer = () => {
@@ -159,6 +162,7 @@ export function CargasMobile({
         open={openDrawerCarga && !openDrawer}
         onClose={handleToggleDrawerCarga}
         cargaSeleccionada={cargaSeleccionada}
+        rolId={rolId}
       />
     </Box>
   );

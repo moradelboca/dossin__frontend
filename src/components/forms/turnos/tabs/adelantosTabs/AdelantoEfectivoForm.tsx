@@ -3,10 +3,8 @@ import React, { useState, useEffect, useContext } from "react";
 import {
   TextField,
   Button,
-  Stack,
   Box,
   Autocomplete,
-  IconButton,
   Dialog,
   DialogTitle,
   DialogContent,
@@ -14,7 +12,6 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { ContextoGeneral } from "../../../../Contexto";
 import MainButton from "../../../../botones/MainButtom";
 
@@ -58,8 +55,6 @@ const AdelantoEfectivoForm: React.FC<AdelantoEfectivoFormProps> = ({
   const [adelanto, setAdelanto] = useState<AdelantoEfectivo | undefined>(
     initialAdelanto
   );
-  // Estado para la lista de adelantos que coinciden con el turno
-  const [adelantos, setAdelantos] = useState<AdelantoEfectivo[]>([]);
   // Estados para los campos del formulario
   const [tipoMedioPago, setTipoMedioPago] = useState<TipoMedioPago | null>(
     null
@@ -108,11 +103,7 @@ const AdelantoEfectivoForm: React.FC<AdelantoEfectivoFormProps> = ({
         });
         if (!response.ok)
           throw new Error("Error al obtener los adelantos efectivos");
-        const data = await response.json();
-        const filtered = data
-          .filter((item: any) => item.turnoDeCarga?.id === Number(turnoId))
-          .map(transformAdelanto);
-        setAdelantos(filtered);
+    
         // Si se pasó un adelanto inicial se establece
         if (initialAdelanto) {
           const transformed = transformAdelanto(initialAdelanto);
@@ -203,9 +194,7 @@ const AdelantoEfectivoForm: React.FC<AdelantoEfectivoFormProps> = ({
   };
 
   // Funciones para el diálogo de confirmación de eliminación
-  const handleOpenDeleteDialog = () => {
-    setOpenDeleteDialog(true);
-  };
+
 
   const handleCloseDeleteDialog = () => {
     setOpenDeleteDialog(false);
@@ -238,55 +227,6 @@ const AdelantoEfectivoForm: React.FC<AdelantoEfectivoFormProps> = ({
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
-      {/* Selector de adelantos existentes, botón para agregar nuevo y botón de eliminar */}
-      <Stack direction="row" spacing={2} alignItems="center">
-        <Autocomplete
-          options={adelantos}
-          getOptionLabel={(option) =>
-            `Adelanto ${option.id} : ${option.montoAdelantado}$`
-          }
-          value={adelanto || null}
-          onChange={(_event, newValue) => {
-            if (newValue) {
-              setAdelanto(newValue);
-              setMontoAdelantado(newValue.montoAdelantado);
-              const foundTipo = tiposMedioPagoOptions.find(
-                (tipo) => tipo.id === newValue.idTipoMedioPago
-              );
-              setTipoMedioPago(foundTipo || null);
-            } else {
-              // Si se deselecciona, se limpian los campos para crear uno nuevo
-              setAdelanto(undefined);
-              setMontoAdelantado("");
-              setTipoMedioPago(null);
-            }
-          }}
-          renderInput={(params) => (
-            <TextField {...params} label="Selecciona un adelanto" />
-          )}
-          sx={{ flex: 1 }}
-        />
-        <Button
-          variant="contained"
-          sx={{ backgroundColor: theme.colores.azul }}
-          onClick={() => {
-            // Limpia la selección para crear un nuevo adelanto
-            setAdelanto(undefined);
-            setMontoAdelantado("");
-            setTipoMedioPago(null);
-          }}
-        >
-          +
-        </Button>
-        <IconButton
-          onClick={handleOpenDeleteDialog}
-          disabled={!adelanto}
-          sx={{ color: adelanto ? "#d32f2f" : "grey" }}
-        >
-          <DeleteOutlineIcon />
-        </IconButton>
-      </Stack>
-
       {/* Campo para seleccionar el tipo de medio de pago */}
       <Autocomplete
         options={tiposMedioPagoOptions}

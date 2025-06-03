@@ -157,11 +157,7 @@ const CrearCargaStepper: React.FC<CrearCargaStepperProps> = ({
   const isStepValid = useCallback((): boolean => {
     switch (pasoActivo) {
       case 0:
-        return !!(
-          datosNuevaCarga.cantidadKm &&
-          datosNuevaCarga.idCargamento
-        );
-      case 1:
+        // Paso 0: Seleccionar ubicacion y horarios
         return !!(
           datosNuevaCarga.idUbicacionCarga &&
           datosNuevaCarga.idUbicacionDescarga &&
@@ -178,11 +174,20 @@ const CrearCargaStepper: React.FC<CrearCargaStepperProps> = ({
           (!datosNuevaCarga.requiereBalanza ||
             datosNuevaCarga.horaInicioBalanza! < datosNuevaCarga.horaFinBalanza!)
         );
+      case 1:
+        // Paso 1: Seleccionar kilometros y cargamento
+        return !!(
+          datosNuevaCarga.cantidadKm &&
+          datosNuevaCarga.idCargamento
+        );
       case 2:
-        return !!(datosNuevaCarga.idsTiposAcoplados?.length);
-      case 3:
+        // Paso 2: Seleccionar tarifa
         return !!(datosNuevaCarga.idTipoTarifa && datosNuevaCarga.tarifa);
+      case 3:
+        // Paso 3: Selecciona tipos de acoplados permitidos
+        return !!(datosNuevaCarga.idsTiposAcoplados?.length);
       case 4:
+        // Paso 4: Mas informacion
         return !!(datosNuevaCarga.descripcion && datosNuevaCarga.tolerancia && datosNuevaCarga.destinoRuca && datosNuevaCarga.plantaProcedenciaRuca);
       default:
         return false;

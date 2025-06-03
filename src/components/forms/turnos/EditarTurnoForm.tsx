@@ -24,7 +24,7 @@ import EstadoTurnoForm from "./tabs/EstadoTurnoForm";
 import FacturaForm from "./tabs/FacturaForm";
 import OrdenPagoForm from "./tabs/OrdenPagoForm";
 import PesajeForm from "./tabs/PesajeForm";
-import TaraForm from "./tabs/TaraForm";
+import { TaraForm } from "./tabs/TaraForm";
 import { useContext } from "react";
 import { ContextoGeneral } from "../../Contexto";
 

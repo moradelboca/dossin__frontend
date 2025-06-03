@@ -107,7 +107,6 @@ const MobileCardList: React.FC<MobileCardListProps> = ({
         headerNames={headerNames} 
         expandedCard={expandedCard} 
         handleExpandClick={handleExpandClick} 
-        handleOpenDialog={handleOpenDialog}
         tituloField={tituloField}
         subtituloField={subtituloField}
         customIcon={customIcon}

@@ -18,6 +18,7 @@ import { CustomButtom } from "../../botones/CustomButtom";
 import { ContextoGeneral } from "../../Contexto";
 import DeleteCupo from "../creadores/DeleteCupo";
 import TurnoForm from "../../forms/turnos/TurnoForm";
+import { useAuth } from '../../autenticacion/ContextoAuth';
 
 const StyledCaja = styled(Box)(() => ({
   minWidth: 180,
@@ -66,6 +67,8 @@ export function TarjetaCupos(props: TarjetaProps & { estaEnElGrid?: boolean }) {
   const [openDialogDelete, setOpenDialogDelete] = useState(false);
 
   const { backendURL } = useContext(ContextoGeneral);
+  const { user } = useAuth();
+  const rolId = user?.rol?.id;
 
   function handleClick() {
     setCuposDisponiblesEstado(cuposDisponiblesEstado);
@@ -257,10 +260,10 @@ export function TarjetaCupos(props: TarjetaProps & { estaEnElGrid?: boolean }) {
           <Typography variant="body2">{cuposConfirmados}</Typography>
         </Box>
         <Box display="flex" gap={2} mt={2}>
-          {cuposDisponiblesEstado > 0 && (
+          {rolId !== 3 && cuposDisponiblesEstado > 0 && (
             <CustomButtom onClick={handleClickDialog} title="Crear turno" />
           )}
-          <CustomButtom onClick={handleClick} title="Ver más" />
+          {rolId !== 3 && <CustomButtom onClick={handleClick} title="Ver más" />}
         </Box>
         {Dialogos()}
       </Box>
@@ -314,10 +317,10 @@ export function TarjetaCupos(props: TarjetaProps & { estaEnElGrid?: boolean }) {
           </Grid>
         </Grid>
         <Box display="flex" flexDirection="row" gap={2}>
-          {cuposDisponiblesEstado > 0 && (
+          {rolId !== 3 && cuposDisponiblesEstado > 0 && (
             <CustomButtom onClick={handleClickDialog} title="Crear turno" />
           )}
-          <CustomButtom onClick={handleClick} title="Ver más" />
+          {rolId !== 3 && <CustomButtom onClick={handleClick} title="Ver más" />}
         </Box>
       </StyledCaja>
       {Dialogos()}

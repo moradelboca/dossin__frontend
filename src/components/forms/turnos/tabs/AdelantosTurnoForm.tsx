@@ -44,13 +44,13 @@ const AdelantosTurnoForm: React.FC<AdelantosTurnoFormProps> = ({
         onChange={handleChange}
         sx={{
           color: theme.colores.azul,
-          "& .MuiTab-root": {
-            color: "gray",
-          },
-          "& .Mui-selected": {
+          '& .MuiTab-root': {
             color: theme.colores.azul,
           },
-          "& .MuiTabs-indicator": {
+          '& .Mui-selected': {
+            color: theme.colores.azul,
+          },
+          '& .MuiTabs-indicator': {
             backgroundColor: theme.colores.azul,
           },
         }}
