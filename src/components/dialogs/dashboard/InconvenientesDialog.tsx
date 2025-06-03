@@ -100,10 +100,6 @@ const InconvenientesDialog: React.FC<InconvenientesDialogProps> = ({ open, handl
     setExpandedCard(expandedCard === index ? null : index);
   };
 
-  const handleOpenEditDialog = (item: Inconveniente) => {
-    console.log("Editar inconveniente", item);
-  };
-
   // Función para renderizar las cards usando CardMobile
   const renderCards = (datos: Inconveniente[]) =>
     datos.map((item, index) => (
@@ -115,7 +111,6 @@ const InconvenientesDialog: React.FC<InconvenientesDialogProps> = ({ open, handl
         headerNames={headerNames}
         expandedCard={expandedCard}
         handleExpandClick={handleExpandClick}
-        handleOpenDialog={handleOpenEditDialog}
         mostrarBotonEditar={false}
       />
     ));

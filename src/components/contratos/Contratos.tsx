@@ -6,10 +6,12 @@ import {
   Dialog,
   DialogContent,
   Typography,
+  useMediaQuery,
 } from "@mui/material";
 import ContratoForm from "../forms/contratos/ContratoForm";
 import { ContratoItem } from "./ContratoItem";
 import useContratosConCargas from "../hooks/contratos/useContratosConCargas";
+import ContratosMobile from "./ContratosMobile";
 
 const DialogContrato = ({
   open,
@@ -45,6 +47,8 @@ export default function Contratos() {
   const [open, setOpen] = useState(false);
   const [seleccionado, setSeleccionado] = useState<any>(null);
 
+  const isMobile = useMediaQuery("(max-width:768px)");
+
   useEffect(() => {
     refreshContratos();
   }, []);
@@ -58,6 +62,20 @@ export default function Contratos() {
     setOpen(false);
     refreshContratos();
   };
+
+  if (isMobile) {
+    return (
+      <ContratosMobile
+        contratos={contratosConCargas}
+        refreshContratos={refreshContratos}
+        handleOpenDialog={handleOpenDialog}
+        seleccionado={seleccionado}
+        open={open}
+        handleClose={handleClose}
+        theme={theme}
+      />
+    );
+  }
 
   return (
     <Box p={2}>

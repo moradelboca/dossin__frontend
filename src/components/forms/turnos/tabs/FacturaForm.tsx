@@ -8,7 +8,6 @@ import {
   DialogContent,
   DialogTitle,
   IconButton,
-  MenuItem,
   Stack,
   TextField,
   Typography,
@@ -305,36 +304,7 @@ const FacturaForm: React.FC<FacturaFormProps> = ({
       />
 
       {isUpdateMode ? (
-        <>
-          {/* En update mode se muestran campos para IVA y Total sin IVA, editables */}
-          <TextField
-            select
-            label="Valor IVA"
-            value={data.ivaSeleccionado}
-            onChange={(e) =>
-              setData((prev: any) => ({ ...prev, ivaSeleccionado: Number(e.target.value) }))
-            }
-          >
-            {[21, 10.5].map((option) => (
-              <MenuItem key={option} value={option}>
-                {option} %
-              </MenuItem>
-            ))}
-          </TextField>
-
-          <TextField
-            label="Total sin IVA"
-            type="number"
-            value={data.totalSinIva}
-            onChange={handleChange('totalSinIva')}
-            error={!!errors.totalSinIva}
-            helperText={errors.totalSinIva}
-          />
-
-          <Typography variant="subtitle1">
-            Total: {computedTotal !== '' ? computedTotal : '0'}
-          </Typography>
-        </>
+        <></>
       ) : (
         <>
           <Autocomplete
@@ -399,34 +369,6 @@ const FacturaForm: React.FC<FacturaFormProps> = ({
               helperText={errors.nroComprobante}
             />
           </Stack>
-
-          <TextField
-            select
-            label="Valor IVA"
-            value={data.ivaSeleccionado}
-            onChange={(e) =>
-              setData((prev: any) => ({ ...prev, ivaSeleccionado: Number(e.target.value) }))
-            }
-          >
-            {[21, 10.5].map((option) => (
-              <MenuItem key={option} value={option}>
-                {option} %
-              </MenuItem>
-            ))}
-          </TextField>
-
-          <TextField
-            label="Total sin IVA"
-            type="number"
-            value={data.totalSinIva}
-            onChange={handleChange('totalSinIva')}
-            error={!!errors.totalSinIva}
-            helperText={errors.totalSinIva}
-          />
-
-          <Typography variant="subtitle1">
-            Total: {computedTotal !== '' ? computedTotal : '0'}
-          </Typography>
         </>
       )}
         <Box

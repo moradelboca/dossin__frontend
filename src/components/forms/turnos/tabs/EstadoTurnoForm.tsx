@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { Autocomplete, TextField, useTheme, useMediaQuery, Box } from "@mui/material";
 import { ContextoGeneral } from "../../../Contexto";
 import MainButton from "../../../botones/MainButtom";
@@ -11,17 +11,6 @@ interface EstadoTurnoFormProps {
   onCancel: () => void;
 }
 
-// Definimos la lista de estados disponibles (basada en los INSERT que proporcionaste)
-const estados = [
-  { id: 1, nombre: "ConErrores" },
-  { id: 2, nombre: "Asignado" },
-  { id: 3, nombre: "Confirmado" },
-  { id: 4, nombre: "Finalizado" },
-  { id: 8, nombre: "Cargando" },
-  { id: 9, nombre: "Descargando" },
-  { id: 10, nombre: "Rechazado" },
-];
-
 const EstadoTurnoForm: React.FC<EstadoTurnoFormProps> = ({
   turnoId,
   initialEstado,
@@ -29,13 +18,24 @@ const EstadoTurnoForm: React.FC<EstadoTurnoFormProps> = ({
   onCancel,
 }) => {
   const { backendURL } = useContext(ContextoGeneral);
-  // Si no hay estado inicial se toma el primero de la lista
-  const [selectedEstado, setSelectedEstado] = useState(initialEstado || estados[0]);
+  const [estados, setEstados] = useState<{ id: number; nombre: string }[]>([]);
+  const [selectedEstado, setSelectedEstado] = useState<{ id: number; nombre: string } | null>(initialEstado);
   const [error, setError] = useState<string | null>(null);
   const {theme} = useContext(ContextoGeneral);
   
   const tema = useTheme();
   const isMobile = useMediaQuery(tema.breakpoints.down("sm"));
+
+  useEffect(() => {
+    fetch(`${backendURL}/turnos/estados`)
+      .then(res => res.json())
+      .then(data => {
+        setEstados(data);
+        // Si no hay estado seleccionado, seteo el primero
+        if (!selectedEstado && data.length > 0) setSelectedEstado(data[0]);
+      })
+      .catch(() => setEstados([]));
+  }, [backendURL]);
 
   const handleSubmit = async () => {
     if (!selectedEstado) {
@@ -63,7 +63,7 @@ const EstadoTurnoForm: React.FC<EstadoTurnoFormProps> = ({
   };
 
   return (
-    <div>
+    <Box p={2}>
       <Autocomplete
         options={estados}
         getOptionLabel={(option) => option.nombre}
@@ -116,7 +116,7 @@ const EstadoTurnoForm: React.FC<EstadoTurnoFormProps> = ({
           divWidth={isMobile ? '100%' : 'auto'}
         />
       </Box>
-    </div>
+    </Box>
   );
 };
 

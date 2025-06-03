@@ -9,6 +9,10 @@ import Dialog from "@mui/material/Dialog";
 import DeleteIcon from '@mui/icons-material/Delete';
 import DeleteTurno from '../../cargas/creadores/DeleteTurno';
 import { useManejoTurnos, renderTurnosDialogs } from './manejoTurnos';
+import { useAllowed } from '../../hooks/auth/useAllowed';
+import EstadoTurnoForm from '../../forms/turnos/tabs/EstadoTurnoForm';
+import { useAuth } from '../../autenticacion/ContextoAuth';
+import { puedeVerEstado } from '../../../utils/turnoEstadoPermisos';
 
 interface CardMobileProps {
   item: any;
@@ -17,7 +21,6 @@ interface CardMobileProps {
   headerNames: string[];
   expandedCard: number | null;
   handleExpandClick: (index: number) => void;
-  handleOpenDialog: (item: any) => void;
   tituloField?: string;
   subtituloField?: string;
   customIcon?: string;
@@ -30,6 +33,7 @@ interface CardMobileProps {
   textoBoton?: string;
   refreshCupos?: () => void; // Callback para refrescar los cupos después de una acción
   cupo?: any; // Nuevo prop opcional
+  childrenCollapse?: React.ReactNode; // Nuevo prop para contenido custom dentro del Collapse
 }
 
 const CardMobile: React.FC<CardMobileProps> = ({
@@ -45,12 +49,17 @@ const CardMobile: React.FC<CardMobileProps> = ({
   usarSinDesplegable,
   cupo,
   refreshCupos,
+  childrenCollapse,
 }) => {
   const { theme } = useContext(ContextoGeneral);
   const transformarCampo = useTransformarCampo();
-
-  // Usar el hook de manejoTurnos
   const manejoTurnos = useManejoTurnos({ item, cupo, refreshCupos });
+  const { user } = useAuth();
+  const rolId = user?.rol?.id;
+  const estadoId = manejoTurnos.turnoLocal.estado?.id;
+  if (rolId && estadoId && !puedeVerEstado(estadoId, rolId)) {
+    return null;
+  }
 
   // Remove 'estado' from fields/headerNames for display
   const filteredFields = fields.filter(f => f !== 'estado.nombre');
@@ -91,44 +100,66 @@ const CardMobile: React.FC<CardMobileProps> = ({
         </>;
         break;
       case 'autorizado':
-        botones = <>{mainButton({ children: 'Cargar Tara', onClick: () => manejoTurnos.setOpenDialog('tara') })}</>;
+        if (rolId === 3) {
+          botones = <>{mainButton({ children: 'Cargar Tara', onClick: () => manejoTurnos.setOpenDialog('tara') })}</>;
+        } else {
+          botones = <>{mainButton({ children: 'Cargar Tara', onClick: () => manejoTurnos.setOpenDialog('tara') })}</>;
+        }
         break;
       case 'tarado':
-        botones = <>
-          {outlinedButton({ children: 'Ver Carta de Porte', onClick: () => manejoTurnos.setOpenDialog('cartaPorte') })}
-          {mainButton({ children: 'Cargar Carta de Porte', onClick: () => manejoTurnos.setOpenDialog('cargarCarta'), sx: { mt: 1, ...mainButton({}).props.sx } })}
-        </>;
+        if (rolId === 3) {
+          botones = <>{mainButton({ children: 'Cargar Peso Bruto', onClick: () => manejoTurnos.setOpenDialog('tara') })}</>;
+        } else {
+          botones = <>{mainButton({ children: 'Cargar Peso Bruto', onClick: () => manejoTurnos.setOpenDialog('tara') })}</>;
+        }
+        break;
+      case 'cargado':
+        botones = (
+          <Box display="flex" gap={2} mb={1}>
+            {outlinedButton({ children: 'Ver CP', onClick: () => manejoTurnos.setOpenDialog('cartaPorte') })}
+            {mainButton({ children: 'Cargar CP', onClick: () => manejoTurnos.setOpenDialog('cargarCarta') })}
+          </Box>
+        );
         break;
       case 'en viaje':
         botones = <>{mainButton({ children: 'Ingresar Kg Descargados', onClick: () => manejoTurnos.setOpenDialog('pesaje') })}</>;
         break;
       case 'descargado':
-        botones = <>
-          {outlinedButton({ children: 'Ver Datos de Pago', onClick: () => manejoTurnos.setOpenDialog('pago') })}
-          {mainButton({ children: 'Agregar Factura', onClick: () => manejoTurnos.setOpenDialog('factura'), sx: { mt: 1, ...mainButton({}).props.sx } })}
-        </>;
+        botones = (
+          <Box display="flex" gap={2} mb={1}>
+            {mainButton({ children: '+ Factura', onClick: () => manejoTurnos.setOpenDialog('factura') })}
+          </Box>
+        );
         break;
       case 'facturado':
-        botones = <>{mainButton({ children: 'Pagar', onClick: () => manejoTurnos.setOpenDialog('pago') })}</>;
+        botones = (
+          <Box display="flex" gap={2} mb={1}>
+            {outlinedButton({ children: 'Ver Pago', onClick: () => manejoTurnos.setOpenDialog('pago') })}
+            {mainButton({ children: 'Pagar', onClick: () => manejoTurnos.setOpenDialog('pago') })}
+          </Box>
+        );
         break;
       default:
         return null;
     }
+    // Botones extra solo si NO es rol 3
     return (
       <Box sx={{ display: 'flex', width: '100%', alignItems: 'stretch', mt: 2 }}>
         <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
           {botones}
-          {outlinedButton({ children: 'Adelanto', onClick: () => manejoTurnos.setOpenDialog('adelanto'), sx: { mt: 1, ...outlinedButton({}).props.sx } })}
+          {rolId !== 3 && outlinedButton({ children: 'Adelanto', onClick: () => manejoTurnos.setOpenDialog('adelanto'), sx: { mt: 1, ...outlinedButton({}).props.sx } })}
         </Box>
-        <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'center', ml: 2, pt: 0.5 }}>
-          <IconButton
-            onClick={() => manejoTurnos.setOpenDeleteDialog(true)}
-            sx={{ color: '#d68384', background: 'transparent', '&:hover': { background: '#fbe9e7' }, borderRadius: 2, height: 48, width: 48 }}
-            aria-label="eliminar turno"
-          >
-            <DeleteIcon fontSize="large" />
-          </IconButton>
-        </Box>
+        {rolId !== 3 && (
+          <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'center', ml: 2, pt: 0.5 }}>
+            <IconButton
+              onClick={() => manejoTurnos.setOpenDeleteDialog(true)}
+              sx={{ color: '#d68384', background: 'transparent', '&:hover': { background: '#fbe9e7' }, borderRadius: 2, height: 48, width: 48 }}
+              aria-label="eliminar turno"
+            >
+              <DeleteIcon fontSize="large" />
+            </IconButton>
+          </Box>
+        )}
         {/* Diálogo de confirmación para eliminar el turno usando DeleteTurno */}
         <Dialog open={manejoTurnos.openDeleteDialog} onClose={() => manejoTurnos.setOpenDeleteDialog(false)} maxWidth="sm" fullWidth>
           <DeleteTurno
@@ -144,6 +175,9 @@ const CardMobile: React.FC<CardMobileProps> = ({
     );
   };
 
+  const isAdmin = useAllowed([1]);
+  const [openEstadoDialog, setOpenEstadoDialog] = React.useState(false);
+
   return (
     <Box
       key={index}
@@ -157,30 +191,71 @@ const CardMobile: React.FC<CardMobileProps> = ({
         position: 'relative',
       }}
     >
-      {/* Estado pill label */}
+      {/* Estado pill label como botón para admin */}
       {manejoTurnos.turnoLocal.estado?.nombre && (
-        <Box
-          sx={{
-            position: 'absolute',
-            top: 8,
-            right: 8,
-            px: 2,
-            py: 0.5,
-            borderRadius: '16px',
-            border: `2px solid ${manejoTurnos.getEstadoColor(manejoTurnos.turnoLocal.estado.nombre.toLowerCase())}`,
-            color: manejoTurnos.getEstadoColor(manejoTurnos.turnoLocal.estado.nombre.toLowerCase()),
-            fontWeight: 'bold',
-            fontSize: '0.85rem',
-            background: '#fff',
-            zIndex: 2,
-            textTransform: 'capitalize',
-            minWidth: '80px',
-            textAlign: 'center',
-          }}
-        >
-          {manejoTurnos.turnoLocal.estado.nombre}
-        </Box>
+        isAdmin ? (
+          <Box
+            sx={{
+              position: 'absolute',
+              top: 8,
+              right: 8,
+              px: 2,
+              py: 0.5,
+              borderRadius: '16px',
+              border: `2px solid ${manejoTurnos.getEstadoColor(manejoTurnos.turnoLocal.estado.nombre.toLowerCase())}`,
+              color: manejoTurnos.getEstadoColor(manejoTurnos.turnoLocal.estado.nombre.toLowerCase()),
+              fontWeight: 'bold',
+              fontSize: '0.85rem',
+              background: '#fff',
+              zIndex: 2,
+              textTransform: 'capitalize',
+              minWidth: '80px',
+              textAlign: 'center',
+              cursor: 'pointer',
+              transition: 'box-shadow 0.2s',
+              boxShadow: openEstadoDialog ? '0 0 0 2px #16366055' : undefined,
+            }}
+            onClick={() => setOpenEstadoDialog(true)}
+          >
+            {manejoTurnos.turnoLocal.estado.nombre}
+          </Box>
+        ) : (
+          <Box
+            sx={{
+              position: 'absolute',
+              top: 8,
+              right: 8,
+              px: 2,
+              py: 0.5,
+              borderRadius: '16px',
+              border: `2px solid ${manejoTurnos.getEstadoColor(manejoTurnos.turnoLocal.estado.nombre.toLowerCase())}`,
+              color: manejoTurnos.getEstadoColor(manejoTurnos.turnoLocal.estado.nombre.toLowerCase()),
+              fontWeight: 'bold',
+              fontSize: '0.85rem',
+              background: '#fff',
+              zIndex: 2,
+              textTransform: 'capitalize',
+              minWidth: '80px',
+              textAlign: 'center',
+            }}
+          >
+            {manejoTurnos.turnoLocal.estado.nombre}
+          </Box>
+        )
       )}
+      {/* Dialog para cambiar estado */}
+      <Dialog open={openEstadoDialog} onClose={() => setOpenEstadoDialog(false)} maxWidth="xs" fullWidth>
+        <EstadoTurnoForm
+          turnoId={manejoTurnos.turnoLocal.id}
+          initialEstado={manejoTurnos.turnoLocal.estado}
+          onSuccess={(updatedData) => {
+            manejoTurnos.setTurnoLocal((prev: any) => ({ ...prev, estado: updatedData.estado || updatedData }));
+            setOpenEstadoDialog(false);
+            if (refreshCupos) refreshCupos();
+          }}
+          onCancel={() => setOpenEstadoDialog(false)}
+        />
+      </Dialog>
       <Box
         display="flex"
         alignItems="center"
@@ -262,6 +337,7 @@ const CardMobile: React.FC<CardMobileProps> = ({
             </Box>
           ))}
           {renderButtons()}
+          {childrenCollapse}
         </Box>
         {renderTurnosDialogs({ ...manejoTurnos, theme, cupo, refreshCupos })}
       </Collapse>

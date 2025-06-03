@@ -44,6 +44,7 @@ export default function Navbar(props: NavbarProps) {
   const [anchorMenuUsuario, setAnchorMenuUsuario] =
     useState<null | HTMLElement>(null);
   const [profileImage, setProfileImage] = useState<string | undefined>(user?.profileImage);
+  const rolId = user?.rol?.id;
 
   useEffect(() => {
     if (user && !user.profileImage && user.email) {
@@ -75,12 +76,14 @@ export default function Navbar(props: NavbarProps) {
       <CustomToolbar transicion={transicion}>
         <Box sx={{ display: "flex", alignItems: "center" }}>
           {/* Botón hamburguesa para abrir/cerrar el Navside */}
-          <IconButton
-            onClick={handleClickToggleNav}
-            sx={{ mr: 2, color: theme.colores.azul }}
-          >
-            {navAbierto ? <ChevronLeftIcon /> : <MenuIcon />}
-          </IconButton>
+          {rolId !== 3 && (
+            <IconButton
+              onClick={handleClickToggleNav}
+              sx={{ mr: 2, color: theme.colores.azul }}
+            >
+              {navAbierto ? <ChevronLeftIcon /> : <MenuIcon />}
+            </IconButton>
+          )}
           <img src={hermex} alt="Logo" style={{ height: "40px" }} />
         </Box>
         <Tooltip title="Ajustes">

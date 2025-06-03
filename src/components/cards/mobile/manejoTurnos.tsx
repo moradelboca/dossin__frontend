@@ -4,7 +4,7 @@ import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import { ContextoGeneral } from "../../Contexto";
 import useTransformarCampo from "../../hooks/useTransformarCampo";
 import TurnoConErroresForm from "../../forms/turnos/tabs/turnosConErrores/TurnoConErroresForm";
-import TaraForm from "../../forms/turnos/tabs/TaraForm";
+import { TaraForm, PesoBrutoForm } from "../../forms/turnos/tabs/TaraForm";
 import CartaPorteForm from "../../forms/turnos/tabs/CartaPorteForm";
 import PesajeForm from "../../forms/turnos/tabs/PesajeForm";
 import FacturaForm from "../../forms/turnos/tabs/FacturaForm";
@@ -235,6 +235,7 @@ export function renderTurnosDialogs({
         </Dialog>
       );
     case 'tara':
+      if (turnoLocal.estado?.nombre?.toLowerCase() === 'autorizado') {
       return (
         <Dialog open onClose={() => setOpenDialog(null)} fullWidth maxWidth="sm">
           <DialogTitle>Cargar Tara</DialogTitle>
@@ -242,25 +243,28 @@ export function renderTurnosDialogs({
             <TaraForm
               turnoId={turnoLocal.id}
               initialTara={turnoLocal.tara}
-              onSuccess={async () => {
-                try {
-                  const nextEstadoId = getNextEstadoId(turnoLocal.estado?.nombre);
-                  if (!nextEstadoId) throw new Error('No se puede determinar el próximo estado');
-                  await fetch(`${import.meta.env.VITE_BACKEND_URL || ''}/turnos/${turnoLocal.id}`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ idEstado: nextEstadoId }),
-                  });
-                } catch (err) {
-                  console.error(err);
-                }
-                handleFormSuccess();
-              }}
+                onSuccess={handleFormSuccess}
+                onCancel={() => setOpenDialog(null)}
+              />
+            </DialogContent>
+          </Dialog>
+        );
+      } else if (turnoLocal.estado?.nombre?.toLowerCase() === 'tarado') {
+        return (
+          <Dialog open onClose={() => setOpenDialog(null)} fullWidth maxWidth="sm">
+            <DialogTitle>Cargar Peso Bruto</DialogTitle>
+            <DialogContent>
+              <PesoBrutoForm
+                turnoId={turnoLocal.id}
+                initialTara={turnoLocal.tara}
+                onSuccess={handleFormSuccess}
               onCancel={() => setOpenDialog(null)}
             />
           </DialogContent>
         </Dialog>
       );
+      }
+      return null;
     case 'cartaPorte':
       return (
         <Dialog open onClose={() => setOpenDialog(null)} fullWidth maxWidth="md">

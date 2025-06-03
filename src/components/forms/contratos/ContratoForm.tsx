@@ -24,11 +24,12 @@ import CargasSection from "./CargasSection";
 import DeleteCarga from "../../dialogs/contratos/DeleteCarga";
 import EmpresaForm from "../empresas/EmpresaForm";
 
-const ContratoForm: React.FC<FormularioProps> = ({
+const ContratoForm: React.FC<FormularioProps & { refreshContratos?: () => void }> = ({
   seleccionado,
   datos,
   setDatos,
   handleClose,
+  refreshContratos,
 }) => {
   const safeSeleccionado = seleccionado || {};
   const { backendURL} = useContext(ContextoGeneral);
@@ -407,6 +408,7 @@ const ContratoForm: React.FC<FormularioProps> = ({
       .then((response) => response.json())
       .then(() => {
         setCargas((prev) => prev.filter((c) => c.id !== cargaAEliminar.id));
+        if (refreshContratos) refreshContratos();
       })
       .catch((error) => console.error("Error al borrar la carga", error));
 
@@ -475,18 +477,37 @@ const ContratoForm: React.FC<FormularioProps> = ({
   // Inicializar empresasPorRol al editar un contrato
   useEffect(() => {
     if (safeSeleccionado && roles.length > 0 && safeSeleccionado.id) {
+      // Log para debug
       // Solo inicializar si empresasPorRol está vacío
       if (Object.keys(empresasPorRol).length === 0) {
         const mapping = [
           { rol: "Titular Carta de Porte", field: "titularCartaDePorte" },
           { rol: "Destino", field: "destino" },
           { rol: "Destinatario", field: "destinatario" },
+          { rol: "Remitente Comercial Productor", field: "remitenteProductor" },
+          { rol: "Corredor Venta Primaria", field: "corredorVentaPrimaria" },
+          { rol: "Rte. Comercial Venta Primaria", field: "remitenteVentaPrimaria" },
+          { rol: "Flete Pagador", field: "fletePagador" },
+          { rol: "Corredor Venta Secundaria", field: "corredorVentaSecundaria" },
+          { rol: "Representante entregador", field: "representanteEntregador" },
+          { rol: "Rte Comercial Venta Secundaria", field: "remitenteVentaSecundaria" },
+          { rol: "Rte Comercial Venta Secundaria 2", field: "rteComercialVentaSecundaria2" },
+          { rol: "Representante recibidor", field: "representanteRecibidor" },
         ];
         const nuevasEmpresasPorRol: { [rolId: number]: any | null } = {};
         mapping.forEach(({ rol, field }) => {
           const rolId = getRolIdByName(rol);
-          if (rolId !== undefined && safeSeleccionado[field]) {
-            nuevasEmpresasPorRol[rolId] = safeSeleccionado[field];
+          const valor = safeSeleccionado[field];
+          if (rolId !== undefined && valor) {
+            if (typeof valor === 'object') {
+              nuevasEmpresasPorRol[rolId] = valor;
+            } else {
+              // Si es un cuit, buscar la empresa correspondiente
+              const empresa = allEmpresas.find(e => String(e.cuit) === String(valor));
+              if (empresa) {
+                nuevasEmpresasPorRol[rolId] = empresa;
+              }
+            }
           }
         });
         // Para otros roles dinámicos
@@ -495,7 +516,15 @@ const ContratoForm: React.FC<FormularioProps> = ({
             !nuevasEmpresasPorRol[rolObj.id] &&
             safeSeleccionado[rolObj.nombre]
           ) {
-            nuevasEmpresasPorRol[rolObj.id] = safeSeleccionado[rolObj.nombre];
+            const valor = safeSeleccionado[rolObj.nombre];
+            if (typeof valor === 'object') {
+              nuevasEmpresasPorRol[rolObj.id] = valor;
+            } else {
+              const empresa = allEmpresas.find(e => String(e.cuit) === String(valor));
+              if (empresa) {
+                nuevasEmpresasPorRol[rolObj.id] = empresa;
+              }
+            }
           }
         });
         setEmpresasPorRol(nuevasEmpresasPorRol);
@@ -616,7 +645,11 @@ const ContratoForm: React.FC<FormularioProps> = ({
         <DeleteEntidad
           idEntidad={data.id || safeSeleccionado.id}
           endpointEntidad="contratos"
-          handleCloseDialog={() => setOpenDialogDelete(false)}
+          handleCloseDialog={() => {
+            setOpenDialogDelete(false);
+            if (refreshContratos) refreshContratos();
+            handleClose();
+          }}
           handleClose={handleClose}
           datos={datos}
           setDatos={setDatos}

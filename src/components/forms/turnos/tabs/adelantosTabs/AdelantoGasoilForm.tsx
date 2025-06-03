@@ -3,10 +3,8 @@ import React, { useState, useEffect, useContext } from "react";
 import {
   TextField,
   Button,
-  Stack,
   Box,
   Autocomplete,
-  IconButton,
   Dialog,
   DialogTitle,
   DialogContent,
@@ -14,7 +12,6 @@ import {
   useTheme,
   useMediaQuery,
 } from "@mui/material";
-import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { ContextoGeneral } from "../../../../Contexto";
 import MainButton from "../../../../botones/MainButtom";
 
@@ -58,8 +55,6 @@ const AdelantoGasoilForm: React.FC<AdelantoGasoilFormProps> = ({
   const [adelanto, setAdelanto] = useState<AdelantoGasoil | undefined>(
     initialAdelanto
   );
-  // Estado para el listado de adelantos del turno
-  const [adelantos, setAdelantos] = useState<AdelantoGasoil[]>([]);
   // Estados para el formulario
   const [tipoCombustible, setTipoCombustible] =
     useState<TipoCombustible | null>(null);
@@ -111,12 +106,7 @@ const AdelantoGasoilForm: React.FC<AdelantoGasoilFormProps> = ({
         });
         if (!response.ok)
           throw new Error("Error al obtener los adelantos de gasoil");
-        const data = await response.json();
-        const filtered = data
-          .filter((item: any) => item.turnoDeCarga?.id === Number(turnoId))
-          .map(transformAdelanto);
-        setAdelantos(filtered);
-        // Si se pasó un adelanto inicial, lo establecemos
+      
         if (initialAdelanto) {
           const transformed = transformAdelanto(initialAdelanto);
           setAdelanto(transformed);
@@ -220,10 +210,7 @@ const AdelantoGasoilForm: React.FC<AdelantoGasoilFormProps> = ({
     }
   };
 
-  // Funciones para el dialog de eliminación
-  const handleOpenDeleteDialog = () => {
-    setOpenDeleteDialog(true);
-  };
+
 
   const handleCloseDeleteDialog = () => {
     setOpenDeleteDialog(false);
@@ -257,58 +244,6 @@ const AdelantoGasoilForm: React.FC<AdelantoGasoilFormProps> = ({
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
-      {/* Selector de adelantos existentes, botón para agregar y botón para eliminar */}
-      <Stack direction="row" spacing={2} alignItems="center">
-        <Autocomplete
-          options={adelantos}
-          getOptionLabel={(option) =>
-            `Adelanto ${option.id} : ${option.cantLitros}L - ${option.precioLitros}$`
-          }
-          value={adelanto || null}
-          onChange={(_event, newValue) => {
-            if (newValue) {
-              setAdelanto(newValue);
-              setCantLitros(newValue.cantLitros);
-              setPrecioLitros(newValue.precioLitros);
-              const foundTipo = tiposCombustibleOptions.find(
-                (tipo) => tipo.id === newValue.idTipoCombustible
-              );
-              setTipoCombustible(foundTipo || null);
-            } else {
-              // Si se deselecciona, se limpian los campos para crear uno nuevo
-              setAdelanto(undefined);
-              setCantLitros("");
-              setPrecioLitros("");
-              setTipoCombustible(null);
-            }
-          }}
-          renderInput={(params) => (
-            <TextField {...params} label="Selecciona un adelanto" />
-          )}
-          sx={{ flex: 1 }}
-        />
-        <Button
-          variant="contained"
-          sx={{ backgroundColor: theme.colores.azul }}
-          onClick={() => {
-            // Al hacer click en '+' se limpian los campos para agregar un nuevo adelanto
-            setAdelanto(undefined);
-            setCantLitros("");
-            setPrecioLitros("");
-            setTipoCombustible(null);
-          }}
-        >
-          +
-        </Button>
-        <IconButton
-          onClick={handleOpenDeleteDialog}
-          disabled={!adelanto}
-          sx={{ color: adelanto ? "#d32f2f" : "grey" }}
-        >
-          <DeleteOutlineIcon />
-        </IconButton>
-      </Stack>
-
       {/* Campos del formulario */}
       <Autocomplete
         options={tiposCombustibleOptions}

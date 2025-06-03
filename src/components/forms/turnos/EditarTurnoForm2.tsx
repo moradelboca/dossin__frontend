@@ -22,7 +22,7 @@ import EstadoTurnoForm from "./tabs/EstadoTurnoForm";
 import FacturaForm from "./tabs/FacturaForm";
 import OrdenPagoForm from "./tabs/OrdenPagoForm";
 import PesajeForm from "./tabs/PesajeForm";
-import TaraForm from "./tabs/TaraForm";
+import { TaraForm } from "./tabs/TaraForm";
 import { useContext } from "react";
 import { ContextoGeneral } from "../../Contexto";
 
@@ -283,7 +283,7 @@ const EditarTurnoForm: React.FC<EditarTurnoFormProps> = ({
         <TaraForm
           turnoId={seleccionado.id}
           initialTara={seleccionado.tara}
-          onSuccess={(updatedTara) => {
+          onSuccess={(updatedTara: any) => {
             setDatos(
               datos.map((turno: any) =>
                 turno.id === seleccionado.id

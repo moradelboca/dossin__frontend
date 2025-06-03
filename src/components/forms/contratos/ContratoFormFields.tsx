@@ -33,7 +33,7 @@ const ContratoFormFields: React.FC<FormFieldsProps> = ({
   const { theme } = useContext(ContextoGeneral);
   return (
     <>
-      {roles.filter((rol) => rol.nombre !== "Transportista").map((rol) => {
+      {roles.filter((rol) => rol.nombre !== "Empresa Transportista").map((rol) => {
         // Filtrar empresas que tengan este rol
         const empresasDelRol = empresas.filter(e => e.roles?.some(r => r.id === rol.id));
         // Opción especial para agregar empresa

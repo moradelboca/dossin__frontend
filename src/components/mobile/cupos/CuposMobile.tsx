@@ -95,35 +95,10 @@ export default function CuposMobile({
     setOpenDialogCupo(false);
   };
 
-  const handleOpenDialogTurno = async (turno: Turno | null, cupo: Cupo) => {
-    if (!turno) return;
-    setSelectedTurno(null);
-    setSelectedCupo(cupo);
-    setOpenDialogTurno(true);
-    try {
-      const backendURL = import.meta.env.VITE_BACKEND_URL || '';
-      const response = await fetch(`${backendURL}/cargas/${cupo.carga}/cupos/${cupo.fecha}/turnos/${turno.id}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'ngrok-skip-browser-warning': 'true',
-        },
-      });
-      const turnoDetalle = await response.json();
-      setSelectedTurno(turnoDetalle);
-    } catch (e) {
-      setSelectedTurno(turno); // fallback a datos básicos
-    }
-  };
   const handleCloseDialogTurno = () => {
     setSelectedTurno(null);
     setSelectedCupo(null);
     setOpenDialogTurno(false);
-  };
-
-  const handleOpenDialogError = (error: any) => {
-    setSelectedError(error);
-    setOpenDialogError(true);
   };
 
   const handleCloseDialogError = () => {
@@ -210,9 +185,8 @@ export default function CuposMobile({
           headerNames={headerNames}
           expandedCard={expandedCard}
           handleExpandClick={handleExpandClick}
-          handleOpenDialog={() => handleOpenDialogTurno(turno, cupo)}
-          tituloField="colaborador.nombre"
-          subtituloField="colaborador.cuil"
+          tituloField="nombreColaborador"
+          subtituloField="nombreEmpresa"
           refreshCupos={refreshCupos}
           cupo={cupo}
         />
@@ -224,28 +198,6 @@ export default function CuposMobile({
   const renderErrores = (errores: any[], cupo: Cupo) => {
     // Filtrar solo los turnos con estado.nombre === 'con errores'
     const filteredErrores = errores.filter((error) => error.estado && error.estado.nombre === 'con errores');
-    const errorFields = [
-      "id",
-      "cuilColaborador",
-      "cuitEmpresa",
-      "patenteCamion",
-      "patenteAcoplado",
-      "patenteAcopladoExtra",
-      "kgCargados",
-      "kgDescargados",
-      "numeroOrdenPago",
-    ];
-    const errorHeaderNames = [
-      "ID",
-      "CUIL Colaborador",
-      "CUIT Empresa",
-      "Patente Camión",
-      "Patente Acoplado",
-      "Patente Acoplado Extra",
-      "Kg Cargados",
-      "Kg Descargados",
-      "Nro Orden de Pago",
-    ];
 
     if (!filteredErrores || filteredErrores.length === 0) {
       return (
@@ -259,13 +211,12 @@ export default function CuposMobile({
         <CardMobile
           item={error}
           index={index}
-          fields={errorFields}
-          headerNames={errorHeaderNames}
+          fields={fields}
+          headerNames={headerNames}
           expandedCard={expandedCard}
           handleExpandClick={handleExpandClick}
-          handleOpenDialog={() => handleOpenDialogError(error)}
-          tituloField="id"
-          subtituloField="fechaCreacion"
+          tituloField="nombreColaborador"
+          subtituloField="nombreEmpresa"
           refreshCupos={refreshCupos}
           cupo={cupo}
         />

@@ -21,17 +21,17 @@ export interface NavItem {
   
   export const navItems: NavItem[] = [
     // Este item es público, sin roles definidos.
-    { label: "Home", ruta: "/",icono: <GridView /> },
+    { label: "Home", ruta: "/", rolesPermitidos: [1], icono: <GridView /> },
     // Items protegidos:
-    { label: "Cargas", ruta: "/cargas", rolesPermitidos: [1, 2, 3], icono: <ViewInAr /> },
-    { label: "Contratos", ruta: "/contratos", rolesPermitidos: [1, 2, 3], icono: <AssignmentOutlinedIcon /> },
-    { label: "Choferes", ruta: "/colaboradores", rolesPermitidos: [1, 2, 3], icono: <GroupsOutlined /> },
-    { label: "Ubicaciones", ruta: "/ubicaciones", rolesPermitidos: [1, 2], icono: <AddLocationAltOutlined /> },
-    { label: "Empresas", ruta: "/empresas", rolesPermitidos: [1, 2, 3], icono: <DomainAddOutlined /> },
-    { label: "Camiones", ruta: "/camiones", rolesPermitidos: [1, 2], icono: <LocalShippingOutlined /> },
-    { label: "Inconvenientes", ruta: "/inconvenientes", rolesPermitidos: [1, 2], icono: <ErrorOutline /> },
-    { label: "Clima", ruta: "/clima", rolesPermitidos: [1, 2], icono: <ThunderstormOutlinedIcon /> },
-    { label: "Calculadora", ruta: "/calculadora", rolesPermitidos: [1, 2], icono: <CalculateOutlinedIcon /> },
+    { label: "Cargas", ruta: "/cargas", rolesPermitidos: [1, 2, 3, 4], icono: <ViewInAr /> },
+    { label: "Contratos", ruta: "/contratos", rolesPermitidos: [1, 2], icono: <AssignmentOutlinedIcon /> },
+    { label: "Choferes", ruta: "/colaboradores", rolesPermitidos: [1, 2, 4], icono: <GroupsOutlined /> },
+    { label: "Ubicaciones", ruta: "/ubicaciones", rolesPermitidos: [1, 2, 4], icono: <AddLocationAltOutlined /> },
+    { label: "Empresas", ruta: "/empresas", rolesPermitidos: [1, 2, 4], icono: <DomainAddOutlined /> },
+    { label: "Camiones", ruta: "/camiones", rolesPermitidos: [1, 2, 4], icono: <LocalShippingOutlined /> },
+    { label: "Inconvenientes", ruta: "/inconvenientes", rolesPermitidos: [1, 2, 4], icono: <ErrorOutline /> },
+    { label: "Clima", ruta: "/clima", rolesPermitidos: [1, 4], icono: <ThunderstormOutlinedIcon /> },
+    { label: "Calculadora", ruta: "/calculadora", rolesPermitidos: [1, 4], icono: <CalculateOutlinedIcon /> },
     { label: "Administrador", ruta: "/admin", rolesPermitidos: [1], icono: <AdminPanelSettingsOutlinedIcon /> },
   ];
   

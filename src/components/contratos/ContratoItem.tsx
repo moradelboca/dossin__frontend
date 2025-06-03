@@ -63,7 +63,6 @@ interface ContratoItemProps {
                     headerNames={headerNames}
                     expandedCard={null}
                     handleExpandClick={() => {}}
-                    handleOpenDialog={() => handleOpenCargaDialog(carga)}
                     tituloField="tituloCustom"
                     subtituloField="subtituloCustom"
                     usarSinDesplegable={true}
@@ -73,92 +72,88 @@ interface ContratoItemProps {
     };
   
     return (
-      <Grid
-        container
-        direction="row"
+      <Box
+        display="flex"
+        flexDirection="row"
         key={contrato.id}
         width={"90%"}
-        flexWrap={"nowrap"}
         gap={5}
         marginLeft={"50px"}
-        alignItems={"center"}
+        alignItems={"flex-start"}
         justifyContent={"center"}
       >
         <Card sx={{ maxWidth: 300, minWidth: 300 }}>
-            <CardContent>
-              <Typography
-                variant="h5"
-                color={theme.colores.azul}
-                textAlign="center"
-              >
-                {contrato.titularCartaDePorte?.razonSocial || "Sin titular"}
-              </Typography>
+          <CardContent>
+            <Typography
+              variant="h5"
+              color={theme.colores.azul}
+              textAlign="center"
+            >
+              {contrato.titularCartaDePorte?.razonSocial || "Sin titular"}
+            </Typography>
 
-              <Divider
-                orientation="horizontal"
-                flexItem
-                sx={{ bgcolor: theme.colores.azul, my: 2 }}
-              />
-
-              <Grid
-                container
-                spacing="10px"
-                justifyContent="center"
-                padding="28px 0px"
-              >
-                <Grid item width="100%">
-                    <Typography
-                        variant="body1"
-                        textAlign="center"
-                        color={theme.colores.azul}
-                    >
-                        Destinatario:
-                    </Typography>
-                    <Typography variant="h6" textAlign="center" color={theme.colores. azul}>
-                        {contrato.destinatario?.razonSocial || "Sin destinatario"}
-                    </Typography>
-                </Grid>
-              </Grid>
-
-              <Box display="flex" justifyContent="center" gap={2}>
-                <CustomButtom
-                  onClick={() => handleOpenCargaDialog()} // Sin parámetros
-                  title="Crear carga +"
-                />
-                <CustomButtom
-                  onClick={() => onEditContrato(contrato)}
-                  title="Editar contrato
-                  "
-                />
-              </Box>
-            </CardContent>
-          </Card>
-          <Grid
-            container
-            spacing={5}
-            flexWrap={"nowrap"}
-            sx={{ 
-                overflowX: "scroll",
-                gap: "16px",
-                padding: "35px",
-                width: "80%",
-                minHeight: "380px",
-                alignItems: "center"
-              }}
-          >
-            {renderCards()}
-          </Grid>
-        
-          <DialogCarga 
-              open={openCargaDialog}
-              onClose={() => {
-                setOpenCargaDialog(false);
-                refreshContratos();
-              }}
-              contrato={contrato}
-              selectedCarga={selectedCarga}
-              refreshContratos={refreshContratos}
+            <Divider
+              orientation="horizontal"
+              flexItem
+              sx={{ bgcolor: theme.colores.azul, my: 2 }}
             />
-      </Grid>
+
+            <Grid
+              container
+              spacing="10px"
+              justifyContent="center"
+              padding="28px 0px"
+            >
+              <Grid item width="100%">
+                <Typography
+                  variant="body1"
+                  textAlign="center"
+                  color={theme.colores.azul}
+                >
+                  Destinatario:
+                </Typography>
+                <Typography variant="h6" textAlign="center" color={theme.colores. azul}>
+                  {contrato.destinatario?.razonSocial || "Sin destinatario"}
+                </Typography>
+              </Grid>
+            </Grid>
+
+            <Box display="flex" justifyContent="center" gap={2}>
+              <CustomButtom
+                onClick={() => handleOpenCargaDialog()} // Sin parámetros
+                title="Crear carga +"
+              />
+              <CustomButtom
+                onClick={() => onEditContrato(contrato)}
+                title="Editar contrato"
+              />
+            </Box>
+          </CardContent>
+        </Card>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'row',
+            overflowX: 'auto',
+            gap: '16px',
+            padding: '0px',
+            width: '80%',
+            alignItems: 'flex-start',
+          }}
+        >
+          {renderCards()}
+        </Box>
+
+        <DialogCarga 
+          open={openCargaDialog}
+          onClose={() => {
+            setOpenCargaDialog(false);
+            refreshContratos();
+          }}
+          contrato={contrato}
+          selectedCarga={selectedCarga}
+          refreshContratos={refreshContratos}
+        />
+      </Box>
     );
   };

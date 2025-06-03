@@ -132,7 +132,7 @@ const HistorialTurnos: React.FC = () => {
   ];
 
   // Función auxiliar para renderizar las filas de la tabla
-  // En la columna de detalles se muestra un botón “+” que abre el diálogo
+  // En la columna de detalles se muestra un botón "+" que abre el diálogo
   const renderRows = (listaTurnos: any[]) => {
     return listaTurnos.map((turno) => (
       <TableRow key={turno.id}>
@@ -297,12 +297,9 @@ const HistorialTurnos: React.FC = () => {
               headerNames={headerNames}
               expandedCard={null}
               handleExpandClick={() => {}}
-              handleOpenDialog={() => {}}
-              // Puedes ajustar estos campos según lo que desees mostrar en el encabezado
-              tituloField="colaborador.nombre"
-              subtituloField="colaborador.cuil"
+              tituloField="nombreColaborador"
+              subtituloField="nombreEmpresa"
               usarSinDesplegable={true}
-              // Deshabilitamos el botón de "Editar" para solo mostrar información
               mostrarBotonEditar={false}
             />
           )}
