@@ -24,6 +24,7 @@ import { Nav } from "./components/nav/Nav";
 import WebSocketComponent from "./components/Websocket";
 import PantallaLogin from "./components/login/PantallaLogin";
 import Cookies from "js-cookie";
+import { HelpBot } from './components/helpbot';
 
 function MainLayout({
   navAbierto,
@@ -212,13 +213,16 @@ function App() {
                     />
                   </Routes>
                 ) : (
+                  <>
                   <MainLayout
                     navAbierto={navAbierto}
                     setNavAbierto={setNavAbierto}
                     anchoAbierto={anchoAbierto}
                     anchoCerrado={anchoCerrado}
                     isMobile={isMobile}
-                  />
+                    />
+                    <HelpBot />
+                    </>
                 )}
               </CssBaseline>
             </Box>
