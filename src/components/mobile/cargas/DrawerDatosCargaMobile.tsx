@@ -1,5 +1,7 @@
 import { Box, Typography, IconButton } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
+import { useContext } from "react";
+import { ContextoCargas } from "../../cargas/containers/ContainerTajetasCargas";
 
 interface DrawerDatosCargaMobileProps {
   cargaSeleccionada: any;
@@ -31,10 +33,39 @@ export default function DrawerDatosCargaMobile({
     destinoRuca
   } = cargaSeleccionada || {};
 
+  const { handleClickAbrirDialog } = useContext(ContextoCargas);
+
   // Ejemplo de función para manejar la edición de cada campo
   const handleEdit = (fieldLabel: string) => {
-    console.log("Editar:", fieldLabel);
-    // Aquí abrirías tu diálogo o la lógica de edición correspondiente
+    // Mapeo de campo a paso del stepper según CrearCargaStepper
+    const pasoPorCampo: Record<string, number> = {
+      // Paso 0: Ubicación y horarios
+      "Hora Inicio Carga": 0,
+      "Hora Fin Carga": 0,
+      "Ubicación Carga": 0,
+      "Hora Inicio Descarga": 0,
+      "Hora Fin Descarga": 0,
+      "Ubicación Descarga": 0,
+      "Hora Inicio Balanza": 0,
+      "Hora Fin Balanza": 0,
+      "Ubicación Balanza": 0,
+      // Paso 1: Kilómetros y cargamento
+      "Kilómetros": 1,
+      "Cargamento": 1,
+      // Paso 2: Tarifa
+      "Tarifa": 2,
+      "Incluye IVA": 2,
+      // Paso 3: Tipos de Acoplados
+      "Tipos de Acoplados": 3,
+      // Paso 4: Más información
+      "Tolerancia": 4,
+      "Creado Por": 4,
+      "Descripción": 4,
+      "Planta Procedencia Ruca": 4,
+      "Destino Ruca": 4,
+    };
+    const paso = pasoPorCampo[fieldLabel] ?? 0;
+    if (handleClickAbrirDialog) handleClickAbrirDialog(paso);
   };
 
   // Array con la definición de los campos que se van a mostrar

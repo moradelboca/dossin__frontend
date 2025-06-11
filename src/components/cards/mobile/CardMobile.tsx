@@ -34,6 +34,7 @@ interface CardMobileProps {
   refreshCupos?: () => void; // Callback para refrescar los cupos después de una acción
   cupo?: any; // Nuevo prop opcional
   childrenCollapse?: React.ReactNode; // Nuevo prop para contenido custom dentro del Collapse
+  ocultarBotonesAccion?: boolean;
 }
 
 const CardMobile: React.FC<CardMobileProps> = ({
@@ -50,6 +51,7 @@ const CardMobile: React.FC<CardMobileProps> = ({
   cupo,
   refreshCupos,
   childrenCollapse,
+  ocultarBotonesAccion = false,
 }) => {
   const { theme } = useContext(ContextoGeneral);
   const transformarCampo = useTransformarCampo();
@@ -67,6 +69,7 @@ const CardMobile: React.FC<CardMobileProps> = ({
 
   // Botones y diálogos ahora usan manejoTurnos
   const renderButtons = () => {
+    if (ocultarBotonesAccion) return null;
     const estado = manejoTurnos.turnoLocal.estado?.nombre?.toLowerCase();
     if (estado === 'pagado') return null;
     const mainButton = (props: any) => (
@@ -192,7 +195,7 @@ const CardMobile: React.FC<CardMobileProps> = ({
       }}
     >
       {/* Estado pill label como botón para admin */}
-      {manejoTurnos.turnoLocal.estado?.nombre && (
+      {manejoTurnos.turnoLocal.estado?.nombre && !ocultarBotonesAccion && (
         isAdmin ? (
           <Box
             sx={{
@@ -244,18 +247,20 @@ const CardMobile: React.FC<CardMobileProps> = ({
         )
       )}
       {/* Dialog para cambiar estado */}
-      <Dialog open={openEstadoDialog} onClose={() => setOpenEstadoDialog(false)} maxWidth="xs" fullWidth>
-        <EstadoTurnoForm
-          turnoId={manejoTurnos.turnoLocal.id}
-          initialEstado={manejoTurnos.turnoLocal.estado}
-          onSuccess={(updatedData) => {
-            manejoTurnos.setTurnoLocal((prev: any) => ({ ...prev, estado: updatedData.estado || updatedData }));
-            setOpenEstadoDialog(false);
-            if (refreshCupos) refreshCupos();
-          }}
-          onCancel={() => setOpenEstadoDialog(false)}
-        />
-      </Dialog>
+      {!ocultarBotonesAccion && (
+        <Dialog open={openEstadoDialog} onClose={() => setOpenEstadoDialog(false)} maxWidth="xs" fullWidth>
+          <EstadoTurnoForm
+            turnoId={manejoTurnos.turnoLocal.id}
+            initialEstado={manejoTurnos.turnoLocal.estado}
+            onSuccess={(updatedData) => {
+              manejoTurnos.setTurnoLocal((prev: any) => ({ ...prev, estado: updatedData.estado || updatedData }));
+              setOpenEstadoDialog(false);
+              if (refreshCupos) refreshCupos();
+            }}
+            onCancel={() => setOpenEstadoDialog(false)}
+          />
+        </Dialog>
+      )}
       <Box
         display="flex"
         alignItems="center"

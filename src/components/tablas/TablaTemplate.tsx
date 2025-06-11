@@ -6,6 +6,7 @@ import {
   DialogContent,
   DialogTitle,
   useMediaQuery,
+  Avatar,
 } from "@mui/material";
 import { GridColDef } from "@mui/x-data-grid";
 import React, { useContext, useEffect, useMemo, useState } from "react";
@@ -169,6 +170,24 @@ export default function TablaTemplate({
         {headerNames[i]}
       </strong>
     ),
+    ...(field === "imagen"
+      ? {
+          renderCell: (params: any) => {
+            const imageUrl = typeof params.value === 'string' && params.value.startsWith("http") ? params.value : undefined;
+            const email = params.row.email || "";
+            return (
+              <Avatar
+                src={imageUrl}
+                alt={email}
+                imgProps={{ referrerPolicy: "no-referrer" }}
+                sx={{ bgcolor: imageUrl ? 'transparent' : theme.colores.azul }}
+              >
+                {!imageUrl && email ? email[0].toUpperCase() : null}
+              </Avatar>
+            );
+          },
+        }
+      : {}),
   }));
   // Columna editar
   columns.push({

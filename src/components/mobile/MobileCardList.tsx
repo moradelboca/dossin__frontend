@@ -33,6 +33,8 @@ interface MobileCardListProps {
   openDialog: boolean;
   handleOpenDialog: (item: any) => void;
   handleCloseDialog: () => void;
+  ocultarBotonesAccion?: boolean;
+  childrenCollapseFn?: (item: any) => React.ReactNode;
 }
 
 const MobileCardList: React.FC<MobileCardListProps> = ({
@@ -50,6 +52,8 @@ const MobileCardList: React.FC<MobileCardListProps> = ({
   openDialog,
   handleOpenDialog,
   handleCloseDialog,
+  ocultarBotonesAccion = false,
+  childrenCollapseFn,
 }) => {
   // Estados para filtrar y buscar dentro de los datos
   const [filteredDatos, setFilteredDatos] = useState<any[]>(datos);
@@ -110,6 +114,8 @@ const MobileCardList: React.FC<MobileCardListProps> = ({
         tituloField={tituloField}
         subtituloField={subtituloField}
         customIcon={customIcon}
+        ocultarBotonesAccion={ocultarBotonesAccion}
+        childrenCollapse={childrenCollapseFn ? childrenCollapseFn(item) : undefined}
       />
     ));
 

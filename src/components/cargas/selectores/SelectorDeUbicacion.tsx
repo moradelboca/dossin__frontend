@@ -62,124 +62,182 @@ export default function SelectorDeUbicacion() {
 
     return (
         <>
-            <Box display="column" flexDirection="row" gap={2} width={"800px"}>
-                <Box display="flex" flexDirection="row" gap={2}>
+            <Box
+                sx={{
+                    width: '100%',
+                    maxWidth: { xs: '75vw', sm: 800 },
+                    mx: 'auto',
+                    display: 'flex',
+                    flexDirection: { xs: 'column', md: 'row' },
+                    gap: 2,
+                    alignItems: { xs: 'center', md: 'flex-start' },
+                    justifyContent: 'center',
+                }}
+            >
+                <Box
+                    sx={{
+                        display: 'flex',
+                        flexDirection: { xs: 'column', md: 'row' },
+                        gap: 2,
+                        width: '100%',
+                        mx: 'auto',
+                    }}
+                >
                     <Box
-                        display="column"
-                        flexDirection="row"
-                        gap={2}
-                        alignItems={"center"}
                         sx={{
-                            border: "1px solid rgba(22, 54, 96, 0.6)",
-                            borderRadius: "8px",
-                            padding: "16px",
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            border: '1px solid rgba(22, 54, 96, 0.6)',
+                            borderRadius: '8px',
+                            p: 2,
+                            flex: 1,
+                            minWidth: 0,
+                            width: '100%',
                         }}
                     >
-                        <AutocompletarUbicacion
-                            ubicaciones={ubicaciones}
-                            title="Ubicación de Carga"
-                            filtro="Carga"
-                            estadoCarga={estadoCarga}
-                            onAgregarUbicacion={handleAgregarUbicacion}
-                        />
-                        <Box display="flex" flexDirection="row" gap={2}>
-                            <Box display="column" gap={2}>
-                                <>Inicio</>
-                                <Reloj filtro="horaInicioCarga" />
+                        <Box sx={{ width: '100%' }}>
+                          <AutocompletarUbicacion
+                              ubicaciones={ubicaciones}
+                              title="Ubicación de Carga"
+                              filtro="Carga"
+                              estadoCarga={estadoCarga}
+                              onAgregarUbicacion={handleAgregarUbicacion}
+                          />
+                        </Box>
+                        <Box
+                            sx={{
+                                display: 'flex',
+                                flexDirection: 'row',
+                                gap: 2,
+                                width: '100%',
+                                mt: 1,
+                                justifyContent: 'center',
+                            }}
+                        >
+                            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
+                                <Typography sx={{ whiteSpace: 'normal', wordBreak: 'break-word', fontSize: 14 }}>Inicio</Typography>
+                                <Box sx={{ width: '100%' }}><Reloj filtro="horaInicioCarga" /></Box>
                             </Box>
-                            <Box display="column">
-                                <>Fin</>
-                                <Reloj filtro="horaFinCarga" />
+                            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
+                                <Typography sx={{ whiteSpace: 'normal', wordBreak: 'break-word', fontSize: 14 }}>Fin</Typography>
+                                <Box sx={{ width: '100%' }}><Reloj filtro="horaFinCarga" /></Box>
                             </Box>
                         </Box>
                     </Box>
                     <Box
-                        display="column"
-                        flexDirection="row"
-                        gap={2}
-                        alignItems={"center"}
                         sx={{
-                            border: "1px solid rgba(22, 54, 96, 0.6)",
-                            borderRadius: "8px",
-                            padding: "16px",
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            border: '1px solid rgba(22, 54, 96, 0.6)',
+                            borderRadius: '8px',
+                            p: 2,
+                            flex: 1,
+                            minWidth: 0,
+                            width: '100%',
                         }}
                     >
-                        <AutocompletarUbicacion
-                            ubicaciones={ubicaciones}
-                            title="Ubicación de Descarga"
-                            filtro="Descarga"
-                            estadoCarga={estadoCarga}
-                            onAgregarUbicacion={handleAgregarUbicacion}
-                        />
-                        <Box display="flex" flexDirection="row" gap={2}>
-                            <Box display="column">
-                                <>Inicio</>
-                                <Reloj filtro="horaInicioDescarga" />
+                        <Box sx={{ width: '100%' }}>
+                          <AutocompletarUbicacion
+                              ubicaciones={ubicaciones}
+                              title="Ubicación de Descarga"
+                              filtro="Descarga"
+                              estadoCarga={estadoCarga}
+                              onAgregarUbicacion={handleAgregarUbicacion}
+                          />
+                        </Box>
+                        <Box
+                            sx={{
+                                display: 'flex',
+                                flexDirection: 'row',
+                                gap: 2,
+                                width: '100%',
+                                mt: 1,
+                                justifyContent: 'center',
+                            }}
+                        >
+                            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
+                                <Typography sx={{ whiteSpace: 'normal', wordBreak: 'break-word', fontSize: 14 }}>Inicio</Typography>
+                                <Box sx={{ width: '100%' }}><Reloj filtro="horaInicioDescarga" /></Box>
                             </Box>
-                            <Box display="column">
-                                <>Fin</>
-                                <Reloj filtro="horaFinDescarga" />
+                            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
+                                <Typography sx={{ whiteSpace: 'normal', wordBreak: 'break-word', fontSize: 14 }}>Fin</Typography>
+                                <Box sx={{ width: '100%' }}><Reloj filtro="horaFinDescarga" /></Box>
                             </Box>
                         </Box>
                     </Box>
                 </Box>
-                <FormControlLabel
-                    control={
-                        <Checkbox
-                            checked={requiereBalanza}
-                            onChange={(e) => {
-                                setRequiereBalanza(e.target.checked);
-                                datosNuevaCarga["requiereBalanza"] =
-                                    e.target.checked;
-                            }}
-                            sx={{
-                                color: "#163660",
-                                "&.Mui-checked": {
-                                    color: "#163660",
-                                },
-                            }}
-                        />
-                    }
-                    label="Requiere balanza"
-                />
-                {requiereBalanza && (
-                    <Box
-                        display="column"
-                        flexDirection="row"
-                        gap={2}
-                        width={"335px"}
-                        alignItems={"center"}
+            </Box>
+            <FormControlLabel
+                control={
+                    <Checkbox
+                        checked={requiereBalanza}
+                        onChange={(e) => {
+                            setRequiereBalanza(e.target.checked);
+                            datosNuevaCarga["requiereBalanza"] =
+                                e.target.checked;
+                        }}
                         sx={{
-                            border: "1px solid rgba(22, 54, 96, 0.6)",
-                            borderRadius: "8px",
-                            padding: "16px",
+                            color: "#163660",
+                            "&.Mui-checked": {
+                                color: "#163660",
+                            },
+                        }}
+                    />
+                }
+                label="Requiere balanza"
+                sx={{ mt: 2, mb: 1 }}
+            />
+            {requiereBalanza && (
+                <Box
+                    sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        border: '1px solid rgba(22, 54, 96, 0.6)',
+                        borderRadius: '8px',
+                        p: 2,
+                        width: '100%',
+                        mt: 1,
+                        mx: 'auto',
+                    }}
+                >
+                    <Box sx={{ width: '100%' }}>
+                      <AutocompletarUbicacion
+                          ubicaciones={ubicaciones}
+                          title="Ubicación de Balanza"
+                          filtro="Balanza"
+                          estadoCarga={estadoCarga}
+                          onAgregarUbicacion={handleAgregarUbicacion}
+                      />
+                    </Box>
+                    <Box
+                        sx={{
+                            display: 'flex',
+                            flexDirection: 'row',
+                            gap: 2,
+                            width: '100%',
+                            mt: 1,
+                            justifyContent: 'center',
                         }}
                     >
-                        <AutocompletarUbicacion
-                            ubicaciones={ubicaciones}
-                            title="Ubicación de Balanza"
-                            filtro="Balanza"
-                            estadoCarga={estadoCarga}
-                            onAgregarUbicacion={handleAgregarUbicacion}
-                        />
-                        <Box display="flex" flexDirection="row" gap={2}>
-                            <Box display="column">
-                                <>Inicio</>
-                                <Reloj filtro="horaInicioBalanza" />
-                            </Box>
-                            <Box display="column">
-                                <>Fin</>
-                                <Reloj filtro="horaFinBalanza" />
-                            </Box>
+                        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
+                            <Typography sx={{ whiteSpace: 'normal', wordBreak: 'break-word', fontSize: 14 }}>Inicio</Typography>
+                            <Box sx={{ width: '100%' }}><Reloj filtro="horaInicioBalanza" /></Box>
+                        </Box>
+                        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
+                            <Typography sx={{ whiteSpace: 'normal', wordBreak: 'break-word', fontSize: 14 }}>Fin</Typography>
+                            <Box sx={{ width: '100%' }}><Reloj filtro="horaFinBalanza" /></Box>
                         </Box>
                     </Box>
-                )}
-                {datosSinCompletar && (
-                    <Typography color="#ff3333">
-                        Las horas de incio deben ser menores a las de fin.
-                    </Typography>
-                )}
-            </Box>
+                </Box>
+            )}
+            {datosSinCompletar && (
+                <Typography color="#ff3333">
+                    Las horas de incio deben ser menores a las de fin.
+                </Typography>
+            )}
             <Dialog open={openCreador} onClose={handleCloseCreador} maxWidth="md" fullWidth>
                 <CreadorUbicacion
                     handleClose={() => {

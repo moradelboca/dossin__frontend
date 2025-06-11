@@ -12,7 +12,7 @@ const InconvenienteForm: React.FC<FormularioProps> = ({
   setDatos,
   handleClose,
 }) => {
-  const { backendURL, authURL } = useContext(ContextoGeneral);
+  const { backendURL, authURL, theme } = useContext(ContextoGeneral);
   const { user } = useAuth();
 
   const [tipoInconveniente, setTipoInconveniente] = useState<string | null>(null);
@@ -205,11 +205,41 @@ const InconvenienteForm: React.FC<FormularioProps> = ({
           />
         )}
       />
-      <Box display="flex" justifyContent="space-between" mt={2}>
-        <Button onClick={handleClose} color="primary">
+      <Box display="flex" justifyContent="space-between" mt={2} gap={2}>
+        <Button
+          onClick={handleClose}
+          sx={{
+            backgroundColor: "transparent",
+            color: theme.colores.azul,
+            borderRadius: "8px",
+            px: 3,
+            py: 1,
+            fontWeight: 500,
+            textTransform: "none",
+            '&:hover': {
+              backgroundColor: 'rgba(22, 54, 96, 0.1)',
+              color: theme.colores.azul,
+            },
+          }}
+        >
           Cancelar
         </Button>
-        <Button onClick={handleSubmit} color="primary">
+        <Button
+          onClick={handleSubmit}
+          sx={{
+            backgroundColor: theme.colores.azul,
+            color: '#fff',
+            borderRadius: '8px',
+            px: 3,
+            py: 1,
+            fontWeight: 500,
+            textTransform: 'none',
+            '&:hover': {
+              backgroundColor: theme.colores.azulOscuro || theme.colores.azul,
+              color: '#fff',
+            },
+          }}
+        >
           Guardar
         </Button>
       </Box>

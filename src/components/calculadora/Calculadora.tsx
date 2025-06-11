@@ -238,12 +238,47 @@ const TarifaApp: React.FC = () => {
           <Tabs
             value={tabValue}
             onChange={handleTabChangeMobile}
-            indicatorColor="primary"
-            textColor="primary"
+            TabIndicatorProps={{
+              style: { backgroundColor: theme.colores.azul, height: 3, borderRadius: 2 }
+            }}
             sx={{ mb: 2, display: "flex", justifyContent: "space-between" }}
           >
-            <Tab label="Ingreso de datos" sx={{ flex: 1 }} />
-            <Tab label="Resultados" sx={{ flex: 1 }} />
+            <Tab 
+              label="Ingreso de datos"
+              sx={{
+                flex: 1,
+                color: theme.colores.grisOscuro,
+                fontWeight: 'normal',
+                borderBottom: '3px solid transparent',
+                transition: 'color 0.2s, border-bottom 0.2s',
+                textTransform: 'none',
+                fontSize: '1rem',
+                minHeight: 48,
+                '&.Mui-selected': {
+                  color: theme.colores.azul,
+                  fontWeight: 'bold',
+                  borderBottom: `3px solid ${theme.colores.azul}`,
+                }
+              }}
+            />
+            <Tab 
+              label="Resultados"
+              sx={{
+                flex: 1,
+                color: theme.colores.grisOscuro,
+                fontWeight: 'normal',
+                borderBottom: '3px solid transparent',
+                transition: 'color 0.2s, border-bottom 0.2s',
+                textTransform: 'none',
+                fontSize: '1rem',
+                minHeight: 48,
+                '&.Mui-selected': {
+                  color: theme.colores.azul,
+                  fontWeight: 'bold',
+                  borderBottom: `3px solid ${theme.colores.azul}`,
+                }
+              }}
+            />
           </Tabs>
 
           {tabValue === 0 && (

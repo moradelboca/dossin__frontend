@@ -1,7 +1,6 @@
 import {
     Autocomplete,
     Box,
-    Button,
     Dialog,
     IconButton,
     TextField,
@@ -12,6 +11,8 @@ import {
   import React from "react";
   import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
   import DeleteUbicacion from "./DeleteUbicaciones";
+  import useMediaQuery from "@mui/material/useMediaQuery";
+  import MainButton from "../botones/MainButtom";
   
   interface Ubicacion {
     handleClose: any;
@@ -22,7 +23,7 @@ import {
   }
   
   export function CreadorUbicacion(props: Ubicacion) {
-    const { backendURL } = useContext(ContextoGeneral);
+    const { backendURL, theme } = useContext(ContextoGeneral);
     const {
       handleClose,
       ubicacionSeleccionada,
@@ -35,6 +36,8 @@ import {
     const [openDialogDelete, setOpenDialogDelete] = useState(false);
     const [estadoCarga, setEstadoCarga] = useState(true);
     const [localidades, setLocalidades] = useState<any[]>([]);
+  
+    const isMobile = useMediaQuery("(max-width:600px)");
   
     // Cargar ubicaciones, tipos y localidades
     useEffect(() => {
@@ -209,6 +212,33 @@ import {
   
     return (
       <>
+        <Dialog 
+          open={openDialogDelete} 
+          onClose={handleCloseDialog} 
+          maxWidth="sm" 
+          fullWidth
+          PaperProps={{
+            sx: {
+              maxHeight: { xs: '90vh', sm: 600 },
+              minHeight: 300,
+              overflow: 'hidden',
+            }
+          }}
+        >
+          <Box sx={{
+            p: { xs: 1, sm: 2 },
+            overflowY: 'auto',
+            maxHeight: { xs: '80vh', sm: 500 },
+            minHeight: 200,
+          }}>
+            <DeleteUbicacion
+              id={datosNuevaUbicacion.id}
+              handleCloseDialog={handleCloseDialog}
+              handleClose={handleClose}
+              refreshUbicaciones={refreshUbicaciones}
+            />
+          </Box>
+        </Dialog>
         <Box
           display="flex"
           flexDirection="column"
@@ -217,7 +247,8 @@ import {
           alignItems={"center"}
           marginTop={2}
           marginBottom={1}
-          margin={3}
+          margin={isMobile ? 1 : 3}
+          sx={{ width: "100%", maxWidth: 350 }}
         >
           <TextField
             id="outlined-basic"
@@ -227,7 +258,7 @@ import {
             error={errorUrl}
             value={datosNuevaUbicacion.urlMaps}
             inputProps={{ maxLength: 200 }}
-            sx={{ width: 350 }}
+            sx={{ width: "100%", maxWidth: 300 }}
           />
           <TextField
             id="outlined-basic"
@@ -236,7 +267,7 @@ import {
             onChange={setNombre}
             value={datosNuevaUbicacion.nombre}
             inputProps={{ maxLength: 50 }}
-            sx={{ width: 350 }}
+            sx={{ width: "100%", maxWidth: 300 }}
           />
           <Autocomplete
             options={tipoUbicacion}
@@ -244,43 +275,64 @@ import {
             value={selectedTipo}
             onChange={seleccionarTipo}
             renderInput={(params) => (
-              <TextField {...params} label="Tipo" sx={{ width: 350 }} error={errorTipo} />
+              <TextField {...params} label="Tipo" sx={{ width: "100%", maxWidth: 300 }} error={errorTipo} />
             )}
             sx={{
-              width: 350,
+              width: "100%",
+              maxWidth: 300,
               background: "white",
               borderRadius: "6px",
             }}
             loading={estadoCarga}
           />
-          <AutocompletarUbicacionLocalidad
-            localidades={localidades}
-            title="Localidad"
-            datosNuevaUbicacion={datosNuevaUbicacion}
-            setDatosNuevaUbicacion={setDatosNuevaUbicacion}
-            error={errorLocalidad}
-            estadoCarga={estadoCarga}
-          />
+          <Box sx={{ width: "100%", maxWidth: 300 }}>
+            <AutocompletarUbicacionLocalidad
+              localidades={localidades}
+              title="Localidad"
+              datosNuevaUbicacion={datosNuevaUbicacion}
+              setDatosNuevaUbicacion={setDatosNuevaUbicacion}
+              error={errorLocalidad}
+              estadoCarga={estadoCarga}
+            />
+          </Box>
         </Box>
-        <Box margin={2} sx={{ display: "flex", justifyContent: "flex-start" }}>
-          <Button onClick={handleClose} color="primary">
-            Cancelar
-          </Button>
-          <Button onClick={handleSave} color="primary">
-            Guardar
-          </Button>
-          <IconButton onClick={() => handleClickDeleteCarga()}>
+        <Box
+          margin={isMobile ? 1 : 2}
+          sx={{
+            display: "flex",
+            flexDirection: isMobile ? "column" : "row",
+            gap: 1.5,
+            justifyContent: "center",
+            alignItems: "center",
+            width: "100%",
+            maxWidth: 300,
+            margin: '0 auto',
+          }}
+        >
+          <MainButton
+            onClick={handleClose}
+            text="Cancelar"
+            backgroundColor="transparent"
+            textColor={theme.colores.azul}
+            width={isMobile ? "100%" : "300px"}
+            borderRadius="8px"
+            hoverBackgroundColor="rgba(22, 54, 96, 0.1)"
+            divWidth={isMobile ? "100%" : "300px"}
+          />
+          <MainButton
+            onClick={handleSave}
+            text="Guardar"
+            backgroundColor={theme.colores.azul}
+            textColor="#fff"
+            width={isMobile ? "100%" : "300px"}
+            borderRadius="8px"
+            hoverBackgroundColor={theme.colores.azulOscuro}
+            divWidth={isMobile ? "100%" : "300px"}
+          />
+          <IconButton onClick={() => handleClickDeleteCarga()} sx={{ ml: isMobile ? 0 : 1, mt: isMobile ? 1 : 0, maxWidth: '300px', width: isMobile ? "100%" : "300px" }}>
             <DeleteOutlineIcon sx={{ fontSize: 20, color: "#d68384" }} />
           </IconButton>
         </Box>
-        <Dialog open={openDialogDelete} onClose={handleCloseDialog} maxWidth="sm" fullWidth>
-          <DeleteUbicacion
-            id={datosNuevaUbicacion.id}
-            handleCloseDialog={handleCloseDialog}
-            handleClose={handleClose}
-            refreshUbicaciones={refreshUbicaciones}
-          />
-        </Dialog>
       </>
     );
   }

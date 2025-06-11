@@ -16,14 +16,11 @@ import {
     Box,
     Checkbox,
     FormControlLabel,
-    IconButton,
-    Menu,
-    MenuItem,
     Typography,
+    useMediaQuery,
 } from "@mui/material";
 import { ContextoGeneral } from "../Contexto";
 import AutocompletarUbicacionMapa from "../cargas/autocompletar/AutocompletarUbicacionMapa";
-import { MoreVert } from "@mui/icons-material";
 
 Chart.register(
     CategoryScale,
@@ -46,26 +43,33 @@ type WeatherData = {
     precipitationSum?: number[];
 };
 interface Ubicacion {
+    id: number;
     nombre: string;
-    provincia: string;
-    pais: string;
+    provincia?: string;
+    pais?: string;
     latitud: number;
     longitud: number;
-    tipoUbicacion: string;
+    tipoUbicacion?: any;
+    localidad?: {
+        nombre: string;
+        provincia: {
+            nombre: string;
+            pais?: {
+                nombre: string;
+            };
+        };
+    };
+    urlMaps?: string;
 }
 
 const Clima = () => {
     const { theme } = React.useContext(ContextoGeneral);
+    const isMobile = useMediaQuery("(max-width:600px)");
     const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
     const [diario, setDiario] = useState(false);
     const { backendURL } = useContext(ContextoGeneral);
     const [ubicaciones, setUbicaciones] = useState<Ubicacion[]>([]);
-    const [selectedLocation, setSelectedLocation] = useState<{
-        lat: number;
-        lng: number;
-    } | null>(null);
-    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-    const open = Boolean(anchorEl);
+    const [selectedLocation, setSelectedLocation] = useState<Ubicacion | null>(null);
 
     useEffect(() => {
         fetch(`${backendURL}/ubicaciones`, {
@@ -79,10 +83,7 @@ const Clima = () => {
             .then((ubicaciones) => {
                 setUbicaciones(ubicaciones);
                 if (ubicaciones.length > 0 && !selectedLocation) {
-                    setSelectedLocation({
-                        lat: ubicaciones[0].latitud,
-                        lng: ubicaciones[0].longitud,
-                    });
+                    setSelectedLocation(ubicaciones[0]);
                 }
             })
             .catch(() =>
@@ -99,8 +100,8 @@ const Clima = () => {
 
             if (diario) {
                 params = {
-                    latitude: selectedLocation.lat,
-                    longitude: selectedLocation.lng,
+                    latitude: selectedLocation.latitud,
+                    longitude: selectedLocation.longitud,
                     daily: [
                         "temperature_2m_max",
                         "temperature_2m_min",
@@ -123,8 +124,8 @@ const Clima = () => {
                 });
             } else {
                 params = {
-                    latitude: selectedLocation.lat,
-                    longitude: selectedLocation.lng,
+                    latitude: selectedLocation.latitud,
+                    longitude: selectedLocation.longitud,
                     hourly: [
                         "temperature_2m",
                         "precipitation_probability",
@@ -155,13 +156,7 @@ const Clima = () => {
     const diarioApretado = (event: React.ChangeEvent<HTMLInputElement>) => {
         setDiario(event.target.checked);
     };
-    const handleClick = (event: React.MouseEvent<HTMLElement>) => {
-        setAnchorEl(event.currentTarget);
-    };
-
-    const handleClose = () => {
-        setAnchorEl(null);
-    };
+ 
 
     const chartData = {
         labels: weatherData?.time,
@@ -231,7 +226,7 @@ const Clima = () => {
                 },
             },
             y: {
-                beginAtZero: true,
+                // beginAtZero: true, // Quitado para que el eje Y se ajuste automáticamente
             },
         },
     };
@@ -245,90 +240,123 @@ const Clima = () => {
                 padding: 3,
             }}
         >
-            <Box display="flex" flexDirection="row" gap={2} alignItems="center">
-                <Typography
-                    variant="h5"
-                    component="div"
-                    sx={{
-                        color: theme.colores.azul,
-                        fontWeight: "bold",
-                        fontSize: "2rem",
-                        marginLeft: 1,
-                    }}
-                >
-                    Pronóstico del Tiempo
-                </Typography>
-                <Box
-                    display="flex"
-                    flexDirection="row"
-                    gap={2}
-                    alignItems="center"
-                >
-                    <IconButton
-                        aria-label="more"
-                        aria-controls={open ? "menu" : undefined}
-                        aria-haspopup="true"
-                        onClick={handleClick}
-                    >
-                        <MoreVert />
-                    </IconButton>
-
-                    <Menu
-                        id="menu"
-                        anchorEl={anchorEl}
-                        open={open}
-                        onClose={handleClose}
-                        MenuListProps={{
-                            "aria-labelledby": "menu-button",
-                        }}
-                        PaperProps={{
-                            style: {
-                                maxHeight: 48 * 4.5,
-                                width: "40ch",
-                            },
-                        }}
-                    >
-                        <MenuItem>
-                            <AutocompletarUbicacionMapa
-                                ubicaciones={ubicaciones}
-                                title="Ubicación de Carga"
-                                filtro="Todas"
-                                onSelectLocation={setSelectedLocation}
-                            />
-                        </MenuItem>
-
-                        <MenuItem>
-                            <FormControlLabel
-                                control={
-                                    <Checkbox
-                                        onChange={diarioApretado}
-                                        sx={{
-                                            color: "#163660",
-                                            "&.Mui-checked": {
-                                                color: "#163660",
-                                            },
-                                        }}
-                                    />
-                                }
-                                label="Ver datos diarios"
-                            />
-                        </MenuItem>
-                    </Menu>
-                </Box>
-            </Box>
-            <Box
-                display="flex"
-                alignItems="center"
-                justifyContent="center"
-                margin={2}
-                sx={{ height: "100%", width: "100%", maxHeight: "550px" }}
+            <Typography
+                variant="h5"
+                component="div"
+                sx={{
+                    color: theme.colores.azul,
+                    fontWeight: "bold",
+                    fontSize: "2rem",
+                    marginLeft: 1,
+                }}
             >
-                {weatherData ? (
-                    <Line data={chartData} options={chartOptions} />
-                ) : (
-                    <Typography variant="body1">Cargando datos...</Typography>
-                )}
-            </Box>
+                Pronóstico del Tiempo
+            </Typography>
+            {isMobile ? (
+                <Box display="flex" flexDirection="column" gap={2} height="100%" mt={2}>
+                    <AutocompletarUbicacionMapa
+                        ubicaciones={ubicaciones}
+                        title="Buscar ubicación"
+                        filtro="Todas"
+                        ubicacionSeleccionada={selectedLocation}
+                        setUbicacionSeleccionada={setSelectedLocation}
+                        sx={{ mb: 2 }}
+                    />
+                    <FormControlLabel
+                        control={
+                            <Checkbox
+                                checked={diario}
+                                onChange={diarioApretado}
+                                sx={{
+                                    color: theme.colores.azul,
+                                    '&.Mui-checked': {
+                                        color: theme.colores.azul,
+                                    },
+                                }}
+                            />
+                        }
+                        label="Ver datos diarios"
+                        sx={{ mb: 2, alignSelf: 'flex-start' }}
+                    />
+                    <Box display="flex" alignItems="center" justifyContent="center" sx={{ height: 'calc(100vh - 220px)', width: '100%', maxHeight: { xs: 400, sm: '60vh' } }}>
+                        {weatherData ? (
+                            <Line data={chartData} options={chartOptions} height={Math.min(400, window.innerHeight * 0.6)} width={undefined} />
+                        ) : (
+                            <Typography variant="body1">Cargando datos...</Typography>
+                        )}
+                    </Box>
+                </Box>
+            ) : (
+                <Box display="flex" flexDirection="row" gap={2} height="100%" mt={2}>
+                    {/* Panel izquierdo: Autocomplete y tarjetas */}
+                    <Box sx={{ minWidth: 320, maxWidth: 340, display: "flex", flexDirection: "column", gap: 2 }}>
+                        <AutocompletarUbicacionMapa
+                            ubicaciones={ubicaciones}
+                            title="Buscar ubicación"
+                            filtro="Todas"
+                            ubicacionSeleccionada={selectedLocation}
+                            setUbicacionSeleccionada={setSelectedLocation}
+                            sx={{ mb: 2 }}
+                        />
+                        <Box sx={{ overflowY: "auto", maxHeight: "60vh", pr: 1 }}>
+                            {ubicaciones.map((ubic, idx) => (
+                                <Box
+                                    key={idx}
+                                    onClick={() => setSelectedLocation(ubic)}
+                                    sx={{
+                                        cursor: "pointer",
+                                        border: "1px solid #ccc",
+                                        borderRadius: "8px",
+                                        p: 2,
+                                        mb: 1,
+                                        backgroundColor:
+                                            selectedLocation && selectedLocation.id === ubic.id
+                                                ? theme.colores.azul
+                                                : "#fff",
+                                        color:
+                                            selectedLocation && selectedLocation.id === ubic.id
+                                                ? "#fff"
+                                                : "#333",
+                                        transition: "background 0.2s, color 0.2s",
+                                    }}
+                                >
+                                    <Typography variant="subtitle1" fontWeight="bold">
+                                        {ubic.nombre}
+                                    </Typography>
+                                    <Typography variant="body2">
+                                        {ubic.localidad?.nombre ? ubic.localidad.nombre + ", " : ""}
+                                        {ubic.localidad?.provincia?.nombre || ""}
+                                    </Typography>
+                                </Box>
+                            ))}
+                        </Box>
+                    </Box>
+                    {/* Panel derecho: Gráfico */}
+                    <Box flex={1} display="flex" flexDirection="column" alignItems="center" justifyContent="flex-start" sx={{ height: "100%", maxHeight: "550px" }}>
+                        <FormControlLabel
+                            control={
+                                <Checkbox
+                                    checked={diario}
+                                    onChange={diarioApretado}
+                                    sx={{
+                                        color: theme.colores.azul,
+                                        '&.Mui-checked': {
+                                            color: theme.colores.azul,
+                                        },
+                                    }}
+                                />
+                            }
+                            label="Ver datos diarios"
+                            sx={{ mb: 2, alignSelf: 'flex-start' }}
+                        />
+                        {weatherData ? (
+                            <Line data={chartData} options={chartOptions} />
+                        ) : (
+                            <Typography variant="body1">Cargando datos...</Typography>
+                        )}
+                    </Box>
+                </Box>
+            )}
         </Box>
     );
 };

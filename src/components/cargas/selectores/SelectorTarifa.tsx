@@ -94,49 +94,53 @@ export default function SelectorTarifa() {
             };
 
     return (
-        <Box display="flex" flexDirection="column">
+        <Box sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            width: '100%',
+            maxWidth: { xs: '95vw', sm: 600, md: 800 },
+            mx: 'auto',
+            px: { xs: 1, sm: 2 },
+        }}>
             <Box
-                display="flex"
-                flexDirection="row"
-                gap={2}
-                alignContent={"center"}
-                alignItems={"center"}
-                width={"800px"}
+                sx={{
+                    display: 'flex',
+                    flexDirection: { xs: 'column', md: 'row' },
+                    gap: 2,
+                    alignContent: 'center',
+                    alignItems: { xs: 'stretch', md: 'center' },
+                    width: '100%',
+                }}
             >
-                <Box display="column" gap={2}>
-                    <Box display="column" gap={2}>
-                        <Stack direction="row" spacing={2}>
-                            <TextField
-                                label="Tarifa"
-                                error={
-                                    datosSinCompletar &&
-                                    !datosNuevaCarga["tarifa"]
-                                }
-                                value={datosNuevaCarga["tarifa"]}
-                                onChange={seleccionarTarifa}
-                                name="numberformat"
-                                id="formatted-numberformat-input"
-                                slotProps={{
-                                    input: {
-                                        inputComponent:
-                                            NumericFormatCustom as any,
-                                    },
-                                }}
-                                variant="outlined"
-                                sx={{
-                                    '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                                        borderColor: '#163660',
-                                    },
-                                    '& .MuiInputLabel-root.Mui-focused': {
-                                        color: '#163660',
-                                    },
-                                }}
-                            />
-                        </Stack>
-                    </Box>
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, width: { xs: '100%', md: 'auto' } }}>
+                    <Stack direction="row" spacing={2} sx={{ width: '100%' }}>
+                        <TextField
+                            label="Tarifa"
+                            error={datosSinCompletar && !datosNuevaCarga["tarifa"]}
+                            value={datosNuevaCarga["tarifa"]}
+                            onChange={seleccionarTarifa}
+                            name="numberformat"
+                            id="formatted-numberformat-input"
+                            slotProps={{
+                                input: {
+                                    inputComponent: NumericFormatCustom as any,
+                                },
+                            }}
+                            variant="outlined"
+                            sx={{
+                                width: { xs: '100%', sm: 220, md: 300 },
+                                '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                    borderColor: '#163660',
+                                },
+                                '& .MuiInputLabel-root.Mui-focused': {
+                                    color: '#163660',
+                                },
+                            }}
+                        />
+                    </Stack>
                 </Box>
-                <>/</>
-                <Box display="column" gap={2}>
+                <Box sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center', px: 1 }}>/</Box>
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, width: { xs: '100%', md: 'auto' } }}>
                     <Autocomplete
                         disablePortal
                         options={tarifas.map((tarifa) => tarifa.nombre)}
@@ -144,7 +148,7 @@ export default function SelectorTarifa() {
                         defaultValue={tarifaSeleccionada}
                         onChange={seleccionarTiposTarifas}
                         sx={{
-                            width: 300,
+                            width: { xs: '100%', sm: 220, md: 300 },
                             '& .MuiAutocomplete-option': {
                                 fontWeight: 400,
                             },
@@ -159,11 +163,7 @@ export default function SelectorTarifa() {
                         renderInput={(params) => (
                             <TextField
                                 {...params}
-                                error={
-                                    !tarifaSeleccionada
-                                        ? datosSinCompletar
-                                        : false
-                                }
+                                error={!tarifaSeleccionada ? datosSinCompletar : false}
                                 label={"Unidades"}
                                 variant="outlined"
                                 sx={{
