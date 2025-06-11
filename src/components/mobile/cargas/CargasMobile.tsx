@@ -14,6 +14,7 @@ import ListaCargasMobile from "./ListaCargasMobile";
 import { ContextoGeneral } from "../../Contexto";
 import DrawerCargaMobile from "./DrawerCargaMobile";
 import { useAuth } from "../../autenticacion/ContextoAuth";
+import SwipeableDrawer from "@mui/material/SwipeableDrawer";
 
 interface CargasMobileProps {
   cargas: any[];
@@ -105,29 +106,39 @@ export function CargasMobile({
         </Toolbar>
 
         {/* Panel que se despliega con la lista de cargas */}
-        {openDrawer && (
-          <Box
-            sx={{
-              position: "absolute",
-              top: "100%",
-              left: 0,
-              right: 0,
-              zIndex: 1200,
-              backgroundColor: "#FFFFFF",
-              display: "flex",
-              flexDirection: "column",
-              height: "calc(100vh - 64px)", // Ocupa el resto de la pantalla
-            }}
-          >
-            <ListaCargasMobile
-              cargas={cargas}
-              estadoCarga={estadoCarga}
-              cargaSeleccionada={cargaSeleccionada}
-              onCardClick={handleCardClick}
-              onCrearCarga={handleCrearCarga}
-            />
-          </Box>
-        )}
+        <SwipeableDrawer
+          anchor="bottom"
+          open={openDrawer}
+          onOpen={() => {}}
+          onClose={toggleDrawer}
+          disableSwipeToOpen
+          disableDiscovery
+          ModalProps={{
+            keepMounted: true,
+            style: { pointerEvents: 'none' },
+            BackdropProps: {
+              style: { backgroundColor: 'transparent', pointerEvents: 'none' },
+            },
+          }}
+          PaperProps={{
+            sx: {
+              pointerEvents: 'auto',
+              height: '80vh',
+              borderTopLeftRadius: 16,
+              borderTopRightRadius: 16,
+              boxShadow: '0px -2px 10px rgba(0,0,0,0.1)',
+              overflow: 'hidden',
+            },
+          }}
+        >
+          <ListaCargasMobile
+            cargas={cargas}
+            estadoCarga={estadoCarga}
+            cargaSeleccionada={cargaSeleccionada}
+            onCardClick={handleCardClick}
+            onCrearCarga={handleCrearCarga}
+          />
+        </SwipeableDrawer>
       </AppBar>
 
       {/* Mapa ocupando el resto de la pantalla */}

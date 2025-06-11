@@ -336,6 +336,7 @@ useEffect(() => {
                                     <br />
                                     <Button
                                         size="small"
+                                        sx={{ color: theme.colores.azul }}
                                         onClick={() => handleMarkerClick(ubi)}
                                     >
                                         Ver más
@@ -348,7 +349,7 @@ useEffect(() => {
             </MapContainer>
     
             {/* Diálogo */}
-            <Dialog open={openDialog} onClose={handleClose}>
+            <Dialog open={openDialog} onClose={handleClose} maxWidth="md" fullWidth>
                 <DialogTitle>Detalles del Punto</DialogTitle>
                 <CreadorUbicacion
                     handleClose={handleClose}

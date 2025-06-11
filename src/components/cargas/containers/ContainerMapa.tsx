@@ -22,7 +22,7 @@ export default function ContainerMapa() {
                 <Typography>Recorrido</Typography>
                 <IconButton
                     disabled={!cargaSeleccionada}
-                    onClick={() => handleClickAbrirDialog(1)}
+                    onClick={() => handleClickAbrirDialog(0)}
                 >
                     <BorderColorIcon sx={{ fontSize: 17 }} />
                 </IconButton>

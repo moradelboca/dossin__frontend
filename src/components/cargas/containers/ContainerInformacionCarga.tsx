@@ -31,7 +31,7 @@ export default function ContainerInformacionCarga() {
                     title="Tarifa"
                     value={`$${cargaSeleccionada?.tarifa || "-"} / ${cargaSeleccionada?.tipoTarifa?.nombre || "-"}`}
                     icon={<MonetizationOnIcon />}
-                    onEdit={() => handleClickAbrirDialog(3)}
+                    onEdit={() => handleClickAbrirDialog(2)}
                     isEditable={!!cargaSeleccionada}
                 />
 
@@ -40,7 +40,7 @@ export default function ContainerInformacionCarga() {
                     title="Kilómetros"
                     value={cargaSeleccionada?.cantidadKm || 0}
                     icon={<PublicIcon />}
-                    onEdit={() => handleClickAbrirDialog(0)}
+                    onEdit={() => handleClickAbrirDialog(1)}
                     isEditable={!!cargaSeleccionada}
                 />
 

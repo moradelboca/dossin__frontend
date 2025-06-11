@@ -191,45 +191,46 @@ function App() {
   const accessToken = Cookies.get("accessToken");
   const { stage } = useContext(ContextoGeneral);
 
+
   return (
-    <BrowserRouter>
-      <AuthProvider>
-        <NotificacionProvider>
-          <ContextoGeneral.Provider value={ValoresContexto}>
-            <Box
-              sx={{
-                display: "flex",
-                height: "100vh",
-                width: "100vw",
-              }}
-            >
-              <CssBaseline>
-              {(!accessToken && stage === "production") ? (
-                  <Routes>
-                    <Route path="/login" element={<PantallaLogin />} />
-                    <Route
-                      path="*"
-                      element={<Navigate to="/login" replace />}
-                    />
-                  </Routes>
-                ) : (
-                  <>
-                  <MainLayout
-                    navAbierto={navAbierto}
-                    setNavAbierto={setNavAbierto}
-                    anchoAbierto={anchoAbierto}
-                    anchoCerrado={anchoCerrado}
-                    isMobile={isMobile}
-                    />
-                    <HelpBot />
+      <BrowserRouter>
+        <AuthProvider>
+          <NotificacionProvider>
+            <ContextoGeneral.Provider value={ValoresContexto}>
+              <Box
+                sx={{
+                  display: "flex",
+                  height: "100vh",
+                  width: "100vw",
+                }}
+              >
+                <CssBaseline>
+                {(!accessToken && stage === "production") ? (
+                    <Routes>
+                      <Route path="/login" element={<PantallaLogin />} />
+                      <Route
+                        path="*"
+                        element={<Navigate to="/login" replace />}
+                      />
+                    </Routes>
+                  ) : (
+                    <>
+                    <MainLayout
+                      navAbierto={navAbierto}
+                      setNavAbierto={setNavAbierto}
+                      anchoAbierto={anchoAbierto}
+                      anchoCerrado={anchoCerrado}
+                      isMobile={isMobile}
+                      />
+                    {!isMobile && <HelpBot />}
                     </>
                 )}
-              </CssBaseline>
-            </Box>
-          </ContextoGeneral.Provider>
-        </NotificacionProvider>
-      </AuthProvider>
-    </BrowserRouter>
+                </CssBaseline>
+              </Box>
+            </ContextoGeneral.Provider>
+          </NotificacionProvider>
+        </AuthProvider>
+      </BrowserRouter>
   );
 }
 

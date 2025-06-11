@@ -45,7 +45,7 @@ export default function ContainerTipoAcoplado() {
                 </Box>
                 <IconButton
                     disabled={!cargaSeleccionada}
-                    onClick={() => handleClickAbrirDialog(2)}
+                    onClick={() => handleClickAbrirDialog(3)}
                 >
                     <BorderColorIcon sx={{ fontSize: 16 }} />
                 </IconButton>

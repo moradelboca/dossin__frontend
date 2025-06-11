@@ -169,11 +169,27 @@ const CrearCargaDialog: React.FC<CrearCargaDialogProps> = ({
   onCargaUpdated
 }) => {
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="lg" fullWidth>
+    <Dialog open={open} onClose={onClose} maxWidth="lg" fullWidth
+      PaperProps={{
+        sx: {
+          m: { xs: 1, sm: 2 }, // margen exterior en móvil y tablet
+          width: '100%',
+          maxWidth: { xs: '98vw', sm: '95vw', md: '900px', lg: '1100px' },
+        }
+      }}
+    >
       <DialogTitle>
         {creando ? "Crear Nueva Carga" : "Modificando Carga"}
       </DialogTitle>
-      <DialogContent sx={{ height: "80vh", alignContent: "center" }}>
+      <DialogContent
+        sx={{
+          height: { xs: 'auto', sm: '80vh' },
+          alignContent: "center",
+          px: { xs: 1, sm: 3 }, // padding lateral responsivo
+          py: { xs: 1, sm: 2 },
+          boxSizing: 'border-box',
+        }}
+      >
         <CrearCargaStepper
           datosCarga={cargaSeleccionada}
           pasoSeleccionado={pasoSeleccionado}

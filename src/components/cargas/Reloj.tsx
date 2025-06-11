@@ -26,21 +26,23 @@ export default function Reloj(props: props) {
         }
     };
 
+    // Theme solo para el reloj (solo MuiClockPointer y MuiClockNumber, que sí son soportados)
+    
     return (
-        <Box width="140px">
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <MobileTimePicker
-                    value={horarioSeleccionado}
-                    defaultValue={horarioSeleccionado}
-                    onChange={manejarTiempo}
-                    ampm={false}
-                    slotProps={{
-                        textField: {
-                            error: !horarioSeleccionado && datosSinCompletar,
-                        },
-                    }}
-                />
-            </LocalizationProvider>
+        <Box sx={{ width: { xs: '100%', sm: 110, md: 140 } }}>
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <MobileTimePicker
+                      value={horarioSeleccionado}
+                      defaultValue={horarioSeleccionado}
+                      onChange={manejarTiempo}
+                      ampm={false}
+                      slotProps={{
+                          textField: {
+                              error: !horarioSeleccionado && datosSinCompletar,
+                          },
+                      }}
+                  />
+              </LocalizationProvider>
         </Box>
     );
 }

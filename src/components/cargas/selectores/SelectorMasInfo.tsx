@@ -2,6 +2,35 @@ import { Box, TextField } from "@mui/material";
 import { useState, useContext } from "react";
 import { ContextoStepper } from "../creadores/CrearCargaStepper";
 import { ContextoGeneral } from "../../Contexto";
+import { PatternFormat } from "react-number-format";
+import React from "react";
+import { CustomProps } from "../../../interfaces/CustomProps";
+
+// Definir el inputComponent fuera del componente principal
+const ToleranciaInput = React.forwardRef<any, CustomProps>(
+  function ToleranciaInput(props, ref) {
+    const { onChange, ...other } = props;
+    return (
+      <PatternFormat
+        {...other}
+        getInputRef={ref}
+        format="####"
+        mask=""
+        onValueChange={(values) => {
+          if (Number(values.value) < 0) {
+            return;
+          }
+          onChange({
+            target: {
+              name: props.name,
+              value: values.value,
+            },
+          });
+        }}
+      />
+    );
+  }
+);
 
 export default function SelectorMasInfo() {
   const { datosNuevaCarga, setDatosNuevaCarga } = useContext(ContextoStepper);
@@ -13,10 +42,13 @@ export default function SelectorMasInfo() {
     setDatosNuevaCarga((prev) => ({ ...prev, descripcion: e.target.value }));
   };
 
-  // Actualizar tolerancia (asegurando que se guarde como número)
+  // Actualizar tolerancia (permitir vacío y no mostrar 0 por defecto, pero mantener tipo number)
   const handleToleranciaChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = parseFloat(e.target.value);
-    setDatosNuevaCarga((prev) => ({ ...prev, tolerancia: isNaN(value) ? 0 : value }));
+    const value = e.target.value;
+    setDatosNuevaCarga((prev) => ({
+      ...prev,
+      tolerancia: value === '' ? undefined : parseFloat(value)
+    }));
   };
 
   const handlePlantaRucaChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -43,7 +75,17 @@ export default function SelectorMasInfo() {
   };
 
   return (
-    <Box display="flex" flexDirection="column" gap={2} width="800px">
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 2,
+        width: '100%',
+        maxWidth: { xs: '95vw', sm: 600, md: 800 },
+        mx: 'auto',
+        px: { xs: 1, sm: 2 },
+      }}
+    >
       {/* Sección Descripción */}
       <Box>
         <strong>Descripción</strong>
@@ -87,15 +129,27 @@ export default function SelectorMasInfo() {
       {/* Campo Tolerancia */}
       <TextField
         label="Tolerancia"
-        variant="outlined"
-        type="number"
-        value={datosNuevaCarga.tolerancia}
+        value={datosNuevaCarga.tolerancia === undefined || datosNuevaCarga.tolerancia === 0 ? '' : datosNuevaCarga.tolerancia}
         onChange={handleToleranciaChange}
-        fullWidth
-        required
-        helperText="Ingrese el valor de tolerancia para la carga"
-        sx={azulStyles}
+        name="numberformat"
+        id="formatted-numberformat-input"
+        slotProps={{
+          input: {
+            inputComponent: ToleranciaInput as any,
+          },
+        }}
+        variant="outlined"
+        sx={{
+          width: { xs: '100%', sm: 220, md: 300 },
+          '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
+            borderColor: '#163660',
+          },
+          '& .MuiInputLabel-root.Mui-focused': {
+            color: '#163660',
+          },
+        }}
       />
+      
     </Box>
   );
 }

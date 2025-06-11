@@ -5,7 +5,11 @@ import { useParams } from "react-router-dom";
 import { ContextoGeneral } from "../../Contexto";
 import { CargasMobile } from "../../mobile/cargas/CargasMobile";
 import { CargaDialog } from "../tarjetas/CargaDialog";
-import { ContainerTarjetasCargas } from "./ContainerTajetasCargas";
+import { ContainerTarjetasCargas, ContextoCargas } from "./ContainerTajetasCargas";
+import CrearCargaStepper from "../creadores/CrearCargaStepper";
+import Dialog from "@mui/material/Dialog";
+import DialogContent from "@mui/material/DialogContent";
+import DialogTitle from "@mui/material/DialogTitle";
 
 export function ContainerCargas() {
   const { backendURL } = useContext(ContextoGeneral);
@@ -19,6 +23,10 @@ export function ContainerCargas() {
   // Estado para la carga seleccionada y sus cupos
   const [cargaSeleccionada, setCargaSeleccionada] = useState<any>(null);
   const [cupos, setCupos] = useState<any[]>([]);
+
+  // Estados para el diálogo de edición en mobile
+  const [openDialogMobile, setOpenDialogMobile] = useState(false);
+  const [pasoSeleccionadoMobile, setPasoSeleccionadoMobile] = useState<any>(null);
 
   // Función para obtener las cargas del backend
   const refreshCargas = useCallback(() => {
@@ -126,6 +134,15 @@ export function ContainerCargas() {
     }
   }, [backendURL, refreshCargas]);
 
+  // Handler para abrir el diálogo en mobile
+  const handleClickAbrirDialogMobile = (paso: any) => {
+    setPasoSeleccionadoMobile(paso);
+    setOpenDialogMobile(true);
+  };
+  const handleCloseDialogMobile = () => {
+    setOpenDialogMobile(false);
+  };
+
   return (
     <Box
       sx={{
@@ -138,13 +155,52 @@ export function ContainerCargas() {
       }}
     >
       {isMobile ? (
-        <CargasMobile
-          cargas={cargas}
-          estadoCarga={estadoCarga}
-          cargaSeleccionada={cargaSeleccionada}
-          setCargaSeleccionada={setCargaSeleccionada}
-          cupos={cupos}
-        />
+        <ContextoCargas.Provider
+          value={{
+            cargaSeleccionada,
+            setCargaSeleccionada,
+            handleClickAbrirDialog: handleClickAbrirDialogMobile,
+            cupos,
+          }}
+        >
+          <CargasMobile
+            cargas={cargas}
+            estadoCarga={estadoCarga}
+            cargaSeleccionada={cargaSeleccionada}
+            setCargaSeleccionada={setCargaSeleccionada}
+            cupos={cupos}
+          />
+          <Dialog open={openDialogMobile} onClose={handleCloseDialogMobile} maxWidth="lg" fullWidth
+            PaperProps={{
+              sx: {
+                m: { xs: 1, sm: 2 },
+                width: '100%',
+                maxWidth: { xs: '98vw', sm: '95vw', md: '900px', lg: '1100px' },
+              }
+            }}
+          >
+            <DialogTitle>
+              Modificando Carga
+            </DialogTitle>
+            <DialogContent
+              sx={{
+                height: { xs: 'auto', sm: '80vh' },
+                alignContent: "center",
+                px: { xs: 1, sm: 3 },
+                py: { xs: 1, sm: 2 },
+                boxSizing: 'border-box',
+              }}
+            >
+              <CrearCargaStepper
+                datosCarga={cargaSeleccionada}
+                pasoSeleccionado={pasoSeleccionadoMobile}
+                handleCloseDialog={handleCloseDialogMobile}
+                creando={false}
+                onCargaUpdated={handleCargaUpdated}
+              />
+            </DialogContent>
+          </Dialog>
+        </ContextoCargas.Provider>
       ) : (
         <ContainerTarjetasCargas
           cargas={cargas}

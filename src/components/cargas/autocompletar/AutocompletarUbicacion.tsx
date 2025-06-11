@@ -78,7 +78,7 @@ export default function AutocompletarUbicacion(props: AutocompletarProps) {
             disablePortal
             options={opciones}
             sx={{
-                width: 300,
+                width: { xs: '100%', sm: 220, md: 300 },
                 '& .MuiAutocomplete-option': {
                     fontWeight: 400,
                 },

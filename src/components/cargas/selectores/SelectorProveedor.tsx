@@ -91,31 +91,34 @@ export default function SelectorProveedor() {
 
     return (
         <Box
-            display="flex"
-            flexDirection="column"
-            gap={2}
-            alignContent={"center"}
-            alignItems={"flex-start"}
-            width={"800px"}
+            sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 2,
+                alignContent: 'center',
+                alignItems: { xs: 'stretch', md: 'flex-start' },
+                width: '100%',
+                maxWidth: { xs: '95vw', sm: 600, md: 800 },
+                mx: 'auto',
+                px: { xs: 1, sm: 2 },
+            }}
         >
             <Box
-                display="flex"
-                flexDirection="row"
-                gap={2}
-                alignContent={"center"}
-                alignItems={"center"}
-                width={"800px"}
+                sx={{
+                    display: 'flex',
+                    flexDirection: { xs: 'column', md: 'row' },
+                    gap: 2,
+                    alignContent: 'center',
+                    alignItems: { xs: 'stretch', md: 'center' },
+                    width: '100%',
+                }}
             >
-                <Box display="column" gap={2}>
-                    <Stack direction="row" spacing={2}>
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, width: { xs: '100%', md: 'auto' } }}>
+                    <Stack direction="row" spacing={2} sx={{ width: '100%' }}>
                         <TextField
                             label="Kilometros"
                             value={datosNuevaCarga["cantidadKm"]}
-                            error={
-                                !datosNuevaCarga["cantidadKm"]
-                                    ? datosSinCompletar
-                                    : false
-                            }
+                            error={!datosNuevaCarga["cantidadKm"] ? datosSinCompletar : false}
                             onChange={seleccionarKilometros}
                             name="numberformat"
                             id="formatted-numberformat-input"
@@ -126,6 +129,7 @@ export default function SelectorProveedor() {
                             }}
                             variant="outlined"
                             sx={{
+                                width: { xs: '100%', sm: 220, md: 300 },
                                 '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
                                     borderColor: '#163660',
                                 },
@@ -136,17 +140,15 @@ export default function SelectorProveedor() {
                         />
                     </Stack>
                 </Box>
-                <Box display="column" gap={2}>
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, width: { xs: '100%', md: 'auto' } }}>
                     <Autocomplete
                         disablePortal
-                        options={cargamentos.map(
-                            (cargamento: any) => cargamento.nombre
-                        )}
+                        options={cargamentos.map((cargamento: any) => cargamento.nombre)}
                         value={valueCargamentos}
                         defaultValue={valueCargamentos}
                         onChange={seleccionarCargamento}
                         sx={{
-                            width: 300,
+                            width: { xs: '100%', sm: 220, md: 300 },
                             '& .MuiAutocomplete-option': {
                                 fontWeight: 400,
                             },
@@ -161,11 +163,7 @@ export default function SelectorProveedor() {
                         renderInput={(params) => (
                             <TextField
                                 {...params}
-                                error={
-                                    !valueCargamentos
-                                        ? datosSinCompletar
-                                        : false
-                                }
+                                error={!valueCargamentos ? datosSinCompletar : false}
                                 label="Cargamento"
                                 variant="outlined"
                                 sx={{

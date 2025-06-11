@@ -32,9 +32,13 @@ export default function AutocompletarUbicacionMapa(props: AutocompletarProps) {
     const seleccionarUbicacion = (event: any, seleccionado: string | null) => {
         event.stopPropagation();
         if (seleccionado) {
-            setUbicacionSeleccionada(seleccionado);
+            if (typeof setUbicacionSeleccionada === 'function') {
+                setUbicacionSeleccionada(seleccionado);
+            }
             setTimeout(() => {
-                handleMarkerClick();
+                if (typeof handleMarkerClick === 'function') {
+                    handleMarkerClick();
+                }
             }, 1000);
         }
     };
@@ -43,9 +47,12 @@ export default function AutocompletarUbicacionMapa(props: AutocompletarProps) {
         <Autocomplete
             options={ubicacionesFiltradas}
             groupBy={(ubicacion) => ubicacion.provincia}
-            getOptionLabel={(ubicacion) =>
-                `${ubicacion.nombre}, ${ubicacion.localidad.provincia.nombre}, ${ubicacion.localidad.provincia.pais.nombre}`
-            }
+            getOptionLabel={(ubicacion) => {
+                const nombre = ubicacion.nombre || "";
+                const localidad = ubicacion.localidad?.nombre || "";
+                const provincia = ubicacion.localidad?.provincia?.nombre || "";
+                return [nombre, localidad, provincia].filter(Boolean).join(", ");
+            }}
             value={ubicacionSeleccionada}
             defaultValue={ubicacionSeleccionada}
             loading={estadoCarga}

@@ -1,15 +1,18 @@
 import { useContext, useEffect, useState } from "react";
 import { ContextoGeneral } from "../Contexto";
 
-export function useUserProfileImage(email?: string) {
+export function useUserProfileImage(email?: string, initialImage?: string | null) {
   const { authURL } = useContext(ContextoGeneral);
-  const [profileImage, setProfileImage] = useState<string | undefined>(undefined);
+  const [profileImage, setProfileImage] = useState<string | undefined>(
+    initialImage && initialImage.startsWith("http") ? initialImage : undefined
+  );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!email) {
-      setProfileImage(undefined);
+    if ((initialImage && initialImage.startsWith("http")) || !email) {
+      // Si ya hay imagen válida, o no hay email, no buscar
+      setProfileImage(initialImage && initialImage.startsWith("http") ? initialImage : undefined);
       return;
     }
     setLoading(true);
@@ -28,7 +31,7 @@ export function useUserProfileImage(email?: string) {
         setProfileImage(undefined);
       })
       .finally(() => setLoading(false));
-  }, [email, authURL]);
+  }, [email, authURL, initialImage]);
 
   return { profileImage, loading, error };
 } 

@@ -16,12 +16,14 @@ import {
   Avatar,
   Stack,
   Button,
+  useMediaQuery,
 } from "@mui/material";
 import { KeyboardArrowDown, KeyboardArrowUp } from "@mui/icons-material";
 import CreadorEntidad from "../dialogs/CreadorEntidad";
 import InconvenienteForm from "../forms/inconvenientes/InconvenienteForm";
 import { inconvenientesPruebas } from "./inconvenientePruebas";
 import { useUserProfileImage } from "./useUserProfileImage";
+import InconvenientesMobile from "./InconvenientesMobile";
 
 interface Usuario {
   id: number;
@@ -103,8 +105,8 @@ const Row: React.FC<{
   const [open, setOpen] = useState(false);
 
   // Avatar hooks para creadoPor y asignadoA
-  const { profileImage: creadoPorImg } = useUserProfileImage(row.creadoPor?.email);
-  const { profileImage: asignadoAImg } = useUserProfileImage(row.asignadoA?.email);
+  const { profileImage: creadoPorImg } = useUserProfileImage(row.creadoPor?.email, row.creadoPor?.imagen);
+  const { profileImage: asignadoAImg } = useUserProfileImage(row.asignadoA?.email, row.asignadoA?.imagen);
 
   // Determinar el próximo estado y texto del botón
   let actionButton = null;
@@ -219,6 +221,7 @@ const Inconvenientes: React.FC = () => {
   const [inconvenientes, setInconvenientes] = useState<Inconveniente[]>([]);
   const [open, setOpen] = useState(false);
   const selectedInconveniente = null;
+  const isMobile = useMediaQuery("(max-width:768px)");
 
   useEffect(() => {
     if (stage === "development") {
@@ -278,6 +281,57 @@ const Inconvenientes: React.FC = () => {
       .catch((error) => console.error(`Error: ${error.message}`));
   };
 
+  // Ordenar inconvenientes según reglas de prioridad
+  const getUrgenciaRank = (urgencia: string) => {
+    switch (urgencia.toLowerCase()) {
+      case "alta": return 1;
+      case "media": return 2;
+      case "leve": return 3;
+      default: return 4;
+    }
+  };
+  const getEstadoRank = (estado: string) => {
+    switch (estado.toLowerCase()) {
+      case "atendiendo": return 1;
+      case "pendiente": return 2;
+      default: return 3; // otros, pero 'resuelto' se maneja aparte
+    }
+  };
+
+  const inconvenientesOrdenados = [...inconvenientes].sort((a, b) => {
+    // 1. Resueltos siempre al fondo
+    const aResuelto = a.estado.nombre.toLowerCase() === "resuelto";
+    const bResuelto = b.estado.nombre.toLowerCase() === "resuelto";
+    if (aResuelto && !bResuelto) return 1;
+    if (!aResuelto && bResuelto) return -1;
+    if (aResuelto && bResuelto) return 0;
+    // 2. Urgencia: alta < media < leve
+    const urgenciaA = getUrgenciaRank(a.urgencia.nombre);
+    const urgenciaB = getUrgenciaRank(b.urgencia.nombre);
+    if (urgenciaA !== urgenciaB) return urgenciaA - urgenciaB;
+    // 3. Fecha: más viejo primero
+    const fechaA = new Date(a.fechaCreacion).getTime();
+    const fechaB = new Date(b.fechaCreacion).getTime();
+    if (fechaA !== fechaB) return fechaA - fechaB;
+    // 4. Estado: Atendiendo < Pendiente
+    const estadoA = getEstadoRank(a.estado.nombre);
+    const estadoB = getEstadoRank(b.estado.nombre);
+    return estadoA - estadoB;
+  });
+
+  if (isMobile) {
+    return (
+      <InconvenientesMobile
+        inconvenientes={inconvenientesOrdenados}
+        setInconvenientes={setInconvenientes}
+        open={open}
+        setOpen={setOpen}
+        handleEstadoChange={handleEstadoChange}
+        selectedInconveniente={selectedInconveniente}
+      />
+    );
+  }
+
   return (
     <Box m={3}>
       <Typography
@@ -313,7 +367,7 @@ const Inconvenientes: React.FC = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {inconvenientes.map((inconveniente) => (
+            {inconvenientesOrdenados.map((inconveniente) => (
               <Row
                 key={inconveniente.id}
                 row={inconveniente}
