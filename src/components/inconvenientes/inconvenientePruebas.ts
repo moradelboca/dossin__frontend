@@ -23,7 +23,7 @@ export const inconvenientesPruebas: Inconveniente[] = [
     tipoInconveniente: { id: 2, nombre: "Sistema" },
     creadoPor: "otro@ejemplo.com",
     asignadoA: "soporte@empresa.com",
-    estado: { id: 1, nombre: "Atendiendo" }
+    estado: { id: 2, nombre: "Activo" }
   },
   {
     id: 3,
@@ -35,6 +35,6 @@ export const inconvenientesPruebas: Inconveniente[] = [
     tipoInconveniente: { id: 3, nombre: "Oficina" },
     creadoPor: "admin@empresa.com",
     asignadoA: null,
-    estado: { id: 2, nombre: "Pendiente" }
+    estado: { id: 1, nombre: "Pendiente" }
   }
 ]
