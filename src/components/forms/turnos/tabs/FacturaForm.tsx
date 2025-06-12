@@ -204,7 +204,6 @@ const FacturaForm: React.FC<FacturaFormProps> = ({
         idTipoFactura: Number(tipoFacturaId),
         puntoDeVenta,
       };
-      console.log('Payload a enviar a /facturas/crear-factura:', payload);
       const createResponse = await fetch(`${backendURL}/facturas/crear-factura`, {
         method: 'POST',
         headers,
