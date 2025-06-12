@@ -59,15 +59,14 @@ const PesajeForm: React.FC<PesajeFormProps> = ({
       console.error(`Error: ${error.message}`);
     }
   };
-
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-    setter: React.Dispatch<React.SetStateAction<number | string>>
-  ) => {
-    const value = e.target.value;
-    if (/^\d*\.?\d*$/.test(value)) {
-      setter(value);
-    }
+  // Estilos para el borde azul al enfocar
+  const azulStyles = {
+    '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
+      borderColor: theme.colores.azul,
+    },
+    '& .MuiInputLabel-root.Mui-focused': {
+      color: theme.colores.azul,
+    },
   };
 
   return (
@@ -79,10 +78,16 @@ const PesajeForm: React.FC<PesajeFormProps> = ({
         variant="outlined"
         fullWidth
         value={kgDescargados}
-        onChange={(e) => handleInputChange(e, setKgDescargados)}
+        onChange={(e) => {
+          const value = e.target.value;
+          if (/^\d{0,5}$/.test(value)) {
+            setKgDescargados(value);
+          }
+        }}
         error={!!errors.kgDescargados}
         helperText={errors.kgDescargados}
-        inputProps={{ inputMode: 'numeric', pattern: '[0-9]*', min: 0 }}
+        inputProps={{ inputMode: 'numeric', pattern: '[0-9]*', min: 0, maxLength: 5 }}
+        sx={{ ...azulStyles, mt: 2 }}
       />
       <Box
         sx={{

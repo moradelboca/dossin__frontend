@@ -48,7 +48,7 @@ const AdelantosTurnoForm: React.FC<AdelantosTurnoFormProps> = ({
             color: theme.colores.azul,
           },
           '& .Mui-selected': {
-            color: theme.colores.azul,
+            color: theme.colores.azul + ' !important',
           },
           '& .MuiTabs-indicator': {
             backgroundColor: theme.colores.azul,

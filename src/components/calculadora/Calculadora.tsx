@@ -131,6 +131,10 @@ const TarifaApp: React.FC = () => {
   const [descuento, setDescuento] = useState<number>(0);
   const [contraFlete, setContraFlete] = useState<number | null>(null);
 
+  // errores
+  const [kmError, setKmError] = useState<string | null>(null);
+  const [tnError, setTnError] = useState<string | null>(null);
+
   // estados de resultado
   const [tarifaSinDescuento, setTarifaSinDescuento] = useState<number | null>(null);
   const [tarifaConDescuento, setTarifaConDescuento] = useState<number | null>(null);
@@ -149,6 +153,19 @@ const TarifaApp: React.FC = () => {
   };
 
   const handleCalcular = async () => {
+    let hasError = false;
+    setKmError(null);
+    setTnError(null);
+    if (km !== null && km > 1500) {
+      setKmError("No puede ser mayor a 1500");
+      hasError = true;
+    }
+    if (tn !== null && tn > 50) {
+      setTnError("No puede ser mayor a 50");
+      hasError = true;
+    }
+    if (hasError) return;
+
     const res = await fetch("/tarifas.csv");
     const text = await res.text();
     const data = Papa.parse<string[]>(text, { header: false }).data;
@@ -208,6 +225,16 @@ const TarifaApp: React.FC = () => {
     { id: 8, concepto: "Incidencia c/ descuento (%)", valor: incidenciaConDescuento?.toFixed(2) || "-" },
     { id: 9, concepto: "Incidencia c/ desc. y contraflete (%)", valor: incideciasConDescContra?.toFixed(2) || "-" },
   ];
+
+  // Estilo para el borde y label azul al enfocar
+  const azulStyles = {
+    '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
+      borderColor: theme.colores.azul,
+    },
+    '& .MuiInputLabel-root.Mui-focused': {
+      color: theme.colores.azul,
+    },
+  };
 
   return (
     <Box
@@ -289,6 +316,9 @@ const TarifaApp: React.FC = () => {
                 onChange={(e) => setKm(parseInt(e.target.value))}
                 slotProps={{ input: { inputComponent: KmFormat as any } }}
                 fullWidth
+                sx={azulStyles}
+                error={!!kmError}
+                helperText={kmError}
               />
               <TextField
                 label="Toneladas a transportar"
@@ -296,6 +326,9 @@ const TarifaApp: React.FC = () => {
                 onChange={(e) => setTn(parseInt(e.target.value))}
                 slotProps={{ input: { inputComponent: TnFormat as any } }}
                 fullWidth
+                sx={azulStyles}
+                error={!!tnError}
+                helperText={tnError}
               />
               <TextField
                 label="Precio del grano de referencia"
@@ -303,6 +336,7 @@ const TarifaApp: React.FC = () => {
                 onChange={(e) => setPrecio(parseInt(e.target.value))}
                 slotProps={{ input: { inputComponent: NumericFormatCustom as any } }}
                 fullWidth
+                sx={azulStyles}
               />
               <TextField
                 label="Porcentaje de Descuento"
@@ -310,6 +344,7 @@ const TarifaApp: React.FC = () => {
                 onChange={(e) => setDescuento(parseFloat(e.target.value))}
                 slotProps={{ input: { inputComponent: PorcentajeFormat as any } }}
                 fullWidth
+                sx={azulStyles}
               />
               <TextField
                 label="Contra flete"
@@ -317,6 +352,7 @@ const TarifaApp: React.FC = () => {
                 onChange={(e) => setContraFlete(parseInt(e.target.value))}
                 slotProps={{ input: { inputComponent: ContraFleteFormat as any } }}
                 fullWidth
+                sx={azulStyles}
               />
               <BotonIcon onClick={handleCalcular} title="Calcular tarifa" icon={<CalculateOutlinedIcon />} />
             </Box>
@@ -351,35 +387,39 @@ const TarifaApp: React.FC = () => {
               value={km ?? ""}
               onChange={(e) => setKm(parseInt(e.target.value))}
               slotProps={{ input: { inputComponent: KmFormat as any } }}
-              sx={{ width: "100%" }}
+              sx={{ width: "100%", ...azulStyles }}
+              error={!!kmError}
+              helperText={kmError}
             />
             <TextField
               label="Toneladas a transportar"
               value={tn ?? ""}
               onChange={(e) => setTn(parseInt(e.target.value))}
               slotProps={{ input: { inputComponent: TnFormat as any } }}
-              sx={{ width: "100%" }}
+              sx={{ width: "100%", ...azulStyles }}
+              error={!!tnError}
+              helperText={tnError}
             />
             <TextField
               label="Precio del grano de referencia"
               value={precio ?? ""}
               onChange={(e) => setPrecio(parseInt(e.target.value))}
               slotProps={{ input: { inputComponent: NumericFormatCustom as any } }}
-              sx={{ width: "100%" }}
+              sx={{ width: "100%", ...azulStyles }}
             />
             <TextField
               label="Porcentaje de Descuento"
               value={descuento}
               onChange={(e) => setDescuento(parseFloat(e.target.value))}
               slotProps={{ input: { inputComponent: PorcentajeFormat as any } }}
-              sx={{ width: "100%" }}
+              sx={{ width: "100%", ...azulStyles }}
             />
             <TextField
               label="Contra flete"
               value={contraFlete ?? ""}
               onChange={(e) => setContraFlete(parseInt(e.target.value))}
               slotProps={{ input: { inputComponent: ContraFleteFormat as any } }}
-              sx={{ width: "100%" }}
+              sx={{ width: "100%", ...azulStyles }}
             />
             <BotonIcon onClick={handleCalcular} title="Calcular tarifa" icon={<CalculateOutlinedIcon />} />
           </Box>

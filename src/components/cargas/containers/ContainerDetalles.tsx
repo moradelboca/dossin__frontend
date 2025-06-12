@@ -88,7 +88,7 @@ export default function ContainerDetalles() {
           marginTop: 2,
         }}
       >
-        <Typography>Detalles</Typography>
+        <Typography>Horarios</Typography>
       </Box>
 
       {/* Contenedor principal del slider de detalles */}

@@ -137,7 +137,7 @@ const CardMobile: React.FC<CardMobileProps> = ({
       case 'facturado':
         botones = (
           <Box display="flex" gap={2} mb={1}>
-            {outlinedButton({ children: 'Ver Pago', onClick: () => manejoTurnos.setOpenDialog('pago') })}
+            {outlinedButton({ children: 'Ver Pago', onClick: () => manejoTurnos.setOpenDialog('datospago') })}
             {mainButton({ children: 'Pagar', onClick: () => manejoTurnos.setOpenDialog('pago') })}
           </Box>
         );

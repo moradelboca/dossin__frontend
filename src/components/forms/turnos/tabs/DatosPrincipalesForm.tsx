@@ -14,6 +14,7 @@ interface DatosPrincipalesFormProps {
   setDatos: any;
   handleClose: () => void;
   tieneBitren?: boolean | null;
+  acopladoExtraRequired?: boolean;
 }
 
 const DatosPrincipalesForm: React.FC<DatosPrincipalesFormProps> = ({
@@ -22,6 +23,7 @@ const DatosPrincipalesForm: React.FC<DatosPrincipalesFormProps> = ({
   setDatos,
   handleClose,
   tieneBitren,
+  acopladoExtraRequired = false,
 }) => {
   const { backendURL } = useContext(ContextoGeneral);
   const { theme } = useContext(ContextoGeneral);
@@ -56,6 +58,10 @@ const DatosPrincipalesForm: React.FC<DatosPrincipalesFormProps> = ({
       !patenteCamionSeleccionada ? "La patente del camión es obligatoria" : null,
     patenteAcoplado: () =>
       !patenteAcopladoSeleccionada ? "La patente del acoplado es obligatoria" : null,
+    patenteAcopladoExtra: () =>
+      (!patenteAcopladoSeleccionadaExtra && tieneBitren && acopladoExtraRequired)
+        ? "La patente del acoplado Extra es obligatoria"
+        : null,
   };
 
   // Se usa el hook useValidationStepper para validar los campos de esta sección
@@ -140,6 +146,8 @@ const DatosPrincipalesForm: React.FC<DatosPrincipalesFormProps> = ({
           value={patenteAcopladoSeleccionadaExtra}
           onChange={setPatenteAcopladoSeleccionadaExtra}
           tituloOpcional="Patente Acoplado Extra"
+          error={!!errors.patenteAcopladoExtra}
+          helperText={errors.patenteAcopladoExtra}
         />
       )}
       <Box

@@ -10,10 +10,8 @@ import "jspdf-autotable";
 import React, { useEffect, useState } from "react";
 import { handleSearch } from "../../utils/busquedaUtils";
 import { exportarCSV, exportarPDF } from "../../utils/exportUtils";
-import { Filter, handleFilterApply } from "../../utils/filtrosUtils";
 import CardMobile from "../cards/mobile/CardMobile";
 import CreadorEntidad from "../dialogs/CreadorEntidad";
-import FilterDialog from "../dialogs/tablas/FilterDialog";
 import MobileEditToolbar from "./MobileEditToolbar";
 
 interface MobileCardListProps {
@@ -57,37 +55,19 @@ const MobileCardList: React.FC<MobileCardListProps> = ({
 }) => {
   // Estados para filtrar y buscar dentro de los datos
   const [filteredDatos, setFilteredDatos] = useState<any[]>(datos);
-  const [originalDatos, setOriginalDatos] = useState<any[]>(datos);
 
   useEffect(() => {
-    setOriginalDatos(datos);
     setFilteredDatos(datos);
   }, [datos]);
 
   const [expandedCard, setExpandedCard] = useState<number | null>(null);
-  const [openFilterDialog, setOpenFilterDialog] = useState(false);
 
   const handleSearchQuery = (query: string) => {
     const filtered = handleSearch(query, datos); // Búsqueda sobre los datos del padre
     setFilteredDatos(filtered);
   };
 
-  const handleFilterApplyQuery = (filter: Filter) => {
-    const filtered = handleFilterApply(filter, datos);
-    setFilteredDatos(filtered);
-  };
 
-  const handleUndoFilter = () => {
-    setFilteredDatos(originalDatos);
-  };
-
-  const handleOpenFilterDialog = () => {
-    setOpenFilterDialog(true);
-  };
-
-  const handleCloseFilterDialog = () => {
-    setOpenFilterDialog(false);
-  };
 
   const handleExport = (formato: "csv" | "pdf") => {
     if (formato === "csv") {
@@ -138,20 +118,12 @@ const MobileCardList: React.FC<MobileCardListProps> = ({
       </Typography>
       <MobileEditToolbar
         onAdd={() => handleOpenDialog(null)}
-        onFilter={handleOpenFilterDialog}
         onExport={handleExport}
         onSearch={handleSearchQuery}
         name={entidad}
       />
       {renderCards(filteredDatos)}
-      <FilterDialog
-        open={openFilterDialog}
-        onClose={handleCloseFilterDialog}
-        onApplyFilter={handleFilterApplyQuery}
-        columns={fields}
-        onUndoFilter={handleUndoFilter}
-      />
-      
+     
       <Dialog open={openDialog} onClose={handleCloseDialog}>
         <DialogTitle>
           {seleccionado ? `Editar ${entidad}` : `Crear ${entidad}`}

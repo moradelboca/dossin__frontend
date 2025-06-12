@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
-import { Autocomplete, Box, Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Stack, TextField, Typography } from "@mui/material";
+import { Autocomplete, Box, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Stack, TextField, Typography } from "@mui/material";
 import React, { useContext, useEffect, useState } from "react";
 import { FormularioProps } from "../../../interfaces/FormularioProps";
 import { ContextoGeneral } from "../../Contexto";
@@ -10,6 +10,7 @@ import AutocompletarPais from "../../cargas/autocompletar/AutocompletarPais";
 import CuilFormat from "../formatos/CuilFormat";
 import NumeroFormat from "../formatos/NumeroFormat";
 import { useNotificacion } from "../../Notificaciones/NotificacionSnackbar";
+import MainButton from '../../botones/MainButtom';
 
 
 const EmpresaForm: React.FC<FormularioProps> = ({
@@ -458,7 +459,7 @@ const EmpresaForm: React.FC<FormularioProps> = ({
       </Stack>
   
       {/* Acciones */}
-      <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mt: 3 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mt: 3, alignItems: 'center' }}>
         <IconButton 
           onClick={handleClickDeleteCarga} 
           sx={{ color: 'error.main', mr: 'auto' }}
@@ -466,21 +467,26 @@ const EmpresaForm: React.FC<FormularioProps> = ({
         >
           <DeleteOutlineIcon />
         </IconButton>
-        
-        <Button 
-          onClick={handleClose} 
-          variant="outlined" 
-          color="inherit"
-        >
-          Cancelar
-        </Button>
-        <Button 
-          onClick={handleSubmit} 
-          variant="contained" 
-          color="primary"
-        >
-          Guardar
-        </Button>
+        <MainButton
+          onClick={handleClose}
+          text="Cancelar"
+          backgroundColor="transparent"
+          textColor="#163660"
+          borderRadius="8px"
+          hoverBackgroundColor="rgba(22, 54, 96, 0.1)"
+          width="120px"
+          divWidth="120px"
+        />
+        <MainButton
+          onClick={handleSubmit}
+          text="Guardar"
+          backgroundColor="#163660"
+          textColor="#fff"
+          borderRadius="8px"
+          hoverBackgroundColor="#0E2A45"
+          width="120px"
+          divWidth="120px"
+        />
       </Box>
   
       {/* Diálogo de Confirmación */}
@@ -503,17 +509,27 @@ const EmpresaForm: React.FC<FormularioProps> = ({
             setDatos={setDatos}
           />
         </DialogContent>
-        <DialogActions sx={{ px: 3, py: 2 }}>
-          <Button onClick={handleCloseDialog} color="inherit">
-            Cancelar
-          </Button>
-          <Button 
-            onClick={() => {/* Lógica de confirmación aquí */}} 
-            color="error"
-            variant="contained"
-          >
-            Confirmar
-          </Button>
+        <DialogActions sx={{ px: 3, py: 2, gap: 2 }}>
+          <MainButton
+            onClick={handleCloseDialog}
+            text="Cancelar"
+            backgroundColor="transparent"
+            textColor="#163660"
+            borderRadius="8px"
+            hoverBackgroundColor="rgba(22, 54, 96, 0.1)"
+            width="120px"
+            divWidth="120px"
+          />
+          <MainButton
+            onClick={() => {/* Lógica de confirmación aquí */}}
+            text="Confirmar"
+            backgroundColor="#d32f2f"
+            textColor="#fff"
+            borderRadius="8px"
+            hoverBackgroundColor="#b71c1c"
+            width="120px"
+            divWidth="120px"
+          />
         </DialogActions>
       </Dialog>
     </Stack>

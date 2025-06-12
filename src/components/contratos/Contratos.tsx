@@ -100,12 +100,13 @@ export default function Contratos() {
       </Box>
 
       {contratosConCargas.map((contrato) => (
+        <Box key={contrato.id} mb={3}>
         <ContratoItem
-          key={contrato.id}
           contrato={contrato}
           onEditContrato={handleOpenDialog}
           refreshContratos={refreshContratos}
         />
+        </Box>
       ))}
 
       <DialogContrato

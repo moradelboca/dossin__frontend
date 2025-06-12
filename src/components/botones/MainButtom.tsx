@@ -12,6 +12,7 @@ interface MainButtonProps {
   hoverBackgroundColor?: string;
   padding?:string;
   divWidth?:string;
+  disabled?: boolean;
 }
 
 const MainButton: React.FC<MainButtonProps> = ({
@@ -24,7 +25,7 @@ const MainButton: React.FC<MainButtonProps> = ({
   hoverBackgroundColor = backgroundColor, 
   padding = '6px 16px',
   divWidth = 'auto',
-  
+  disabled = false,
 }) => {
     const { theme } = useContext(ContextoGeneral);
     const resolvedTextColor = textColor || theme.colores.azul;
@@ -32,6 +33,7 @@ const MainButton: React.FC<MainButtonProps> = ({
     <Box display="flex" justifyContent="center" width={divWidth}>
       <Button
         onClick={onClick}
+        disabled={disabled}
         sx={{
           backgroundColor: backgroundColor,
           color: resolvedTextColor,

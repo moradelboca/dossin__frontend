@@ -22,14 +22,11 @@ import { KeyboardArrowDown, KeyboardArrowUp } from "@mui/icons-material";
 import CreadorEntidad from "../dialogs/CreadorEntidad";
 import InconvenienteForm from "../forms/inconvenientes/InconvenienteForm";
 import { inconvenientesPruebas } from "./inconvenientePruebas";
-import { useUserProfileImage } from "./useUserProfileImage";
 import InconvenientesMobile from "./InconvenientesMobile";
+import { usuariosPruebas } from "./usuariosPruebas";
+import { useAuth } from "../autenticacion/ContextoAuth";
 
-interface Usuario {
-  id: number;
-  email: string;
-  imagen: string | null;
-}
+// interface Usuario { ... } // Elimino o comento esta interfaz
 
 export interface Inconveniente {
   id: number;
@@ -39,8 +36,8 @@ export interface Inconveniente {
   fechaCreacion: string;
   fechaResolucion: string | null;
   tipoInconveniente: { id: number; nombre: string };
-  creadoPor: Usuario;
-  asignadoA: Usuario | null;
+  creadoPor: string; // email
+  asignadoA: string | null; // email o null
   estado: { id: number; nombre: string };
 }
 
@@ -98,15 +95,11 @@ const getUrgenciaStyles = (nombre: string) => {
 };
 
 const Row: React.FC<{
-  row: Inconveniente;
+  row: Inconveniente & { creadoPorImagen?: string | null; asignadoAImagen?: string | null };
   handleEstadoChange: (id: number, nuevoEstado: number) => void;
   theme: any;
 }> = ({ row, handleEstadoChange, theme }) => {
   const [open, setOpen] = useState(false);
-
-  // Avatar hooks para creadoPor y asignadoA
-  const { profileImage: creadoPorImg } = useUserProfileImage(row.creadoPor?.email, row.creadoPor?.imagen);
-  const { profileImage: asignadoAImg } = useUserProfileImage(row.asignadoA?.email, row.asignadoA?.imagen);
 
   // Determinar el próximo estado y texto del botón
   let actionButton = null;
@@ -131,14 +124,19 @@ const Row: React.FC<{
   }
 
   // Renderizar Avatar con imagen o inicial
-  const renderAvatar = (email: string | undefined, profileImage: string | undefined) => (
+  const renderAvatar = (email: string | undefined, imagen?: string | null) => (
     <Avatar
-      src={profileImage}
+      src={imagen || undefined}
       alt={email}
+      sx={{
+        bgcolor: imagen ? 'transparent' : theme.colores.azul,
+        width: 40,
+        height: 40,
+        border: imagen ? '1px solid #ccc' : undefined,
+      }}
       imgProps={{ referrerPolicy: "no-referrer" }}
-      sx={{ bgcolor: profileImage ? 'transparent' : theme.colores.azul }}
     >
-      {!profileImage && email ? email[0].toUpperCase() : null}
+      {!imagen && email ? email[0].toUpperCase() : null}
     </Avatar>
   );
 
@@ -177,15 +175,15 @@ const Row: React.FC<{
         <TableCell>{row.fechaCreacion}</TableCell>
         <TableCell>
           <Stack direction="row" spacing={2} alignItems="center">
-            {renderAvatar(row.creadoPor?.email, creadoPorImg)}
-            <Typography variant="body2">{row.creadoPor?.email}</Typography>
+            {renderAvatar(row.creadoPor, row.creadoPorImagen)}
+            <Typography variant="body2">{row.creadoPor}</Typography>
           </Stack>
         </TableCell>
         <TableCell>
           {row.asignadoA ? (
             <Stack direction="row" spacing={2} alignItems="center">
-              {renderAvatar(row.asignadoA?.email, asignadoAImg)}
-              <Typography variant="body2">{row.asignadoA?.email}</Typography>
+              {renderAvatar(row.asignadoA, row.asignadoAImagen)}
+              <Typography variant="body2">{row.asignadoA}</Typography>
             </Stack>
           ) : (
             <Typography variant="body2">Sin asignar</Typography>
@@ -217,11 +215,45 @@ const Row: React.FC<{
 };
 
 const Inconvenientes: React.FC = () => {
-  const { theme, backendURL, stage } = useContext(ContextoGeneral);
+  const { theme, backendURL, stage, authURL } = useContext(ContextoGeneral);
+  const { user } = useAuth();
   const [inconvenientes, setInconvenientes] = useState<Inconveniente[]>([]);
+  const [usuarios, setUsuarios] = useState<any[]>([]);
   const [open, setOpen] = useState(false);
   const selectedInconveniente = null;
   const isMobile = useMediaQuery("(max-width:768px)");
+
+  // Filtro de visibilidad según rol
+  const filtrarInconvenientesPorRol = (inconvenientes: Inconveniente[]) => {
+    if (!user) return [];
+    // Admin (id: 1) ve todos
+    if (user.rol.id === 1) return inconvenientes;
+    // Contable (2), Ingeniero (3), Logistica (4): solo los creados por o asignados a ellos
+    if ([2, 3, 4].includes(user.rol.id)) {
+      return inconvenientes.filter(
+        (inc) => inc.creadoPor === user.email || inc.asignadoA === user.email
+      );
+    }
+    // Otros roles: nada
+    return [];
+  };
+
+  useEffect(() => {
+    if (stage === "development") {
+      setUsuarios(usuariosPruebas);
+      return;
+    }
+    fetch(`${authURL}/auth/usuarios`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "ngrok-skip-browser-warning": "true",
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => setUsuarios(data))
+      .catch(() => setUsuarios([]));
+  }, [authURL, stage]);
 
   useEffect(() => {
     if (stage === "development") {
@@ -238,7 +270,6 @@ const Inconvenientes: React.FC = () => {
         });
         if (!response.ok) throw new Error("Error en el servidor");
         const data = await response.json();
-        console.log('GET inconvenientes:', data);
         setInconvenientes(data);
       } catch (error) {
         console.error("Error fetching inconvenientes:", error);
@@ -294,7 +325,8 @@ const Inconvenientes: React.FC = () => {
     switch (estado.toLowerCase()) {
       case "atendiendo": return 1;
       case "pendiente": return 2;
-      default: return 3; // otros, pero 'resuelto' se maneja aparte
+      case "activo": return 3;
+      default: return 4; // otros, pero 'resuelto' se maneja aparte
     }
   };
 
@@ -305,24 +337,39 @@ const Inconvenientes: React.FC = () => {
     if (aResuelto && !bResuelto) return 1;
     if (!aResuelto && bResuelto) return -1;
     if (aResuelto && bResuelto) return 0;
-    // 2. Urgencia: alta < media < leve
+    // 2. Estado: Atendiendo > Pendiente > Activo > otros
+    const estadoA = getEstadoRank(a.estado.nombre);
+    const estadoB = getEstadoRank(b.estado.nombre);
+    if (estadoA !== estadoB) return estadoA - estadoB;
+    // 3. Urgencia: alta < media < leve
     const urgenciaA = getUrgenciaRank(a.urgencia.nombre);
     const urgenciaB = getUrgenciaRank(b.urgencia.nombre);
     if (urgenciaA !== urgenciaB) return urgenciaA - urgenciaB;
-    // 3. Fecha: más viejo primero
+    // 4. Fecha: más viejo primero
     const fechaA = new Date(a.fechaCreacion).getTime();
     const fechaB = new Date(b.fechaCreacion).getTime();
-    if (fechaA !== fechaB) return fechaA - fechaB;
-    // 4. Estado: Atendiendo < Pendiente
-    const estadoA = getEstadoRank(a.estado.nombre);
-    const estadoB = getEstadoRank(b.estado.nombre);
-    return estadoA - estadoB;
+    return fechaA - fechaB;
   });
+
+  // Mapear imágenes solo en desktop y solo si ambos arrays están cargados
+  let inconvenientesConImagen: (Inconveniente & { creadoPorImagen?: string | null; asignadoAImagen?: string | null })[] = filtrarInconvenientesPorRol(inconvenientesOrdenados);
+  if (!isMobile && usuarios.length && inconvenientesConImagen.length) {
+    inconvenientesConImagen = inconvenientesConImagen.map((inc: Inconveniente) => {
+      const creadoPorUser = usuarios.find((u) => u.email === inc.creadoPor);
+      const asignadoAUser = inc.asignadoA ? usuarios.find((u) => u.email === inc.asignadoA) : null;
+      const obj = {
+        ...inc,
+        creadoPorImagen: creadoPorUser?.imagen || null,
+        asignadoAImagen: asignadoAUser?.imagen || null,
+      };
+      return obj;
+    });
+  }
 
   if (isMobile) {
     return (
       <InconvenientesMobile
-        inconvenientes={inconvenientesOrdenados}
+        inconvenientes={inconvenientesConImagen}
         setInconvenientes={setInconvenientes}
         open={open}
         setOpen={setOpen}
@@ -367,7 +414,7 @@ const Inconvenientes: React.FC = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {inconvenientesOrdenados.map((inconveniente) => (
+            {inconvenientesConImagen.map((inconveniente: Inconveniente & { creadoPorImagen?: string | null; asignadoAImagen?: string | null }) => (
               <Row
                 key={inconveniente.id}
                 row={inconveniente}

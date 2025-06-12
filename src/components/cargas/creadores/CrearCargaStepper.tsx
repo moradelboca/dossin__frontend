@@ -97,12 +97,18 @@ const CrearCargaStepper: React.FC<CrearCargaStepperProps> = ({
     plantaProcedenciaRuca: initialCargaData?.plantaProcedenciaRuca || "",
     destinoRuca: initialCargaData?.destinoRuca || "",
     nombreCargamento: initialCargaData?.cargamento?.nombre || "",
-    nombreUbicacionCarga: initialCargaData?.ubicacionCarga?.nombre || "",
+    nombreUbicacionCarga: initialCargaData?.ubicacionCarga
+      ? `${initialCargaData.ubicacionCarga.nombre}, ${initialCargaData.ubicacionCarga.localidad.nombre}, ${initialCargaData.ubicacionCarga.localidad.provincia.nombre}`
+      : "",
     idUbicacionCarga: initialCargaData?.ubicacionCarga?.id,
-    nombreUbicacionDescarga: initialCargaData?.ubicacionDescarga?.nombre || "",
+    nombreUbicacionDescarga: initialCargaData?.ubicacionDescarga
+      ? `${initialCargaData.ubicacionDescarga.nombre}, ${initialCargaData.ubicacionDescarga.localidad.nombre}, ${initialCargaData.ubicacionDescarga.localidad.provincia.nombre}`
+      : "",
     idUbicacionDescarga: initialCargaData?.ubicacionDescarga?.id,
     requiereBalanza: Boolean(initialCargaData?.horaInicioBalanza),
-    nombreUbicacionBalanza: initialCargaData?.ubicacionBalanza?.nombre || "",
+    nombreUbicacionBalanza: initialCargaData?.ubicacionBalanza
+      ? `${initialCargaData.ubicacionBalanza.nombre}, ${initialCargaData.ubicacionBalanza.localidad.nombre}, ${initialCargaData.ubicacionBalanza.localidad.provincia.nombre}`
+      : "",
     idUbicacionBalanza: initialCargaData?.ubicacionBalanza?.id || null,
     idCargamento: initialCargaData?.cargamento?.id,
     cantidadKm: initialCargaData?.cantidadKm,
@@ -187,8 +193,8 @@ const CrearCargaStepper: React.FC<CrearCargaStepperProps> = ({
         // Paso 3: Selecciona tipos de acoplados permitidos
         return !!(datosNuevaCarga.idsTiposAcoplados?.length);
       case 4:
-        // Paso 4: Mas informacion
-        return !!(datosNuevaCarga.descripcion && datosNuevaCarga.tolerancia && datosNuevaCarga.destinoRuca && datosNuevaCarga.plantaProcedenciaRuca);
+        // Paso 4: Solo tolerancia es requerida
+        return datosNuevaCarga.tolerancia !== undefined && datosNuevaCarga.tolerancia !== null && !isNaN(Number(datosNuevaCarga.tolerancia));
       default:
         return false;
     }
@@ -212,6 +218,8 @@ const CrearCargaStepper: React.FC<CrearCargaStepperProps> = ({
         requiereBalanza,
         ...body
       } = datosNuevaCarga;
+      // Si tolerancia está vacío o no es un número, enviar 0
+      const toleranciaFinal = (datosNuevaCarga.tolerancia === undefined || datosNuevaCarga.tolerancia === null || isNaN(Number(datosNuevaCarga.tolerancia))) ? 0 : Number(datosNuevaCarga.tolerancia);
       const fullCarga = {
         id: datosNuevaCarga.id,
         idsTiposAcoplados: datosNuevaCarga.idsTiposAcoplados,
@@ -247,7 +255,7 @@ const CrearCargaStepper: React.FC<CrearCargaStepperProps> = ({
         horaFinDescarga: datosNuevaCarga.horaFinDescarga,
         horaInicioBalanza: datosNuevaCarga.horaInicioBalanza,
         horaFinBalanza: datosNuevaCarga.horaFinBalanza,
-        tolerancia: datosNuevaCarga.tolerancia,
+        tolerancia: toleranciaFinal,
         creadoPor: datosNuevaCarga.creadoPor,
         payload: body
       };

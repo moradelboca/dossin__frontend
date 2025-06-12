@@ -18,11 +18,23 @@ export default function ContainerDescripcion() {
                     width: "100%",
                 }}
             >
-                <Typography>Detalles</Typography>
+                <Typography>Descripción</Typography>
                 <IconButton
                     disabled={!cargaSeleccionada}
                     onClick={() => handleClickAbrirDialog(4)}
-                    sx={{ paddingTop: 0, paddingBottom: 0 }}
+                    sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        width: 32,
+                        height: 32,
+                        borderRadius: '50%',
+                        p: 0,
+                        transition: 'background 0.2s',
+                        '&:hover': {
+                            backgroundColor: '#f5f5f5',
+                        },
+                    }}
                 >
                     <BorderColorIcon sx={{ fontSize: 16 }} />
                 </IconButton>

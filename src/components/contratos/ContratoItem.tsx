@@ -51,9 +51,6 @@ interface ContratoItemProps {
                 tituloCustom: `${ubicacion} - ${provincia}`,
                 subtituloCustom: `${ubicacionDescarga} - ${provinciaDescarga}`
             };
-
-   
-
             return (
                 <CardMobile
                     key={carga.id || index}
@@ -139,6 +136,7 @@ interface ContratoItemProps {
             padding: '0px',
             width: '80%',
             alignItems: 'flex-start',
+            marginTop: "15px"
           }}
         >
           {renderCards()}

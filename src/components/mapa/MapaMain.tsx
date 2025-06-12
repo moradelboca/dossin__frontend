@@ -349,7 +349,7 @@ useEffect(() => {
             </MapContainer>
     
             {/* Diálogo */}
-            <Dialog open={openDialog} onClose={handleClose} maxWidth="md" fullWidth>
+            <Dialog open={openDialog} onClose={handleClose} maxWidth="xs" fullWidth>
                 <DialogTitle>Detalles del Punto</DialogTitle>
                 <CreadorUbicacion
                     handleClose={handleClose}

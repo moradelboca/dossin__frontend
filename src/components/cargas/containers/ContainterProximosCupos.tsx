@@ -104,7 +104,19 @@ export default function ContainerProximosCupos() {
         <IconButton
           disabled={!cargaSeleccionada}
           onClick={handleClickVerCupos}
-          sx={{ paddingRight: 0, paddingBottom: 0 }}
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: 25,
+            height: 25,
+            borderRadius: '50%',
+            p: 0,
+            transition: 'background 0.2s',
+            '&:hover': {
+              backgroundColor: '#f5f5f5', 
+            },
+          }}
         >
           <AddIcon />
         </IconButton>
@@ -171,10 +183,10 @@ export default function ContainerProximosCupos() {
                     Fecha: {cupo.fecha}
                   </Typography>
                   <Typography variant="subtitle2" color="#90979f">
-                    Cupos confirmados: {cupo.turnos?.length} ⛟ 🗸
+                    Turnos confirmados: {cupo.turnos?.length} ⛟
                   </Typography>
                   <Typography variant="subtitle2" color="#90979f">
-                    Cupos restantes: {cupo.cupos} ⛟ ⏱︎
+                    Turnos restantes: {cupo.cupos} ⛟
                   </Typography>
                 </Box>
               ))}

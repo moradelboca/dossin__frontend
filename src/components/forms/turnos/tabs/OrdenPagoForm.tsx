@@ -20,7 +20,10 @@ const OrdenPagoForm: React.FC<OrdenPagoFormProps> = ({ turnoId, initialData, onS
     const isMobile = useMediaQuery(tema.breakpoints.down("sm"));
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setNumeroOrdenPago(Number(event.target.value));
+    const value = event.target.value.replace(/\D/g, ''); // Solo números
+    if (value.length <= 5) {
+      setNumeroOrdenPago(value === '' ? null : Number(value));
+    }
   };
 
   const handleSubmit = async () => {
@@ -57,6 +60,15 @@ const OrdenPagoForm: React.FC<OrdenPagoFormProps> = ({ turnoId, initialData, onS
         onChange={handleChange}
         error={!!error}
         helperText={error}
+        inputProps={{ maxLength: 5, inputMode: 'numeric', pattern: '[0-9]*' }}
+        sx={{
+          '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
+            borderColor: theme.colores.azul,
+          },
+          '& .MuiInputLabel-root.Mui-focused': {
+            color: theme.colores.azul,
+          },
+        }}
       />
       <Box
         sx={{

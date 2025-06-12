@@ -4,13 +4,10 @@ import {
   Box,
   Typography,
   CircularProgress,
-  ToggleButton,
-  ToggleButtonGroup,
   Dialog,
   DialogContent,
   DialogTitle,
   IconButton,
-  Button,
 } from "@mui/material";
 import ClearSharpIcon from "@mui/icons-material/ClearSharp";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
@@ -40,8 +37,6 @@ interface Cupo {
 interface CuposMobileProps {
   cupos: Cupo[];
   estadoCarga: string;
-  selectedView: { label: string; value: string };
-  setSelectedView: (view: { label: string; value: string }) => void;
   idCarga?: string;
   refreshCupos: () => void;
   theme: any;
@@ -52,8 +47,6 @@ interface CuposMobileProps {
 export default function CuposMobile({
   cupos,
   estadoCarga,
-  selectedView,
-  setSelectedView,
   idCarga,
   refreshCupos,
   theme,
@@ -69,7 +62,6 @@ export default function CuposMobile({
   // Estados para turnos con errores
   const [openDialogError, setOpenDialogError] = useState(false);
   const [selectedError, setSelectedError] = useState<any>(null);
-
 
   const availableDates = Array.from(new Set(cupos?.map((c) => c.fecha)));
   const [selectedDate, setSelectedDate] = useState<string>(availableDates[0] || "");
@@ -88,9 +80,7 @@ export default function CuposMobile({
     setExpandedCard(expandedCard === index ? null : index);
   };
 
-  const handleClickCrearCupo = () => {
-    setOpenDialogCupo(true);
-  };
+
   const handleCloseDialogCupo = () => {
     setOpenDialogCupo(false);
   };
@@ -133,17 +123,11 @@ export default function CuposMobile({
       {availableDates.map((date) => {
         const isSelected = date === selectedDate;
         let backgroundColor, color, border;
-        if (selectedView.value === "ERRORES") {
-          backgroundColor = isSelected ? theme.colores.azul : "#fff";
-          color = isSelected ? "#fff" : theme.colores.azul;
-          border = isSelected ? `1px solid ${theme.colores.azul}` : `1px solid #ccc`;
-        } else {
-          const cupo = cupos.find((c) => c.fecha === date);
-          const hasAvailability = cupo ? cupo.cupos > 0 : false;
-          backgroundColor = isSelected ? theme.colores.azul : (hasAvailability ? "#418C75" : "red");
-          color = isSelected ? "#fff" : "#fff";
-          border = isSelected ? `1px solid ${theme.colores.azul}` : "1px solid black";
-        }
+        const cupo = cupos.find((c) => c.fecha === date);
+        const hasAvailability = cupo ? cupo.cupos > 0 : false;
+        backgroundColor = isSelected ? theme.colores.azul : (hasAvailability ? "#418C75" : "red");
+        color = isSelected ? "#fff" : "#fff";
+        border = isSelected ? `1px solid ${theme.colores.azul}` : "1px solid black";
         return (
           <Box
             key={date}
@@ -194,111 +178,11 @@ export default function CuposMobile({
     ));
   };
 
-  // Render de turnos con errores (lista vertical)
-  const renderErrores = (errores: any[], cupo: Cupo) => {
-    // Filtrar solo los turnos con estado.nombre === 'con errores'
-    const filteredErrores = errores.filter((error) => error.estado && error.estado.nombre === 'con errores');
-
-    if (!filteredErrores || filteredErrores.length === 0) {
-      return (
-        <Box padding={2}>
-          <Typography variant="body2">No hay turnos con errores para este cupo</Typography>
-        </Box>
-      );
-    }
-    return filteredErrores.map((error, index) => (
-      <Box key={error.id || index}>
-        <CardMobile
-          item={error}
-          index={index}
-          fields={fields}
-          headerNames={headerNames}
-          expandedCard={expandedCard}
-          handleExpandClick={handleExpandClick}
-          tituloField="nombreColaborador"
-          subtituloField="nombreEmpresa"
-          refreshCupos={refreshCupos}
-          cupo={cupo}
-        />
-      </Box>
-    ));
-  };
-
   return (
     <Box padding={2}>
       <Typography variant="h5" gutterBottom>
         Cupos
       </Typography>
-
-      {/* Toggle para Turnos vs Errores */}
-      <Box display="flex" justifyContent="center" my={2}>
-        <ToggleButtonGroup
-          value={selectedView.value}
-          exclusive
-          onChange={(_, newValue) => {
-            if (newValue !== null) {
-              setSelectedView({
-                label: newValue === "TURNOS" ? "Turnos" : "Con Errores",
-                value: newValue,
-              });
-            }
-          }}
-          sx={{ width: "100%" }}
-        >
-          <ToggleButton
-            value="TURNOS"
-            sx={{
-              width: "50%",
-              textTransform: "none",
-              backgroundColor: selectedView.value === "TURNOS" ? theme.colores.azul : "transparent",
-              color: selectedView.value === "TURNOS" ? "white" : "black",
-              "&.Mui-selected": {
-                backgroundColor: theme.colores.azul,
-                color: "white",
-              },
-            }}
-          >
-            Turnos
-          </ToggleButton>
-          <ToggleButton
-            value="ERRORES"
-            sx={{
-              width: "50%",
-              textTransform: "none",
-              backgroundColor: selectedView.value === "ERRORES" ? theme.colores.azul : "transparent",
-              color: selectedView.value === "ERRORES" ? "white" : "black",
-              "&.Mui-selected": {
-                backgroundColor: theme.colores.azul,
-                color: "white",
-              },
-            }}
-          >
-            Con Errores
-          </ToggleButton>
-        </ToggleButtonGroup>
-      </Box>
-
-      {selectedView.value !== "ERRORES" && (
-        <Box display="flex" justifyContent="center" mb={2}>
-          <Button
-            onClick={handleClickCrearCupo}
-            sx={{
-              backgroundColor: "#fff",
-              color: theme.colores.azul,
-              border: `1px solid ${theme.colores.azul}`,
-              textTransform: "none",
-              fontWeight: "600",
-              width: "100%",
-              "&:hover": {
-                backgroundColor: "#fff",
-                opacity: 0.8,
-              },
-            }}
-          >
-            + Agregar Cupo
-          </Button>
-        </Box>
-      )}
 
       {estadoCarga === "Cargando" && (
         <Box
@@ -333,63 +217,37 @@ export default function CuposMobile({
               </Box>
 
               {selectedDate ? (
-                selectedView.value === "TURNOS" ? (
-                  filteredCupos.length > 0 ? (
-                    filteredCupos.map((cupo, idx) => (
-                      <Box key={idx} mb={4} p={2} sx={{ backgroundColor: "#fff" }}>
-                        <TarjetaCupos
-                          fecha={cupo.fecha}
-                          cuposDisponibles={cupo.cupos}
-                          cuposConfirmados={cupo.turnos.length}
-                          idCarga={cupo.carga}
-                          refreshCupos={refreshCupos}
-                          estaEnElGrid={true}
-                          cupos={cupos}
-                        />
-                        {/* Lista vertical de turnos */}
-                        <Box
-                          mt={2}
-                          sx={{
-                            display: "flex",
-                            flexDirection: "column",
-                            gap: 2,
-                          }}
-                        >
-                          {renderTurnos(cupo.turnos, cupo)}
-                        </Box>
+                filteredCupos.length > 0 ? (
+                  filteredCupos.map((cupo, idx) => (
+                    <Box key={idx} mb={4} p={2} sx={{ backgroundColor: "#fff" }}>
+                      <TarjetaCupos
+                        fecha={cupo.fecha}
+                        cuposDisponibles={cupo.cupos}
+                        cuposConfirmados={cupo.turnos.length}
+                        idCarga={cupo.carga}
+                        refreshCupos={refreshCupos}
+                        estaEnElGrid={true}
+                        cupos={cupos}
+                      />
+                      {/* Lista vertical de turnos */}
+                      <Box
+                        mt={2}
+                        sx={{
+                          display: "flex",
+                          flexDirection: "column",
+                          gap: 2,
+                        }}
+                      >
+                        {renderTurnos(cupo.turnos, cupo)}
                       </Box>
-                    ))
-                  ) : (
-                    <Box display="flex" justifyContent="center" alignItems="center" height="200px">
-                      <Typography variant="body1">
-                        No hay cupos para la fecha seleccionada
-                      </Typography>
                     </Box>
-                  )
+                  ))
                 ) : (
-                  <>
-                    {filteredCupos.map((cupo, idx) =>
-                      cupo.turnosConErrores && cupo.turnosConErrores.length > 0 ? (
-                        <Box key={idx} mb={4} p={2} sx={{ backgroundColor: "#fff" }}>
-                          <Box sx={{ marginBottom: 2 }}>
-                            <Typography variant="h6">Fecha: {cupo.fecha}</Typography>
-                          </Box>
-                          <Box mt={2} sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                            {renderErrores(cupo.turnosConErrores, cupo)}
-                          </Box>
-                        </Box>
-                      ) : null
-                    )}
-                    {!filteredCupos.some(
-                      (cupo) => cupo.turnosConErrores && cupo.turnosConErrores.length > 0
-                    ) && (
-                      <Box display="flex" justifyContent="center" alignItems="center" height="200px">
-                        <Typography variant="body1">
-                          No hay turnos con errores para la fecha seleccionada
-                        </Typography>
-                      </Box>
-                    )}
-                  </>
+                  <Box display="flex" justifyContent="center" alignItems="center" height="200px">
+                    <Typography variant="body1">
+                      No hay cupos para la fecha seleccionada
+                    </Typography>
+                  </Box>
                 )
               ) : (
                 <Box display="flex" justifyContent="center" alignItems="center" height="200px">

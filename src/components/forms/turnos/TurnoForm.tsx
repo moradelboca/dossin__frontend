@@ -17,37 +17,34 @@ const TurnoForm: React.FC<TurnoFormProps> = (props) => {
   const { backendURL } = useContext(ContextoGeneral);
   const { seleccionado } = props;
   const [tieneBitren, setTieneBitren] = useState<boolean | null>(null);
+  const [acopladoExtraRequired, setAcopladoExtraRequired] = useState<boolean>(false);
 
   useEffect(() => {
-    // Hacer el fetch al endpoint
-    const fetchRequiereBitren = async () => {
+    const fetchCarga = async () => {
       try {
-        const response = await fetch(`${backendURL}/cargas/${props.idCarga}/requiere-bitren`, {
-          method: "GET", // Utilizamos GET
-          headers: {
-            "Content-Type": "application/json",
-            "ngrok-skip-browser-warning": "true",
-          },
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          if (Array.isArray(data) && data.length === 0) {
-            setTieneBitren(false);
+        const response = await fetch(`${backendURL}/cargas/${props.idCarga}`);
+        if (!response.ok) throw new Error("No se pudo obtener la carga");
+        const carga = await response.json();
+        // Lógica para required
+        const tipos = carga.tiposAcoplados || [];
+        const tieneBitrenLocal = tipos.some((t: any) => t.nombre === "Bitren");
+        setTieneBitren(tieneBitrenLocal);
+        if (tieneBitrenLocal) {
+          if (tipos.length === 1 && tipos[0].nombre === "Bitren") {
+            setAcopladoExtraRequired(true);
           } else {
-            setTieneBitren(true);
+            setAcopladoExtraRequired(false);
           }
         } else {
-          throw new Error("No se pudo obtener el estado de requiere-bitren");
+          setAcopladoExtraRequired(false);
         }
-      } catch (error) {
-        console.error("Error fetching requiere-bitren:", error);
-        setTieneBitren(false);  // Asegúrate de poner un valor booleano en caso de error
+      } catch (e) {
+        setTieneBitren(false);
+        setAcopladoExtraRequired(false);
       }
     };
-
     if (props.idCarga) {
-      fetchRequiereBitren();
+      fetchCarga();
     }
   }, [backendURL, props.idCarga]);
   
@@ -61,9 +58,9 @@ const TurnoForm: React.FC<TurnoFormProps> = (props) => {
       }}
     >
       {(!seleccionado || !seleccionado.id) ? (
-        <CrearNuevoTurnoForm {...props} tieneBitren={tieneBitren} />
+        <CrearNuevoTurnoForm {...props} tieneBitren={tieneBitren} acopladoExtraRequired={acopladoExtraRequired} />
       ) : (
-        <EditarTurnoForm {...props} tieneBitren={tieneBitren} />
+        <EditarTurnoForm {...props} tieneBitren={tieneBitren} acopladoExtraRequired={acopladoExtraRequired} />
       )}
     </Box>
   );

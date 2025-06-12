@@ -47,8 +47,6 @@ export const DialogCarga = ({ open, onClose, contrato, selectedCarga, refreshCon
             ]
           };
           
-          console.log("Payload actualizado:", JSON.stringify(payloadContrato));
-          
           // 4. Actualizar contrato
           const resContrato = await fetch(`${backendURL}/contratos/${selectedContrato.id}`, {
             method: "PUT",

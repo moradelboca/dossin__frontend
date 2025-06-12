@@ -60,6 +60,25 @@ const useTransformarCampo = () => {
         return typeof value === "boolean" 
           ? value ? "Activo" : "Inactivo" 
           : "No especificado"
+      case "nombreColaborador":
+        if (item.nombreColaborador) return item.nombreColaborador;
+        if (item.colaborador) {
+          const nombre = item.colaborador.nombre || '';
+          const apellido = item.colaborador.apellido || '';
+          if (nombre || apellido) return `${nombre} ${apellido}`.trim();
+        }
+        return 'No especificado';
+      case "nombreEmpresa":
+        if (item.nombreEmpresa) return item.nombreEmpresa;
+        if (item.empresa) {
+          // Prioridad: razonSocial, luego nombreFantasia
+          const razon = item.empresa.razonSocial || '';
+          const fantasia = item.empresa.nombreFantasia || '';
+          if (razon && fantasia) return `${razon} - ${fantasia}`;
+          if (razon) return razon;
+          if (fantasia) return fantasia;
+        }
+        return 'No especificado';
       default:
         return value || "No especificado";
     }
