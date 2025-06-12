@@ -323,9 +323,9 @@ const Inconvenientes: React.FC = () => {
   };
   const getEstadoRank = (estado: string) => {
     switch (estado.toLowerCase()) {
-      case "atendiendo": return 1;
+      case "activo": return 1;
       case "pendiente": return 2;
-      case "activo": return 3;
+      case "resuelto": return 3;
       default: return 4; // otros, pero 'resuelto' se maneja aparte
     }
   };
