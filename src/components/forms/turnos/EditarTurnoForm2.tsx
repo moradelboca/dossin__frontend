@@ -300,7 +300,6 @@ const EditarTurnoForm: React.FC<EditarTurnoFormProps> = ({
       {/* Factura */}
       <TabPanel value={activeTab} index={3}>
         <FacturaForm
-          turnoId={seleccionado.id}
           cuitEmpresa={seleccionado.empresa?.cuit}
           initialFactura={seleccionado.factura}
           onSuccess={(updatedFactura) => {

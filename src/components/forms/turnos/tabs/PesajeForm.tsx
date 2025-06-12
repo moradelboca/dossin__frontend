@@ -59,17 +59,6 @@ const PesajeForm: React.FC<PesajeFormProps> = ({
       console.error(`Error: ${error.message}`);
     }
   };
-
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-    setter: React.Dispatch<React.SetStateAction<number | string>>
-  ) => {
-    const value = e.target.value;
-    if (/^\d*\.?\d*$/.test(value)) {
-      setter(value);
-    }
-  };
-
   // Estilos para el borde azul al enfocar
   const azulStyles = {
     '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {

@@ -4,13 +4,10 @@ import {
   Box,
   Typography,
   CircularProgress,
-  ToggleButton,
-  ToggleButtonGroup,
   Dialog,
   DialogContent,
   DialogTitle,
   IconButton,
-  Button,
 } from "@mui/material";
 import ClearSharpIcon from "@mui/icons-material/ClearSharp";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
@@ -83,9 +80,7 @@ export default function CuposMobile({
     setExpandedCard(expandedCard === index ? null : index);
   };
 
-  const handleClickCrearCupo = () => {
-    setOpenDialogCupo(true);
-  };
+
   const handleCloseDialogCupo = () => {
     setOpenDialogCupo(false);
   };
@@ -169,36 +164,6 @@ export default function CuposMobile({
       <Box key={turno.id || index}>
         <CardMobile
           item={turno}
-          index={index}
-          fields={fields}
-          headerNames={headerNames}
-          expandedCard={expandedCard}
-          handleExpandClick={handleExpandClick}
-          tituloField="nombreColaborador"
-          subtituloField="nombreEmpresa"
-          refreshCupos={refreshCupos}
-          cupo={cupo}
-        />
-      </Box>
-    ));
-  };
-
-  // Render de turnos con errores (lista vertical)
-  const renderErrores = (errores: any[], cupo: Cupo) => {
-    // Filtrar solo los turnos con estado.nombre === 'con errores'
-    const filteredErrores = errores.filter((error) => error.estado && error.estado.nombre === 'con errores');
-
-    if (!filteredErrores || filteredErrores.length === 0) {
-      return (
-        <Box padding={2}>
-          <Typography variant="body2">No hay turnos con errores para este cupo</Typography>
-        </Box>
-      );
-    }
-    return filteredErrores.map((error, index) => (
-      <Box key={error.id || index}>
-        <CardMobile
-          item={error}
           index={index}
           fields={fields}
           headerNames={headerNames}
