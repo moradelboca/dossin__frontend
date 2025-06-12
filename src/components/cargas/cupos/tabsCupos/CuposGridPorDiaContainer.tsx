@@ -27,7 +27,8 @@ interface CuposGridPorDiaContainerProps {
 export function CuposGridPorDiaContainer({
   cupos,
   refreshCupos,
-}: CuposGridPorDiaContainerProps) {
+  estadoCarga
+}: CuposGridPorDiaContainerProps & { estadoCarga: string }) {
   // Extraer todas las fechas únicas de los cupos
   const availableDates = Array.from(new Set(cupos.map((cupo) => cupo.fecha)));
 
@@ -70,9 +71,9 @@ export function CuposGridPorDiaContainer({
 
       <Box mt={3}>
         {filteredCupos.length > 0 ? (
-          <CuposGridContainer cupos={filteredCupos} refreshCupos={refreshCupos} />
+          <CuposGridContainer cupos={filteredCupos} refreshCupos={refreshCupos} estadoCarga={estadoCarga} />
         ) : (
-          <Typography>No hay cupos para la fecha seleccionada</Typography>
+          estadoCarga === 'Cargado' && <Typography>No hay cupos para la fecha seleccionada</Typography>
         )}
       </Box>
     </Box>

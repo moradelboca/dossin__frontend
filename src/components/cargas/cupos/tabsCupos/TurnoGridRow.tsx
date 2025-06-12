@@ -10,23 +10,30 @@ import { useAllowed } from '../../../hooks/auth/useAllowed';
 import EstadoTurnoForm from '../../../forms/turnos/tabs/EstadoTurnoForm';
 import { useAuth } from '../../../autenticacion/ContextoAuth';
 import { puedeVerEstado } from '../../../../utils/turnoEstadoPermisos';
+import Tooltip from '@mui/material/Tooltip';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogActions from '@mui/material/DialogActions';
 
 interface TurnoGridRowProps {
   turno: any;
   cupo: any;
   refreshCupos: () => void;
   fields: string[];
+  onEdit?: () => void;
 }
 
-const TurnoGridRow: React.FC<TurnoGridRowProps> = ({ turno, cupo, refreshCupos, fields }) => {
+const TurnoGridRow: React.FC<TurnoGridRowProps> = ({ turno, cupo, refreshCupos, fields, onEdit }) => {
   const { theme } = useContext(ContextoGeneral);
   const transformarCampo = useTransformarCampo();
   const manejoTurnos = useManejoTurnos({ item: turno, cupo, refreshCupos });
-  const isAdmin = useAllowed([1]);
-  const [openEstadoDialog, setOpenEstadoDialog] = React.useState(false);
   const { user } = useAuth();
   const rolId = user?.rol?.id;
   const estadoId = manejoTurnos.turnoLocal.estado?.id;
+  const isAdmin = useAllowed([1]);
+  const [openEstadoDialog, setOpenEstadoDialog] = React.useState(false);
+  const [openCancelarDialog, setOpenCancelarDialog] = React.useState(false);
   if (rolId && estadoId && !puedeVerEstado(estadoId, rolId)) {
     return null;
   }
@@ -109,19 +116,33 @@ const TurnoGridRow: React.FC<TurnoGridRowProps> = ({ turno, cupo, refreshCupos, 
       default:
         return null;
     }
-    // Botones extra solo si NO es rol 3
-    if (rolId !== 3) {
-      botones.push(outlinedButton({ key: 'adelanto', children: 'Adelanto', onClick: () => manejoTurnos.setOpenDialog('adelanto') }));
+    // Botones extra
+    const isContableOrLogistica = rolId === 2 || rolId === 4;
+    if (isAdmin) {
       botones.push(
-        <IconButton
-          key="delete"
-          onClick={() => manejoTurnos.setOpenDeleteDialog(true)}
-          sx={{ color: '#d68384', background: 'transparent', '&:hover': { background: '#fbe9e7' }, borderRadius: 2, ml: 1 }}
-          aria-label="eliminar turno"
-          size="small"
-        >
-          <DeleteIcon fontSize="small" />
-        </IconButton>
+        <Tooltip title="Eliminar turno" key="delete">
+          <IconButton
+            onClick={() => manejoTurnos.setOpenDeleteDialog(true)}
+            sx={{ color: '#d68384', background: 'transparent', '&:hover': { background: '#fbe9e7' }, borderRadius: 2, ml: 1 }}
+            aria-label="eliminar turno"
+            size="small"
+          >
+            <DeleteIcon fontSize="small" />
+          </IconButton>
+        </Tooltip>
+      );
+    } else if (isContableOrLogistica) {
+      botones.push(
+        <Tooltip title="Cancelar turno" key="cancel">
+          <IconButton
+            onClick={() => setOpenCancelarDialog(true)}
+            sx={{ color: '#d68384', background: 'transparent', '&:hover': { background: '#fbe9e7' }, borderRadius: 2, ml: 1 }}
+            aria-label="cancelar turno"
+            size="small"
+          >
+            <DeleteIcon fontSize="small" />
+          </IconButton>
+        </Tooltip>
       );
     }
     return (
@@ -133,7 +154,10 @@ const TurnoGridRow: React.FC<TurnoGridRowProps> = ({ turno, cupo, refreshCupos, 
 
   return (
     <>
-      <TableRow>
+      <TableRow
+        onDoubleClick={onEdit}
+        style={{ cursor: onEdit ? 'pointer' : undefined }}
+      >
         {fields.map((field, idx) => (
           <TableCell key={idx}>{transformarCampo(field, manejoTurnos.turnoLocal)}</TableCell>
         ))}
@@ -145,8 +169,8 @@ const TurnoGridRow: React.FC<TurnoGridRowProps> = ({ turno, cupo, refreshCupos, 
                   px: 2,
                   py: 0.5,
                   borderRadius: '16px',
-                  border: `2px solid ${manejoTurnos.getEstadoColor(manejoTurnos.turnoLocal.estado.nombre.toLowerCase())}`,
-                  color: manejoTurnos.getEstadoColor(manejoTurnos.turnoLocal.estado.nombre.toLowerCase()),
+                  border: `2px solid ${manejoTurnos.turnoLocal.estado.id === 4 ? '#d68384' : manejoTurnos.getEstadoColor(manejoTurnos.turnoLocal.estado.nombre.toLowerCase())}`,
+                  color: manejoTurnos.turnoLocal.estado.id === 4 ? '#d68384' : manejoTurnos.getEstadoColor(manejoTurnos.turnoLocal.estado.nombre.toLowerCase()),
                   fontWeight: 'bold',
                   fontSize: '0.85rem',
                   background: '#fff',
@@ -168,8 +192,8 @@ const TurnoGridRow: React.FC<TurnoGridRowProps> = ({ turno, cupo, refreshCupos, 
                   px: 2,
                   py: 0.5,
                   borderRadius: '16px',
-                  border: `2px solid ${manejoTurnos.getEstadoColor(manejoTurnos.turnoLocal.estado.nombre.toLowerCase())}`,
-                  color: manejoTurnos.getEstadoColor(manejoTurnos.turnoLocal.estado.nombre.toLowerCase()),
+                  border: `2px solid ${manejoTurnos.turnoLocal.estado.id === 4 ? '#d68384' : manejoTurnos.getEstadoColor(manejoTurnos.turnoLocal.estado.nombre.toLowerCase())}`,
+                  color: manejoTurnos.turnoLocal.estado.id === 4 ? '#d68384' : manejoTurnos.getEstadoColor(manejoTurnos.turnoLocal.estado.nombre.toLowerCase()),
                   fontWeight: 'bold',
                   fontSize: '0.85rem',
                   background: '#fff',
@@ -209,6 +233,39 @@ const TurnoGridRow: React.FC<TurnoGridRowProps> = ({ turno, cupo, refreshCupos, 
           handleClose={() => manejoTurnos.setOpenDeleteDialog(false)}
           refreshCupos={refreshCupos || (() => {})}
         />
+      </Dialog>
+      {/* Diálogo de confirmación para cancelar el turno (solo contable y logística) */}
+      <Dialog open={openCancelarDialog} onClose={() => setOpenCancelarDialog(false)} maxWidth="xs" fullWidth>
+        <DialogTitle>Cancelar Turno</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            ¿Está seguro que desea cancelar este turno? Esta acción no se puede deshacer.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenCancelarDialog(false)} sx={{ color: theme.colores.azul }}>
+            No, volver
+          </Button>
+          <Button
+            onClick={async () => {
+              try {
+                const response = await fetch(`${import.meta.env.VITE_BACKEND_URL || ''}/turnos/${manejoTurnos.turnoLocal.id}`, {
+                  method: 'PUT',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ idEstado: 4 }),
+                });
+                if (!response.ok) throw new Error(await response.text());
+                if (refreshCupos) refreshCupos();
+                setOpenCancelarDialog(false);
+              } catch (err) {
+                console.error(err);
+              }
+            }}
+            sx={{ color: '#fff', backgroundColor: theme.colores.azul, '&:hover': { backgroundColor: theme.colores.azulOscuro || '#163660' } }}
+          >
+            Sí, cancelar
+          </Button>
+        </DialogActions>
       </Dialog>
       {renderTurnosDialogs({ ...manejoTurnos, theme, cupo, refreshCupos })}
     </>

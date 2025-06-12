@@ -18,6 +18,7 @@ interface Props {
   headerNames: string[];
   idCarga: string | undefined;
   refreshCupos: () => void;
+  estadoCarga: string;
 }
 
 export function CuposCardsContainer({
@@ -26,6 +27,7 @@ export function CuposCardsContainer({
   headerNames,
   idCarga,
   refreshCupos,
+  estadoCarga,
 }: Props) {
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedTurno, setSelectedTurno] = useState<any>(null);
@@ -98,7 +100,7 @@ export function CuposCardsContainer({
           </Grid>
         ))}
 
-      {cupos.length === 0 && (
+      {cupos.length === 0 && estadoCarga === 'Cargado' && (
         <Box
           display={"flex"}
           flexDirection={"row"}

@@ -45,15 +45,18 @@ export function useManejoTurnos({ item, cupo, refreshCupos }: any) {
   }, [openDialog, item, cupo]);
 
   const getEstadoColor = (estado: string) => {
-    switch (estado) {
-      case 'con errores': return '#FF0000';
-      case 'validado': return '#FFFF00';
-      case 'autorizado': return '#00B7EB';
-      case 'tarado': return '#90EE90';
-      case 'en viaje': return '#FFA500';
-      case 'descargado': return '#800080';
-      case 'facturado': return '#008000';
-      case 'pagado': return '#006400';
+    switch (estado?.toLowerCase()) {
+      case 'con errores': return '#E53935'; // Rojo fuerte
+      case 'creado': return '#90A4AE'; // Gris azulado
+      case 'validado': return '#FFD600'; // Amarillo vibrante
+      case 'cancelado': return '#757575'; // Gris oscuro
+      case 'autorizado': return '#1976D2'; // Azul fuerte
+      case 'tarado': return '#00BFAE'; // Verde agua
+      case 'cargado': return '#FFA000'; // Naranja
+      case 'en viaje': return '#7C4DFF'; // Violeta
+      case 'descargado': return '#43A047'; // Verde
+      case 'facturado': return '#8E24AA'; // Púrpura
+      case 'pagado': return '#388E3C'; // Verde oscuro
       default: return theme.colores.azul;
     }
   };
@@ -170,7 +173,7 @@ export function useManejoTurnos({ item, cupo, refreshCupos }: any) {
 
 export function renderTurnosDialogs({
   openDialog, setOpenDialog, autorizarLoading, setAutorizarLoading, cartaPorteData, cartaPorteLoading, cartaPorteError, copiedField, turnoLocal, setTurnoLocal,
-  handleFormSuccess, handleCopy, getNextEstadoName, preciosPago, preciosPagoLoading, preciosPagoError, theme
+  handleFormSuccess, handleCopy, getNextEstadoName, preciosPago, preciosPagoLoading, preciosPagoError, theme, item
 }: any) {
   switch (openDialog) {
     case 'corregir':
@@ -229,7 +232,7 @@ export function renderTurnosDialogs({
                   });
                   handleFormSuccess();
                 } catch (err) {
-                  console.error(err);
+                  //console.error(err);
                 } finally {
                   setAutorizarLoading(false);
                 }
@@ -272,6 +275,8 @@ export function renderTurnosDialogs({
       }
       return null;
     case 'cartaPorte':
+      // Detectar mobile
+      const isMobile = window.innerWidth <= 600;
       return (
         <Dialog open onClose={() => setOpenDialog(null)} fullWidth maxWidth="md">
           <DialogTitle>Carta de Porte</DialogTitle>
@@ -299,7 +304,7 @@ export function renderTurnosDialogs({
                   { label: 'Rte. Comercial Venta secundaria 2', value: formatearEmpresa(cartaPorteData.contrato?.remitenteVentaSecundaria2) },
                   { label: 'Flete pagador', value: formatearEmpresa(cartaPorteData.contrato?.fletePagador) },
                   { label: 'Representante recibidor', value: formatearEmpresa(cartaPorteData.contrato?.representanteRecibidor) },
-                  { label: 'Empresa transportista', value: formatearEmpresa(cartaPorteData.turno?.empresa) },
+                 
                   { label: 'Chofer', value: cartaPorteData.turno?.colaborador?.nombre + ' ' + cartaPorteData.turno?.colaborador?.apellido },
                   { label: 'Patente camión', value: cartaPorteData.turno?.camion?.patente },
                   { label: 'Patente acoplado', value: cartaPorteData.turno?.acoplado?.patente },
@@ -309,16 +314,31 @@ export function renderTurnosDialogs({
                   { label: 'Kg bruto', value: cartaPorteData.turnoCompleto?.[0]?.kgBruto },
                   { label: 'Kg neto', value: cartaPorteData.turnoCompleto?.[0]?.kgNeto },
                 ].filter((row: any) => row.value !== undefined && row.value !== null).map((row: any) => (
-                  <Box key={row.label} sx={{ display: 'flex', alignItems: 'center', gap: 2, borderBottom: '1px solid #eee', pb: 1 }}>
-                    <Typography sx={{ minWidth: 260, fontWeight: 500 }}>{row.label}</Typography>
-                    <Typography sx={{ flex: 1 }}>{row.value && String(row.value).trim() !== '' ? String(row.value) : 'Dato no necesario'}</Typography>
-                    <IconButton size="small" onClick={() => handleCopy(String(row.value), row.label)}>
-                      <ContentCopyIcon fontSize="small" />
-                    </IconButton>
-                    {copiedField === row.label && (
-                      <Typography sx={{ color: theme.colores.azul, fontSize: 12, ml: 1 }}>Copiado!</Typography>
-                    )}
-                  </Box>
+                  isMobile ? (
+                    <Box key={row.label} sx={{ borderBottom: '1px solid #eee', pb: 1, mb: 1 }}>
+                      <Typography sx={{ fontWeight: 500, fontSize: 15 }}>{row.label}</Typography>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 0.5 }}>
+                        <Typography sx={{ flex: 1 }}>{row.value && String(row.value).trim() !== '' ? String(row.value) : 'Dato no necesario'}</Typography>
+                        <IconButton size="small" onClick={() => handleCopy(String(row.value), row.label)}>
+                          <ContentCopyIcon fontSize="small" />
+                        </IconButton>
+                        {copiedField === row.label && (
+                          <Typography sx={{ color: theme.colores.azul, fontSize: 12, ml: 1 }}>Copiado!</Typography>
+                        )}
+                      </Box>
+                    </Box>
+                  ) : (
+                    <Box key={row.label} sx={{ display: 'flex', alignItems: 'center', gap: 2, borderBottom: '1px solid #eee', pb: 1 }}>
+                      <Typography sx={{ minWidth: 260, fontWeight: 500 }}>{row.label}</Typography>
+                      <Typography sx={{ flex: 1 }}>{row.value && String(row.value).trim() !== '' ? String(row.value) : 'Dato no necesario'}</Typography>
+                      <IconButton size="small" onClick={() => handleCopy(String(row.value), row.label)}>
+                        <ContentCopyIcon fontSize="small" />
+                      </IconButton>
+                      {copiedField === row.label && (
+                        <Typography sx={{ color: theme.colores.azul, fontSize: 12, ml: 1 }}>Copiado!</Typography>
+                      )}
+                    </Box>
+                  )
                 ))}
               </Box>
             ) : (
@@ -345,7 +365,7 @@ export function renderTurnosDialogs({
                     body: JSON.stringify({ idEstado: nextEstadoId }),
                   });
                 } catch (err) {
-                  console.error(err);
+                  //console.error(err);
                 }
                 handleFormSuccess();
               }}
@@ -372,7 +392,7 @@ export function renderTurnosDialogs({
                     body: JSON.stringify({ idEstado: nextEstadoId }),
                   });
                 } catch (err) {
-                  console.error(err);
+                  //console.error(err);
                 }
                 handleFormSuccess();
               }}
@@ -382,6 +402,7 @@ export function renderTurnosDialogs({
         </Dialog>
       );
     case 'datospago':
+      const isMobilePago = window.innerWidth <= 600;
       return (
         <Dialog open onClose={() => setOpenDialog(null)} fullWidth maxWidth="sm">
           <DialogTitle>Datos de Pago</DialogTitle>
@@ -405,19 +426,35 @@ export function renderTurnosDialogs({
                             .replace(/^./, (str) => str.toUpperCase())
                             .trim();
                           return (
-                            <Box key={label} sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 0.5 }}>
-                              <Typography sx={{ minWidth: 180, fontWeight: 500 }}>{prettyLabel}</Typography>
-                              <Box sx={{ display: 'flex', alignItems: 'center', flex: 1 }}>
-                                <Typography sx={{ flex: 1 }}>{String(value)}</Typography>
-                                <Typography sx={{ color: '#888', ml: 0.5, userSelect: 'none' }} component="span">$</Typography>
+                            isMobilePago ? (
+                              <Box key={label} sx={{ borderBottom: '1px solid #eee', pb: 1, mb: 1 }}>
+                                <Typography sx={{ fontWeight: 500, fontSize: 15 }}>{prettyLabel}</Typography>
+                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 0.5 }}>
+                                  <Typography sx={{ flex: 1 }}>{String(value)}</Typography>
+                                  <Typography sx={{ color: '#888', ml: 0.5, userSelect: 'none' }} component="span">$</Typography>
+                                  <IconButton size="small" onClick={() => handleCopy(String(value), `${row.id}-${label}`)}>
+                                    <ContentCopyIcon fontSize="small" />
+                                  </IconButton>
+                                  {copiedField === `${row.id}-${label}` && (
+                                    <Typography sx={{ color: theme.colores.azul, fontSize: 12, ml: 1 }}>Copiado!</Typography>
+                                  )}
+                                </Box>
                               </Box>
-                              <IconButton size="small" onClick={() => handleCopy(String(value), `${row.id}-${label}`)}>
-                                <ContentCopyIcon fontSize="small" />
-                              </IconButton>
-                              {copiedField === `${row.id}-${label}` && (
-                                <Typography sx={{ color: theme.colores.azul, fontSize: 12, ml: 1 }}>Copiado!</Typography>
-                              )}
-                            </Box>
+                            ) : (
+                              <Box key={label} sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 0.5 }}>
+                                <Typography sx={{ minWidth: 180, fontWeight: 500 }}>{prettyLabel}</Typography>
+                                <Box sx={{ display: 'flex', alignItems: 'center', flex: 1 }}>
+                                  <Typography sx={{ flex: 1 }}>{String(value)}</Typography>
+                                  <Typography sx={{ color: '#888', ml: 0.5, userSelect: 'none' }} component="span">$</Typography>
+                                </Box>
+                                <IconButton size="small" onClick={() => handleCopy(String(value), `${row.id}-${label}`)}>
+                                  <ContentCopyIcon fontSize="small" />
+                                </IconButton>
+                                {copiedField === `${row.id}-${label}` && (
+                                  <Typography sx={{ color: theme.colores.azul, fontSize: 12, ml: 1 }}>Copiado!</Typography>
+                                )}
+                              </Box>
+                            )
                           );
                         })}
                       </Box>
@@ -443,10 +480,10 @@ export function renderTurnosDialogs({
                   await fetch(`${import.meta.env.VITE_BACKEND_URL || ''}/turnos/${turnoLocal.id}`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ idEstado: 8 }),
+                    body: JSON.stringify({ idEstado: 11 }),
                   });
                 } catch (err) {
-                  console.error(err);
+                  //console.error(err);
                 }
                 handleFormSuccess();
               }}
@@ -456,24 +493,27 @@ export function renderTurnosDialogs({
         </Dialog>
       );
     case 'factura':
+      // Usar item directo si está disponible, si no, fallback a turnoLocal
+      const turnoFactura = (typeof item !== 'undefined' && item && item.id) ? item : turnoLocal;
       return (
         <Dialog open onClose={() => setOpenDialog(null)} fullWidth maxWidth="sm">
           <DialogTitle>Agregar Factura</DialogTitle>
           <DialogContent>
             <FacturaForm
-              cuitEmpresa={turnoLocal.empresa?.cuit}
-              initialFactura={turnoLocal.factura}
+              cuitEmpresa={turnoFactura.empresa?.cuit}
+              turnoId={turnoFactura.id}
+              initialFactura={turnoFactura.factura}
               onSuccess={async () => {
                 try {
-                  const nextEstadoId = getNextEstadoId(turnoLocal.estado?.nombre);
+                  const nextEstadoId = getNextEstadoId(turnoFactura.estado?.nombre);
                   if (!nextEstadoId) throw new Error('No se puede determinar el próximo estado');
-                  await fetch(`${import.meta.env.VITE_BACKEND_URL || ''}/turnos/${turnoLocal.id}`, {
+                  await fetch(`${import.meta.env.VITE_BACKEND_URL || ''}/turnos/${turnoFactura.id}`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ idEstado: nextEstadoId }),
                   });
                 } catch (err) {
-                  console.error(err);
+                  //console.error(err);
                 }
                 handleFormSuccess();
               }}
