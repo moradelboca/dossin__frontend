@@ -19,6 +19,7 @@ import {
   IconButton,
   Tooltip,
   DialogActions,
+  Typography,
 } from "@mui/material";
 import TurnoForm from "../../../forms/turnos/TurnoForm";
 import TurnoGridRow from './TurnoGridRow';
@@ -29,6 +30,7 @@ import FilterListIcon from '@mui/icons-material/FilterList';
 import ViewColumnIcon from '@mui/icons-material/ViewColumn';
 import SaveAltIcon from '@mui/icons-material/SaveAlt';
 import { ContextoGeneral } from '../../../Contexto';
+import CancelIcon from '@mui/icons-material/Cancel';
 
 interface Turno {
   id: number;
@@ -64,51 +66,39 @@ const fields = [
   "colaborador.nombre",
   "colaborador.apellido",
   "colaborador.cuil",
-  "colaborador.numeroCel",
-  "colaborador.fechaNacimiento",
   "empresa.cuit",
-  "empresa.razonSocial",
-  "empresa.nombreFantasia",
-  "empresa.numeroCel",
-  "estado.nombre",
-  "tara.pesoNeto",
   "camion.patente",
   "acoplado.patente",
   "acopladoExtra.patente",
-  "numeroCP",
-  "kgCargados",
+  "kgTara",
+  "kgBruto",
+  "kgNeto",
   "kgDescargados",
   "precioGrano",
-  "NumOrdenDePago",
-  "factura.id",
-  "factura.tipoFactura.nombre"
+  "factura",
+  "numeroOrdenPago"
 ];
 const headerNames = [
   "Nombre",
   "Apellido",
-  "CUIL Colaborador",
-  "Celular Colaborador",
-  "Fecha Nacimiento",
+  "CUIL Chofer",
   "CUIT Empresa",
-  "Razón Social Empresa",
-  "Nombre Fantasía Empresa",
-  "Celular Empresa",
-  "Tara (Peso Neto)",
   "Patente Camión",
   "Patente Acoplado",
   "Patente Acoplado Extra",
-  "N° Carta de Porte",
-  "Kg Cargados",
+  "Kg Tara",
+  "Kg Bruto",
+  "Kg Neto",
   "Kg Descargados",
   "Precio Grano",
-  "N° Orden de Pago",
-  "ID Factura",
-  "Tipo de Factura"
+  "Factura",
+  "N° Orden Pago"
 ];
 
-export const CuposGridContainer: React.FC<CuposGridContainerProps> = ({
+export const CuposGridContainer: React.FC<CuposGridContainerProps & { estadoCarga: string }> = ({
   cupos,
   refreshCupos,
+  estadoCarga
 }) => {
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedTurno, setSelectedTurno] = useState<any>(null);
@@ -119,12 +109,16 @@ export const CuposGridContainer: React.FC<CuposGridContainerProps> = ({
     "colaborador.apellido",
     "colaborador.cuil",
     "empresa.cuit",
-    "estado.nombre",
-    "tara.pesoNeto",
     "camion.patente",
     "acoplado.patente",
-    "kgCargados",
-    "kgDescargados"
+    "acopladoExtra.patente",
+    "kgTara",
+    "kgBruto",
+    "kgNeto",
+    "kgDescargados",
+    "precioGrano",
+    "factura",
+    "numeroOrdenPago",
   ]);
   const [anchorElColumns, setAnchorElColumns] = useState<null | HTMLElement>(null);
   const [openFilterDialog, setOpenFilterDialog] = useState(false);
@@ -205,6 +199,17 @@ export const CuposGridContainer: React.FC<CuposGridContainerProps> = ({
     if (formato === 'csv') exportarCSV(exportHeaders, turnosExport, exportFields, 'turnos');
     if (formato === 'pdf') exportarPDF(exportHeaders, turnosExport, exportFields, 'turnos');
     handleCloseExport();
+  };
+
+  // Handler seguro para editar turno
+  const handleEditTurno = (turno: any) => {
+    if (turno && turno.id) {
+      setSelectedTurno(turno);
+      setOpenDialog(true);
+    } else {
+      // Opcional: mostrar un error o ignorar
+      console.error("Turno inválido para editar", turno);
+    }
   };
 
   return (
@@ -379,33 +384,59 @@ export const CuposGridContainer: React.FC<CuposGridContainerProps> = ({
               cupos={[]}
             />
             {/* Tabla de turnos */}
-            <TableContainer component={Paper}>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    {selectedColumns.map((field) => (
-                      <TableCell key={field}>{headerNames[fields.indexOf(field)]}</TableCell>
+            <Box sx={{ width: '100%', maxWidth: '90vw', overflowX: 'auto' }}>
+              <TableContainer component={Paper}>
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      {selectedColumns.map((field) => (
+                        <TableCell key={field}>{headerNames[fields.indexOf(field)]}</TableCell>
+                      ))}
+                      <TableCell>Estado</TableCell>
+                      <TableCell>Acciones</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {(filteredTurnos[cupo.fecha] || []).map((turno) => (
+                      <React.Fragment key={turno.id}>
+                        <TurnoGridRow
+                          turno={turno}
+                          cupo={cupo}
+                          refreshCupos={refreshCupos}
+                          fields={selectedColumns}
+                          onEdit={() => handleEditTurno(turno)}
+                        />
+                      </React.Fragment>
                     ))}
-                    <TableCell>Estado</TableCell>
-                    <TableCell>Acciones</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {(filteredTurnos[cupo.fecha] || []).map((turno) => (
-                    <React.Fragment key={turno.id}>
-                      <TurnoGridRow
-                        turno={turno}
-                        cupo={cupo}
-                        refreshCupos={refreshCupos}
-                        fields={selectedColumns}
-                      />
-                    </React.Fragment>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </Box>
           </Box>
         ))}
+      {cupos.length === 0 && estadoCarga === 'Cargado' && (
+        <Box
+          display={"flex"}
+          flexDirection={"row"}
+          width={"100%"}
+          justifyContent={"center"}
+          alignItems={"center"}
+          gap={3}
+        >
+          <CancelIcon
+            sx={{
+              color: "red",
+              borderRadius: "50%",
+              padding: "5px",
+              width: "50px",
+              height: "50px",
+            }}
+          />
+          <Typography variant="h5">
+            <b>Al parecer no hay cupos.</b>
+          </Typography>
+        </Box>
+      )}
       <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="md" fullWidth>
         <DialogTitle>Editar Turno</DialogTitle>
         <DialogContent>

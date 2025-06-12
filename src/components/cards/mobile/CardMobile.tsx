@@ -5,7 +5,11 @@ import { ContextoGeneral } from "../../Contexto";
 import useTransformarCampo from "../../hooks/useTransformarCampo";
 import LocalShippingIcon from "@mui/icons-material/LocalShipping";
 import Dialog from "@mui/material/Dialog";
-
+import DialogTitle from "@mui/material/DialogTitle";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogActions from "@mui/material/DialogActions";
+import Tooltip from '@mui/material/Tooltip';
 import DeleteIcon from '@mui/icons-material/Delete';
 import DeleteTurno from '../../cargas/creadores/DeleteTurno';
 import { useManejoTurnos, renderTurnosDialogs } from './manejoTurnos';
@@ -59,6 +63,9 @@ const CardMobile: React.FC<CardMobileProps> = ({
   const { user } = useAuth();
   const rolId = user?.rol?.id;
   const estadoId = manejoTurnos.turnoLocal.estado?.id;
+  const isAdmin = useAllowed([1]);
+  const [openEstadoDialog, setOpenEstadoDialog] = React.useState(false);
+  const [openCancelarDialog, setOpenCancelarDialog] = React.useState(false);
   if (rolId && estadoId && !puedeVerEstado(estadoId, rolId)) {
     return null;
   }
@@ -90,70 +97,79 @@ const CardMobile: React.FC<CardMobileProps> = ({
       />
     );
     let botones = null;
+    const safeOpenDialog = (dialog: Parameters<typeof manejoTurnos.setOpenDialog>[0]) => {
+      if (item && item.id) {
+        manejoTurnos.setTurnoLocal(item);
+        manejoTurnos.setOpenDialog(dialog);
+      } else {
+        console.error('No se puede abrir el diálogo, turno sin id:', item);
+      }
+    };
     switch (estado) {
       case 'con errores':
-        botones = <>{mainButton({ children: 'Corregir', onClick: () => manejoTurnos.setOpenDialog('corregir') })}</>;
+        botones = <>{mainButton({ children: 'Corregir', onClick: () => safeOpenDialog('corregir') })}</>;
         break;
       case 'validado':
         botones = <>
           <Box display="flex" gap={2} mb={1}>
-            {mainButton({ children: 'Corregir', onClick: () => manejoTurnos.setOpenDialog('corregir') })}
-            {mainButton({ children: 'Autorizar', onClick: () => manejoTurnos.setOpenDialog('autorizar') })}
+            {mainButton({ children: 'Corregir', onClick: () => safeOpenDialog('corregir') })}
+            {mainButton({ children: 'Autorizar', onClick: () => safeOpenDialog('autorizar') })}
           </Box>
         </>;
         break;
       case 'autorizado':
         if (rolId === 3) {
-          botones = <>{mainButton({ children: 'Cargar Tara', onClick: () => manejoTurnos.setOpenDialog('tara') })}</>;
+          botones = <>{mainButton({ children: 'Cargar Tara', onClick: () => safeOpenDialog('tara') })}</>;
         } else {
-          botones = <>{mainButton({ children: 'Cargar Tara', onClick: () => manejoTurnos.setOpenDialog('tara') })}</>;
+          botones = <>{mainButton({ children: 'Cargar Tara', onClick: () => safeOpenDialog('tara') })}</>;
         }
         break;
       case 'tarado':
         if (rolId === 3) {
-          botones = <>{mainButton({ children: 'Cargar Peso Bruto', onClick: () => manejoTurnos.setOpenDialog('tara') })}</>;
+          botones = <>{mainButton({ children: 'Cargar Peso Bruto', onClick: () => safeOpenDialog('tara') })}</>;
         } else {
-          botones = <>{mainButton({ children: 'Cargar Peso Bruto', onClick: () => manejoTurnos.setOpenDialog('tara') })}</>;
+          botones = <>{mainButton({ children: 'Cargar Peso Bruto', onClick: () => safeOpenDialog('tara') })}</>;
         }
         break;
       case 'cargado':
         botones = (
           <Box display="flex" gap={2} mb={1}>
-            {outlinedButton({ children: 'Ver CP', onClick: () => manejoTurnos.setOpenDialog('cartaPorte') })}
-            {mainButton({ children: 'Cargar CP', onClick: () => manejoTurnos.setOpenDialog('cargarCarta') })}
+            {outlinedButton({ children: 'Ver CP', onClick: () => safeOpenDialog('cartaPorte') })}
+            {mainButton({ children: 'Cargar CP', onClick: () => safeOpenDialog('cargarCarta') })}
           </Box>
         );
         break;
       case 'en viaje':
-        botones = <>{mainButton({ children: 'Ingresar Kg Descargados', onClick: () => manejoTurnos.setOpenDialog('pesaje') })}</>;
+        botones = <>{mainButton({ children: 'Ingresar Kg Descargados', onClick: () => safeOpenDialog('pesaje') })}</>;
         break;
       case 'descargado':
         botones = (
           <Box display="flex" gap={2} mb={1}>
-            {mainButton({ children: '+ Factura', onClick: () => manejoTurnos.setOpenDialog('factura') })}
+            {mainButton({ children: '+ Factura', onClick: () => safeOpenDialog('factura') })}
           </Box>
         );
         break;
       case 'facturado':
         botones = (
           <Box display="flex" gap={2} mb={1}>
-            {outlinedButton({ children: 'Ver Pago', onClick: () => manejoTurnos.setOpenDialog('datospago') })}
-            {mainButton({ children: 'Pagar', onClick: () => manejoTurnos.setOpenDialog('pago') })}
+            {outlinedButton({ children: 'Ver Pago', onClick: () => safeOpenDialog('datospago') })}
+            {mainButton({ children: 'Pagar', onClick: () => safeOpenDialog('pago') })}
           </Box>
         );
         break;
       default:
         return null;
     }
-    // Botones extra solo si NO es rol 3
+    // Botones extra
+    const isContableOrLogistica = rolId === 2 || rolId === 4;
     return (
       <Box sx={{ display: 'flex', width: '100%', alignItems: 'stretch', mt: 2 }}>
         <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
           {botones}
-          {rolId !== 3 && outlinedButton({ children: 'Adelanto', onClick: () => manejoTurnos.setOpenDialog('adelanto'), sx: { mt: 1, ...outlinedButton({}).props.sx } })}
+          {rolId !== 3 && outlinedButton({ children: 'Adelanto', onClick: () => safeOpenDialog('adelanto'), sx: { mt: 1, ...outlinedButton({}).props.sx } })}
         </Box>
-        {rolId !== 3 && (
-          <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'center', ml: 2, pt: 0.5 }}>
+        {isAdmin && (
+          <Tooltip title="Eliminar turno">
             <IconButton
               onClick={() => manejoTurnos.setOpenDeleteDialog(true)}
               sx={{ color: '#d68384', background: 'transparent', '&:hover': { background: '#fbe9e7' }, borderRadius: 2, height: 48, width: 48 }}
@@ -161,7 +177,18 @@ const CardMobile: React.FC<CardMobileProps> = ({
             >
               <DeleteIcon fontSize="large" />
             </IconButton>
-          </Box>
+          </Tooltip>
+        )}
+        {isContableOrLogistica && (
+          <Tooltip title="Cancelar turno">
+            <IconButton
+              onClick={() => setOpenCancelarDialog(true)}
+              sx={{ color: '#d68384', background: 'transparent', '&:hover': { background: '#fbe9e7' }, borderRadius: 2, height: 48, width: 48 }}
+              aria-label="cancelar turno"
+            >
+              <DeleteIcon fontSize="large" />
+            </IconButton>
+          </Tooltip>
         )}
         {/* Diálogo de confirmación para eliminar el turno usando DeleteTurno */}
         <Dialog open={manejoTurnos.openDeleteDialog} onClose={() => manejoTurnos.setOpenDeleteDialog(false)} maxWidth="sm" fullWidth>
@@ -174,12 +201,42 @@ const CardMobile: React.FC<CardMobileProps> = ({
             refreshCupos={refreshCupos || (() => {})}
           />
         </Dialog>
+        {/* Diálogo de confirmación para cancelar el turno (solo contable y logística) */}
+        <Dialog open={openCancelarDialog} onClose={() => setOpenCancelarDialog(false)} maxWidth="xs" fullWidth>
+          <DialogTitle>Cancelar Turno</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              ¿Está seguro que desea cancelar este turno? Esta acción no se puede deshacer.
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setOpenCancelarDialog(false)} sx={{ color: theme.colores.azul }}>
+              No, volver
+            </Button>
+            <Button
+              onClick={async () => {
+                try {
+                  const response = await fetch(`${import.meta.env.VITE_BACKEND_URL || ''}/turnos/${manejoTurnos.turnoLocal.id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ idEstado: 4 }),
+                  });
+                  if (!response.ok) throw new Error(await response.text());
+                  if (refreshCupos) refreshCupos();
+                  setOpenCancelarDialog(false);
+                } catch (err) {
+                  console.error(err);
+                }
+              }}
+              sx={{ color: '#fff', backgroundColor: theme.colores.azul, '&:hover': { backgroundColor: theme.colores.azulOscuro || '#163660' } }}
+            >
+              Sí, cancelar
+            </Button>
+          </DialogActions>
+        </Dialog>
       </Box>
     );
   };
-
-  const isAdmin = useAllowed([1]);
-  const [openEstadoDialog, setOpenEstadoDialog] = React.useState(false);
 
   return (
     <Box
@@ -205,8 +262,8 @@ const CardMobile: React.FC<CardMobileProps> = ({
               px: 2,
               py: 0.5,
               borderRadius: '16px',
-              border: `2px solid ${manejoTurnos.getEstadoColor(manejoTurnos.turnoLocal.estado.nombre.toLowerCase())}`,
-              color: manejoTurnos.getEstadoColor(manejoTurnos.turnoLocal.estado.nombre.toLowerCase()),
+              border: `2px solid ${manejoTurnos.turnoLocal.estado.id === 4 ? '#d68384' : manejoTurnos.getEstadoColor(manejoTurnos.turnoLocal.estado.nombre.toLowerCase())}`,
+              color: manejoTurnos.turnoLocal.estado.id === 4 ? '#d68384' : manejoTurnos.getEstadoColor(manejoTurnos.turnoLocal.estado.nombre.toLowerCase()),
               fontWeight: 'bold',
               fontSize: '0.85rem',
               background: '#fff',
@@ -231,8 +288,8 @@ const CardMobile: React.FC<CardMobileProps> = ({
               px: 2,
               py: 0.5,
               borderRadius: '16px',
-              border: `2px solid ${manejoTurnos.getEstadoColor(manejoTurnos.turnoLocal.estado.nombre.toLowerCase())}`,
-              color: manejoTurnos.getEstadoColor(manejoTurnos.turnoLocal.estado.nombre.toLowerCase()),
+              border: `2px solid ${manejoTurnos.turnoLocal.estado.id === 4 ? '#d68384' : manejoTurnos.getEstadoColor(manejoTurnos.turnoLocal.estado.nombre.toLowerCase())}`,
+              color: manejoTurnos.turnoLocal.estado.id === 4 ? '#d68384' : manejoTurnos.getEstadoColor(manejoTurnos.turnoLocal.estado.nombre.toLowerCase()),
               fontWeight: 'bold',
               fontSize: '0.85rem',
               background: '#fff',
@@ -344,7 +401,7 @@ const CardMobile: React.FC<CardMobileProps> = ({
           {renderButtons()}
           {childrenCollapse}
         </Box>
-        {renderTurnosDialogs({ ...manejoTurnos, theme, cupo, refreshCupos })}
+        {renderTurnosDialogs({ ...manejoTurnos, theme, cupo, refreshCupos, item })}
       </Collapse>
     </Box>
   );

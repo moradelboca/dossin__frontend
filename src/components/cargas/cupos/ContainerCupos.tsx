@@ -36,7 +36,7 @@ export function ContainerCupos() {
   const refreshCupos = async () => {
     setEstadoCarga("Cargando");
     try {
-      // 1. Traer cupos
+      // 1. Traer cupos (para obtener fechas)
       const cuposRes = await fetch(`${backendURL}/cargas/${idCarga}/cupos`, {
         method: "GET",
         headers: {
@@ -45,46 +45,52 @@ export function ContainerCupos() {
         },
       });
       const cuposData = await cuposRes.json();
-      // 2. Traer todos los turnos
-      const turnosRes = await fetch(`${backendURL}/turnos`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          "ngrok-skip-browser-warning": "true",
-        },
-      });
-      const turnosData = await turnosRes.json();
-      // 3. Indexar turnos por id
-      const turnosById = Array.isArray(turnosData)
-        ? Object.fromEntries(turnosData.map((t: any) => [t.id, t]))
-        : (turnosData.turnos ? Object.fromEntries(turnosData.turnos.map((t: any) => [t.id, t])) : {});
-      // 4. Reemplazar cada turno en cada cupo por el objeto completo
-      const cuposClonados = cuposData.map((cupo: any) => ({
-        ...cupo,
-        turnos: Array.isArray(cupo.turnos)
-          ? cupo.turnos.map((turno: any) => {
-              const fullTurno = turnosById[turno.id] || turno;
-              return {
-                ...fullTurno,
-                camion: typeof fullTurno.camion === "string" ? { patente: fullTurno.camion } : fullTurno.camion,
-                acoplado: typeof fullTurno.acoplado === "string" ? { patente: fullTurno.acoplado } : fullTurno.acoplado,
-                acopladoExtra: typeof fullTurno.acopladoExtra === "string" ? { patente: fullTurno.acopladoExtra } : fullTurno.acopladoExtra,
-              };
-            })
-          : [],
-        turnosConErrores: Array.isArray(cupo.turnosConErrores)
-          ? cupo.turnosConErrores.map((turno: any) => {
-              const fullTurno = turnosById[turno.id] || turno;
-              return {
-                ...fullTurno,
-                camion: typeof fullTurno.camion === "string" ? { patente: fullTurno.camion } : fullTurno.camion,
-                acoplado: typeof fullTurno.acoplado === "string" ? { patente: fullTurno.acoplado } : fullTurno.acoplado,
-                acopladoExtra: typeof fullTurno.acopladoExtra === "string" ? { patente: fullTurno.acopladoExtra } : fullTurno.acopladoExtra,
-              };
-            })
-          : [],
-      }));
-      setCupos(cuposClonados);
+      // 2. Para cada fecha, traer los turnos de ese cupo
+      const cuposConTurnos = await Promise.all(
+        cuposData.map(async (cupo: any) => {
+          const turnosRes = await fetch(
+            `${backendURL}/cargas/${idCarga}/cupos/${cupo.fecha}/turnos`,
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+                "ngrok-skip-browser-warning": "true",
+              },
+            }
+          );
+          const turnosData = await turnosRes.json();
+          // turnosData puede venir como { turnos: [...] } o como array directo
+          const turnos = Array.isArray(turnosData)
+            ? turnosData
+            : turnosData.turnos || [];
+          // turnosConErrores puede venir o no
+          const turnosConErrores = turnosData.turnosConErrores || [];
+          // Normalizar los campos de patente
+          const normalizarTurno = (turno: any) => ({
+            ...turno,
+            camion:
+              typeof turno.camion === "string"
+                ? { patente: turno.camion }
+                : turno.camion,
+            acoplado:
+              typeof turno.acoplado === "string"
+                ? { patente: turno.acoplado }
+                : turno.acoplado,
+            acopladoExtra:
+              typeof turno.acopladoExtra === "string"
+                ? { patente: turno.acopladoExtra }
+                : turno.acopladoExtra,
+          });
+          return {
+            ...cupo,
+            turnos: Array.isArray(turnos) ? turnos.map(normalizarTurno) : [],
+            turnosConErrores: Array.isArray(turnosConErrores)
+              ? turnosConErrores.map(normalizarTurno)
+              : [],
+          };
+        })
+      );
+      setCupos(cuposConTurnos);
       setEstadoCarga("Cargado");
     } catch (e) {
       setEstadoCarga("Cargado");
@@ -205,6 +211,7 @@ export function ContainerCupos() {
           justifyContent="center"
           alignItems="center"
           gap={3}
+          minHeight="60vh"
         >
           <CircularProgress />
           <Typography variant="h5">
@@ -220,15 +227,17 @@ export function ContainerCupos() {
           headerNames={headerNames}
           idCarga={idCarga}
           refreshCupos={refreshCupos}
+          estadoCarga={estadoCarga}
         />
       ) : null}
       {!isIngeniero && selectedTab === "GRID" && (
-        <CuposGridContainer cupos={cupos} refreshCupos={refreshCupos} />
+        <CuposGridContainer cupos={cupos} refreshCupos={refreshCupos} estadoCarga={estadoCarga} />
       )}
       {!isIngeniero && selectedTab === "POR_DIA" && (
         <CuposGridPorDiaContainer
           cupos={cupos}
           refreshCupos={refreshCupos}
+          estadoCarga={estadoCarga}
         />
       )}
 

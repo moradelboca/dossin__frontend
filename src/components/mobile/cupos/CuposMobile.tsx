@@ -125,7 +125,7 @@ export default function CuposMobile({
         let backgroundColor, color, border;
         const cupo = cupos.find((c) => c.fecha === date);
         const hasAvailability = cupo ? cupo.cupos > 0 : false;
-        backgroundColor = isSelected ? theme.colores.azul : (hasAvailability ? "#418C75" : "red");
+        backgroundColor = isSelected ? theme.colores.azul : (hasAvailability ? "#418C75" : "#FF6666");
         color = isSelected ? "#fff" : "#fff";
         border = isSelected ? `1px solid ${theme.colores.azul}` : "1px solid black";
         return (
@@ -193,6 +193,7 @@ export default function CuposMobile({
           justifyContent="center"
           alignItems="center"
           gap={3}
+          minHeight="60vh"
         >
           <CircularProgress />
           <Typography variant="h5">

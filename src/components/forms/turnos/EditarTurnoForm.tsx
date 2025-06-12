@@ -319,21 +319,34 @@ const EditarTurnoForm: React.FC<EditarTurnoFormProps> = ({
 
       {/* Factura */}
       <TabPanel value={numeroEstadoActual} index={4}>
-        <FacturaForm
-          cuitEmpresa={seleccionado.empresa?.cuit}
-          initialFactura={seleccionado.factura}
-          onSuccess={(updatedFactura) => {
-            setDatos(
-              datos.map((turno: any) =>
-                turno.id === seleccionado.id
-                  ? { ...turno, factura: updatedFactura }
-                  : turno
-              )
+        {seleccionado.id ? (
+          <FacturaForm
+            cuitEmpresa={seleccionado.empresa?.cuit}
+            turnoId={seleccionado.id}
+            initialFactura={seleccionado.factura}
+            onSuccess={(updatedFactura) => {
+              setDatos(
+                datos.map((turno: any) =>
+                  turno.id === seleccionado.id
+                    ? { ...turno, factura: updatedFactura }
+                    : turno
+                )
+              );
+              handleClose();
+            }}
+            onCancel={handleClose}
+          />
+        ) : (
+          (() => {
+            console.error('FacturaForm: seleccionado.id es undefined', seleccionado);
+            return (
+              <Box sx={{ color: 'error.main', p: 2 }}>
+                <strong>Error:</strong> No se encontró el ID del turno. No se puede asociar la factura.<br/>
+                <span style={{ fontSize: '0.9em' }}>Contacte a soporte si el problema persiste.</span>
+              </Box>
             );
-            handleClose();
-          }}
-          onCancel={handleClose}
-        />
+          })()
+        )}
       </TabPanel>
 
       {/* Carta de Porte */}

@@ -36,6 +36,7 @@ interface Factura {
 
 interface FacturaFormProps {
   cuitEmpresa: number | string;
+  turnoId: number;
   initialFactura?: Factura | null;
   onSuccess: (updatedData: any) => void;
   onCancel: () => void;
@@ -43,6 +44,7 @@ interface FacturaFormProps {
 
 const FacturaForm: React.FC<FacturaFormProps> = ({
   cuitEmpresa,
+  turnoId,
   initialFactura,
   onSuccess,
   onCancel,
@@ -66,9 +68,6 @@ const FacturaForm: React.FC<FacturaFormProps> = ({
   const initialData = isUpdateMode
     ? {
         tipoFactura: initialFactura?.tipoFactura || null,
-        valorIva: initialFactura?.valorIva ?? 21,
-        total: initialFactura?.total ?? '',
-        ivaSeleccionado: initialFactura?.valorIva ?? 21,
         nroPuntoVenta: initialFactura?.nroPuntoVenta || '',
         nroComprobante: initialFactura?.nroComprobante || '',
       }
@@ -76,13 +75,10 @@ const FacturaForm: React.FC<FacturaFormProps> = ({
         tipoFactura: null as TipoFactura | null,
         nroPuntoVenta: '',
         nroComprobante: '',
-        ivaSeleccionado: 21,
       };
 
   // Reglas de validación.
   const rules = {
-        ivaSeleccionado: (value: any) =>
-          value === '' ? 'El IVA es obligatorio' : Number(value) < 0 ? 'Valor IVA inválido' : null,
         tipoFactura: (value: TipoFactura | null) =>
           value ? null : 'El tipo de factura es obligatorio',
         nroPuntoVenta: (value: string) =>
@@ -117,9 +113,6 @@ const FacturaForm: React.FC<FacturaFormProps> = ({
     if (initialFactura && isUpdateMode) {
       setData({
         tipoFactura: initialFactura.tipoFactura || null,
-        valorIva: initialFactura.valorIva ?? 21,
-        total: initialFactura.total ?? '',
-        ivaSeleccionado: initialFactura.valorIva ?? 21,
         nroPuntoVenta: initialFactura.nroPuntoVenta || '',
         nroComprobante: initialFactura.nroComprobante || '',
       });
@@ -157,11 +150,18 @@ const FacturaForm: React.FC<FacturaFormProps> = ({
 
   // Nueva función para asociar factura existente al turno
   const asociarFacturaATurno = async (facturaId: string) => {
-    // Aquí deberías hacer el request para asociar la factura al turno
-    // Por ejemplo, PUT /turnos/{turnoId} body: { factura: facturaId }
-    // Como no tenemos el id del turno aquí, deberías pasarlo por props si es necesario
-    // Por ahora, solo llamo onSuccess con el id de la factura
-    onSuccess({ factura: facturaId });
+    try {
+      const response = await fetch(`${backendURL}/turnos/${turnoId}`, {
+        method: 'PUT',
+        headers,
+        body: JSON.stringify({ idFactura: facturaId  }),
+      });
+      if (!response.ok) throw new Error(await response.text());
+      const updatedTurno = await response.json();
+      onSuccess(updatedTurno);
+    } catch (error) {
+      console.error('Error al asociar la factura al turno:', error);
+    }
   };
 
   // Manejo del submit (update o creación)
@@ -175,8 +175,6 @@ const FacturaForm: React.FC<FacturaFormProps> = ({
       const puntoDeVenta = data.nroPuntoVenta;
       const tipoFacturaId = data.tipoFactura?.id;
       const cuitEmisor = cuitEmpresa;
-
-      // 1. Buscar si existe la factura
       setPendingSubmit(true);
       const response = await fetch(`${backendURL}/facturas`, {
         method: 'GET',
@@ -184,7 +182,6 @@ const FacturaForm: React.FC<FacturaFormProps> = ({
       });
       if (!response.ok) throw new Error('Error al buscar facturas');
       const facturas = await response.json();
-      // Buscar coincidencia usando los campos correctos
       const existente = facturas.find((f: any) =>
         String(f.cuitEmisor) === String(cuitEmisor) &&
         String(f.nroFactura) === String(nroFactura) &&
@@ -211,8 +208,8 @@ const FacturaForm: React.FC<FacturaFormProps> = ({
       });
       if (!createResponse.ok) throw new Error(await createResponse.text());
       const facturaCreada = await createResponse.json();
-      // Asociar la factura creada al turno (esto depende de tu backend, aquí solo llamo onSuccess)
-      onSuccess({ factura: facturaCreada.id });
+      // Asociar la factura creada al turno
+      await asociarFacturaATurno(facturaCreada.id);
       setPendingSubmit(false);
     } catch (error) {
       setPendingSubmit(false);

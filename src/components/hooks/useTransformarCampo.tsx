@@ -79,6 +79,21 @@ const useTransformarCampo = () => {
           if (fantasia) return fantasia;
         }
         return 'No especificado';
+      case "tara.pesoNeto":
+        // Si no existe tara.pesoNeto, usar kgNeto
+        if (value !== undefined && value !== null) return value;
+        if (item.kgNeto !== undefined && item.kgNeto !== null) return item.kgNeto;
+        return "No especificado";
+      case "factura":
+        if (value && typeof value === "object") {
+          const nro = value.nroFactura || value.nro || value.id || "";
+          const tipo = value.tipoFactura?.nombre || "";
+          const pv = value.puntoDeVenta || value.puntoVenta || "";
+          if (nro || tipo || pv) {
+            return ` ${pv ? `${pv} - ${nro} ${tipo ? `Tipo: ${tipo}` : ''} ` : ''}`.trim();
+          }
+        }
+        return "Sin factura";
       default:
         return value || "No especificado";
     }

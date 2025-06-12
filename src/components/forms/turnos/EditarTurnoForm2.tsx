@@ -304,16 +304,14 @@ const EditarTurnoForm: React.FC<EditarTurnoFormProps> = ({
           initialFactura={seleccionado.factura}
           onSuccess={(updatedFactura) => {
             setDatos(
-              datos.map((turno: any) =>
-                turno.id === seleccionado.id
-                  ? { ...turno, factura: updatedFactura }
-                  : turno
+              datos.map((turno: any) => turno.id === seleccionado.id
+                ? { ...turno, factura: updatedFactura }
+                : turno
               )
             );
             handleClose();
-          }}
-          onCancel={handleClose}
-        />
+          } }
+          onCancel={handleClose} turnoId={0}        />
       </TabPanel>
 
       {/* Carta de Porte */}
