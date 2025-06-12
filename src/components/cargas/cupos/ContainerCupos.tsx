@@ -11,8 +11,6 @@ import {
   DialogTitle,
   useMediaQuery,
 } from "@mui/material";
-import ToggleButton from "@mui/material/ToggleButton";
-import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import { BotonIcon } from "../../botones/IconButton";
 import { AccessAlarmOutlined } from "@mui/icons-material";
 import ClearSharpIcon from "@mui/icons-material/ClearSharp";
@@ -20,13 +18,11 @@ import { useParams } from "react-router-dom";
 import { ContextoGeneral } from "../../Contexto";
 import { CreadorCupos } from "../creadores/CreadorCupos";
 import { CuposCardsContainer } from "./tabsCupos/CuposCardsContainer";
-import { ErroresCuposCardsContainer } from "./tabsCupos/ErroresCuposCardsContainer";
 import { CuposGridContainer } from "./tabsCupos/CuposGridContainer";
-import { ErroresCuposGridContainer } from "./tabsCupos/ErroresCuposGridContainer";
 import { CuposGridPorDiaContainer } from "./tabsCupos/CuposGridPorDiaContainer";
-import { ErroresCuposGridPorDiaContainer } from "./tabsCupos/ErroresCuposGridPorDiaContainer";
 //import { cuposPrueba } from "./cuposPrueba";
 import CuposMobile from "../../mobile/cupos/CuposMobile";
+import { useAuth } from "../../autenticacion/ContextoAuth";
 
 export function ContainerCupos() {
   const { idCarga } = useParams();
@@ -35,54 +31,66 @@ export function ContainerCupos() {
   const [estadoCarga, setEstadoCarga] = useState("Cargando");
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedTab, setSelectedTab] = useState("CARDS");
+  const { user } = useAuth();
 
-  // State para elegir entre Turnos y Con Errores (para todas las tabs)
-  const [selectedView, setSelectedView] = useState<{
-    label: string;
-    value: string;
-  }>({
-    label: "Turnos",
-    value: "TURNOS",
-  });
-
-  const refreshCupos = () => {
+  const refreshCupos = async () => {
     setEstadoCarga("Cargando");
-    fetch(`${backendURL}/cargas/${idCarga}/cupos`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        "ngrok-skip-browser-warning": "true",
-      },
-    })
-      .then((response) => response.json())
-      .then((cupos) => {
-        // Forzar nueva referencia de objetos internos y arrays internos y normalizar campos
-        const cuposClonados = cupos.map((cupo: any) => ({
-          ...cupo,
-          turnos: Array.isArray(cupo.turnos)
-            ? cupo.turnos.map((turno: any) => ({
-                ...turno,
-                camion: typeof turno.camion === "string" ? { patente: turno.camion } : turno.camion,
-                acoplado: typeof turno.acoplado === "string" ? { patente: turno.acoplado } : turno.acoplado,
-                acopladoExtra: typeof turno.acopladoExtra === "string" ? { patente: turno.acopladoExtra } : turno.acopladoExtra,
-              }))
-            : [],
-          turnosConErrores: Array.isArray(cupo.turnosConErrores)
-            ? cupo.turnosConErrores.map((turno: any) => ({
-                ...turno,
-                camion: typeof turno.camion === "string" ? { patente: turno.camion } : turno.camion,
-                acoplado: typeof turno.acoplado === "string" ? { patente: turno.acoplado } : turno.acoplado,
-                acopladoExtra: typeof turno.acopladoExtra === "string" ? { patente: turno.acopladoExtra } : turno.acopladoExtra,
-              }))
-            : [],
-        }));
-        setCupos(cuposClonados);
-        setEstadoCarga("Cargado");
-      })
-      .catch(() => {
-        setEstadoCarga("Cargado");
-        console.error("Error al obtener los cupos disponibles");
+    try {
+      // 1. Traer cupos
+      const cuposRes = await fetch(`${backendURL}/cargas/${idCarga}/cupos`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "ngrok-skip-browser-warning": "true",
+        },
       });
+      const cuposData = await cuposRes.json();
+      // 2. Traer todos los turnos
+      const turnosRes = await fetch(`${backendURL}/turnos`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "ngrok-skip-browser-warning": "true",
+        },
+      });
+      const turnosData = await turnosRes.json();
+      // 3. Indexar turnos por id
+      const turnosById = Array.isArray(turnosData)
+        ? Object.fromEntries(turnosData.map((t: any) => [t.id, t]))
+        : (turnosData.turnos ? Object.fromEntries(turnosData.turnos.map((t: any) => [t.id, t])) : {});
+      // 4. Reemplazar cada turno en cada cupo por el objeto completo
+      const cuposClonados = cuposData.map((cupo: any) => ({
+        ...cupo,
+        turnos: Array.isArray(cupo.turnos)
+          ? cupo.turnos.map((turno: any) => {
+              const fullTurno = turnosById[turno.id] || turno;
+              return {
+                ...fullTurno,
+                camion: typeof fullTurno.camion === "string" ? { patente: fullTurno.camion } : fullTurno.camion,
+                acoplado: typeof fullTurno.acoplado === "string" ? { patente: fullTurno.acoplado } : fullTurno.acoplado,
+                acopladoExtra: typeof fullTurno.acopladoExtra === "string" ? { patente: fullTurno.acopladoExtra } : fullTurno.acopladoExtra,
+              };
+            })
+          : [],
+        turnosConErrores: Array.isArray(cupo.turnosConErrores)
+          ? cupo.turnosConErrores.map((turno: any) => {
+              const fullTurno = turnosById[turno.id] || turno;
+              return {
+                ...fullTurno,
+                camion: typeof fullTurno.camion === "string" ? { patente: fullTurno.camion } : fullTurno.camion,
+                acoplado: typeof fullTurno.acoplado === "string" ? { patente: fullTurno.acoplado } : fullTurno.acoplado,
+                acopladoExtra: typeof fullTurno.acopladoExtra === "string" ? { patente: fullTurno.acopladoExtra } : fullTurno.acopladoExtra,
+              };
+            })
+          : [],
+      }));
+      setCupos(cuposClonados);
+      setEstadoCarga("Cargado");
+    } catch (e) {
+      setEstadoCarga("Cargado");
+      setCupos([]);
+      console.error("Error al obtener los cupos o turnos", e);
+    }
   };
 
   useEffect(() => {
@@ -124,13 +132,14 @@ export function ContainerCupos() {
 
   const isMobile = useMediaQuery("(max-width:768px)");
 
+  // Si el usuario es Ingeniero (rol 3), forzar vista CARDS y ocultar tabs
+  const isIngeniero = user?.rol?.id === 3;
+
   if (isMobile) {
     return (
       <CuposMobile
         cupos={cupos}
         estadoCarga={estadoCarga}
-        selectedView={selectedView}
-        setSelectedView={setSelectedView}
         idCarga={idCarga}
         refreshCupos={refreshCupos}
         theme={theme}
@@ -155,84 +164,36 @@ export function ContainerCupos() {
         width="100%"
         padding={2}
       >
-        <Tabs
-          value={selectedTab}
-          onChange={handleChangeTab}
-          textColor="inherit"
-          sx={{
-            color: theme.colores.azul,
-            "& .MuiTab-root": {
-              color: "gray",
-            },
-            "& .Mui-selected": {
+        {!isIngeniero && (
+          <Tabs
+            value={selectedTab}
+            onChange={handleChangeTab}
+            textColor="inherit"
+            sx={{
               color: theme.colores.azul,
-            },
-            "& .MuiTabs-indicator": {
-              backgroundColor: theme.colores.azul,
-            },
-          }}
-        >
-          <Tab value="CARDS" label="CARDS" />
-          <Tab value="GRID" label="GRID" />
-          <Tab value="POR_DIA" label="POR DÍA" />
-        </Tabs>
-
-        {selectedView.value !== "ERRORES" && (
+              "& .MuiTab-root": {
+                color: "gray",
+              },
+              "& .Mui-selected": {
+                color: theme.colores.azul,
+              },
+              "& .MuiTabs-indicator": {
+                backgroundColor: theme.colores.azul,
+              },
+            }}
+          >
+            <Tab value="CARDS" label="CARDS" />
+            <Tab value="GRID" label="GRID" />
+            <Tab value="POR_DIA" label="POR DÍA" />
+          </Tabs>
+        )}
+        {!isIngeniero && (
           <BotonIcon
             onClick={handleClickCrearCupo}
             title="Quiero crear un nuevo cupo"
             icon={<AccessAlarmOutlined />}
           />
         )}
-      </Box>
-
-      {/* Selector para Turnos / Con Errores: se aplica para todas las tabs */}
-      <Box display="flex" justifyContent="center" my={2}>
-        <ToggleButtonGroup
-          value={selectedView.value}
-          exclusive
-          onChange={(_, newValue) => {
-            if (newValue !== null) {
-              setSelectedView({
-                label: newValue === "TURNOS" ? "Turnos" : "Con Errores",
-                value: newValue,
-              });
-            }
-          }}
-        >
-          <ToggleButton
-            value="TURNOS"
-            sx={{
-              backgroundColor:
-                selectedView.value === "TURNOS"
-                  ? theme.colores.azul
-                  : "transparent",
-              color: selectedView.value === "TURNOS" ? "white" : "black",
-              "&.Mui-selected": {
-                backgroundColor: theme.colores.azul, // Aquí puedes cambiar el color al que desees
-                color: "white", // El color del texto cuando está seleccionado
-              },
-            }}
-          >
-            Turnos
-          </ToggleButton>
-          <ToggleButton
-            value="ERRORES"
-            sx={{
-              backgroundColor:
-                selectedView.value === "ERRORES"
-                  ? theme.colores.azul
-                  : "transparent",
-              color: selectedView.value === "ERRORES" ? "white" : "black",
-              "&.Mui-selected": {
-                backgroundColor: theme.colores.azul,
-                color: "white",
-              },
-            }}
-          >
-            Con Errores
-          </ToggleButton>
-        </ToggleButtonGroup>
       </Box>
 
       {estadoCarga === "Cargando" && (
@@ -252,57 +213,23 @@ export function ContainerCupos() {
         </Box>
       )}
 
-      {estadoCarga === "Cargado" && (
-        <Box width="100%">
-          {selectedTab === "CARDS" && (
-            <>
-              {selectedView.value === "TURNOS" ? (
-                <CuposCardsContainer
-                  cupos={cupos}
-                  fields={fields}
-                  headerNames={headerNames}
-                  idCarga={idCarga}
-                  refreshCupos={refreshCupos}
-                />
-              ) : (
-                <ErroresCuposCardsContainer
-                  cupos={cupos}
-                  idCarga={idCarga}
-                  refreshCupos={refreshCupos}
-                />
-              )}
-            </>
-          )}
-          {selectedTab === "GRID" && (
-            <>
-              {selectedView.value === "TURNOS" ? (
-                <CuposGridContainer cupos={cupos} refreshCupos={refreshCupos} />
-              ) : (
-                <ErroresCuposGridContainer
-                  idCarga={idCarga}
-                  cupos={cupos}
-                  refreshCupos={refreshCupos}
-                />
-              )}
-            </>
-          )}
-          {selectedTab === "POR_DIA" && (
-            <>
-              {selectedView.value === "TURNOS" ? (
-                <CuposGridPorDiaContainer
-                  cupos={cupos}
-                  refreshCupos={refreshCupos}
-                />
-              ) : (
-                <ErroresCuposGridPorDiaContainer
-                  idCarga={idCarga}
-                  cupos={cupos}
-                  refreshCupos={refreshCupos}
-                />
-              )}
-            </>
-          )}
-        </Box>
+      {(!isIngeniero && selectedTab === "CARDS") || (isIngeniero) ? (
+        <CuposCardsContainer
+          cupos={cupos}
+          fields={fields}
+          headerNames={headerNames}
+          idCarga={idCarga}
+          refreshCupos={refreshCupos}
+        />
+      ) : null}
+      {!isIngeniero && selectedTab === "GRID" && (
+        <CuposGridContainer cupos={cupos} refreshCupos={refreshCupos} />
+      )}
+      {!isIngeniero && selectedTab === "POR_DIA" && (
+        <CuposGridPorDiaContainer
+          cupos={cupos}
+          refreshCupos={refreshCupos}
+        />
       )}
 
       <Dialog

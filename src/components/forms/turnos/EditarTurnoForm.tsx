@@ -36,6 +36,7 @@ interface EditarTurnoFormProps {
   setDatos: any;
   handleClose: () => void;
   tieneBitren?: boolean | null;
+  acopladoExtraRequired?: boolean;
 }
 
 interface TabPanelProps {
@@ -67,6 +68,7 @@ const EditarTurnoForm: React.FC<EditarTurnoFormProps> = ({
   setDatos,
   handleClose,
   tieneBitren,
+  acopladoExtraRequired = false,
 }) => {
   const isAllowed = useAllowed(ROLES_PERMITIDOS_ADELANTOS);
   const [activeTab, setActiveTab] = useState(0);
@@ -272,6 +274,7 @@ const EditarTurnoForm: React.FC<EditarTurnoFormProps> = ({
           setDatos={setDatos}
           handleClose={handleClose}
           tieneBitren={tieneBitren}
+          acopladoExtraRequired={acopladoExtraRequired}
         />
       </TabPanel>
 
@@ -317,7 +320,6 @@ const EditarTurnoForm: React.FC<EditarTurnoFormProps> = ({
       {/* Factura */}
       <TabPanel value={numeroEstadoActual} index={4}>
         <FacturaForm
-          turnoId={seleccionado.id}
           cuitEmpresa={seleccionado.empresa?.cuit}
           initialFactura={seleccionado.factura}
           onSuccess={(updatedFactura) => {

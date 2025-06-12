@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import {
   Box,
   Table,
@@ -11,10 +11,24 @@ import {
   Dialog,
   DialogTitle,
   DialogContent,
+  Button,
+  Menu,
+  MenuItem,
+  Checkbox,
+  ListItemText,
+  IconButton,
+  Tooltip,
+  DialogActions,
 } from "@mui/material";
 import TurnoForm from "../../../forms/turnos/TurnoForm";
 import TurnoGridRow from './TurnoGridRow';
 import { TarjetaCupos } from '../TarjetaCupos';
+import FilterDialog from '../../../dialogs/tablas/FilterDialog';
+import { exportarCSV, exportarPDF } from '../../../../utils/exportUtils';
+import FilterListIcon from '@mui/icons-material/FilterList';
+import ViewColumnIcon from '@mui/icons-material/ViewColumn';
+import SaveAltIcon from '@mui/icons-material/SaveAlt';
+import { ContextoGeneral } from '../../../Contexto';
 
 interface Turno {
   id: number;
@@ -45,40 +59,312 @@ interface CuposGridContainerProps {
   refreshCupos: () => void;
 }
 
+// Definir todos los fields y headerNames posibles del endpoint /turnos
+const fields = [
+  "colaborador.nombre",
+  "colaborador.apellido",
+  "colaborador.cuil",
+  "colaborador.numeroCel",
+  "colaborador.fechaNacimiento",
+  "empresa.cuit",
+  "empresa.razonSocial",
+  "empresa.nombreFantasia",
+  "empresa.numeroCel",
+  "estado.nombre",
+  "tara.pesoNeto",
+  "camion.patente",
+  "acoplado.patente",
+  "acopladoExtra.patente",
+  "numeroCP",
+  "kgCargados",
+  "kgDescargados",
+  "precioGrano",
+  "NumOrdenDePago",
+  "factura.id",
+  "factura.tipoFactura.nombre"
+];
+const headerNames = [
+  "Nombre",
+  "Apellido",
+  "CUIL Colaborador",
+  "Celular Colaborador",
+  "Fecha Nacimiento",
+  "CUIT Empresa",
+  "Razón Social Empresa",
+  "Nombre Fantasía Empresa",
+  "Celular Empresa",
+  "Tara (Peso Neto)",
+  "Patente Camión",
+  "Patente Acoplado",
+  "Patente Acoplado Extra",
+  "N° Carta de Porte",
+  "Kg Cargados",
+  "Kg Descargados",
+  "Precio Grano",
+  "N° Orden de Pago",
+  "ID Factura",
+  "Tipo de Factura"
+];
+
 export const CuposGridContainer: React.FC<CuposGridContainerProps> = ({
   cupos,
   refreshCupos,
 }) => {
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedTurno, setSelectedTurno] = useState<any>(null);
-
-  // Definir los mismos fields y headerNames que CardMobile
-  const fields = [
+  const { theme } = useContext(ContextoGeneral);
+  // Columnas seleccionadas para mostrar (por defecto las más relevantes)
+  const [selectedColumns, setSelectedColumns] = useState([
     "colaborador.nombre",
+    "colaborador.apellido",
     "colaborador.cuil",
-    "estado.nombre",
     "empresa.cuit",
+    "estado.nombre",
     "tara.pesoNeto",
     "camion.patente",
     "acoplado.patente",
-  ];
-  const headerNames = [
-    "Nombre",
-    "Cuil",
-    "Estado",
-    "Cuit Empresa",
-    "Tara",
-    "Patente Camión",
-    "Patente Acoplado",
-  ];
+    "kgCargados",
+    "kgDescargados"
+  ]);
+  const [anchorElColumns, setAnchorElColumns] = useState<null | HTMLElement>(null);
+  const [openFilterDialog, setOpenFilterDialog] = useState(false);
+  // Para exportar varias tablas
+  const [openExportDialog, setOpenExportDialog] = useState(false);
+  const [selectedCupos, setSelectedCupos] = useState<number[]>([]);
+
+  // Filtro de datos (simple, por columna)
+  const [filteredTurnos, setFilteredTurnos] = useState<{ [fecha: string]: Turno[] }>({});
+  const [originalTurnos, setOriginalTurnos] = useState<{ [fecha: string]: Turno[] }>({});
+
+  React.useEffect(() => {
+    // Inicializar turnos originales y filtrados
+    const orig: { [fecha: string]: Turno[] } = {};
+    cupos.forEach(cupo => {
+      orig[cupo.fecha] = cupo.turnos;
+    });
+    setOriginalTurnos(orig);
+    setFilteredTurnos(orig);
+  }, [cupos]);
 
   const handleCloseDialog = () => {
     setSelectedTurno(null);
     setOpenDialog(false);
   };
 
+  // --- Columnas ---
+  const handleOpenColumns = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorElColumns(event.currentTarget);
+  };
+  const handleCloseColumns = () => {
+    setAnchorElColumns(null);
+  };
+  const handleToggleColumn = (field: string) => {
+    setSelectedColumns(prev =>
+      prev.includes(field) ? prev.filter(f => f !== field) : [...prev, field]
+    );
+  };
+
+  // --- Filtros ---
+  const handleOpenFilter = () => setOpenFilterDialog(true);
+  const handleCloseFilter = () => setOpenFilterDialog(false);
+  const handleApplyFilter = (filter: { column: string; operator: string; value: string }) => {
+    // Filtrar todos los turnos de todos los cupos
+    const nuevo: { [fecha: string]: Turno[] } = {};
+    Object.entries(originalTurnos).forEach(([fecha, turnos]) => {
+      nuevo[fecha] = turnos.filter(turno => {
+        // Acceso seguro a campos anidados
+        const val = filter.column.split('.').reduce<any>((acc, key) => acc && typeof acc === 'object' ? acc[key] : undefined, turno);
+        if (filter.operator === 'contains') return String(val ?? '').toLowerCase().includes(filter.value.toLowerCase());
+        if (filter.operator === 'equals') return String(val ?? '') === filter.value;
+        if (filter.operator === 'does not contain') return !String(val ?? '').toLowerCase().includes(filter.value.toLowerCase());
+        if (filter.operator === 'does not equal') return String(val ?? '') !== filter.value;
+        if (filter.operator === 'starts with') return String(val ?? '').startsWith(filter.value);
+        if (filter.operator === 'ends with') return String(val ?? '').endsWith(filter.value);
+        if (filter.operator === 'is empty') return !val;
+        if (filter.operator === 'is not empty') return !!val;
+        return true;
+      });
+    });
+    setFilteredTurnos(nuevo);
+  };
+  const handleUndoFilter = () => setFilteredTurnos(originalTurnos);
+
+  // --- Exportar ---
+  const handleOpenExport = () => setOpenExportDialog(true);
+  const handleCloseExport = () => setOpenExportDialog(false);
+  const handleToggleCupo = (idx: number) => {
+    setSelectedCupos(prev => prev.includes(idx) ? prev.filter(i => i !== idx) : [...prev, idx]);
+  };
+  const handleExport = (formato: 'csv' | 'pdf') => {
+    // Sumar todos los turnos de los cupos seleccionados
+    const turnosExport = selectedCupos.length > 0
+      ? selectedCupos.flatMap(idx => cupos[idx]?.turnos || [])
+      : cupos.flatMap(c => c.turnos);
+    const exportFields = selectedColumns;
+    const exportHeaders = exportFields.map(f => headerNames[fields.indexOf(f)]);
+    if (formato === 'csv') exportarCSV(exportHeaders, turnosExport, exportFields, 'turnos');
+    if (formato === 'pdf') exportarPDF(exportHeaders, turnosExport, exportFields, 'turnos');
+    handleCloseExport();
+  };
+
   return (
     <Box m={3}>
+      {/* Barra de botones */}
+      <Box display="flex" alignItems="center" gap={2} mb={2}>
+        <Tooltip title="Filtrar">
+          <IconButton
+            onClick={handleOpenFilter}
+            sx={{
+              backgroundColor: '#fff',
+              color: theme.colores.azul,
+              border: `1px solid ${theme.colores.azul}`,
+              borderRadius: '8px',
+              p: 1.2,
+              transition: 'background 0.2s',
+              '&:hover': {
+                backgroundColor: theme.colores.azul,
+                color: '#fff',
+              },
+            }}
+          >
+            <FilterListIcon />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title="Seleccionar columnas">
+          <IconButton
+            onClick={handleOpenColumns}
+            sx={{
+              backgroundColor: '#fff',
+              color: theme.colores.azul,
+              border: `1px solid ${theme.colores.azul}`,
+              borderRadius: '8px',
+              p: 1.2,
+              transition: 'background 0.2s',
+              '&:hover': {
+                backgroundColor: theme.colores.azul,
+                color: '#fff',
+              },
+            }}
+          >
+            <ViewColumnIcon />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title="Exportar">
+          <IconButton
+            onClick={handleOpenExport}
+            sx={{
+              backgroundColor: '#fff',
+              color: theme.colores.azul,
+              border: `1px solid ${theme.colores.azul}`,
+              borderRadius: '8px',
+              p: 1.2,
+              transition: 'background 0.2s',
+              '&:hover': {
+                backgroundColor: theme.colores.azul,
+                color: '#fff',
+              },
+            }}
+          >
+            <SaveAltIcon />
+          </IconButton>
+        </Tooltip>
+      </Box>
+      {/* Menú de columnas */}
+      <Menu anchorEl={anchorElColumns} open={Boolean(anchorElColumns)} onClose={handleCloseColumns}>
+        {fields.map((field, idx) => (
+          <MenuItem key={field} onClick={() => handleToggleColumn(field)}
+            sx={{
+              color: theme.colores.azul,
+              borderRadius: '8px',
+              '&.Mui-selected, &:hover': {
+                backgroundColor: theme.colores.azul,
+                color: '#fff',
+              },
+            }}
+          >
+            <Checkbox
+              checked={selectedColumns.includes(field)}
+              sx={{
+                color: theme.colores.azul,
+                '&.Mui-checked': {
+                  color: theme.colores.azul,
+                },
+                '& .MuiSvgIcon-root': {
+                  borderColor: theme.colores.azul,
+                },
+              }}
+            />
+            <ListItemText primary={headerNames[idx]} />
+          </MenuItem>
+        ))}
+      </Menu>
+      {/* Diálogo de filtro */}
+      <FilterDialog
+        open={openFilterDialog}
+        onClose={handleCloseFilter}
+        onApplyFilter={handleApplyFilter}
+        columns={fields}
+        headerNames={headerNames}
+        onUndoFilter={handleUndoFilter}
+      />
+      {/* Diálogo de exportar varias tablas */}
+      <Dialog open={openExportDialog} onClose={handleCloseExport} maxWidth="xs" fullWidth>
+        <DialogTitle sx={{ color: theme.colores.azul }}>Exportar varias tablas</DialogTitle>
+        <DialogContent>
+          <Box display="flex" flexDirection="column" gap={1}>
+            {cupos.map((cupo, idx) => (
+              <MenuItem key={cupo.fecha} onClick={() => handleToggleCupo(idx)}
+                sx={{
+                  color: theme.colores.azul,
+                  borderRadius: '8px',
+                  '&.Mui-selected, &:hover': {
+                    backgroundColor: theme.colores.azul,
+                    color: '#fff',
+                  },
+                }}
+              >
+                <Checkbox checked={selectedCupos.includes(idx)} sx={{ color: theme.colores.azul }} />
+                <ListItemText primary={`Fecha: ${cupo.fecha}`} />
+              </MenuItem>
+            ))}
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={() => handleExport('csv')}
+            variant="contained"
+            sx={{
+              backgroundColor: theme.colores.azul,
+              color: '#fff',
+              borderRadius: '8px',
+              textTransform: 'none',
+              fontWeight: 500,
+              '&:hover': {
+                backgroundColor: theme.colores.azulOscuro,
+              },
+            }}
+          >
+            Exportar CSV
+          </Button>
+          <Button
+            onClick={() => handleExport('pdf')}
+            variant="contained"
+            sx={{
+              backgroundColor: theme.colores.azul,
+              color: '#fff',
+              borderRadius: '8px',
+              textTransform: 'none',
+              fontWeight: 500,
+              '&:hover': {
+                backgroundColor: theme.colores.azulOscuro,
+              },
+            }}
+          >
+            Exportar PDF
+          </Button>
+        </DialogActions>
+      </Dialog>
+      {/* Render de tablas */}
       {Array.isArray(cupos) &&
         cupos.map((cupo, index) => (
           <Box key={index} mb={4} p={2}>
@@ -92,29 +378,27 @@ export const CuposGridContainer: React.FC<CuposGridContainerProps> = ({
               estaEnElGrid={true}
               cupos={[]}
             />
-
             {/* Tabla de turnos */}
             <TableContainer component={Paper}>
               <Table>
                 <TableHead>
                   <TableRow>
-                    {headerNames.map((header, idx) => (
-                      <TableCell key={idx}>{header}</TableCell>
+                    {selectedColumns.map((field) => (
+                      <TableCell key={field}>{headerNames[fields.indexOf(field)]}</TableCell>
                     ))}
                     <TableCell>Estado</TableCell>
                     <TableCell>Acciones</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {cupo.turnos.map((turno) => (
+                  {(filteredTurnos[cupo.fecha] || []).map((turno) => (
                     <React.Fragment key={turno.id}>
                       <TurnoGridRow
                         turno={turno}
                         cupo={cupo}
                         refreshCupos={refreshCupos}
-                        fields={fields}
+                        fields={selectedColumns}
                       />
-                      {/* Si quieres mantener el collapse para detalles extra, puedes dejarlo aquí o quitarlo si no es necesario */}
                     </React.Fragment>
                   ))}
                 </TableBody>

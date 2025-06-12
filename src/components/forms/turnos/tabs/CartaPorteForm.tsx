@@ -15,6 +15,7 @@ import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import useCartaPorteHandler from "../../../hooks/turnos/useCartaPorteHandler";
 import { ContextoGeneral } from "../../../Contexto";
 import MainButton from "../../../botones/MainButtom";
+import { useNotificacion } from '../../../Notificaciones/NotificacionSnackbar';
 
 interface CartaPorteFormProps {
   turnoId: string;
@@ -46,9 +47,20 @@ const CartaPorteForm: React.FC<CartaPorteFormProps> = ({
 
   const { handleCartaPorteSubmission, handleCartaPorteDeletion } = useCartaPorteHandler();
   const {theme} = useContext(ContextoGeneral);
+  const { showNotificacion } = useNotificacion();
   
   const tema = useTheme();
   const isMobile = useMediaQuery(tema.breakpoints.down("sm"));
+
+  // Estilos para el borde azul al enfocar
+  const azulStyles = {
+    '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
+      borderColor: theme.colores.azul,
+    },
+    '& .MuiInputLabel-root.Mui-focused': {
+      color: theme.colores.azul,
+    },
+  };
 
   // Actualizar estados cuando cambie initialData
   useEffect(() => {
@@ -71,7 +83,9 @@ const CartaPorteForm: React.FC<CartaPorteFormProps> = ({
   const validate = () => {
     const newErrors: { numeroCartaPorte?: string; ctg?: string } = {};
     if (!numeroCartaPorte) newErrors.numeroCartaPorte = "Número de Carta de Porte es obligatorio";
+    else if (String(numeroCartaPorte).length > 13) newErrors.numeroCartaPorte = "Máximo 13 dígitos";
     if (!ctg) newErrors.ctg = "CTG es obligatorio";
+    else if (String(ctg).length > 11) newErrors.ctg = "Máximo 11 dígitos";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -87,9 +101,15 @@ const CartaPorteForm: React.FC<CartaPorteFormProps> = ({
       isUpdate
     )
       .then((result) => onSuccess(result))
-      .catch((error) =>
-        console.error("Error al procesar Carta de Porte:", error)
-      );
+      .catch((error) => {
+        let mensaje = 'Error al procesar Carta de Porte';
+        try {
+          const parsed = JSON.parse(error.message);
+          if (parsed.mensaje) mensaje = parsed.mensaje;
+        } catch {}
+        showNotificacion(mensaje, 'error');
+        console.error('Error al procesar Carta de Porte:', error);
+      });
   };
 
   // Funciones para el diálogo de eliminación
@@ -115,14 +135,16 @@ const CartaPorteForm: React.FC<CartaPorteFormProps> = ({
         value={numeroCartaPorte}
         onChange={(e) => {
           const newValue = e.target.value;
-          if (/^\d*$/.test(newValue)) {
+          if (/^\d{0,13}$/.test(newValue)) {
             setNumeroCartaPorte(newValue === "" ? "" : Number(newValue));
           }
         }}
+        inputProps={{ maxLength: 13 }}
         error={!!errors.numeroCartaPorte}
         helperText={errors.numeroCartaPorte}
         fullWidth
         disabled={initialData?.numeroCartaPorte !== undefined}
+        sx={{ ...azulStyles, mt: 2 }}
       />
       <TextField
         label="CTG"
@@ -130,13 +152,15 @@ const CartaPorteForm: React.FC<CartaPorteFormProps> = ({
         value={ctg}
         onChange={(e) => {
           const newValue = e.target.value;
-          if (/^\d*$/.test(newValue)) {
+          if (/^\d{0,11}$/.test(newValue)) {
             setCtg(newValue === "" ? "" : Number(newValue));
           }
         }}
+        inputProps={{ maxLength: 11 }}
         error={!!errors.ctg}
         helperText={errors.ctg}
         fullWidth
+        sx={azulStyles}
       />
       <Box
         sx={{

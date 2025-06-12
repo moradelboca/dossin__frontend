@@ -161,7 +161,7 @@ Si no hay suficiente información en los DOCUMENTOS para responder, devolvé:
               ]
             }
           ],
-          temperature: 1,
+          temperature: 0,
           max_output_tokens: 1024,
           top_p: 1,
           store: true

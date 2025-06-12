@@ -70,6 +70,16 @@ const PesajeForm: React.FC<PesajeFormProps> = ({
     }
   };
 
+  // Estilos para el borde azul al enfocar
+  const azulStyles = {
+    '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
+      borderColor: theme.colores.azul,
+    },
+    '& .MuiInputLabel-root.Mui-focused': {
+      color: theme.colores.azul,
+    },
+  };
+
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
       <TextField
@@ -79,10 +89,16 @@ const PesajeForm: React.FC<PesajeFormProps> = ({
         variant="outlined"
         fullWidth
         value={kgDescargados}
-        onChange={(e) => handleInputChange(e, setKgDescargados)}
+        onChange={(e) => {
+          const value = e.target.value;
+          if (/^\d{0,5}$/.test(value)) {
+            setKgDescargados(value);
+          }
+        }}
         error={!!errors.kgDescargados}
         helperText={errors.kgDescargados}
-        inputProps={{ inputMode: 'numeric', pattern: '[0-9]*', min: 0 }}
+        inputProps={{ inputMode: 'numeric', pattern: '[0-9]*', min: 0, maxLength: 5 }}
+        sx={{ ...azulStyles, mt: 2 }}
       />
       <Box
         sx={{

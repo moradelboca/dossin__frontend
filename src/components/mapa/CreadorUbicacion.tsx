@@ -213,12 +213,14 @@ import {
     return (
       <>
         <Dialog 
-          open={openDialogDelete} 
-          onClose={handleCloseDialog} 
-          maxWidth="sm" 
+          open={openDialogDelete}
+          onClose={handleCloseDialog}
+          maxWidth="xs"
           fullWidth
           PaperProps={{
             sx: {
+              maxWidth: 380,
+              width: '100%',
               maxHeight: { xs: '90vh', sm: 600 },
               minHeight: 300,
               overflow: 'hidden',
@@ -248,7 +250,7 @@ import {
           marginTop={2}
           marginBottom={1}
           margin={isMobile ? 1 : 3}
-          sx={{ width: "100%", maxWidth: 350 }}
+          sx={{ width: "100%", maxWidth: 390 }}
         >
           <TextField
             id="outlined-basic"
@@ -258,7 +260,7 @@ import {
             error={errorUrl}
             value={datosNuevaUbicacion.urlMaps}
             inputProps={{ maxLength: 200 }}
-            sx={{ width: "100%", maxWidth: 300 }}
+            sx={{ width: "100%"}}
           />
           <TextField
             id="outlined-basic"
@@ -267,7 +269,7 @@ import {
             onChange={setNombre}
             value={datosNuevaUbicacion.nombre}
             inputProps={{ maxLength: 50 }}
-            sx={{ width: "100%", maxWidth: 300 }}
+            sx={{ width: "100%" }}
           />
           <Autocomplete
             options={tipoUbicacion}
@@ -275,17 +277,16 @@ import {
             value={selectedTipo}
             onChange={seleccionarTipo}
             renderInput={(params) => (
-              <TextField {...params} label="Tipo" sx={{ width: "100%", maxWidth: 300 }} error={errorTipo} />
+              <TextField {...params} label="Tipo" sx={{ width: "100%"}} error={errorTipo} />
             )}
             sx={{
               width: "100%",
-              maxWidth: 300,
               background: "white",
               borderRadius: "6px",
             }}
             loading={estadoCarga}
           />
-          <Box sx={{ width: "100%", maxWidth: 300 }}>
+          <Box sx={{ width: "100%"}}>
             <AutocompletarUbicacionLocalidad
               localidades={localidades}
               title="Localidad"
@@ -297,16 +298,15 @@ import {
           </Box>
         </Box>
         <Box
-          margin={isMobile ? 1 : 2}
           sx={{
             display: "flex",
-            flexDirection: isMobile ? "column" : "row",
+            flexDirection: "column",
             gap: 1.5,
             justifyContent: "center",
             alignItems: "center",
             width: "100%",
             maxWidth: 300,
-            margin: '0 auto',
+            margin: '10px auto 0 auto',
           }}
         >
           <MainButton

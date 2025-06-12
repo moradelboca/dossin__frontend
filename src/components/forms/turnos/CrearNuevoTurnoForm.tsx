@@ -14,6 +14,7 @@ interface CrearNuevoTurnoFormProps {
   idCarga: any;
   fechaCupo?: string;
   tieneBitren?: boolean | null;
+  acopladoExtraRequired?: boolean;
 }
 
 const CrearNuevoTurnoForm: React.FC<CrearNuevoTurnoFormProps> = ({
@@ -22,6 +23,7 @@ const CrearNuevoTurnoForm: React.FC<CrearNuevoTurnoFormProps> = ({
   idCarga,
   fechaCupo,
   tieneBitren,
+  acopladoExtraRequired = false,
 }) => {
   const { backendURL, theme } = useContext(ContextoGeneral);
 
@@ -53,7 +55,9 @@ const CrearNuevoTurnoForm: React.FC<CrearNuevoTurnoFormProps> = ({
     patenteAcoplado: () =>
       !patenteAcopladoSeleccionada ? "La patente del acoplado es obligatoria" : null,
     patenteAcopladoExtra: () =>
-      (!patenteAcopladoSeleccionadaExtra && tieneBitren) ? "La patente del acoplado Extra es obligatoria" : null,
+      (!patenteAcopladoSeleccionadaExtra && tieneBitren && acopladoExtraRequired)
+        ? "La patente del acoplado Extra es obligatoria"
+        : null,
   };
 
   const {errors, validateAll} = useValidation(initialData, rules);

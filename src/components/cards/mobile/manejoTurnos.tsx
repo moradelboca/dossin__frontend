@@ -17,7 +17,7 @@ export function useManejoTurnos({ item, cupo, refreshCupos }: any) {
   const transformarCampo = useTransformarCampo();
 
   // Dialog states for forms
-  const [openDialog, setOpenDialog] = useState<null | 'corregir' | 'autorizar' | 'tara' | 'cartaPorte' | 'cargarCarta' | 'pesaje' | 'pago' | 'factura' | 'adelanto'>(null);
+  const [openDialog, setOpenDialog] = useState<null | 'corregir' | 'autorizar' | 'tara' | 'cartaPorte' | 'cargarCarta' | 'pesaje' | 'pago' | 'datospago' | 'factura' | 'adelanto'>(null);
   const [autorizarLoading, setAutorizarLoading] = useState(false);
   const [cartaPorteData, setCartaPorteData] = useState<any>(null);
   const [cartaPorteLoading, setCartaPorteLoading] = useState(false);
@@ -108,7 +108,13 @@ export function useManejoTurnos({ item, cupo, refreshCupos }: any) {
   }, [openDialog, item, cupo]);
 
   const handleCopy = (value: string, field: string) => {
-    navigator.clipboard.writeText(value);
+    // Si el valor tiene formato 'razonSocial - cuit', solo copiar el cuit
+    const cuitMatch = value.match(/-\s*(\d{11})$/);
+    if (cuitMatch) {
+      navigator.clipboard.writeText(cuitMatch[1]);
+    } else {
+      navigator.clipboard.writeText(value);
+    }
     setCopiedField(field);
     setTimeout(() => setCopiedField(null), 1200);
   };
@@ -131,7 +137,7 @@ export function useManejoTurnos({ item, cupo, refreshCupos }: any) {
   const [preciosPagoError, setPreciosPagoError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (openDialog === 'pago') {
+    if (openDialog === 'datospago' || openDialog === 'pago') {
       setPreciosPagoLoading(true);
       setPreciosPagoError(null);
       (async () => {
@@ -375,9 +381,9 @@ export function renderTurnosDialogs({
           </DialogContent>
         </Dialog>
       );
-    case 'pago':
+    case 'datospago':
       return (
-        <Dialog open onClose={() => setOpenDialog(null)} fullWidth maxWidth="md">
+        <Dialog open onClose={() => setOpenDialog(null)} fullWidth maxWidth="sm">
           <DialogTitle>Datos de Pago</DialogTitle>
           <DialogContent>
             {preciosPagoLoading ? (
@@ -393,18 +399,27 @@ export function renderTurnosDialogs({
                     .filter((row: any) => row.id === turnoLocal.id)
                     .map((row: any, idx: number) => (
                       <Box key={row.id || idx} sx={{ borderBottom: '1px solid #eee', pb: 1, mb: 2 }}>
-                        {Object.entries(row.precio).map(([label, value]: [string, any]) => (
-                          <Box key={label} sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 0.5 }}>
-                            <Typography sx={{ minWidth: 180, fontWeight: 400 }}>{label}</Typography>
-                            <Typography sx={{ flex: 1 }}>{String(value)}</Typography>
-                            <IconButton size="small" onClick={() => handleCopy(String(value), `${row.id}-${label}`)}>
-                              <ContentCopyIcon fontSize="small" />
-                            </IconButton>
-                            {copiedField === `${row.id}-${label}` && (
-                              <Typography sx={{ color: theme.colores.azul, fontSize: 12, ml: 1 }}>Copiado!</Typography>
-                            )}
-                          </Box>
-                        ))}
+                        {Object.entries(row.precio).map(([label, value]: [string, any]) => {
+                          const prettyLabel = label
+                            .replace(/([A-Z])/g, ' $1')
+                            .replace(/^./, (str) => str.toUpperCase())
+                            .trim();
+                          return (
+                            <Box key={label} sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 0.5 }}>
+                              <Typography sx={{ minWidth: 180, fontWeight: 500 }}>{prettyLabel}</Typography>
+                              <Box sx={{ display: 'flex', alignItems: 'center', flex: 1 }}>
+                                <Typography sx={{ flex: 1 }}>{String(value)}</Typography>
+                                <Typography sx={{ color: '#888', ml: 0.5, userSelect: 'none' }} component="span">$</Typography>
+                              </Box>
+                              <IconButton size="small" onClick={() => handleCopy(String(value), `${row.id}-${label}`)}>
+                                <ContentCopyIcon fontSize="small" />
+                              </IconButton>
+                              {copiedField === `${row.id}-${label}` && (
+                                <Typography sx={{ color: theme.colores.azul, fontSize: 12, ml: 1 }}>Copiado!</Typography>
+                              )}
+                            </Box>
+                          );
+                        })}
                       </Box>
                     ))}
                 </Box>
@@ -412,25 +427,31 @@ export function renderTurnosDialogs({
             ) : (
               <Typography color="text.secondary">No hay datos para mostrar.</Typography>
             )}
-            {turnoLocal.estado?.nombre?.toLowerCase() === 'facturado' && (
-              <OrdenPagoForm
-                turnoId={turnoLocal.id}
-                initialData={turnoLocal.numeroOrdenPago}
-                onSuccess={async () => {
-                  try {
-                    await fetch(`${import.meta.env.VITE_BACKEND_URL || ''}/turnos/${turnoLocal.id}`, {
-                      method: 'PUT',
-                      headers: { 'Content-Type': 'application/json' },
-                      body: JSON.stringify({ idEstado: 8 }),
-                    });
-                  } catch (err) {
-                    console.error(err);
-                  }
-                  handleFormSuccess();
-                }}
-                onCancel={() => setOpenDialog(null)}
-              />
-            )}
+          </DialogContent>
+        </Dialog>
+      );
+    case 'pago':
+      return (
+        <Dialog open onClose={() => setOpenDialog(null)} fullWidth maxWidth="sm">
+          <DialogTitle>Ingresar Orden de Pago</DialogTitle>
+          <DialogContent>
+            <OrdenPagoForm
+              turnoId={turnoLocal.id}
+              initialData={turnoLocal.numeroOrdenPago}
+              onSuccess={async () => {
+                try {
+                  await fetch(`${import.meta.env.VITE_BACKEND_URL || ''}/turnos/${turnoLocal.id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ idEstado: 8 }),
+                  });
+                } catch (err) {
+                  console.error(err);
+                }
+                handleFormSuccess();
+              }}
+              onCancel={() => setOpenDialog(null)}
+            />
           </DialogContent>
         </Dialog>
       );
@@ -440,7 +461,6 @@ export function renderTurnosDialogs({
           <DialogTitle>Agregar Factura</DialogTitle>
           <DialogContent>
             <FacturaForm
-              turnoId={turnoLocal.id}
               cuitEmpresa={turnoLocal.empresa?.cuit}
               initialFactura={turnoLocal.factura}
               onSuccess={async () => {

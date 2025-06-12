@@ -32,6 +32,16 @@ export const TaraForm: React.FC<Omit<TaraFormProps, 'initialTara'> & { initialTa
   const tema = useTheme();
   const isMobile = useMediaQuery(tema.breakpoints.down("sm"));
 
+  // Estilos para el borde azul al enfocar
+  const azulStyles = {
+    '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
+      borderColor: theme.colores.azul,
+    },
+    '& .MuiInputLabel-root.Mui-focused': {
+      color: theme.colores.azul,
+    },
+  };
+
   useEffect(() => {
     if (initialTara) {
       setPesoTara(initialTara.pesoTara || "");
@@ -87,10 +97,17 @@ export const TaraForm: React.FC<Omit<TaraFormProps, 'initialTara'> & { initialTa
         label="Peso Tara (kg)"
         type="number"
         value={pesoTara}
-        onChange={(e) => setPesoTara(e.target.value ? Number(e.target.value) : "")}
+        onChange={(e) => {
+          const newValue = e.target.value;
+          if (/^\d{0,5}$/.test(newValue)) {
+            setPesoTara(newValue === "" ? "" : Number(newValue));
+          }
+        }}
+        inputProps={{ maxLength: 5 }}
         error={!!errors.pesoTara}
         helperText={errors.pesoTara}
         fullWidth
+        sx={{ ...azulStyles, mt: 2 }}
       />
       <Box
         sx={{
@@ -158,6 +175,16 @@ export const PesoBrutoForm: React.FC<Omit<TaraFormProps, 'initialTara'> & { init
   const tema = useTheme();
   const isMobile = useMediaQuery(tema.breakpoints.down("sm"));
 
+  // Estilos para el borde azul al enfocar
+  const azulStyles = {
+    '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
+      borderColor: theme.colores.azul,
+    },
+    '& .MuiInputLabel-root.Mui-focused': {
+      color: theme.colores.azul,
+    },
+  };
+
   useEffect(() => {
     if (initialTara) {
       setPesoBruto(initialTara.pesoBruto || "");
@@ -198,10 +225,17 @@ export const PesoBrutoForm: React.FC<Omit<TaraFormProps, 'initialTara'> & { init
         label="Peso Bruto (kg)"
         type="number"
         value={pesoBruto}
-        onChange={(e) => setPesoBruto(e.target.value ? Number(e.target.value) : "")}
+        onChange={(e) => {
+          const newValue = e.target.value;
+          if (/^\d{0,5}$/.test(newValue)) {
+            setPesoBruto(newValue === "" ? "" : Number(newValue));
+          }
+        }}
+        inputProps={{ maxLength: 5 }}
         error={!!errors.pesoBruto}
         helperText={errors.pesoBruto}
         fullWidth
+        sx={{ ...azulStyles, mt: 2 }}
       />
       <Box
         sx={{

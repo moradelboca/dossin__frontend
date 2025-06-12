@@ -2,7 +2,6 @@ import {
   Autocomplete,
   Box,
   Button,
-  CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
@@ -16,39 +15,26 @@ import {
 } from '@mui/material';
 import React, { useContext, useEffect, useState } from 'react';
 import { ContextoGeneral } from '../../../Contexto';
-import useFacturaHandler from '../../../hooks/turnos/useFacturaHandler';
 import useValidation from '../../../hooks/useValidation';
 import MainButton from '../../../botones/MainButtom';
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+import { Dialog as MuiDialog } from '@mui/material';
 
 interface TipoFactura {
   id: number;
   nombre: string;
 }
 
-interface Turno {
-  id: string;
-  nombre?: string;
-  factura?: any;
-  empresa?: {
-    cuit: number | string;
-  };
-}
-
 interface Factura {
   id?: string;
   tipoFactura?: TipoFactura;
-  fecha?: string;
   valorIva?: number;
   total?: number;
-  // En update se espera que la factura tenga un array de IDs de turnos asociados
-  idTurnos?: (string | number)[];
   nroPuntoVenta?: string;
   nroComprobante?: string;
 }
 
 interface FacturaFormProps {
-  turnoId: string;
   cuitEmpresa: number | string;
   initialFactura?: Factura | null;
   onSuccess: (updatedData: any) => void;
@@ -56,7 +42,6 @@ interface FacturaFormProps {
 }
 
 const FacturaForm: React.FC<FacturaFormProps> = ({
-  turnoId,
   cuitEmpresa,
   initialFactura,
   onSuccess,
@@ -69,77 +54,50 @@ const FacturaForm: React.FC<FacturaFormProps> = ({
   const tema = useTheme();
   const isMobile = useMediaQuery(tema.breakpoints.down("sm"));
 
-  // Estados para opciones (tipos de factura y, en creación, turnos disponibles)
+  // Estados para opciones (tipos de factura)
   const [tiposFacturaOptions, setTiposFacturaOptions] = useState<TipoFactura[]>([]);
-  const [turnosDisponibles, setTurnosDisponibles] = useState<Turno[]>([]);
   // Estado para el diálogo de eliminación
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [existsDialogOpen, setExistsDialogOpen] = useState(false);
+  const [facturaExistente, setFacturaExistente] = useState<any>(null);
+  const [pendingSubmit, setPendingSubmit] = useState(false);
 
   // Configuramos el estado inicial.
-  // En update mode se autocompletan todos los campos, incluido el listado de turnos (a partir de initialFactura.idTurnos).
   const initialData = isUpdateMode
     ? {
         tipoFactura: initialFactura?.tipoFactura || null,
-        fecha: initialFactura?.fecha || '',
-        // Aunque se muestran IVA y total sin IVA, en update solo se podrán modificar los campos:
-        // - IVA (como valor seleccionado) y total (ya calculado o ingresado)
         valorIva: initialFactura?.valorIva ?? 21,
         total: initialFactura?.total ?? '',
         ivaSeleccionado: initialFactura?.valorIva ?? 21,
-        totalSinIva:
-          initialFactura && initialFactura.total && initialFactura.valorIva
-            ? Number(initialFactura.total) / (1 + Number(initialFactura.valorIva) / 100)
-            : '',
-        // Mapeamos el array idTurnos a objetos Turno para mostrarlos
-        turnosSeleccionados: initialFactura?.idTurnos
-          ? initialFactura.idTurnos.map((id: string | number) => ({
-              id: String(id),
-              nombre: `Turno ${id}`,
-            }))
-          : [],
         nroPuntoVenta: initialFactura?.nroPuntoVenta || '',
         nroComprobante: initialFactura?.nroComprobante || '',
       }
     : {
         tipoFactura: null as TipoFactura | null,
-        fecha: '',
-        turnosSeleccionados: [] as Turno[],
         nroPuntoVenta: '',
         nroComprobante: '',
         ivaSeleccionado: 21,
-        totalSinIva: '',
       };
 
   // Reglas de validación.
-  // En update mode se validan únicamente los campos editables.
   const rules = {
         ivaSeleccionado: (value: any) =>
           value === '' ? 'El IVA es obligatorio' : Number(value) < 0 ? 'Valor IVA inválido' : null,
         tipoFactura: (value: TipoFactura | null) =>
           value ? null : 'El tipo de factura es obligatorio',
-        fecha: (value: string) => (value ? null : 'La fecha es obligatoria'),
-        turnosSeleccionados: (value: Turno[]) =>
-          value && value.length > 0 ? null : 'Debe seleccionar al menos un turno',
         nroPuntoVenta: (value: string) =>
           value ? null : 'El número de punto de venta es obligatorio',
         nroComprobante: (value: string) =>
           value ? null : 'El número de comprobante es obligatorio',
-        totalSinIva: (value: any) =>
-          value === ''
-            ? 'El total sin IVA es obligatorio'
-            : Number(value) < 0
-            ? 'El total sin IVA no puede ser negativo'
-            : null,
       };
 
-  const { data, errors, handleChange, validateAll, setData } = useValidation(initialData, rules);
-  const { handleFacturaSubmission } = useFacturaHandler();
+  const { data, errors, validateAll, setData } = useValidation(initialData, rules);
   const headers = {
     'Content-Type': 'application/json',
     'ngrok-skip-browser-warning': 'true',
   };
 
-  // Cargar tipos de factura (para creación)
+  // Cargar tipos de factura
   useEffect(() => {
     const fetchTiposFactura = async () => {
       try {
@@ -154,47 +112,14 @@ const FacturaForm: React.FC<FacturaFormProps> = ({
     fetchTiposFactura();
   }, [backendURL]);
 
-  // Obtener turnos disponibles solo en modo creación
-  useEffect(() => {
-    if (!isUpdateMode) {
-      const fetchTurnos = async () => {
-        try {
-          const response = await fetch(`${backendURL}/turnos`, { method: 'GET', headers });
-          if (!response.ok) throw new Error('Error al obtener los turnos');
-          const data = await response.json();
-          const disponibles = data.turnos.filter(
-            (turno: Turno) =>
-              turno.factura === null &&
-              String(turno.empresa?.cuit) === String(cuitEmpresa)
-          );
-          setTurnosDisponibles(disponibles);
-        } catch (error) {
-          console.error(error);
-        }
-      };
-      fetchTurnos();
-    }
-  }, [backendURL, isUpdateMode, cuitEmpresa]);
-
   // Actualizar el estado en update mode si cambia initialFactura
   useEffect(() => {
     if (initialFactura && isUpdateMode) {
       setData({
         tipoFactura: initialFactura.tipoFactura || null,
-        fecha: initialFactura.fecha || '',
         valorIva: initialFactura.valorIva ?? 21,
         total: initialFactura.total ?? '',
         ivaSeleccionado: initialFactura.valorIva ?? 21,
-        totalSinIva:
-          initialFactura.total && initialFactura.valorIva
-            ? Number(initialFactura.total) / (1 + Number(initialFactura.valorIva) / 100)
-            : '',
-        turnosSeleccionados: initialFactura.idTurnos
-          ? initialFactura.idTurnos.map((id: string | number) => ({
-              id: String(id),
-              nombre: `Turno ${id}`,
-            }))
-          : [],
         nroPuntoVenta: initialFactura.nroPuntoVenta || '',
         nroComprobante: initialFactura.nroComprobante || '',
       });
@@ -202,11 +127,6 @@ const FacturaForm: React.FC<FacturaFormProps> = ({
   }, [initialFactura, isUpdateMode, setData]);
 
   // En modo creación se calcula el total con IVA a partir de totalSinIva e ivaSeleccionado.
-  const computedTotal =
-    !isUpdateMode && data.totalSinIva !== ''
-      ? Number(data.totalSinIva) +
-        Number(data.totalSinIva) * (Number(data.ivaSeleccionado) / 100)
-      : '';
 
   // Funciones para el diálogo de eliminación.
   const handleOpenDeleteDialog = () => {
@@ -227,13 +147,21 @@ const FacturaForm: React.FC<FacturaFormProps> = ({
         },
       });
       if (!response.ok) throw new Error(await response.text());
-      // Notificamos al padre; en este caso onSuccess podría actualizar el listado
       onSuccess(null);
       handleCloseDeleteDialog();
     } catch (error) {
       console.error('Error al borrar la factura:', error);
       handleCloseDeleteDialog();
     }
+  };
+
+  // Nueva función para asociar factura existente al turno
+  const asociarFacturaATurno = async (facturaId: string) => {
+    // Aquí deberías hacer el request para asociar la factura al turno
+    // Por ejemplo, PUT /turnos/{turnoId} body: { factura: facturaId }
+    // Como no tenemos el id del turno aquí, deberías pasarlo por props si es necesario
+    // Por ahora, solo llamo onSuccess con el id de la factura
+    onSuccess({ factura: facturaId });
   };
 
   // Manejo del submit (update o creación)
@@ -243,32 +171,66 @@ const FacturaForm: React.FC<FacturaFormProps> = ({
       return;
     }
     try {
-      if (isUpdateMode) {
-        // En update mode se envían solo los campos editables
-        const payload = {
-          idFactura: initialFactura?.id,
-          fecha: data.fecha,
-          valorIva: Number(data.ivaSeleccionado),
-          total: Number(computedTotal) || Number(data.total),
-        };
-        const result = await handleFacturaSubmission(cuitEmpresa, payload);
-        onSuccess(result);
-      } else {
-        const nroFactura = `${data.nroPuntoVenta}-${data.nroComprobante}`;
-        const payload = {
-          idsTurnos: data.turnosSeleccionados.map((turno: Turno) => turno.id),
-          nroFactura,
-          tipoFactura: data.tipoFactura?.id,
-          fecha: data.fecha,
-          valorIva: data.ivaSeleccionado,
-          total: Number(computedTotal),
-        };
-        const result = await handleFacturaSubmission(cuitEmpresa, payload);
-        onSuccess(result);
+      const nroFactura = data.nroComprobante;
+      const puntoDeVenta = data.nroPuntoVenta;
+      const tipoFacturaId = data.tipoFactura?.id;
+      const cuitEmisor = cuitEmpresa;
+
+      // 1. Buscar si existe la factura
+      setPendingSubmit(true);
+      const response = await fetch(`${backendURL}/facturas`, {
+        method: 'GET',
+        headers,
+      });
+      if (!response.ok) throw new Error('Error al buscar facturas');
+      const facturas = await response.json();
+      // Buscar coincidencia usando los campos correctos
+      const existente = facturas.find((f: any) =>
+        String(f.cuitEmisor) === String(cuitEmisor) &&
+        String(f.nroFactura) === String(nroFactura) &&
+        String(f.tipoFactura?.id) === String(tipoFacturaId) &&
+        String(f.puntoDeVenta) === String(puntoDeVenta)
+      );
+      if (existente) {
+        setFacturaExistente(existente);
+        setExistsDialogOpen(true);
+        setPendingSubmit(false);
+        return;
       }
+      // 2. Si no existe, crear la factura
+      const payload = {
+        cuitEmisor,
+        nroFactura,
+        idTipoFactura: Number(tipoFacturaId),
+        puntoDeVenta,
+      };
+      console.log('Payload a enviar a /facturas/crear-factura:', payload);
+      const createResponse = await fetch(`${backendURL}/facturas/crear-factura`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(payload),
+      });
+      if (!createResponse.ok) throw new Error(await createResponse.text());
+      const facturaCreada = await createResponse.json();
+      // Asociar la factura creada al turno (esto depende de tu backend, aquí solo llamo onSuccess)
+      onSuccess({ factura: facturaCreada.id });
+      setPendingSubmit(false);
     } catch (error) {
+      setPendingSubmit(false);
       console.error('Error al procesar la factura:', error);
     }
+  };
+
+  const handleNroPuntoVentaChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.replace(/\D/g, '').slice(0, 4);
+    setData((prev: any) => ({ ...prev, nroPuntoVenta: value }));
+    rules.nroPuntoVenta && rules.nroPuntoVenta(value);
+  };
+
+  const handleNroComprobanteChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.replace(/\D/g, '').slice(0, 8);
+    setData((prev: any) => ({ ...prev, nroComprobante: value }));
+    rules.nroComprobante && rules.nroComprobante(value);
   };
 
   return (
@@ -287,127 +249,108 @@ const FacturaForm: React.FC<FacturaFormProps> = ({
             label="Tipo de Factura"
             error={!!errors.tipoFactura}
             helperText={errors.tipoFactura}
+            fullWidth
+            sx={{
+              mt: 2,
+              '& .MuiInputLabel-root': {
+                background: '#fff',
+                px: 0.5,
+                zIndex: 1,
+              },
+              '& .MuiOutlinedInput-root': {
+                '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                  borderColor: theme.colores.azul,
+                },
+              },
+              '& .MuiInputLabel-root.Mui-focused': {
+                color: theme.colores.azul,
+              },
+            }}
           />
         )}
         disabled={isUpdateMode}
+        fullWidth
       />
-
-      {/* Fecha */}
-      <TextField
-        label="Fecha"
-        type="date"
-        value={data.fecha}
-        onChange={handleChange('fecha')}
-        error={!!errors.fecha}
-        helperText={errors.fecha}
-        InputLabelProps={{ shrink: true }}
-      />
-
-      {isUpdateMode ? (
-        <></>
-      ) : (
-        <>
-          <Autocomplete
-            multiple
-            limitTags={2}
-            id="turnos-autocomplete"
-            options={turnosDisponibles}
-            getOptionLabel={(option: Turno) => option.nombre || option.id.toString()}
-            value={
-              initialFactura === null
-                ? [{ id: turnoId, nombre: `${turnoId}` }, ...data.turnosSeleccionados.filter((t: Turno) => t.id !== turnoId)]
-                : data.turnosSeleccionados
-            }
-            onChange={(_event, newValue) => {
-              if (initialFactura === null) {
-                // Siempre se mantiene el turnoId en la selección
-                setData((prev: any) => ({
-                  ...prev,
-                  turnosSeleccionados: [{ id: turnoId, nombre: `Turno ${turnoId}` }, ...newValue.filter(t => t.id !== turnoId)],
-                }));
-              } else {
-                setData((prev: any) => ({ ...prev, turnosSeleccionados: newValue }));
-              }
-            }}
-            isOptionEqualToValue={(option, value) => option.id === value.id}
-            disableClearable={initialFactura === null}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                label="Turnos"
-                placeholder="Selecciona turnos"
-                error={!!errors.turnosSeleccionados}
-                helperText={errors.turnosSeleccionados}
-                InputProps={{
-                  ...params.InputProps,
-                  endAdornment: (
-                    <>
-                      {turnosDisponibles.length === 0 && <CircularProgress size={20} />}
-                      {params.InputProps.endAdornment}
-                    </>
-                  ),
-                }}
-              />
-            )}
-          />
-
-          <Stack direction="row" spacing={2}>
-            <TextField
-              label="Nro Punto de Venta"
-              type="text"
-              value={data.nroPuntoVenta}
-              onChange={handleChange('nroPuntoVenta')}
-              error={!!errors.nroPuntoVenta}
-              helperText={errors.nroPuntoVenta}
-            />
-            <TextField
-              label="Nro Comprobante"
-              type="text"
-              value={data.nroComprobante}
-              onChange={handleChange('nroComprobante')}
-              error={!!errors.nroComprobante}
-              helperText={errors.nroComprobante}
-            />
-          </Stack>
-        </>
-      )}
-        <Box
+      <Stack direction="row" spacing={2}>
+        <TextField
+          label="Nro Punto de Venta"
+          type="text"
+          value={data.nroPuntoVenta}
+          onChange={handleNroPuntoVentaChange}
+          error={!!errors.nroPuntoVenta}
+          helperText={errors.nroPuntoVenta}
           sx={{
-            display: "flex",
-            flexDirection: isMobile ? "column" : "row",
-            gap: 1,
-            justifyContent: "center",
-            alignItems: "center",
-            position: 'relative'
+            minWidth: 150,
+            maxWidth: 200,
+            '& .MuiOutlinedInput-root': {
+              '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                borderColor: theme.colores.azul,
+              },
+            },
+            '& .MuiInputLabel-root.Mui-focused': {
+              color: theme.colores.azul,
+            },
           }}
-        >
-          <MainButton
-            onClick={onCancel}
-            text="Cancelar"
-            backgroundColor="transparent"
-            textColor={theme.colores.azul}
-            width={isMobile ? '100%' : 'auto'}
-            borderRadius="8px"
-            hoverBackgroundColor="rgba(22, 54, 96, 0.1)"
-            divWidth={isMobile ? '100%' : 'auto'}
-          />
-          <MainButton
-            onClick={handleSubmit}
-            text={isUpdateMode ? 'Actualizar' : 'Crear'}
-            backgroundColor={theme.colores.azul}
-            textColor="#fff"
-            width={isMobile ? '100%' : 'auto'}
-            borderRadius="8px"
-            hoverBackgroundColor={theme.colores.azulOscuro}
-            divWidth={isMobile ? '100%' : 'auto'}
-          />
-          {isUpdateMode && (
-            <IconButton onClick={handleOpenDeleteDialog}>
-            <DeleteOutlineIcon sx={{ fontSize: 20, color: "#d68384" }} />
-          </IconButton>
-          )}
+          inputProps={{ maxLength: 4, inputMode: 'numeric', pattern: '[0-9]*' }}
+        />
+        <TextField
+          label="Nro Comprobante"
+          type="text"
+          value={data.nroComprobante}
+          onChange={handleNroComprobanteChange}
+          error={!!errors.nroComprobante}
+          helperText={errors.nroComprobante}
+          fullWidth
+          sx={{
+            '& .MuiOutlinedInput-root': {
+              '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                borderColor: theme.colores.azul,
+              },
+            },
+            '& .MuiInputLabel-root.Mui-focused': {
+              color: theme.colores.azul,
+            },
+          }}
+          inputProps={{ maxLength: 8, inputMode: 'numeric', pattern: '[0-9]*' }}
+        />
+      </Stack>
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: isMobile ? "column" : "row",
+          gap: 1,
+          justifyContent: "center",
+          alignItems: "center",
+          position: 'relative'
+        }}
+      >
+        <MainButton
+          onClick={onCancel}
+          text="Cancelar"
+          backgroundColor="transparent"
+          textColor={theme.colores.azul}
+          width={isMobile ? '100%' : 'auto'}
+          borderRadius="8px"
+          hoverBackgroundColor="rgba(22, 54, 96, 0.1)"
+          divWidth={isMobile ? '100%' : 'auto'}
+        />
+        <MainButton
+          onClick={handleSubmit}
+          text={isUpdateMode ? 'Actualizar' : 'Crear'}
+          backgroundColor={theme.colores.azul}
+          textColor="#fff"
+          width={isMobile ? '100%' : 'auto'}
+          borderRadius="8px"
+          hoverBackgroundColor={theme.colores.azulOscuro}
+          divWidth={isMobile ? '100%' : 'auto'}
+          disabled={pendingSubmit}
+        />
+        {isUpdateMode && (
+          <IconButton onClick={handleOpenDeleteDialog}>
+          <DeleteOutlineIcon sx={{ fontSize: 20, color: "#d68384" }} />
+        </IconButton>
+        )}
       </Box>
-
       {/* Diálogo de confirmación para eliminar */}
       <Dialog open={deleteDialogOpen} onClose={handleCloseDeleteDialog}>
         <DialogTitle>Eliminar Factura</DialogTitle>
@@ -425,6 +368,40 @@ const FacturaForm: React.FC<FacturaFormProps> = ({
           </Button>
         </DialogActions>
       </Dialog>
+      {/* Diálogo si la factura ya existe */}
+      <MuiDialog open={existsDialogOpen} onClose={() => setExistsDialogOpen(false)}>
+        <DialogTitle>Factura ya existe</DialogTitle>
+        <DialogContent>
+          <Typography>
+            Esa factura ya existe y probablemente esté asociada a otros turnos. ¿Querés asociar este turno también?
+          </Typography>
+        </DialogContent>
+        <DialogActions sx={{ justifyContent: 'center', gap: 2, pb: 2 }}>
+          <MainButton
+            onClick={() => setExistsDialogOpen(false)}
+            text="No"
+            backgroundColor="transparent"
+            textColor={theme.colores.azul}
+            width="120px"
+            borderRadius="8px"
+            hoverBackgroundColor="rgba(22, 54, 96, 0.1)"
+            divWidth="120px"
+          />
+          <MainButton
+            onClick={async () => {
+              setExistsDialogOpen(false);
+              await asociarFacturaATurno(facturaExistente.id);
+            }}
+            text="Sí, asociar"
+            backgroundColor={theme.colores.azul}
+            textColor="#fff"
+            width="120px"
+            borderRadius="8px"
+            hoverBackgroundColor={theme.colores.azulOscuro}
+            divWidth="120px"
+          />
+        </DialogActions>
+      </MuiDialog>
     </Box>
   );
 };

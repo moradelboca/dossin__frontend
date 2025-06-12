@@ -51,7 +51,7 @@ export default function AutocompletarUbicacionLocalidad(props: AutocompletarProp
       disablePortal
       options={localidades}
       getOptionLabel={(option) => `${option.nombre}, ${option.provincia.nombre}`}
-      sx={{ width: '100%', maxWidth: 300 }}
+      sx={{ width: '100%' }}
       value={selectedLocalidad}
       onChange={seleccionarUbicacion}
       renderInput={(params) => (

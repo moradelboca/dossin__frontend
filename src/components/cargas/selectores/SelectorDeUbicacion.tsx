@@ -238,7 +238,7 @@ export default function SelectorDeUbicacion() {
                     Las horas de incio deben ser menores a las de fin.
                 </Typography>
             )}
-            <Dialog open={openCreador} onClose={handleCloseCreador} maxWidth="md" fullWidth>
+            <Dialog open={openCreador} onClose={handleCloseCreador} maxWidth="xs" fullWidth>
                 <CreadorUbicacion
                     handleClose={() => {
                         handleCloseCreador();

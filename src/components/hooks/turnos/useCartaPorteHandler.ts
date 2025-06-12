@@ -33,10 +33,15 @@ const useCartaPorteHandler = () => {
     }
     const data = await cartaResponse.json();
 
+    // Actualizar el turno con numeroCartaDePorte, CTG y estado 8 (En Viaje)
     const turnoResponse = await fetch(`${backendURL}/turnos/${turnoId}`, {
       method: "PUT",
       headers,
-      body: JSON.stringify({ numeroCartaDePorte: data.numeroCartaPorte }),
+      body: JSON.stringify({
+        numeroCartaDePorte: data.numeroCartaPorte,
+        CTG: data.CTG,
+        idEstado: 8,
+      }),
     });
     if (!turnoResponse.ok) {
       throw new Error(await turnoResponse.text());

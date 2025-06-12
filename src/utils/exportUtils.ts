@@ -2,14 +2,19 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import "jspdf-autotable";
 
+// Helper para acceder a campos anidados
+function getNestedValue(obj: any, path: string) {
+  return path.split('.').reduce((acc, key) => acc && acc[key], obj);
+}
+
 export const exportarCSV = (headerNames: string[], filteredDatos: any[], fields: string[], entidad: string) => {
   const csvContent = [
     headerNames.join(","),
     ...filteredDatos.map((item) =>
       fields
         .map((field) => {
-          const valor = item[field];
-          const valorString = typeof valor === "string" ? valor : String(valor);
+          const valor = getNestedValue(item, field);
+          const valorString = typeof valor === "string" ? valor : String(valor ?? '');
           return `"${valorString.replace(/"/g, '""')}"`;
         })
         .join(",")
@@ -35,7 +40,7 @@ export const exportarPDF = (headerNames: string[], filteredDatos: any[], fields:
 
   // Datos de la tabla
   const tableData = filteredDatos.map((item) =>
-    fields.map((field) => item[field])
+    fields.map((field) => getNestedValue(item, field))
   );
 
   // Encabezados
