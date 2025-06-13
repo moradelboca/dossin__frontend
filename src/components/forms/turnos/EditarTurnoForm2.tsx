@@ -376,13 +376,22 @@ const EditarTurnoForm: React.FC<EditarTurnoFormProps> = ({
       {/* Pestaña Adelantos condicional */}
       {filteredTabs.includes("Adelantos") && (
         <TabPanel value={activeTab} index={7}>
-          <AdelantosTurnoForm
-            turnoId={seleccionado.id}
-            onSuccess={handleClose}
-            onCancel={handleClose}
-            // Añadir validación de rol en el formulario mismo
-            rolPermitido={isAllowed}
-          />
+          {(!seleccionado || !seleccionado.id) ? (
+            <Box sx={{ p: 3, textAlign: "center" }}>
+              <span style={{ color: 'red' }}>Error: El turno seleccionado no tiene un ID válido.</span>
+            </Box>
+          ) : (
+            (() => {
+              return (
+                <AdelantosTurnoForm
+                  turnoId={seleccionado.id}
+                  onSuccess={handleClose}
+                  onCancel={handleClose}
+                  rolPermitido={isAllowed}
+                />
+              );
+            })()
+          )}
         </TabPanel>
       )}
     </Box>
