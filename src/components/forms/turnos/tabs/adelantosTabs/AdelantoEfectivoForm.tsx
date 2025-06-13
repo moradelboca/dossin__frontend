@@ -11,6 +11,7 @@ import {
   DialogActions,
   useMediaQuery,
   useTheme,
+  InputAdornment,
 } from "@mui/material";
 import { ContextoGeneral } from "../../../../Contexto";
 import MainButton from "../../../../botones/MainButtom";
@@ -22,7 +23,7 @@ interface TipoMedioPago {
 
 export interface AdelantoEfectivo {
   id?: number;
-  idTurnoDeCarga: number;
+  idTurnoDeCarga: number | string;
   idTipoMedioPago: number;
   montoAdelantado: number;
 }
@@ -72,6 +73,16 @@ const AdelantoEfectivoForm: React.FC<AdelantoEfectivoFormProps> = ({
   >([]);
   // Estado para controlar la apertura del diálogo de eliminación
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+
+  // Estilos para azul en focus
+  const azulStyles = {
+    '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
+      borderColor: theme.colores.azul,
+    },
+    '& .MuiInputLabel-root.Mui-focused': {
+      color: theme.colores.azul,
+    },
+  };
 
   // 1. Cargar las opciones para el autocomplete de tipos de medio de pago
   useEffect(() => {
@@ -163,7 +174,7 @@ const AdelantoEfectivoForm: React.FC<AdelantoEfectivoFormProps> = ({
     }
 
     const payload: AdelantoEfectivo = {
-      idTurnoDeCarga: Number(turnoId),
+      idTurnoDeCarga: turnoId,
       idTipoMedioPago: tipoMedioPago.id,
       montoAdelantado: Number(montoAdelantado),
     };
@@ -233,12 +244,14 @@ const AdelantoEfectivoForm: React.FC<AdelantoEfectivoFormProps> = ({
         getOptionLabel={(option) => option.nombre}
         value={tipoMedioPago}
         onChange={(_event, newValue) => setTipoMedioPago(newValue)}
+        sx={azulStyles}
         renderInput={(params) => (
           <TextField
             {...params}
             label="Tipo de Medio de Pago"
             error={!!errors.tipoMedioPago}
             helperText={errors.tipoMedioPago}
+            sx={azulStyles}
           />
         )}
       />
@@ -247,11 +260,22 @@ const AdelantoEfectivoForm: React.FC<AdelantoEfectivoFormProps> = ({
         label="Monto Adelantado"
         type="number"
         value={montoAdelantado}
-        onChange={(e) =>
-          setMontoAdelantado(e.target.value ? Number(e.target.value) : "")
-        }
+        onChange={(e) => {
+          let val = e.target.value;
+          // No permitir que empiece en 0 (excepto si es vacío)
+          if (val.length > 1 && val.startsWith('0')) val = val.replace(/^0+/, '');
+          // Limitar a 7 cifras
+          if (val.length > 7) val = val.slice(0, 7);
+          // Solo números positivos
+          if (/^\d{0,7}$/.test(val)) setMontoAdelantado(val === '' ? '' : Number(val));
+        }}
         error={!!errors.montoAdelantado}
         helperText={errors.montoAdelantado}
+        inputProps={{ maxLength: 7, inputMode: 'numeric', pattern: '[1-9][0-9]{0,6}' }}
+        sx={azulStyles}
+        InputProps={{
+          startAdornment: <InputAdornment position="start">$</InputAdornment>
+        }}
       />
 
       <Box

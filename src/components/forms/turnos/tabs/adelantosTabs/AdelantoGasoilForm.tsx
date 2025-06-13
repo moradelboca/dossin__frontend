@@ -11,6 +11,7 @@ import {
   DialogActions,
   useTheme,
   useMediaQuery,
+  InputAdornment,
 } from "@mui/material";
 import { ContextoGeneral } from "../../../../Contexto";
 import MainButton from "../../../../botones/MainButtom";
@@ -68,6 +69,7 @@ const AdelantoGasoilForm: React.FC<AdelantoGasoilFormProps> = ({
     tipoCombustible?: string;
     cantLitros?: string;
     precioLitros?: string;
+    turnoId?: string;
   }>({});
 
   const [tiposCombustibleOptions, setTiposCombustibleOptions] = useState<
@@ -75,6 +77,16 @@ const AdelantoGasoilForm: React.FC<AdelantoGasoilFormProps> = ({
   >([]);
   // Estado para controlar la apertura del dialog de eliminación
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+
+  // Estilos para azul en focus
+  const azulStyles = {
+    '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
+      borderColor: theme.colores.azul,
+    },
+    '& .MuiInputLabel-root.Mui-focused': {
+      color: theme.colores.azul,
+    },
+  };
 
   // 1. Cargar las opciones para el autocomplete de tipos de combustible
   useEffect(() => {
@@ -173,12 +185,12 @@ const AdelantoGasoilForm: React.FC<AdelantoGasoilFormProps> = ({
     if (!tipoCombustible) return;
 
     if (!turnoId) {
-      console.error("El id del turno no está definido");
+      setErrors((prev) => ({ ...prev, turnoId: "El id del turno no está definido" }));
       return;
     }
 
-    const payload: AdelantoGasoil = {
-      idTurnoDeCarga: Number(turnoId),
+    const payload = {
+      idTurnoDeCarga: turnoId,
       idTipoCombustible: tipoCombustible.id,
       cantLitros: Number(cantLitros),
       precioLitros: Number(precioLitros),
@@ -209,8 +221,6 @@ const AdelantoGasoilForm: React.FC<AdelantoGasoilFormProps> = ({
       console.error("Error al procesar el adelanto de gasoil:", error);
     }
   };
-
-
 
   const handleCloseDeleteDialog = () => {
     setOpenDeleteDialog(false);
@@ -250,12 +260,14 @@ const AdelantoGasoilForm: React.FC<AdelantoGasoilFormProps> = ({
         getOptionLabel={(option) => option.nombre}
         value={tipoCombustible}
         onChange={(_event, newValue) => setTipoCombustible(newValue)}
+        sx={azulStyles}
         renderInput={(params) => (
           <TextField
             {...params}
             label="Tipo de Combustible"
             error={!!errors.tipoCombustible}
             helperText={errors.tipoCombustible}
+            sx={azulStyles}
           />
         )}
       />
@@ -263,21 +275,40 @@ const AdelantoGasoilForm: React.FC<AdelantoGasoilFormProps> = ({
         label="Cantidad de Litros"
         type="number"
         value={cantLitros}
-        onChange={(e) =>
-          setCantLitros(e.target.value ? Number(e.target.value) : "")
-        }
+        onChange={(e) => {
+          let val = e.target.value;
+          // No permitir que empiece en 0 (excepto si es vacío)
+          if (val.length > 1 && val.startsWith('0')) val = val.replace(/^0+/, '');
+          // Limitar a 3 cifras
+          if (val.length > 3) val = val.slice(0, 3);
+          // Solo números positivos
+          if (/^\d{0,3}$/.test(val)) setCantLitros(val === '' ? '' : Number(val));
+        }}
         error={!!errors.cantLitros}
         helperText={errors.cantLitros}
+        inputProps={{ maxLength: 3, inputMode: 'numeric', pattern: '[1-9][0-9]{0,2}' }}
+        sx={azulStyles}
       />
       <TextField
         label="Precio por Litro"
         type="number"
         value={precioLitros}
-        onChange={(e) =>
-          setPrecioLitros(e.target.value ? Number(e.target.value) : "")
-        }
+        onChange={(e) => {
+          let val = e.target.value;
+          // No permitir que empiece en 0 (excepto si es vacío)
+          if (val.length > 1 && val.startsWith('0')) val = val.replace(/^0+/, '');
+          // Limitar a 4 cifras
+          if (val.length > 4) val = val.slice(0, 4);
+          // Solo números positivos
+          if (/^\d{0,4}$/.test(val)) setPrecioLitros(val === '' ? '' : Number(val));
+        }}
         error={!!errors.precioLitros}
         helperText={errors.precioLitros}
+        inputProps={{ maxLength: 4, inputMode: 'numeric', pattern: '[1-9][0-9]{0,3}' }}
+        sx={azulStyles}
+        InputProps={{
+          startAdornment: <InputAdornment position="start">$</InputAdornment>
+        }}
       />
 
       {/* Botones de guardado */}
