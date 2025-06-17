@@ -77,6 +77,9 @@ const EditarTurnoForm: React.FC<EditarTurnoFormProps> = ({
   const [filteredTabs, setFilteredTabs] = useState<string[]>([]);
   const { theme } = useContext(ContextoGeneral);
 
+  console.log('EditarTurnoForm - seleccionado:', seleccionado);
+  console.log('EditarTurnoForm - precioGrano:', seleccionado?.precioGrano);
+
   const tema = useTheme();
   const isMobile = useMediaQuery(tema.breakpoints.down("sm"));
   
@@ -324,11 +327,16 @@ const EditarTurnoForm: React.FC<EditarTurnoFormProps> = ({
             cuitEmpresa={seleccionado.empresa?.cuit}
             turnoId={seleccionado.id}
             initialFactura={seleccionado.factura}
+            precioGrano={seleccionado.precioGrano}
             onSuccess={(updatedFactura) => {
               setDatos(
                 datos.map((turno: any) =>
                   turno.id === seleccionado.id
-                    ? { ...turno, factura: updatedFactura }
+                    ? { 
+                        ...turno, 
+                        factura: updatedFactura,
+                        precioGrano: turno.precioGrano // Preserve the precioGrano value
+                      }
                     : turno
                 )
               );
