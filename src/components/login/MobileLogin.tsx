@@ -19,7 +19,6 @@ const MobileLogin = () => {
     const interval = setInterval(() => {
       setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length);
     }, 5000);
-
     return () => clearInterval(interval);
   }, []);
 
@@ -32,22 +31,37 @@ const MobileLogin = () => {
   };
 
   return (
-    <Box sx={{ position: "relative", height: "100vh", overflow: "hidden" }}>
+    <Box
+      sx={{
+        position: "relative",
+        minHeight: "100vh",
+        width: "100vw",
+        overflow: "hidden",
+        boxSizing: "border-box",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "stretch",
+        alignItems: "stretch",
+        backgroundColor: "#000",
+      }}
+    >
       {/* Fondo con imágenes en transición */}
       {images.map((img, index) => (
         <Box
           key={index}
           sx={{
-            position: "absolute",
+            position: "fixed",
             top: 0,
             left: 0,
-            height: "100%",
-            width: "100%",
+            height: "100vh",
+            width: "100vw",
             backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.6)), url(${img})`,
             backgroundSize: "cover",
             backgroundPosition: "center",
             opacity: currentImageIndex === index ? 1 : 0,
             transition: "opacity 1.5s ease-in-out",
+            zIndex: 0,
+            pointerEvents: "none",
           }}
         />
       ))}
@@ -56,32 +70,34 @@ const MobileLogin = () => {
       <Box
         sx={{
           position: "relative",
-          height: "100%",
-          width: "100%",
+          zIndex: 1,
+          flex: 1,
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-between",
           alignItems: "center",
-          padding: "2rem",
-          paddingTop: "10vh",
-          paddingBottom: "5vh",
+          minHeight: 0,
+          padding: { xs: "16px 8px 8px 8px", sm: "24px 16px 16px 16px" },
+          boxSizing: "border-box",
         }}
       >
-        {/* Logo en la parte superior, más grande */}
-        <Box>
+        {/* Logo en la parte superior */}
+        <Box sx={{ mt: 2, mb: 2 }}>
           <img
             src={hermex}
             alt="Hermex Logo"
             style={{
-              width: "220px",
+              width: "160px",
               height: "auto",
-              filter: "drop-shadow(0 0 30px rgba(255,255,255,0.7)) drop-shadow(0 0 15px rgba(255,255,255,0.8))",
+              maxWidth: "80vw",
+              filter:
+                "drop-shadow(0 0 30px rgba(255,255,255,0.7)) drop-shadow(0 0 15px rgba(255,255,255,0.8))",
             }}
           />
         </Box>
 
         {/* Texto centrado */}
-        <Box sx={{ textAlign: "center" }}>
+        <Box sx={{ textAlign: "center", flex: 1, display: "flex", flexDirection: "column", justifyContent: "center" }}>
           <Typography
             variant="h5"
             sx={{
@@ -105,8 +121,15 @@ const MobileLogin = () => {
           </Typography>
         </Box>
 
-        {/* Botón de sign in en la parte inferior */}
-        <Box sx={{ width: "100%", maxWidth: "280px", textAlign: "center" }}>
+        {/* Botón de sign in fijo abajo */}
+        <Box
+          sx={{
+            width: "100%",
+            maxWidth: "320px",
+            textAlign: "center",
+            mb: 2,
+          }}
+        >
           <Button
             variant="contained"
             sx={{
@@ -123,7 +146,7 @@ const MobileLogin = () => {
               "&:hover": {
                 backgroundColor: "#f0f0f0",
                 boxShadow: "0px 6px 15px rgba(0,0,0,0.5)",
-              }
+              },
             }}
             onClick={handleOpenDialog}
           >
@@ -133,8 +156,8 @@ const MobileLogin = () => {
       </Box>
 
       {/* Diálogo para el inicio de sesión */}
-      <Dialog 
-        open={openDialog} 
+      <Dialog
+        open={openDialog}
         onClose={handleCloseDialog}
         PaperProps={{
           sx: {
@@ -142,7 +165,7 @@ const MobileLogin = () => {
             maxWidth: "350px",
             width: "100%",
             margin: "16px",
-          }
+          },
         }}
       >
         <DialogContent sx={{ padding: "2rem", textAlign: "center" }}>
@@ -156,13 +179,13 @@ const MobileLogin = () => {
           >
             SIGN IN
           </Typography>
-          
+
           <Button
             variant="contained"
             startIcon={<Google />}
             fullWidth
             size="large"
-            sx={{ 
+            sx={{
               backgroundColor: theme.colores.azul,
               borderRadius: "30px",
               padding: "0.8rem",
@@ -174,7 +197,7 @@ const MobileLogin = () => {
               "&:hover": {
                 backgroundColor: theme.colores.azul ? theme.colores.azul + "dd" : undefined,
                 boxShadow: "0 6px 15px rgba(0,0,0,0.2)",
-              }
+              },
             }}
             onClick={() =>
               window.open("https://auth.dossin.com.ar/auth/google", "_self")

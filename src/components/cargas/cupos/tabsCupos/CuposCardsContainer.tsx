@@ -102,11 +102,12 @@ export function CuposCardsContainer({
 
       {cupos.length === 0 && estadoCarga === 'Cargado' && (
         <Box
-          display={"flex"}
-          flexDirection={"row"}
-          width={"100%"}
-          justifyContent={"center"}
-          alignItems={"center"}
+          display="flex"
+          flexDirection="column"
+          justifyContent="center"
+          alignItems="center"
+          width="100%"
+          minHeight="60vh"
           gap={3}
         >
           <CancelIcon
