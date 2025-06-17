@@ -30,8 +30,8 @@ interface Factura {
   tipoFactura?: TipoFactura;
   valorIva?: number;
   total?: number;
-  nroPuntoVenta?: string;
-  nroComprobante?: string;
+  puntoDeVenta?: string;
+  nroFactura?: string;
 }
 
 interface FacturaFormProps {
@@ -40,6 +40,7 @@ interface FacturaFormProps {
   initialFactura?: Factura | null;
   onSuccess: (updatedData: any) => void;
   onCancel: () => void;
+  precioGrano?: number;
 }
 
 const FacturaForm: React.FC<FacturaFormProps> = ({
@@ -48,11 +49,11 @@ const FacturaForm: React.FC<FacturaFormProps> = ({
   initialFactura,
   onSuccess,
   onCancel,
+  precioGrano,
 }) => {
   const { backendURL } = useContext(ContextoGeneral);
   const isUpdateMode = Boolean(initialFactura);
   const {theme} = useContext(ContextoGeneral);
-
   const tema = useTheme();
   const isMobile = useMediaQuery(tema.breakpoints.down("sm"));
 
@@ -68,23 +69,27 @@ const FacturaForm: React.FC<FacturaFormProps> = ({
   const initialData = isUpdateMode
     ? {
         tipoFactura: initialFactura?.tipoFactura || null,
-        nroPuntoVenta: initialFactura?.nroPuntoVenta || '',
-        nroComprobante: initialFactura?.nroComprobante || '',
+        puntoDeVenta: initialFactura?.puntoDeVenta || '',
+        nroFactura: initialFactura?.nroFactura || '',
+        precioGrano: precioGrano || '',
       }
     : {
         tipoFactura: null as TipoFactura | null,
-        nroPuntoVenta: '',
-        nroComprobante: '',
+        puntoDeVenta: '',
+        nroFactura: '',
+        precioGrano: precioGrano || ''
       };
 
   // Reglas de validación.
   const rules = {
         tipoFactura: (value: TipoFactura | null) =>
           value ? null : 'El tipo de factura es obligatorio',
-        nroPuntoVenta: (value: string) =>
+        puntoDeVenta: (value: string) =>
           value ? null : 'El número de punto de venta es obligatorio',
-        nroComprobante: (value: string) =>
+        nroFactura: (value: string) =>
           value ? null : 'El número de comprobante es obligatorio',
+        precioGrano: (value: string | number) =>
+          value ? null : 'El precio del grano es obligatorio',
       };
 
   const { data, errors, validateAll, setData } = useValidation(initialData, rules);
@@ -113,11 +118,12 @@ const FacturaForm: React.FC<FacturaFormProps> = ({
     if (initialFactura && isUpdateMode) {
       setData({
         tipoFactura: initialFactura.tipoFactura || null,
-        nroPuntoVenta: initialFactura.nroPuntoVenta || '',
-        nroComprobante: initialFactura.nroComprobante || '',
+        puntoDeVenta: initialFactura.puntoDeVenta || '',
+        nroFactura: initialFactura.nroFactura || '',
+        precioGrano: precioGrano !== undefined ? precioGrano : '',
       });
     }
-  }, [initialFactura, isUpdateMode, setData]);
+  }, [initialFactura, isUpdateMode, setData, precioGrano]);
 
   // En modo creación se calcula el total con IVA a partir de totalSinIva e ivaSeleccionado.
 
@@ -171,11 +177,22 @@ const FacturaForm: React.FC<FacturaFormProps> = ({
       return;
     }
     try {
-      const nroFactura = data.nroComprobante;
-      const puntoDeVenta = data.nroPuntoVenta;
+      const nroFactura = data.nroFactura;
+      const puntoDeVenta = data.puntoDeVenta;
       const tipoFacturaId = data.tipoFactura?.id;
       const cuitEmisor = cuitEmpresa;
+      const precioGrano = data.precioGrano;
       setPendingSubmit(true);
+
+      // First, update the Turno with precioGrano
+      const turnoResponse = await fetch(`${backendURL}/turnos/${turnoId}`, {
+        method: 'PUT',
+        headers,
+        body: JSON.stringify({ precioGrano: Number(precioGrano) }),
+      });
+      if (!turnoResponse.ok) throw new Error('Error al actualizar el precio del grano');
+
+      // Then proceed with factura creation/association
       const response = await fetch(`${backendURL}/facturas`, {
         method: 'GET',
         headers,
@@ -217,16 +234,15 @@ const FacturaForm: React.FC<FacturaFormProps> = ({
     }
   };
 
-  const handleNroPuntoVentaChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePuntoDeVentaChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/\D/g, '').slice(0, 4);
-    setData((prev: any) => ({ ...prev, nroPuntoVenta: value }));
-    rules.nroPuntoVenta && rules.nroPuntoVenta(value);
+    setData((prev: any) => ({ ...prev, puntoDeVenta: value }));
+    rules.puntoDeVenta && rules.puntoDeVenta(value);
   };
 
-  const handleNroComprobanteChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleNroFacturaChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/\D/g, '').slice(0, 8);
-    setData((prev: any) => ({ ...prev, nroComprobante: value }));
-    rules.nroComprobante && rules.nroComprobante(value);
+    setData((prev: any) => ({ ...prev, nroFactura: value }));
   };
 
   return (
@@ -269,12 +285,12 @@ const FacturaForm: React.FC<FacturaFormProps> = ({
       />
       <Stack direction="row" spacing={2}>
         <TextField
-          label="Nro Punto de Venta"
+          label="Punto de Venta"
           type="text"
-          value={data.nroPuntoVenta}
-          onChange={handleNroPuntoVentaChange}
-          error={!!errors.nroPuntoVenta}
-          helperText={errors.nroPuntoVenta}
+          value={data.puntoDeVenta}
+          onChange={handlePuntoDeVentaChange}
+          error={!!errors.puntoDeVenta}
+          helperText={errors.puntoDeVenta}
           sx={{
             minWidth: 150,
             maxWidth: 200,
@@ -290,12 +306,12 @@ const FacturaForm: React.FC<FacturaFormProps> = ({
           inputProps={{ maxLength: 4, inputMode: 'numeric', pattern: '[0-9]*' }}
         />
         <TextField
-          label="Nro Comprobante"
+          label="Nro Factura"
           type="text"
-          value={data.nroComprobante}
-          onChange={handleNroComprobanteChange}
-          error={!!errors.nroComprobante}
-          helperText={errors.nroComprobante}
+          value={data.nroFactura}
+          onChange={handleNroFacturaChange}
+          error={!!errors.nroFactura}
+          helperText={errors.nroFactura}
           fullWidth
           sx={{
             '& .MuiOutlinedInput-root': {
@@ -310,6 +326,40 @@ const FacturaForm: React.FC<FacturaFormProps> = ({
           inputProps={{ maxLength: 8, inputMode: 'numeric', pattern: '[0-9]*' }}
         />
       </Stack>
+      <TextField
+        label="Precio Grano"
+        type="number"
+        value={data.precioGrano}
+        onChange={(e) => {
+          const value = e.target.value.replace(/[^0-9.]/g, '');
+          // Limit to 6 digits before decimal point
+          const parts = value.split('.');
+          if (parts[0].length > 6) {
+            parts[0] = parts[0].slice(0, 6);
+          }
+          const newValue = parts.join('.');
+          setData((prev: any) => ({ ...prev, precioGrano: newValue }));
+        }}
+        error={!!errors.precioGrano}
+        helperText={errors.precioGrano}
+        fullWidth
+        sx={{
+          '& .MuiOutlinedInput-root': {
+            '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+              borderColor: theme.colores.azul,
+            },
+          },
+          '& .MuiInputLabel-root.Mui-focused': {
+            color: theme.colores.azul,
+          },
+        }}
+        inputProps={{ 
+          step: "0.01",
+          min: "0",
+          max: "999999",
+          inputMode: 'decimal'
+        }}
+      />
       <Box
         sx={{
           display: "flex",
