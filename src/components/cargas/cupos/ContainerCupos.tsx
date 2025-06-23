@@ -29,12 +29,17 @@ export function ContainerCupos() {
   const { backendURL, theme } = useContext(ContextoGeneral);
   const [cupos, setCupos] = useState<any[]>([]);
   const [estadoCarga, setEstadoCarga] = useState("Cargando");
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedTab, setSelectedTab] = useState("CARDS");
   const { user } = useAuth();
 
   const refreshCupos = async () => {
-    setEstadoCarga("Cargando");
+    if (cupos.length === 0) {
+      setEstadoCarga("Cargando");
+    } else {
+      setIsRefreshing(true);
+    }
     try {
       // 1. Traer cupos (para obtener fechas)
       const cuposRes = await fetch(`${backendURL}/cargas/${idCarga}/cupos`, {
@@ -45,19 +50,40 @@ export function ContainerCupos() {
         },
       });
       const cuposData = await cuposRes.json();
-      // 2. Para cada fecha, traer los turnos de ese cupo
-      const cuposConTurnos = await Promise.all(
-        cuposData.map(async (cupo: any) => {
-          const turnosRes = await fetch(
-            `${backendURL}/cargas/${idCarga}/cupos/${cupo.fecha}/turnos`,
-            {
-              method: "GET",
-              headers: {
-                "Content-Type": "application/json",
-                "ngrok-skip-browser-warning": "true",
-              },
-            }
-          );
+      // 2. Para cada fecha, traer los turnos de ese cupo (ahora secuencial)
+      const cuposConTurnos = [];
+      for (const cupo of cuposData) {
+        // Validación defensiva
+        if (!idCarga || !cupo.fecha || typeof idCarga !== 'string' || typeof cupo.fecha !== 'string') {
+          console.warn('No se hace fetch de turnos por datos inválidos:', { idCarga, fecha: cupo.fecha });
+          cuposConTurnos.push({
+            ...cupo,
+            turnos: [],
+            turnosConErrores: [],
+            _error: 'Datos inválidos para fetch de turnos',
+          });
+          continue;
+        }
+        try {
+          const url = `${backendURL}/cargas/${idCarga}/cupos/${cupo.fecha}/turnos`;
+         // console.log('Haciendo fetch de turnos:', url);
+          const turnosRes = await fetch(url, {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              "ngrok-skip-browser-warning": "true",
+            },
+          });
+          if (!turnosRes.ok) {
+            console.error('Error HTTP al obtener turnos', { url, status: turnosRes.status });
+            cuposConTurnos.push({
+              ...cupo,
+              turnos: [],
+              turnosConErrores: [],
+              _error: `HTTP ${turnosRes.status}`,
+            });
+            continue;
+          }
           const turnosData = await turnosRes.json();
           // turnosData puede venir como { turnos: [...] } o como array directo
           const turnos = Array.isArray(turnosData)
@@ -81,21 +107,31 @@ export function ContainerCupos() {
                 ? { patente: turno.acopladoExtra }
                 : turno.acopladoExtra,
           });
-          return {
+          cuposConTurnos.push({
             ...cupo,
             turnos: Array.isArray(turnos) ? turnos.map(normalizarTurno) : [],
             turnosConErrores: Array.isArray(turnosConErrores)
               ? turnosConErrores.map(normalizarTurno)
               : [],
-          };
-        })
-      );
+          });
+        } catch (err) {
+          console.error('Excepción al obtener turnos', { idCarga, fecha: cupo.fecha, err });
+          cuposConTurnos.push({
+            ...cupo,
+            turnos: [],
+            turnosConErrores: [],
+            _error: 'Excepción en fetch de turnos',
+          });
+        }
+      }
       setCupos(cuposConTurnos);
       setEstadoCarga("Cargado");
     } catch (e) {
       setEstadoCarga("Cargado");
       setCupos([]);
       console.error("Error al obtener los cupos o turnos", e);
+    } finally {
+      setIsRefreshing(false);
     }
   };
 
@@ -202,44 +238,84 @@ export function ContainerCupos() {
         )}
       </Box>
 
-      {estadoCarga === "Cargando" && (
-        <Box
-          display="flex"
-          flexDirection="row"
-          width="100%"
-          height="100%"
-          justifyContent="center"
-          alignItems="center"
-          gap={3}
-          minHeight="60vh"
-        >
-          <CircularProgress />
-          <Typography variant="h5">
-            <b>Cargando...</b>
-          </Typography>
-        </Box>
-      )}
+      <Box sx={{ position: 'relative', width: '100%' }}>
+        {isRefreshing && (
+          <Box
+            sx={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: '100%',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              backgroundColor: 'rgba(255, 255, 255, 0.7)',
+              zIndex: 10,
+            }}
+          >
+            <CircularProgress />
+          </Box>
+        )}
 
-      {(!isIngeniero && selectedTab === "CARDS") || (isIngeniero) ? (
-        <CuposCardsContainer
-          cupos={cupos}
-          fields={fields}
-          headerNames={headerNames}
-          idCarga={idCarga}
-          refreshCupos={refreshCupos}
-          estadoCarga={estadoCarga}
-        />
-      ) : null}
-      {!isIngeniero && selectedTab === "GRID" && (
-        <CuposGridContainer cupos={cupos} refreshCupos={refreshCupos} estadoCarga={estadoCarga} />
-      )}
-      {!isIngeniero && selectedTab === "POR_DIA" && (
-        <CuposGridPorDiaContainer
-          cupos={cupos}
-          refreshCupos={refreshCupos}
-          estadoCarga={estadoCarga}
-        />
-      )}
+        {estadoCarga === "Cargando" ? (
+          <Box
+            display="flex"
+            flexDirection="row"
+            width="100%"
+            height="100%"
+            justifyContent="center"
+            alignItems="center"
+            gap={3}
+            minHeight="60vh"
+          >
+            <CircularProgress />
+            <Typography variant="h5">
+              <b>Cargando...</b>
+            </Typography>
+          </Box>
+        ) : estadoCarga === "Cargado" && cupos.length > 0 ? (
+          <Box width="100%">
+            {selectedTab === "CARDS" && (
+              <CuposCardsContainer
+                cupos={cupos}
+                refreshCupos={refreshCupos}
+                fields={fields}
+                headerNames={headerNames}
+                idCarga={idCarga}
+                estadoCarga={estadoCarga}
+              />
+            )}
+            {selectedTab === "GRID" && (
+              <CuposGridContainer
+                cupos={cupos}
+                refreshCupos={refreshCupos}
+                estadoCarga={estadoCarga}
+              />
+            )}
+            {selectedTab === "POR_DIA" && (
+              <CuposGridPorDiaContainer
+                cupos={cupos}
+                refreshCupos={refreshCupos}
+                estadoCarga={estadoCarga}
+              />
+            )}
+          </Box>
+        ) : (
+          <Box
+            display="flex"
+            flexDirection="column"
+            alignItems="center"
+            justifyContent="center"
+            height="50vh"
+          >
+            <ClearSharpIcon style={{ fontSize: "5rem", color: "gray" }} />
+            <Typography variant="h6" color="textSecondary">
+              No hay cupos disponibles.
+            </Typography>
+          </Box>
+        )}
+      </Box>
 
       <Dialog
         open={openDialog}

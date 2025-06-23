@@ -21,7 +21,7 @@ import TurnoForm from "../../forms/turnos/TurnoForm";
 import { useAuth } from '../../autenticacion/ContextoAuth';
 
 const StyledCaja = styled(Box)(() => ({
-  minWidth: 180,
+  minWidth: 230,
   minHeight: 170,
   maxHeight: 230,
   maxWidth: 230,
