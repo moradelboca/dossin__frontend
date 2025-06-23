@@ -118,39 +118,65 @@ Respondé de forma clara, cálida y paso a paso, usando solo la información de 
               content: userMessageText
                 }
           ],
+          reasoning: {},
           tools: [
             {
-              type: "function",
-              function: {
-                name: "respuesta_json",
-                description: "Devuelve la respuesta estructurada para el helpbot.",
-                parameters: {
-                  type: "object",
-                  properties: {
-                    permiso: { type: "boolean", description: "Si el usuario tiene permiso para la acción" },
-                    message: { type: ["string", "null"], description: "Mensaje de ayuda o explicación" },
-                    pagina: { type: ["string", "null"], description: "Página sugerida o relevante" },
-                    sugerencias: {
-                      type: ["array", "null"],
-                      items: { type: "string" },
-                      description: "Sugerencias adicionales para el usuario"
-                    }
+              "type": "function",
+              "name": "respuesta_json",
+              "description": "Devuelve la respuesta estructurada para el helpbot.",
+              "parameters": {
+                "type": "object",
+                "required": [
+                  "permiso",
+                  "message",
+                  "pagina",
+                  "sugerencias"
+                ],
+                "properties": {
+                  "permiso": {
+                    "type": "boolean",
+                    "description": "Si el usuario tiene permiso para la acción"
                   },
-                  required: ["permiso", "message", "pagina"]
-                }
-              }
+                  "message": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "description": "Mensaje de ayuda o explicación"
+                  },
+                  "pagina": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "description": "Página sugerida o relevante"
+                  },
+                  "sugerencias": {
+                    "type": [
+                      "array",
+                      "null"
+                    ],
+                    "description": "Sugerencias adicionales para el usuario",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "additionalProperties": false
+              },
+              "strict": true
             },
             {
               "type": "file_search",
               "vector_store_ids": [
-              "vs_68595443a6208191bc452748082d28ac"
+                "vs_68595443a6208191bc452748082d28ac"
               ]
             }
           ],
-          tool_choice: "auto",
           temperature: 1,
-          max_tokens: 2048,
-          top_p: 1
+          max_output_tokens: 2048,
+          top_p: 1,
+          store: true
         };
         console.log('HelpBot: Payload enviado a la IA:', openaiPayload);
         const response: Response = await fetchWithTimeout('https://api.openai.com/v1/chat/completions', {
