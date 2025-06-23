@@ -26,6 +26,8 @@ export interface AdelantoEfectivo {
   idTurnoDeCarga: number | string;
   idTipoMedioPago: number;
   montoAdelantado: number;
+  // Permitir que venga como objeto para precarga robusta
+  tipoMedioPago?: { id: number; nombre: string };
 }
 
 interface AdelantoEfectivoFormProps {
@@ -92,63 +94,32 @@ const AdelantoEfectivoForm: React.FC<AdelantoEfectivoFormProps> = ({
           method: "GET",
           headers,
         });
-        if (!response.ok)
-          throw new Error("Error al obtener los tipos de medio de pago");
+        if (!response.ok) throw new Error("Error al obtener los tipos de medio de pago");
         const data = await response.json();
         setTiposMedioPagoOptions(data);
       } catch (error) {
         console.error(error);
       }
     };
-
     fetchTiposMedioPago();
   }, [backendURL]);
 
-  // 2. Obtener el listado de adelantos efectivos filtrados por turnoId
+  // Precarga robusta: cuando initialAdelanto y las opciones están, setear todo
   useEffect(() => {
-    const fetchAdelantos = async () => {
-      try {
-        const response = await fetch(`${backendURL}/adelantos/efectivo`, {
-          method: "GET",
-          headers,
-        });
-        if (!response.ok)
-          throw new Error("Error al obtener los adelantos efectivos");
-    
-        // Si se pasó un adelanto inicial se establece
-        if (initialAdelanto) {
-          const transformed = transformAdelanto(initialAdelanto);
-          setAdelanto(transformed);
-          setMontoAdelantado(transformed.montoAdelantado);
-        }
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
-    fetchAdelantos();
-  }, [backendURL, turnoId, initialAdelanto]);
-
-  // 3. Establecer el tipo de medio de pago cuando ya hay un adelanto seleccionado
-  useEffect(() => {
-    if (adelanto && tiposMedioPagoOptions.length > 0) {
-      const foundTipo = tiposMedioPagoOptions.find(
-        (tipo) => tipo.id === adelanto.idTipoMedioPago
-      );
-      if (foundTipo) {
-        setTipoMedioPago(foundTipo);
-      }
+    if (initialAdelanto && tiposMedioPagoOptions.length > 0) {
+      // Permitir precarga tanto por idTipoMedioPago como por tipoMedioPago.id
+      const idTipo = initialAdelanto.idTipoMedioPago ?? initialAdelanto.tipoMedioPago?.id;
+      const foundTipo = tiposMedioPagoOptions.find((tipo) => tipo.id === idTipo) || null;
+      setTipoMedioPago(foundTipo);
+      setMontoAdelantado(initialAdelanto.montoAdelantado ?? "");
+      setAdelanto(initialAdelanto);
     }
-  }, [adelanto, tiposMedioPagoOptions]);
-
-  const transformAdelanto = (record: any): AdelantoEfectivo => {
-    return {
-      id: record.id,
-      idTurnoDeCarga: record.turnoDeCarga?.id,
-      idTipoMedioPago: record.tipoMedioPago?.id,
-      montoAdelantado: record.montoAdelantado,
-    };
-  };
+    if (!initialAdelanto) {
+      setTipoMedioPago(null);
+      setMontoAdelantado("");
+      setAdelanto(undefined);
+    }
+  }, [initialAdelanto, tiposMedioPagoOptions]);
 
   // Validación simple de los campos
   const validate = () => {
@@ -174,7 +145,7 @@ const AdelantoEfectivoForm: React.FC<AdelantoEfectivoFormProps> = ({
     }
 
     const payload: AdelantoEfectivo = {
-      idTurnoDeCarga: turnoId,
+      idTurnoDeCarga: String(turnoId),
       idTipoMedioPago: tipoMedioPago.id,
       montoAdelantado: Number(montoAdelantado),
     };
@@ -244,7 +215,7 @@ const AdelantoEfectivoForm: React.FC<AdelantoEfectivoFormProps> = ({
         getOptionLabel={(option) => option.nombre}
         value={tipoMedioPago}
         onChange={(_event, newValue) => setTipoMedioPago(newValue)}
-        sx={azulStyles}
+        sx={{ ...azulStyles, mt: 2 }}
         renderInput={(params) => (
           <TextField
             {...params}

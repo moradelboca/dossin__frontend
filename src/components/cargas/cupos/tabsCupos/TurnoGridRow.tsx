@@ -118,6 +118,26 @@ const TurnoGridRow: React.FC<TurnoGridRowProps> = ({ turno, cupo, refreshCupos, 
     }
     // Botones extra
     const isContableOrLogistica = rolId === 2 || rolId === 4;
+    if (rolId !== 3) {
+      botones.push(
+        <Button
+          key="adelanto"
+          variant="outlined"
+          color="secondary"
+          fullWidth
+          sx={{
+            borderColor: theme.colores.azul,
+            color: theme.colores.azul,
+            '&:hover': { borderColor: theme.colores.azul, backgroundColor: '#f0f8ff' },
+            justifyContent: 'flex-start',
+            mt: 1
+          }}
+          onClick={() => manejoTurnos.setOpenDialog('adelanto')}
+        >
+          Adelanto
+        </Button>
+      );
+    }
     if (isAdmin) {
       botones.push(
         <Tooltip title="Eliminar turno" key="delete">

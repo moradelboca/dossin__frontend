@@ -76,26 +76,7 @@ INSTRUCCIONES:
 1. Antes de responder, revisá primero la información de permisos. Si el usuario no tiene permiso para la acción, respondé solo eso y no sigas.
 2. Si tiene permiso, explicá el flujo usando la documentación de pantallas, priorizando la pantalla relevante según la pregunta o el contexto.
 3. Solo usá la documentación de acciones si el usuario pide detalles paso a paso o información muy específica sobre cómo realizar la acción.
-Respondé de forma clara, cálida y paso a paso, usando solo la información de los DOCUMENTOS. Si hay acciones relacionadas, sugerilas al final. Si no sabés la respuesta, decí que no sabés.
-Respondé siempre en formato JSON válido, exactamente como en el ejemplo:
-
-EJEMPLO:
-Pregunta: ¿Cómo puedo modificar un turno?
-Respuesta:
-{
-  "permiso": true,
-  "message": "No te preocupes, es fácil. Primero dirigite a Contratos, seleccioná un contrato y hacé clic en 'Crear carga +'. Una vez ahí, si querés sigo explicándote.",
-  "pagina": "Contratos",
-  "sugerencias": ["¿Querés saber cómo editar los datos del turno una vez que lo abriste?"]
-}
-
-Si no hay suficiente información en los DOCUMENTOS para responder, devolvé:
-{
-  "permiso": false,
-  "message": null,
-  "pagina": null,
-  "sugerencias": null
-}`;
+Respondé de forma clara, cálida y paso a paso, usando solo la información de los DOCUMENTOS. Si hay acciones relacionadas, sugerilas al final. Si no sabés la respuesta, decí que no sabés.`;
 
   const handleSend = async () => {
     if (!input.trim()) return;
@@ -126,48 +107,53 @@ Si no hay suficiente información en los DOCUMENTOS para responder, devolvé:
           .join('\n');
         const userMessageText = `Rol: ${user?.rol?.nombre || user?.rol?.id}\nPágina: ${window.location.pathname}\nHistorial: ${historySummary}\nMensaje: ${inputWithIntent}`;
         const openaiPayload = {
-          model: "gpt-4.1-nano",
-          input: [
+          model: "gpt-4.1",
+          messages: [
             {
               role: "system",
-              content: [
-                {
-                  type: "input_text",
-                  text: helpBotSystemPrompt
-                }
-              ]
+              content: helpBotSystemPrompt
             },
             {
               role: "user",
-              content: [
-                {
-                  type: "input_text",
-                  text: userMessageText
+              content: userMessageText
                 }
-              ]
-            }
           ],
-          text: {
-            format: {
-              type: "text"
-            }
-          },
-          reasoning: {},
           tools: [
             {
-              type: "file_search",
-              vector_store_ids: [
-               "vs_68484698d77481919b023232b0869517"
+              type: "function",
+              function: {
+                name: "respuesta_json",
+                description: "Devuelve la respuesta estructurada para el helpbot.",
+                parameters: {
+                  type: "object",
+                  properties: {
+                    permiso: { type: "boolean", description: "Si el usuario tiene permiso para la acción" },
+                    message: { type: ["string", "null"], description: "Mensaje de ayuda o explicación" },
+                    pagina: { type: ["string", "null"], description: "Página sugerida o relevante" },
+                    sugerencias: {
+                      type: ["array", "null"],
+                      items: { type: "string" },
+                      description: "Sugerencias adicionales para el usuario"
+                    }
+                  },
+                  required: ["permiso", "message", "pagina"]
+                }
+              }
+            },
+            {
+              "type": "file_search",
+              "vector_store_ids": [
+              "vs_68595443a6208191bc452748082d28ac"
               ]
             }
           ],
-          temperature: 0,
-          max_output_tokens: 1024,
-          top_p: 1,
-          store: true
+          tool_choice: "auto",
+          temperature: 1,
+          max_tokens: 2048,
+          top_p: 1
         };
         console.log('HelpBot: Payload enviado a la IA:', openaiPayload);
-        const response: Response = await fetchWithTimeout('https://api.openai.com/v1/responses', {
+        const response: Response = await fetchWithTimeout('https://api.openai.com/v1/chat/completions', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -177,33 +163,26 @@ Si no hay suficiente información en los DOCUMENTOS para responder, devolvé:
         }, 30000);
         const data = await response.json();
         console.log('HelpBot: Respuesta completa de la API:', data);
-        let rawText = '';
         if (
-          Array.isArray(data.output) &&
-          data.output.length > 1 &&
-          Array.isArray(data.output[1].content) &&
-          data.output[1].content.length > 0 &&
-          typeof data.output[1].content[0].text === 'string'
+          data.choices &&
+          data.choices[0] &&
+          data.choices[0].message &&
+          data.choices[0].message.tool_calls &&
+          data.choices[0].message.tool_calls[0] &&
+          data.choices[0].message.tool_calls[0].function &&
+          typeof data.choices[0].message.tool_calls[0].function.arguments === 'string'
         ) {
-          rawText = data.output[1].content[0].text;
-        } else if (typeof data.output === 'string') {
-          rawText = data.output;
-        } else if (data.error && data.error.message) {
-          rawText = `Error IA: ${data.error.message}`;
-        } else {
-          rawText = 'No se pudo obtener respuesta de la IA.';
-          errorFinal = JSON.stringify(data);
-        }
-        console.log('HelpBot: Respuesta rawText de la IA:', rawText);
-        // Intentar parsear JSON
         try {
-          aiResponse = JSON.parse(rawText);
-          console.log('HelpBot: Objeto parseado de la IA:', aiResponse);
+            aiResponse = JSON.parse(data.choices[0].message.tool_calls[0].function.arguments);
           aiContent = aiResponse && typeof aiResponse === 'object' && 'message' in aiResponse ? aiResponse.message || '' : '';
         } catch (e) {
           aiContent = 'Error: la IA no devolvió un JSON válido.';
+            aiResponse = undefined;
+            console.error('HelpBot: Error parseando JSON de la IA:', e, data.choices[0].message.tool_calls[0].function.arguments);
+          }
+        } else {
+          aiContent = 'No se pudo obtener respuesta de la IA.';
           aiResponse = undefined;
-          console.error('HelpBot: Error parseando JSON de la IA:', e, rawText);
         }
         break;
       } catch (e) {

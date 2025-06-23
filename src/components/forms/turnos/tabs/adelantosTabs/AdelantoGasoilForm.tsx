@@ -23,10 +23,12 @@ interface TipoCombustible {
 
 export interface AdelantoGasoil {
   id?: number;
-  idTurnoDeCarga: number;
+  idTurnoDeCarga: string;
   idTipoCombustible: number;
   cantLitros: number;
   precioLitros: number;
+  tipoCombustible?: { id: number; nombre: string };
+  precio?: number;
 }
 
 interface AdelantoGasoilFormProps {
@@ -53,18 +55,10 @@ const AdelantoGasoilForm: React.FC<AdelantoGasoilFormProps> = ({
   const isMobile = useMediaQuery(tema.breakpoints.down("sm"));
 
   // Estado para el adelanto actualmente seleccionado
-  const [adelanto, setAdelanto] = useState<AdelantoGasoil | undefined>(
-    initialAdelanto
-  );
-  // Estados para el formulario
-  const [tipoCombustible, setTipoCombustible] =
-    useState<TipoCombustible | null>(null);
-  const [cantLitros, setCantLitros] = useState<number | "">(
-    initialAdelanto?.cantLitros || ""
-  );
-  const [precioLitros, setPrecioLitros] = useState<number | "">(
-    initialAdelanto?.precioLitros || ""
-  );
+  const [adelanto, setAdelanto] = useState<AdelantoGasoil | undefined>(initialAdelanto);
+  const [tipoCombustible, setTipoCombustible] = useState<TipoCombustible | null>(null);
+  const [cantLitros, setCantLitros] = useState<number | "">("");
+  const [precioLitros, setPrecioLitros] = useState<number | "">("");
   const [errors, setErrors] = useState<{
     tipoCombustible?: string;
     cantLitros?: string;
@@ -96,64 +90,34 @@ const AdelantoGasoilForm: React.FC<AdelantoGasoilFormProps> = ({
           method: "GET",
           headers,
         });
-        if (!response.ok)
-          throw new Error("Error al obtener los tipos de gasoil");
+        if (!response.ok) throw new Error("Error al obtener los tipos de gasoil");
         const data = await response.json();
         setTiposCombustibleOptions(data);
       } catch (error) {
         console.error(error);
       }
     };
-
     fetchTiposCombustible();
   }, [backendURL]);
 
-  // 2. Obtener el listado de adelantos para el turno y filtrar por turnoId
+  // Precarga robusta: cuando initialAdelanto y las opciones están, setear todo
   useEffect(() => {
-    const fetchAdelantos = async () => {
-      try {
-        const response = await fetch(`${backendURL}/adelantos/gasoil`, {
-          method: "GET",
-          headers,
-        });
-        if (!response.ok)
-          throw new Error("Error al obtener los adelantos de gasoil");
-      
-        if (initialAdelanto) {
-          const transformed = transformAdelanto(initialAdelanto);
-          setAdelanto(transformed);
-          setCantLitros(transformed.cantLitros);
-          setPrecioLitros(transformed.precioLitros);
-        }
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
-    fetchAdelantos();
-  }, [backendURL, turnoId, initialAdelanto]);
-
-  // 3. Actualizar el tipo de combustible si ya hay un adelanto seleccionado
-  useEffect(() => {
-    if (adelanto && tiposCombustibleOptions.length > 0) {
-      const foundTipo = tiposCombustibleOptions.find(
-        (tipo) => tipo.id === adelanto.idTipoCombustible
-      );
-      if (foundTipo) {
-        setTipoCombustible(foundTipo);
-      }
+    if (initialAdelanto && tiposCombustibleOptions.length > 0) {
+      // Permitir precarga tanto por idTipoCombustible como por tipoCombustible.id
+      const idTipo = initialAdelanto.idTipoCombustible ?? initialAdelanto.tipoCombustible?.id;
+      const foundTipo = tiposCombustibleOptions.find((tipo) => tipo.id === idTipo) || null;
+      setTipoCombustible(foundTipo);
+      setCantLitros(initialAdelanto.cantLitros ?? "");
+      setPrecioLitros(initialAdelanto.precioLitros ?? initialAdelanto.precio ?? "");
+      setAdelanto(initialAdelanto);
     }
-  }, [adelanto, tiposCombustibleOptions]);
-
-  const transformAdelanto = (record: any): AdelantoGasoil => {
-    return {
-      id: record.id,
-      idTurnoDeCarga: record.turnoDeCarga?.id,
-      idTipoCombustible: record.tipoCombustible?.id,
-      cantLitros: record.cantLitros,
-      precioLitros: record.precio, // Si el backend lo llama 'precio'
-    };
-  };
+    if (!initialAdelanto) {
+      setTipoCombustible(null);
+      setCantLitros("");
+      setPrecioLitros("");
+      setAdelanto(undefined);
+    }
+  }, [initialAdelanto, tiposCombustibleOptions]);
 
   // Validación simple
   const validate = () => {
@@ -190,7 +154,7 @@ const AdelantoGasoilForm: React.FC<AdelantoGasoilFormProps> = ({
     }
 
     const payload = {
-      idTurnoDeCarga: turnoId,
+      idTurnoDeCarga: String(turnoId),
       idTipoCombustible: tipoCombustible.id,
       cantLitros: Number(cantLitros),
       precioLitros: Number(precioLitros),
@@ -260,7 +224,7 @@ const AdelantoGasoilForm: React.FC<AdelantoGasoilFormProps> = ({
         getOptionLabel={(option) => option.nombre}
         value={tipoCombustible}
         onChange={(_event, newValue) => setTipoCombustible(newValue)}
-        sx={azulStyles}
+        sx={{ ...azulStyles, mt: 2 }}
         renderInput={(params) => (
           <TextField
             {...params}

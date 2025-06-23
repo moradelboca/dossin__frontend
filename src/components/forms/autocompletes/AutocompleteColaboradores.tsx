@@ -39,7 +39,11 @@ const AutocompleteColaboradores: React.FC<AutocompleteColaboradoresProps> = ({
       },
     })
       .then(response => response.json())
-      .then((data: Colaborador[]) => setColaboradores(data))
+      .then((data: Colaborador[]) => {
+        // Fuerzo que todos los cuil sean string
+        const normalizados = data.map(col => ({ ...col, cuil: col.cuil.toString() }));
+        setColaboradores(normalizados);
+      })
       .catch(err => console.error('Error al obtener colaboradores', err));
   }, [backendURL]);
 

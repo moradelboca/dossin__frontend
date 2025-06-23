@@ -45,19 +45,40 @@ export function ContainerCupos() {
         },
       });
       const cuposData = await cuposRes.json();
-      // 2. Para cada fecha, traer los turnos de ese cupo
-      const cuposConTurnos = await Promise.all(
-        cuposData.map(async (cupo: any) => {
-          const turnosRes = await fetch(
-            `${backendURL}/cargas/${idCarga}/cupos/${cupo.fecha}/turnos`,
-            {
-              method: "GET",
-              headers: {
-                "Content-Type": "application/json",
-                "ngrok-skip-browser-warning": "true",
-              },
-            }
-          );
+      // 2. Para cada fecha, traer los turnos de ese cupo (ahora secuencial)
+      const cuposConTurnos = [];
+      for (const cupo of cuposData) {
+        // Validación defensiva
+        if (!idCarga || !cupo.fecha || typeof idCarga !== 'string' || typeof cupo.fecha !== 'string') {
+          console.warn('No se hace fetch de turnos por datos inválidos:', { idCarga, fecha: cupo.fecha });
+          cuposConTurnos.push({
+            ...cupo,
+            turnos: [],
+            turnosConErrores: [],
+            _error: 'Datos inválidos para fetch de turnos',
+          });
+          continue;
+        }
+        try {
+          const url = `${backendURL}/cargas/${idCarga}/cupos/${cupo.fecha}/turnos`;
+         // console.log('Haciendo fetch de turnos:', url);
+          const turnosRes = await fetch(url, {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              "ngrok-skip-browser-warning": "true",
+            },
+          });
+          if (!turnosRes.ok) {
+            console.error('Error HTTP al obtener turnos', { url, status: turnosRes.status });
+            cuposConTurnos.push({
+              ...cupo,
+              turnos: [],
+              turnosConErrores: [],
+              _error: `HTTP ${turnosRes.status}`,
+            });
+            continue;
+          }
           const turnosData = await turnosRes.json();
           // turnosData puede venir como { turnos: [...] } o como array directo
           const turnos = Array.isArray(turnosData)
@@ -81,15 +102,23 @@ export function ContainerCupos() {
                 ? { patente: turno.acopladoExtra }
                 : turno.acopladoExtra,
           });
-          return {
+          cuposConTurnos.push({
             ...cupo,
             turnos: Array.isArray(turnos) ? turnos.map(normalizarTurno) : [],
             turnosConErrores: Array.isArray(turnosConErrores)
               ? turnosConErrores.map(normalizarTurno)
               : [],
-          };
-        })
-      );
+          });
+        } catch (err) {
+          console.error('Excepción al obtener turnos', { idCarga, fecha: cupo.fecha, err });
+          cuposConTurnos.push({
+            ...cupo,
+            turnos: [],
+            turnosConErrores: [],
+            _error: 'Excepción en fetch de turnos',
+          });
+        }
+      }
       setCupos(cuposConTurnos);
       setEstadoCarga("Cargado");
     } catch (e) {

@@ -533,6 +533,7 @@ export function renderTurnosDialogs({
               rolPermitido={true}
               onSuccess={handleFormSuccess}
               onCancel={() => setOpenDialog(null)}
+              adelantos={turnoLocal.adelantos}
             />
           </DialogContent>
         </Dialog>

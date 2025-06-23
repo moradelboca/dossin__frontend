@@ -1,0 +1,120 @@
+{
+  "pantalla": "Contratos",
+  "descripcion": "En esta pantalla podés ver y gestionar todos los contratos. Cada contrato muestra información del titular, destinatario y las cargas asociadas.",
+  
+  "como_llegar": {
+    "pasos": [
+      "Hacé clic en 'Contratos' en la barra lateral izquierda",
+      "Verás la lista de todos los contratos disponibles"
+    ]
+  },
+
+  "elementos_principales": {
+    "lista_de_contratos": {
+      "descripcion": "Cada contrato se muestra como una tarjeta que contiene:",
+      "elementos": [
+        "Nombre del titular",
+        "Nombre del destinatario",
+        "Botones para crear carga y editar contrato",
+        "Lista de cargas asociadas a la derecha"
+      ]
+    },
+    "cargas_del_contrato": {
+      "descripcion": "A la derecha de cada contrato verás las cargas asociadas. Cada carga muestra:",
+      "elementos": [
+        "Ubicación de origen y provincia",
+        "Ubicación de destino y provincia",
+        "Kilómetros del recorrido",
+        "Tarifa y tipo de tarifa",
+        "Tipo de cargamento"
+      ]
+    }
+  },
+
+  "acciones_principales": {
+    "agregar_contrato": {
+      "como": "Hacé clic en el botón 'Agregar contrato +' que está en la parte superior derecha de la pantalla",
+      "que_necesitas": [
+        "Datos del titular de la carta de porte",
+        "Datos del destinatario"
+      ]
+    },
+    "editar_contrato": {
+      "como": "En la tarjeta del contrato, hacé clic en el botón 'Editar contrato'",
+      "que_podes_editar": [
+        "Titular de la carta de porte",
+        "Destinatario"
+      ]
+    },
+    "crear_carga": {
+      "como": "En la tarjeta del contrato, hacé clic en el botón 'Crear carga +'",
+      "descripcion_formulario": "Se abrirá un formulario guiado para crear la carga. El formulario tiene 5 pasos y una barra lateral que resalta el paso activo.",
+      "pasos_formulario": [
+        {
+          "paso": 1,
+          "titulo": "Seleccionar ubicación y horarios",
+          "campos": [
+            "Ubicación de Carga (desplegable con horarios de inicio y fin)",
+            "Ubicación de Descarga (desplegable con horarios de inicio y fin)",
+            "Checkbox 'Requiere balanza' que habilita 'Ubicación de Balanza' (desplegable con horarios)"
+          ]
+        },
+        {
+          "paso": 2,
+          "titulo": "Seleccionar kilómetros y cargamento",
+          "campos": [
+            "Kilómetros (campo de número)",
+            "Cargamento (desplegable)"
+          ]
+        },
+        {
+          "paso": 3,
+          "titulo": "Seleccionar tarifa",
+          "campos": [
+            "Tarifa (campo de número)",
+            "Unidades (desplegable)",
+            "Checkbox 'Incluye IVA'"
+          ]
+        },
+        {
+          "paso": 4,
+          "titulo": "Selecciona tipos de acoplados permitidos",
+          "campos": [
+            "Cuadrícula de selección de tipos de acoplado (Semirremolque, Batea, Sider, etc.)"
+          ]
+        },
+        {
+          "paso": 5,
+          "titulo": "Más información",
+          "campos": [
+            "Descripción (texto, máx. 100 caracteres)",
+            "Planta Procedencia RUCA (obligatorio)",
+            "Destino RUCA (obligatorio)",
+            "Tolerancia (número)"
+          ]
+        }
+      ]
+    }
+  },
+
+  "preguntas_frecuentes": [
+    {
+      "pregunta": "¿Cómo veo las cargas de un contrato?",
+      "respuesta": "Las cargas aparecen automáticamente a la derecha de cada contrato, mostrando toda la información importante como origen, destino, kilómetros y tarifa."
+    },
+    {
+      "pregunta": "¿Puedo tener varias cargas en un mismo contrato?",
+      "respuesta": "Sí, podés crear todas las cargas que necesites para un contrato usando el botón 'Crear carga +'."
+    },
+    {
+      "pregunta": "¿Qué pasa si edito un contrato?",
+      "respuesta": "Al editar un contrato, las cargas asociadas se mantienen. Solo cambiarán los datos del titular o destinatario que modifiques."
+    }
+  ],
+
+  "consejos_utiles": [
+    "Creá primero el contrato con los datos básicos y después agregá las cargas que necesites",
+    "Podés tener varias cargas con diferentes destinos en un mismo contrato",
+    "Revisá bien los datos antes de crear una carga, especialmente la tarifa y los kilómetros"
+  ]
+} 

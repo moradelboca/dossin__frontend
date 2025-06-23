@@ -1,0 +1,91 @@
+{
+  "Administrador": {
+    "pantallas": {
+      "Cargas": ["ver", "crear", "editar", "eliminar", "ver detalles", "ver mapa"],
+      "Cupos": ["ver", "crear", "editar", "eliminar", "corregir turnos con error"],
+      "Turnos": ["ver", "crear", "editar", "eliminar", "cambiar estado libremente"],
+      "Usuarios": ["ver", "crear", "editar", "eliminar", "asignar roles y permisos"],
+      "Colaboradores": ["ver", "crear", "editar", "eliminar"],
+      "Empresas": ["ver", "crear", "editar", "eliminar"],
+      "Contratos": ["ver", "crear", "editar", "eliminar"],
+      "Camiones": ["ver", "crear", "editar", "eliminar"],
+      "Ubicaciones": ["ver", "crear", "editar", "eliminar"],
+      "Inconvenientes": ["ver", "crear", "editar", "eliminar"],
+      "Clima": ["ver"],
+      "Calculadora": ["ver"],
+      "Dashboard": ["ver"]
+    },
+    "notas": [
+      "El administrador puede acceder a todas las pantallas y realizar cualquier acción.",
+      "Puede cambiar el estado de los turnos en cualquier momento.",
+      "Puede corregir turnos con errores y eliminar cualquier entidad."
+    ]
+  },
+  "Logística": {
+    "pantallas": {
+      "Cargas": ["ver", "crear", "editar"],
+      "Cupos": ["ver", "crear", "editar", "eliminar", "corregir turnos con error"],
+      "Turnos": ["ver", "crear", "editar", "eliminar", "operar sobre estados: Con errores, Validado"],
+      "Usuarios": [],
+      "Colaboradores": ["ver", "crear", "editar"],
+      "Empresas": ["ver", "crear", "editar"],
+      "Contratos": ["ver", "crear", "editar"],
+      "Camiones": ["ver", "crear", "editar"],
+      "Ubicaciones": ["ver", "crear", "editar"],
+      "Inconvenientes": ["ver", "crear", "editar"],
+      "Clima": ["ver"],
+      "Calculadora": ["ver"],
+      "Dashboard": []
+    },
+    "notas": [
+      "Logística puede operar sobre turnos en estado 'Con errores' y 'Validado'.",
+      "Puede corregir turnos con errores y crear/editar cupos y cargas, pero no eliminarlas.",
+      "No puede eliminar cargas, colaboradores, empresas, camiones, ubicaciones ni inconvenientes.",
+      "No tiene acceso a usuarios ni dashboard."
+    ]
+  },
+  "Ingeniero": {
+    "pantallas": {
+      "Cargas": ["ver lista", "ver mapa", "ver cupos"],
+      "Cupos": ["ver cupos", "ver turnos"],
+      "Turnos": ["ver", "editar kg netos", "editar kg bruto"],
+      "Usuarios": [],
+      "Colaboradores": [],
+      "Empresas": [],
+      "Contratos": [],
+      "Camiones": [],
+      "Ubicaciones": [],
+      "Inconvenientes": [],
+      "Clima": [],
+      "Calculadora": [],
+      "Dashboard": []
+    },
+    "notas": [
+      "El ingeniero solo puede editar campos específicos en turnos (kg netos y kg bruto) y solo en los estados Autorizado y Tarado.",
+      "No puede crear, editar ni eliminar ninguna otra entidad."
+    ]
+  },
+  "Contable": {
+    "pantallas": {
+      "Cargas": [],
+      "Cupos": ["ver", "crear", "editar", "eliminar", "corregir turnos con error"],
+      "Turnos": ["ver", "crear", "editar", "eliminar", "operar sobre estados: Autorizado, Tarado, Cargado, En viaje, Descargado, Facturado, Pagado"],
+      "Usuarios": [],
+      "Colaboradores": ["ver", "crear", "editar"],
+      "Empresas": ["ver", "crear", "editar"],
+      "Contratos": ["ver", "crear", "editar"],
+      "Camiones": ["ver", "crear", "editar"],
+      "Ubicaciones": ["ver"],
+      "Inconvenientes": ["ver", "crear", "editar"],
+      "Clima": [],
+      "Calculadora": [],
+      "Dashboard": []
+    },
+    "notas": [
+      "El Contable puede operar sobre turnos en estados avanzados, pero no puede cambiar el estado libremente.",
+      "Puede crear, editar y eliminar cupos y turnos, pero no cargas.",
+      "No puede eliminar colaboradores, empresas, contratos, camiones, ubicaciones ni inconvenientes.",
+      "No tiene acceso a usuarios, clima, calculadora ni dashboard."
+    ]
+  }
+} 
