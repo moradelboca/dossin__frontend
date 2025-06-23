@@ -28,6 +28,15 @@ const TurnoConErroresForm: React.FC<TurnoConErroresFormProps> = ({
   // Estado para saber si se requiere el bitren
   const [tieneBitren, setTieneBitren] = useState<boolean | null>(null);
 
+  // Estados para errores de validación
+  const [errores, setErrores] = useState({
+    colaborador: '',
+    empresa: '',
+    camion: '',
+    acoplado: '',
+    acopladoExtra: '',
+  });
+
   useEffect(() => {
     const fetchRequiereBitren = async () => {
       try {
@@ -78,31 +87,71 @@ const TurnoConErroresForm: React.FC<TurnoConErroresFormProps> = ({
   }
 
   // Estados para cada uno de los campos
-  const [colaboradorSeleccionado, setColaboradorSeleccionado] = useState<any | null>(
-    seleccionado?.cuilColaborador || null
-  );
-  const [empresaSeleccionada, setEmpresaSeleccionada] = useState<any | null>(
-    seleccionado?.cuitEmpresa || null
-  );
-  const [patenteCamionSeleccionada, setPatenteCamionSeleccionada] = useState<string | null>(
-    seleccionado?.patenteCamion || null
-  );
-  const [patenteAcopladoSeleccionada, setPatenteAcopladoSeleccionada] = useState<string | null>(
-    seleccionado?.patenteAcoplado || null
-  );
-  const [patenteAcopladoExtraSeleccionada, setPatenteAcopladoExtraSeleccionada] = useState<string | null>(
-    seleccionado?.patenteAcopladoExtra || null
-  );
+  // --- COLABORADOR ---
+  const colaboradorEsObjeto = seleccionado?.colaborador && typeof seleccionado.colaborador === 'object';
+  const colaboradorValor = colaboradorEsObjeto ? String(seleccionado.colaborador.cuil) : seleccionado?.colaborador !== undefined && seleccionado?.colaborador !== null ? String(seleccionado.colaborador) : null;
+  const colaboradorError = !colaboradorEsObjeto && !!colaboradorValor;
+
+  const [colaboradorSeleccionado, setColaboradorSeleccionado] = useState<string | null>(colaboradorValor);
+
+  // --- EMPRESA ---
+  const empresaEsObjeto = seleccionado?.empresa && typeof seleccionado.empresa === 'object';
+  const empresaValor = empresaEsObjeto ? String(seleccionado.empresa.cuit) : seleccionado?.empresa !== undefined && seleccionado?.empresa !== null ? String(seleccionado.empresa) : null;
+  const empresaError = !empresaEsObjeto && !!empresaValor;
+
+  const [empresaSeleccionada, setEmpresaSeleccionada] = useState<string | null>(empresaValor);
+
+  // --- CAMION ---
+  const camionEsObjeto = seleccionado?.camion && typeof seleccionado.camion === 'object';
+  const camionValor = camionEsObjeto ? seleccionado.camion.patente : seleccionado?.camion?.toString() || null;
+  const camionError = !camionEsObjeto && !!camionValor;
+
+  const [patenteCamionSeleccionada, setPatenteCamionSeleccionada] = useState<string | null>(camionValor);
+
+  // --- ACOPLADO ---
+  const acopladoEsObjeto = seleccionado?.acoplado && typeof seleccionado.acoplado === 'object';
+  const acopladoValor = acopladoEsObjeto ? seleccionado.acoplado.patente : seleccionado?.acoplado?.toString() || null;
+  const acopladoError = !acopladoEsObjeto && !!acopladoValor;
+
+  const [patenteAcopladoSeleccionada, setPatenteAcopladoSeleccionada] = useState<string | null>(acopladoValor);
+
+  // --- ACOPLADO EXTRA ---
+  const acopladoExtraEsObjeto = seleccionado?.acopladoExtra && typeof seleccionado.acopladoExtra === 'object';
+  const acopladoExtraValor = acopladoExtraEsObjeto ? seleccionado.acopladoExtra.patente : seleccionado?.acopladoExtra?.toString() || null;
+  const acopladoExtraError = !acopladoExtraEsObjeto && !!acopladoExtraValor;
+
+  const [patenteAcopladoExtraSeleccionada, setPatenteAcopladoExtraSeleccionada] = useState<string | null>(acopladoExtraValor);
+
+  // Sincronizar estados con seleccionado cada vez que cambia
+  useEffect(() => {
+    setColaboradorSeleccionado(colaboradorValor);
+    setEmpresaSeleccionada(empresaValor);
+    setPatenteCamionSeleccionada(camionValor);
+    setPatenteAcopladoSeleccionada(acopladoValor);
+    setPatenteAcopladoExtraSeleccionada(acopladoExtraValor);
+  }, [colaboradorValor, empresaValor, camionValor, acopladoValor, acopladoExtraValor]);
 
   const handleSubmit = async () => {
+    // Validación de campos obligatorios
+    const nuevosErrores: typeof errores = {
+      colaborador: !colaboradorSeleccionado ? 'Debe seleccionar un colaborador' : '',
+      empresa: !empresaSeleccionada ? 'Debe seleccionar una empresa' : '',
+      camion: !patenteCamionSeleccionada ? 'Debe seleccionar un camión' : '',
+      acoplado: !patenteAcopladoSeleccionada ? 'Debe seleccionar un acoplado' : '',
+      acopladoExtra: tieneBitren && !patenteAcopladoExtraSeleccionada ? 'Debe seleccionar un acoplado extra' : '',
+    };
+    setErrores(nuevosErrores);
+    // Si hay algún error, no enviar
+    if (Object.values(nuevosErrores).some(e => !!e)) return;
+
     const payload = {
-      idEstado: 5,
       cuilColaborador: colaboradorSeleccionado,
       cuitEmpresa: empresaSeleccionada,
       patenteCamion: patenteCamionSeleccionada,
       patenteAcoplado: patenteAcopladoSeleccionada,
       patenteAcopladoExtra: patenteAcopladoExtraSeleccionada || null,
     };
+
 
     try {
       const response = await fetch(`${backendURL}/turnos/${seleccionado.id}`, {
@@ -126,35 +175,60 @@ const TurnoConErroresForm: React.FC<TurnoConErroresFormProps> = ({
   };
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
+    <Box sx={{ display: "flex", flexDirection: "column", gap: 3, mt: 4 }}>
       {fieldsToShow.includes("colaborador") && (
-        <AutocompleteColaboradores
-          value={colaboradorSeleccionado}
-          onChange={setColaboradorSeleccionado}
-        />
+        <Box sx={{ mt: 0 }}>
+          <AutocompleteColaboradores
+            value={colaboradorSeleccionado}
+            onChange={value => {
+              setColaboradorSeleccionado(value);
+              setErrores(e => ({ ...e, colaborador: '' }));
+            }}
+            helperText={errores.colaborador || (colaboradorError ? "El colaborador ingresado no existe, por favor corrija." : undefined)}
+          />
+        </Box>
       )}
       {fieldsToShow.includes("empresa") && (
         <AutocompleteEmpresas
           value={empresaSeleccionada}
-          onChange={setEmpresaSeleccionada}
+          onChange={value => {
+            setEmpresaSeleccionada(value);
+            setErrores(e => ({ ...e, empresa: '' }));
+          }}
+          helperText={errores.empresa || (empresaError ? "La empresa ingresada no existe, por favor corrija." : undefined)}
         />
       )}
       {fieldsToShow.includes("patenteCamion") && (
         <AutocompleteCamiones
           value={patenteCamionSeleccionada}
-          onChange={setPatenteCamionSeleccionada}
+          onChange={value => {
+            setPatenteCamionSeleccionada(value);
+            setErrores(e => ({ ...e, camion: '' }));
+          }}
+          error={camionError}
+          helperText={errores.camion || (camionError ? "La patente de camión ingresada no existe, por favor corrija." : undefined)}
         />
       )}
       {fieldsToShow.includes("patenteAcoplado") && (
         <AutocompleteAcoplados
           value={patenteAcopladoSeleccionada}
-          onChange={setPatenteAcopladoSeleccionada}
+          onChange={value => {
+            setPatenteAcopladoSeleccionada(value);
+            setErrores(e => ({ ...e, acoplado: '' }));
+          }}
+          error={acopladoError}
+          helperText={errores.acoplado || (acopladoError ? "La patente de acoplado ingresada no existe, por favor corrija." : undefined)}
         />
       )}
       {tieneBitren && fieldsToShow.includes("patenteAcopladoExtra") && (
         <AutocompleteAcoplados
           value={patenteAcopladoExtraSeleccionada}
-          onChange={setPatenteAcopladoExtraSeleccionada}
+          onChange={value => {
+            setPatenteAcopladoExtraSeleccionada(value);
+            setErrores(e => ({ ...e, acopladoExtra: '' }));
+          }}
+          error={acopladoExtraError}
+          helperText={errores.acopladoExtra || (acopladoExtraError ? "La patente de acoplado extra ingresada no existe, por favor corrija." : undefined)}
           tituloOpcional="Patente Acoplado Extra"
         />
       )}

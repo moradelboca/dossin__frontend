@@ -2,6 +2,7 @@ import { Box, Button, Typography } from "@mui/material";
 import { useContext } from "react";
 import { ContextoGeneral } from "../../Contexto";
 import ClearSharpIcon from "@mui/icons-material/ClearSharp";
+import { useNotificacion } from '../../Notificaciones/NotificacionSnackbar';
 
 interface Turnos {
     idTurno: any;
@@ -14,6 +15,7 @@ interface Turnos {
 export default function DeleteTurno(props: Turnos) {
     const { handleCloseDialog, idTurno, handleClose, refreshCupos } = props;
     const { backendURL, theme } = useContext(ContextoGeneral);
+    const { showNotificacion } = useNotificacion();
 
     const handleNoClick = () => {
         handleCloseDialog();
@@ -28,7 +30,7 @@ export default function DeleteTurno(props: Turnos) {
             },
         })
             .then((response) => {
-                if (!response.ok) throw new Error('Error al borrar el turno');
+                if (!response.ok) throw response;
                 return response.json();
             })
             .then(() => {
@@ -36,7 +38,16 @@ export default function DeleteTurno(props: Turnos) {
                 refreshCupos();
                 handleClose();
             })
-            .catch((error) => {
+            .catch(async (error) => {
+                let errorMsg = "Error al borrar el turno";
+                if (error && error.text) {
+                    const text = await error.text();
+                    // Detectar mensaje específico del backend
+                    if (text && (text.includes("adelanto") || text.includes("adelantos"))) {
+                        errorMsg = "No se puede eliminar este turno, tiene adelantos de efectivo o combustible asociados";
+                    }
+                }
+                showNotificacion(errorMsg, 'error');
                 console.error("Error al borrar el turno", error);
             });
     };

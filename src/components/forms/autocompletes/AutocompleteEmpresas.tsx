@@ -49,7 +49,11 @@ const AutocompleteEmpresas: React.FC<AutocompleteEmpresasProps> = ({
       }
     })
       .then(response => response.json())
-      .then((data: Empresa[]) => setAllEmpresas(data))
+      .then((data: Empresa[]) => {
+        // Fuerzo que todos los cuit sean string
+        const normalizados = data.map(emp => ({ ...emp, cuit: emp.cuit.toString() }));
+        setAllEmpresas(normalizados);
+      })
       .catch(err => console.error('Error al obtener las empresas', err));
   }, [backendURL]);
   // Filtra las empresas según el rol (si se pasa)
