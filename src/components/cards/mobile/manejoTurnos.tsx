@@ -464,6 +464,7 @@ export function renderTurnosDialogs({
             <FacturaForm
               cuitEmpresa={turnoFactura.empresa?.cuit}
               turnoId={turnoFactura.id}
+              precioGrano={turnoFactura.precioGrano}
               initialFactura={turnoFactura.factura}
               onSuccess={async () => {
                 try {

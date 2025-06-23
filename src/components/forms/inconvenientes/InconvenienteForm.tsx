@@ -101,7 +101,7 @@ const InconvenienteForm: React.FC<FormularioProps> = ({
           (tipo) => tipo.nombre === tipoInconveniente
         )?.id,
         creadoPor: user?.email,
-        asignadoA: asignadoA?.id || null,
+        asignadoA: asignadoA?.email || null,
       };
 
       // Aquí podrías diferenciar entre POST y PUT según tus necesidades

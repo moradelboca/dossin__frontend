@@ -1,0 +1,247 @@
+{
+  "pantalla": "Cargas",
+  "descripcion": "La pantalla de Cargas permite consultar, filtrar, editar y gestionar todos los datos y etapas logísticas de cada carga desde una sola vista. Se divide en un panel lateral izquierdo para navegación y filtros, y un panel principal para ver detalles y realizar acciones.",
+  
+  "como_llegar": {
+    "pasos": [
+      "Hacé clic en el ícono de 'Cargas' (un camión) en la barra de navegación lateral.",
+      "Llegarás a la pantalla principal de gestión de Cargas."
+    ]
+  },
+
+  "elementos_principales": {
+    "panel_lateral_izquierdo": {
+      "descripcion": "Contiene la lista de todas las cargas y las herramientas para filtrarlas.",
+      "elementos": {
+        "filtros": {
+          "descripcion": "En la parte superior, un menú desplegable permite filtrar la lista de cargas.",
+          "opciones": [
+            "Todas las provincias",
+            "ID",
+            "Provincia Carga",
+            "Provincia Descarga",
+            "Cargamento"
+          ]
+        },
+        "lista_de_cargas": {
+          "descripcion": "Debajo de los filtros, cada carga se muestra en una caja con la siguiente información:",
+          "contenido_caja": [
+            "Título (ej: 'Carga: #3, Maiz Partido')",
+            "Origen (ciudad y provincia)",
+            "Destino (ciudad y provincia)",
+            "Fecha de la carga"
+          ]
+        }
+      }
+    },
+    "panel_principal": {
+      "descripcion": "Muestra todos los detalles de la carga que seleccionaste en el panel izquierdo.",
+      "elementos": {
+        "encabezado": {
+          "descripcion": "En la parte superior, muestra el ID de la carga seleccionada y un botón para eliminarla.",
+          "componentes": [
+            "ID de la carga (ej: #3)",
+            "Botón de eliminar (ícono de papelera)"
+          ]
+        },
+        "recorrido_mapa": {
+          "descripcion": "Un mapa en la parte central que muestra el trayecto entre el origen y el destino, con íconos en cada punto."
+        },
+        "cupos": {
+          "descripcion": "En la parte superior derecha, una caja muestra la gestión de cupos.",
+          "contenido_caja": [
+            "Fecha de la carga",
+            "Cupos confirmados",
+            "Cupos restantes",
+            "Botón para agregar cupo (+)"
+          ]
+        },
+        "detalles_horarios": {
+          "descripcion": "Debajo de los cupos, una caja muestra las fechas y horarios de inicio y fin para cada etapa.",
+          "etapas": [
+            "Balanza",
+            "Carga",
+            "Descarga"
+          ]
+        },
+        "datos_generales": {
+          "descripcion": "En la parte inferior central, se visualizan cajas con datos clave, todos editables.",
+          "campos": [
+            "Tarifa (ej: '$5 / Tonelada')",
+            "Kilómetros",
+            "Cupos creados",
+            "Tipo de acoplado (ej: 'Carreton, PortaCont')"
+          ]
+        },
+        "descripcion_carga": {
+          "descripcion": "En la parte inferior derecha, una caja para agregar o editar notas y observaciones sobre la carga."
+        }
+      }
+    }
+  },
+
+  "acciones_principales": {
+    "ver_detalles": {
+      "como": "Hacé clic en cualquier carga de la lista para ver todos sus detalles",
+      "que_veras": [
+        "El recorrido en el mapa central",
+        "Los cupos disponibles en el panel derecho",
+        "Los horarios de carga y descarga",
+        "La tarifa y kilómetros",
+        "El tipo de acoplado necesario",
+        "La descripción completa"
+      ]
+    },
+    "editar_carga": {
+      "como": "Hacé clic en el ícono de lápiz junto a la carga que querés modificar",
+      "que_podes_editar": [
+        "Ubicaciones de origen y destino",
+        "Horarios de carga y descarga",
+        "Kilómetros del recorrido",
+        "Tarifa y tipo de tarifa",
+        "Tipos de acoplados permitidos",
+        "Descripción y otros detalles"
+      ],
+      "pasos_edicion": {
+        "paso1": {
+          "titulo": "Ubicaciones y horarios",
+          "que_hacer": [
+            "Modificá las ubicaciones de origen/destino si es necesario",
+            "Ajustá los horarios de carga y descarga",
+            "Si la carga necesita balanza, marcá la opción y completá esos datos"
+          ]
+        },
+        "paso2": {
+          "titulo": "Kilómetros y cargamento",
+          "que_hacer": [
+            "Actualizá la cantidad de kilómetros si cambió el recorrido",
+            "Seleccioná el tipo de cargamento de la lista"
+          ]
+        },
+        "paso3": {
+          "titulo": "Tarifa",
+          "que_hacer": [
+            "Ingresá la nueva tarifa si corresponde",
+            "Elegí el tipo de tarifa",
+            "Marcá si incluye IVA"
+          ]
+        },
+        "paso4": {
+          "titulo": "Tipos de acoplados",
+          "que_hacer": [
+            "Seleccioná qué tipos de acoplados se pueden usar para esta carga",
+            "Podés elegir más de uno"
+          ]
+        },
+        "paso5": {
+          "titulo": "Información adicional",
+          "que_hacer": [
+            "Modificá la descripción si es necesario",
+            "Actualizá los datos RUCA si cambiaron",
+            "Ajustá la tolerancia si hace falta"
+          ]
+        }
+      }
+    },
+    "filtrar_cargas": {
+      "como": "Usá el campo de filtro en la parte superior de la lista de cargas",
+      "que_podes_filtrar": [
+        "Por número de carga",
+        "Por tipo de cargamento",
+        "Por ubicación de origen o destino",
+        "Por estado de la carga"
+      ]
+    }
+  },
+
+  "formulario_editar_carga": {
+    "descripcion": "Al hacer clic en el ícono de lápiz de una carga, se abre un formulario guiado para modificar sus datos. El formulario tiene 5 pasos y una barra lateral que resalta el paso activo.",
+    "pasos_formulario": [
+      {
+        "paso": 1,
+        "titulo": "Seleccionar ubicación y horarios",
+        "campos": [
+          "Ubicación de Carga (desplegable con horarios de inicio y fin)",
+          "Ubicación de Descarga (desplegable con horarios de inicio y fin)",
+          "Checkbox 'Requiere balanza' que habilita 'Ubicación de Balanza' (desplegable con horarios)"
+        ]
+      },
+      {
+        "paso": 2,
+        "titulo": "Seleccionar kilómetros y cargamento",
+        "campos": [
+          "Kilómetros (campo de número)",
+          "Cargamento (desplegable)"
+        ]
+      },
+      {
+        "paso": 3,
+        "titulo": "Seleccionar tarifa",
+        "campos": [
+          "Tarifa (campo de número)",
+          "Unidades (desplegable)",
+          "Checkbox 'Incluye IVA'"
+        ]
+      },
+      {
+        "paso": 4,
+        "titulo": "Selecciona tipos de acoplados permitidos",
+        "campos": [
+          "Cuadrícula de selección de tipos de acoplado (Semirremolque, Batea, Sider, etc.)"
+        ]
+      },
+      {
+        "paso": 5,
+        "titulo": "Más información",
+        "campos": [
+          "Descripción (texto, máx. 100 caracteres)",
+          "Planta Procedencia RUCA (obligatorio)",
+          "Destino RUCA (obligatorio)",
+          "Tolerancia (número)"
+        ]
+      }
+    ]
+  },
+
+  "preguntas_frecuentes": [
+    {
+      "pregunta": "¿Cómo veo los detalles de una carga?",
+      "respuesta": "Simplemente hacé clic en la carga que te interesa en la lista de la izquierda. Todos sus detalles aparecerán en el mapa y en el panel derecho."
+    },
+    {
+      "pregunta": "¿Puedo crear una nueva carga?",
+      "respuesta": "No, en esta pantalla solo se pueden ver y editar cargas existentes. Las cargas nuevas se crean desde la pantalla de Contratos."
+    },
+    {
+      "pregunta": "¿Qué hago si necesito modificar una carga?",
+      "respuesta": "Buscá la carga en la lista y hacé clic en el ícono de lápiz. Se abrirá un formulario paso a paso donde podrás modificar todos los datos necesarios."
+    },
+    {
+      "pregunta": "¿Por qué no veo cupos en una carga?",
+      "respuesta": "Si no hay cupos visibles, puede ser porque aún no se han creado cupos para esa carga. Los cupos se crean y gestionan por separado."
+    },
+    {
+      "pregunta": "¿Cómo edito los kilómetros de una carga?",
+      "respuesta": "Primero, seleccioná la carga en la lista de la izquierda. Luego, en el panel principal, andá a la caja 'Kilómetros' en la parte inferior central y hacé clic en el ícono de lápiz. Se abrirá el formulario de edición en el paso correspondiente para que puedas modificar el valor."
+    },
+    {
+      "pregunta": "¿Dónde agrego un cupo a una carga?",
+      "respuesta": "Seleccioná la carga que querés gestionar. En el panel principal, arriba a la derecha, verás la caja 'Cupos'. Hacé clic en el botón con el ícono de suma (+) para agregar un nuevo cupo."
+    },
+    {
+      "pregunta": "¿Por qué no puedo eliminar una carga?",
+      "respuesta": "Probablemente la carga que intentás eliminar ya tiene cupos o turnos asociados. El sistema no permite eliminar cargas con datos vinculados para evitar inconsistencias. Primero debés quitar los cupos y turnos."
+    },
+    {
+      "pregunta": "¿Para qué sirve la sección 'Descripción'?",
+      "respuesta": "Es un campo de texto libre para que agregues notas, observaciones o cualquier detalle importante sobre la carga que no encaje en los otros campos, como instrucciones especiales para el transportista o detalles del lugar de descarga."
+    }
+  ],
+
+  "consejos_utiles": [
+    "Usá los filtros para encontrar cargas específicas más rápido",
+    "Si una carga ya tiene cupos asignados, algunos cambios pueden afectar a esos cupos",
+    "El mapa te ayuda a visualizar rápidamente el recorrido completo de la carga",
+    "Siempre revisá bien todos los datos antes de guardar cambios en una carga"
+  ]
+} 

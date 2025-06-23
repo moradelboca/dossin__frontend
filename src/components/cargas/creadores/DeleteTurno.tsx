@@ -39,12 +39,16 @@ export default function DeleteTurno(props: Turnos) {
                 handleClose();
             })
             .catch(async (error) => {
+
                 let errorMsg = "Error al borrar el turno";
+
                 if (error && error.text) {
                     const text = await error.text();
                     // Detectar mensaje específico del backend
                     if (text && (text.includes("adelanto") || text.includes("adelantos"))) {
+                      
                         errorMsg = "No se puede eliminar este turno, tiene adelantos de efectivo o combustible asociados";
+
                     }
                 }
                 showNotificacion(errorMsg, 'error');

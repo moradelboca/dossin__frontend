@@ -125,6 +125,54 @@ const TurnoGridRow: React.FC<TurnoGridRowProps> = ({ turno, cupo, refreshCupos, 
     }
     // Botones extra
     const isContableOrLogistica = rolId === 2 || rolId === 4;
+
+    if (rolId !== 3) {
+      botones.push(
+        <Button
+          key="adelanto"
+          variant="outlined"
+          color="secondary"
+          fullWidth
+          sx={{
+            borderColor: theme.colores.azul,
+            color: theme.colores.azul,
+            '&:hover': { borderColor: theme.colores.azul, backgroundColor: '#f0f8ff' },
+            justifyContent: 'flex-start',
+            mt: 1
+          }}
+          onClick={() => manejoTurnos.setOpenDialog('adelanto')}
+        >
+          Adelanto
+        </Button>
+      );
+    }
+    if (isAdmin) {
+      botones.push(
+        <Tooltip title="Eliminar turno" key="delete">
+          <IconButton
+            onClick={() => manejoTurnos.setOpenDeleteDialog(true)}
+            sx={{ color: '#d68384', background: 'transparent', '&:hover': { background: '#fbe9e7' }, borderRadius: 2, ml: 1 }}
+            aria-label="eliminar turno"
+            size="small"
+          >
+            <DeleteIcon fontSize="small" />
+          </IconButton>
+        </Tooltip>
+      );
+    } else if (isContableOrLogistica) {
+      botones.push(
+        <Tooltip title="Cancelar turno" key="cancel">
+          <IconButton
+            onClick={() => setOpenCancelarDialog(true)}
+            sx={{ color: '#d68384', background: 'transparent', '&:hover': { background: '#fbe9e7' }, borderRadius: 2, ml: 1 }}
+            aria-label="cancelar turno"
+            size="small"
+          >
+            <DeleteIcon fontSize="small" />
+          </IconButton>
+        </Tooltip>
+      );
+    }
     return (
       <Box sx={{ display: 'flex', flexDirection: 'row', gap: 1, alignItems: 'center' }}>
         {botones}
