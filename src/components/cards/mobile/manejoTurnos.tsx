@@ -2,6 +2,7 @@ import  { useState, useEffect, useContext } from "react";
 import { Box, Button, Dialog, DialogTitle, DialogContent, Typography, IconButton, CircularProgress } from "@mui/material";
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import { ContextoGeneral } from "../../Contexto";
+import useTransformarCampo from "../../hooks/useTransformarCampo";
 import TurnoConErroresForm from "../../forms/turnos/tabs/turnosConErrores/TurnoConErroresForm";
 import { TaraForm, PesoBrutoForm } from "../../forms/turnos/tabs/TaraForm";
 import CartaPorteForm from "../../forms/turnos/tabs/CartaPorteForm";
@@ -13,6 +14,7 @@ import { getNextEstadoId } from "../../../utils/turnosEstados";
 
 export function useManejoTurnos({ item, cupo, refreshCupos }: any) {
   const { theme } = useContext(ContextoGeneral);
+  const transformarCampo = useTransformarCampo();
 
   // Dialog states for forms
   const [openDialog, setOpenDialog] = useState<null | 'corregir' | 'autorizar' | 'tara' | 'cartaPorte' | 'cargarCarta' | 'pesaje' | 'pago' | 'datospago' | 'factura' | 'adelanto'>(null);
@@ -27,8 +29,10 @@ export function useManejoTurnos({ item, cupo, refreshCupos }: any) {
   useEffect(() => { setTurnoLocal(item); }, [item]);
 
   useEffect(() => {
-    if (['cartaPorte', 'corregir', 'autorizar', 'datospago'].includes(openDialog || '') && item?.id) {
-      if (!turnoLocal.precios) {
+    // Si se abre un dialogo que necesita datos completos del turno (como precios o adelantos), y no los tenemos, los buscamos.
+    if (['cartaPorte', 'corregir', 'autorizar', 'datospago', 'adelanto'].includes(openDialog || '') && item?.id) {
+      // Usamos 'precios' como indicador de que tenemos los datos completos.
+      if (!turnoLocal.precios) { 
         (async () => {
           try {
             const backendURL = import.meta.env.VITE_BACKEND_URL || '';
@@ -37,28 +41,12 @@ export function useManejoTurnos({ item, cupo, refreshCupos }: any) {
             const turnoCompleto = await res.json();
             setTurnoLocal(turnoCompleto);
           } catch (e) {
-            //console.error(e)
+            // console.error(e)
           }
         })();
       }
     }
   }, [openDialog, item, turnoLocal.precios]);
-
-  useEffect(() => {
-    if ((openDialog === 'cartaPorte' || openDialog === 'corregir' || openDialog === 'autorizar') && item && cupo && item.id && cupo.carga && cupo.fecha) {
-      if (!item.estado || !item.tara || item.kgCargados === undefined) {
-        (async () => {
-          try {
-            const backendURL = import.meta.env.VITE_BACKEND_URL || '';
-            await fetch(`${backendURL}/turnos/${item.id}`, {
-              method: 'GET',
-              headers: { 'Content-Type': 'application/json', 'ngrok-skip-browser-warning': 'true' },
-            });
-          } catch (e) {}
-        })();
-      }
-    }
-  }, [openDialog, item, cupo]);
 
   const getEstadoColor = (estado: string) => {
     switch (estado?.toLowerCase()) {
@@ -104,16 +92,9 @@ export function useManejoTurnos({ item, cupo, refreshCupos }: any) {
             const contratos = await contratosRes.json();
             contrato = contratos.find((contrato: any) => Array.isArray(contrato.cargas) && contrato.cargas.some((c: any) => c.id === carga.id));
           }
-          const idCarga = cupo?.carga || item.carga || item.idCarga;
-          const fecha = cupo?.fecha || item.fecha || item.fechaCupo;
-          const idTurno = item.id;
-          let turnoCompleto = null;
-          if (idCarga && fecha && idTurno) {
-            const res = await fetch(`${backendURL}/turnos/${idTurno}`);
-            if (!res.ok) throw new Error(await res.text());
-            turnoCompleto = await res.json();
-            setTurnoLocal(turnoCompleto);
-          }
+          
+          const turnoCompleto = turnoLocal.precios ? turnoLocal : null;
+          
           setCartaPorteData({ turno, carga, contrato, cupo, turnoCompleto });
         } catch (err: any) {
           setCartaPorteError('Error al cargar los datos de la carta de porte');
@@ -125,7 +106,7 @@ export function useManejoTurnos({ item, cupo, refreshCupos }: any) {
       setCartaPorteData(null);
       setCartaPorteError(null);
     }
-  }, [openDialog, item, cupo]);
+  }, [openDialog, item, cupo, turnoLocal]);
 
   const handleCopy = (value: string, field: string) => {
     // Si el valor tiene formato 'razonSocial - cuit', solo copiar el cuit
@@ -154,13 +135,13 @@ export function useManejoTurnos({ item, cupo, refreshCupos }: any) {
 
   return {
     openDialog, setOpenDialog, autorizarLoading, setAutorizarLoading, cartaPorteData, cartaPorteLoading, cartaPorteError, copiedField, setCopiedField, openDeleteDialog, setOpenDeleteDialog, turnoLocal, setTurnoLocal,
-    getEstadoColor, handleFormSuccess, handleCopy, getNextEstadoName
+    getEstadoColor, handleFormSuccess, transformarCampo, handleCopy, getNextEstadoName
   };
 }
 
 export function renderTurnosDialogs({
   openDialog, setOpenDialog, autorizarLoading, setAutorizarLoading, cartaPorteData, cartaPorteLoading, cartaPorteError, copiedField, turnoLocal, setTurnoLocal,
-  handleFormSuccess, handleCopy, getNextEstadoName, theme
+  handleFormSuccess, handleCopy, getNextEstadoName, theme, item
 }: any) {
   switch (openDialog) {
     case 'corregir':
@@ -475,7 +456,7 @@ export function renderTurnosDialogs({
       );
     case 'factura':
       // Usar item directo si está disponible, si no, fallback a turnoLocal
-      const turnoFactura = turnoLocal;
+      const turnoFactura = (typeof item !== 'undefined' && item && item.id) ? item : turnoLocal;
       return (
         <Dialog open onClose={() => setOpenDialog(null)} fullWidth maxWidth="sm">
           <DialogTitle>Agregar Factura</DialogTitle>

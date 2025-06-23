@@ -24,7 +24,7 @@ interface TurnoGridRowProps {
   onEdit?: () => void;
 }
 
-const TurnoGridRow: React.FC<TurnoGridRowProps> = ({ turno, cupo, refreshCupos, fields, onEdit }) => {
+const TurnoGridRow: React.FC<TurnoGridRowProps> = ({ turno, cupo, refreshCupos, fields }) => {
   const { theme } = useContext(ContextoGeneral);
   const transformarCampo = useTransformarCampo();
   const manejoTurnos = useManejoTurnos({ item: turno, cupo, refreshCupos });
@@ -38,7 +38,7 @@ const TurnoGridRow: React.FC<TurnoGridRowProps> = ({ turno, cupo, refreshCupos, 
     return null;
   }
 
-  // Botones de acción (idénticos a CardMobile, pero en formato vertical dentro de la celda)
+  // Botones de acción (idénticos a CardMobile, pero en formato horizontal dentro de la celda)
   const renderButtons = () => {
     const estado = manejoTurnos.turnoLocal.estado?.nombre?.toLowerCase();
     if (estado === 'pagado') return null;
@@ -67,49 +67,56 @@ const TurnoGridRow: React.FC<TurnoGridRowProps> = ({ turno, cupo, refreshCupos, 
         />
       );
     };
-    let botones = [];
+    let botones: React.ReactNode = null;
+    const safeOpenDialog = (dialog: null | 'corregir' | 'autorizar' | 'tara' | 'cartaPorte' | 'cargarCarta' | 'pesaje' | 'pago' | 'datospago' | 'factura' | 'adelanto') => {
+      if (turno && turno.id) {
+        manejoTurnos.setTurnoLocal(turno);
+        manejoTurnos.setOpenDialog(dialog);
+      } else {
+        console.error('No se puede abrir el diálogo, turno sin id:', turno);
+      }
+    };
     switch (estado) {
       case 'con errores':
-        botones.push(mainButton({ key: 'corregir', children: 'Corregir', onClick: () => manejoTurnos.setOpenDialog('corregir') }));
+        botones = <>{mainButton({ key: 'corregir', children: 'Corregir', onClick: () => safeOpenDialog('corregir') })}</>;
         break;
       case 'validado':
-        botones.push(mainButton({ key: 'corregir', children: 'Corregir', onClick: () => manejoTurnos.setOpenDialog('corregir') }));
-        botones.push(mainButton({ key: 'autorizar', children: 'Autorizar', onClick: () => manejoTurnos.setOpenDialog('autorizar') }));
+        botones = (
+          <Box sx={{ display: 'flex', gap: 1 }}>
+            {mainButton({ key: 'corregir', children: 'Corregir', onClick: () => safeOpenDialog('corregir') })}
+            {mainButton({ key: 'autorizar', children: 'Autorizar', onClick: () => safeOpenDialog('autorizar') })}
+          </Box>
+        );
         break;
       case 'autorizado':
-        if (rolId === 3) {
-          botones.push(mainButton({ key: 'tara', children: 'Cargar Tara', onClick: () => manejoTurnos.setOpenDialog('tara') }));
-        } else {
-          botones.push(mainButton({ key: 'tara', children: 'Cargar Tara', onClick: () => manejoTurnos.setOpenDialog('tara') }));
-        }
+        botones = <>{mainButton({ key: 'tara', children: 'Cargar Tara', onClick: () => safeOpenDialog('tara') })}</>;
         break;
       case 'tarado':
-        if (rolId === 3) {
-          botones.push(mainButton({ key: 'tara', children: 'Cargar Peso Bruto', onClick: () => manejoTurnos.setOpenDialog('tara') }));
-        } else {
-          botones.push(
-            <Box key="tarado-row" sx={{ display: 'flex', gap: 1 }}>
-              {outlinedButton({ key: 'ver-carta', children: 'Ver Carta de Porte', onClick: () => manejoTurnos.setOpenDialog('cartaPorte') })}
-              {mainButton({ key: 'cargar-carta', children: 'Cargar Carta de Porte', onClick: () => manejoTurnos.setOpenDialog('cargarCarta') })}
-            </Box>
-          );
-        }
+        botones = <>{mainButton({ key: 'tara', children: 'Cargar Peso Bruto', onClick: () => safeOpenDialog('tara') })}</>;
+        break;
+      case 'cargado':
+        botones = (
+          <Box sx={{ display: 'flex', gap: 1 }}>
+            {outlinedButton({ key: 'ver-carta', children: 'Ver CP', onClick: () => safeOpenDialog('cartaPorte') })}
+            {mainButton({ key: 'cargar-carta', children: 'Cargar CP', onClick: () => safeOpenDialog('cargarCarta') })}
+          </Box>
+        );
         break;
       case 'en viaje':
-        botones.push(mainButton({ key: 'descarga', children: 'Ingresar Kg Descargados', onClick: () => manejoTurnos.setOpenDialog('pesaje') }));
+        botones = <>{mainButton({ key: 'descarga', children: 'Ingresar Kg Descargados', onClick: () => safeOpenDialog('pesaje') })}</>;
         break;
       case 'descargado':
-        botones.push(
-          <Box key="descargado-row" sx={{ display: 'flex', gap: 1 }}>
-            {mainButton({ key: 'factura', children: 'Agregar Factura', onClick: () => manejoTurnos.setOpenDialog('factura') })}
+        botones = (
+          <Box sx={{ display: 'flex', gap: 1 }}>
+            {mainButton({ key: 'factura', children: '+ Factura', onClick: () => safeOpenDialog('factura') })}
           </Box>
         );
         break;
       case 'facturado':
-        botones.push(
-          <Box key="facturado-row" sx={{ display: 'flex', gap: 1 }}>
-            {outlinedButton({ key: 'ver-pago', children: 'Ver Datos de Pago', onClick: () => manejoTurnos.setOpenDialog('pago') })}
-            {mainButton({ key: 'pagar', children: 'Pagar', onClick: () => manejoTurnos.setOpenDialog('pago') })}
+        botones = (
+          <Box sx={{ display: 'flex', gap: 1 }}>
+            {outlinedButton({ key: 'ver-pago', children: 'Ver Pago', onClick: () => safeOpenDialog('datospago') })}
+            {mainButton({ key: 'pagar', children: 'Pagar', onClick: () => safeOpenDialog('pago') })}
           </Box>
         );
         break;
@@ -118,6 +125,7 @@ const TurnoGridRow: React.FC<TurnoGridRowProps> = ({ turno, cupo, refreshCupos, 
     }
     // Botones extra
     const isContableOrLogistica = rolId === 2 || rolId === 4;
+
     if (rolId !== 3) {
       botones.push(
         <Button
@@ -168,6 +176,31 @@ const TurnoGridRow: React.FC<TurnoGridRowProps> = ({ turno, cupo, refreshCupos, 
     return (
       <Box sx={{ display: 'flex', flexDirection: 'row', gap: 1, alignItems: 'center' }}>
         {botones}
+        {rolId !== 3 && outlinedButton({ key: 'adelanto', children: 'Adelanto', onClick: () => safeOpenDialog('adelanto'), sx: { borderColor: theme.colores.azul, color: theme.colores.azul, minWidth: 0, px: 2, '&:hover': { borderColor: theme.colores.azul, backgroundColor: '#f0f8ff' }, ml: 1 } })}
+        {isAdmin && (
+          <Tooltip title="Eliminar turno" key="delete">
+            <IconButton
+              onClick={() => manejoTurnos.setOpenDeleteDialog(true)}
+              sx={{ color: '#d68384', background: 'transparent', '&:hover': { background: '#fbe9e7' }, borderRadius: 2, ml: 1 }}
+              aria-label="eliminar turno"
+              size="small"
+            >
+              <DeleteIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+        )}
+        {isContableOrLogistica && (
+          <Tooltip title="Cancelar turno" key="cancel">
+            <IconButton
+              onClick={() => setOpenCancelarDialog(true)}
+              sx={{ color: '#d68384', background: 'transparent', '&:hover': { background: '#fbe9e7' }, borderRadius: 2, ml: 1 }}
+              aria-label="cancelar turno"
+              size="small"
+            >
+              <DeleteIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+        )}
       </Box>
     );
   };
@@ -175,8 +208,7 @@ const TurnoGridRow: React.FC<TurnoGridRowProps> = ({ turno, cupo, refreshCupos, 
   return (
     <>
       <TableRow
-        onDoubleClick={onEdit}
-        style={{ cursor: onEdit ? 'pointer' : undefined }}
+        style={{ cursor: undefined }}
       >
         {fields.map((field, idx) => (
           <TableCell key={idx}>{transformarCampo(field, manejoTurnos.turnoLocal)}</TableCell>

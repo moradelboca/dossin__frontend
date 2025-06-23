@@ -201,17 +201,7 @@ export const CuposGridContainer: React.FC<CuposGridContainerProps & { estadoCarg
     handleCloseExport();
   };
 
-  // Handler seguro para editar turno
-  const handleEditTurno = (turno: any) => {
-    if (turno && turno.id) {
-      setSelectedTurno(turno);
-      setOpenDialog(true);
-    } else {
-      // Opcional: mostrar un error o ignorar
-      console.error("Turno inválido para editar", turno);
-    }
-  };
-
+ 
   return (
     <Box m={3}>
       {/* Barra de botones */}
@@ -404,7 +394,6 @@ export const CuposGridContainer: React.FC<CuposGridContainerProps & { estadoCarg
                           cupo={cupo}
                           refreshCupos={refreshCupos}
                           fields={selectedColumns}
-                          onEdit={() => handleEditTurno(turno)}
                         />
                       </React.Fragment>
                     ))}

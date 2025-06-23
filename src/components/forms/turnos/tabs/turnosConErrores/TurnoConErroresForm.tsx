@@ -145,7 +145,6 @@ const TurnoConErroresForm: React.FC<TurnoConErroresFormProps> = ({
     if (Object.values(nuevosErrores).some(e => !!e)) return;
 
     const payload = {
-      idEstado: 5,
       cuilColaborador: colaboradorSeleccionado,
       cuitEmpresa: empresaSeleccionada,
       patenteCamion: patenteCamionSeleccionada,
@@ -153,7 +152,6 @@ const TurnoConErroresForm: React.FC<TurnoConErroresFormProps> = ({
       patenteAcopladoExtra: patenteAcopladoExtraSeleccionada || null,
     };
 
-    console.log('Payload enviado al backend:', payload);
 
     try {
       const response = await fetch(`${backendURL}/turnos/${seleccionado.id}`, {
