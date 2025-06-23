@@ -2,7 +2,6 @@ import  { useState, useEffect, useContext } from "react";
 import { Box, Button, Dialog, DialogTitle, DialogContent, Typography, IconButton, CircularProgress } from "@mui/material";
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import { ContextoGeneral } from "../../Contexto";
-import useTransformarCampo from "../../hooks/useTransformarCampo";
 import TurnoConErroresForm from "../../forms/turnos/tabs/turnosConErrores/TurnoConErroresForm";
 import { TaraForm, PesoBrutoForm } from "../../forms/turnos/tabs/TaraForm";
 import CartaPorteForm from "../../forms/turnos/tabs/CartaPorteForm";
@@ -14,7 +13,6 @@ import { getNextEstadoId } from "../../../utils/turnosEstados";
 
 export function useManejoTurnos({ item, cupo, refreshCupos }: any) {
   const { theme } = useContext(ContextoGeneral);
-  const transformarCampo = useTransformarCampo();
 
   // Dialog states for forms
   const [openDialog, setOpenDialog] = useState<null | 'corregir' | 'autorizar' | 'tara' | 'cartaPorte' | 'cargarCarta' | 'pesaje' | 'pago' | 'datospago' | 'factura' | 'adelanto'>(null);
@@ -29,12 +27,30 @@ export function useManejoTurnos({ item, cupo, refreshCupos }: any) {
   useEffect(() => { setTurnoLocal(item); }, [item]);
 
   useEffect(() => {
+    if (['cartaPorte', 'corregir', 'autorizar', 'datospago'].includes(openDialog || '') && item?.id) {
+      if (!turnoLocal.precios) {
+        (async () => {
+          try {
+            const backendURL = import.meta.env.VITE_BACKEND_URL || '';
+            const res = await fetch(`${backendURL}/turnos/${item.id}`);
+            if (!res.ok) throw new Error('No se pudo obtener datos del turno');
+            const turnoCompleto = await res.json();
+            setTurnoLocal(turnoCompleto);
+          } catch (e) {
+            //console.error(e)
+          }
+        })();
+      }
+    }
+  }, [openDialog, item, turnoLocal.precios]);
+
+  useEffect(() => {
     if ((openDialog === 'cartaPorte' || openDialog === 'corregir' || openDialog === 'autorizar') && item && cupo && item.id && cupo.carga && cupo.fecha) {
       if (!item.estado || !item.tara || item.kgCargados === undefined) {
         (async () => {
           try {
             const backendURL = import.meta.env.VITE_BACKEND_URL || '';
-            await fetch(`${backendURL}/cargas/${cupo.carga}/cupos/${cupo.fecha}/turnos/${item.id}`, {
+            await fetch(`${backendURL}/turnos/${item.id}`, {
               method: 'GET',
               headers: { 'Content-Type': 'application/json', 'ngrok-skip-browser-warning': 'true' },
             });
@@ -93,9 +109,10 @@ export function useManejoTurnos({ item, cupo, refreshCupos }: any) {
           const idTurno = item.id;
           let turnoCompleto = null;
           if (idCarga && fecha && idTurno) {
-            const res = await fetch(`${backendURL}/cargas/${idCarga}/cupos/${fecha}/turnos/${idTurno}`);
+            const res = await fetch(`${backendURL}/turnos/${idTurno}`);
             if (!res.ok) throw new Error(await res.text());
             turnoCompleto = await res.json();
+            setTurnoLocal(turnoCompleto);
           }
           setCartaPorteData({ turno, carga, contrato, cupo, turnoCompleto });
         } catch (err: any) {
@@ -135,45 +152,15 @@ export function useManejoTurnos({ item, cupo, refreshCupos }: any) {
     }
   };
 
-  const [preciosPago, setPreciosPago] = useState<any[] | null>(null);
-  const [preciosPagoLoading, setPreciosPagoLoading] = useState(false);
-  const [preciosPagoError, setPreciosPagoError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (openDialog === 'datospago' || openDialog === 'pago') {
-      setPreciosPagoLoading(true);
-      setPreciosPagoError(null);
-      (async () => {
-        try {
-          const backendURL = import.meta.env.VITE_BACKEND_URL || '';
-          const idCarga = cupo?.carga || turnoLocal.carga || turnoLocal.idCarga;
-          const fecha = cupo?.fecha || turnoLocal.fecha || turnoLocal.fechaCupo;
-          if (!idCarga || !fecha) throw new Error('Faltan datos de carga o fecha para consultar precios');
-          const res = await fetch(`${backendURL}/cargas/${idCarga}/cupos/${fecha}/turnos/precios`);
-          if (!res.ok) throw new Error(await res.text());
-          const data = await res.json();
-          setPreciosPago(data);
-        } catch (err: any) {
-          setPreciosPagoError('Error al cargar los datos de pago');
-        } finally {
-          setPreciosPagoLoading(false);
-        }
-      })();
-    } else {
-      setPreciosPago(null);
-      setPreciosPagoError(null);
-    }
-  }, [openDialog, cupo, turnoLocal]);
-
   return {
     openDialog, setOpenDialog, autorizarLoading, setAutorizarLoading, cartaPorteData, cartaPorteLoading, cartaPorteError, copiedField, setCopiedField, openDeleteDialog, setOpenDeleteDialog, turnoLocal, setTurnoLocal,
-    getEstadoColor, handleFormSuccess, transformarCampo, handleCopy, getNextEstadoName, preciosPago, preciosPagoLoading, preciosPagoError
+    getEstadoColor, handleFormSuccess, handleCopy, getNextEstadoName
   };
 }
 
 export function renderTurnosDialogs({
   openDialog, setOpenDialog, autorizarLoading, setAutorizarLoading, cartaPorteData, cartaPorteLoading, cartaPorteError, copiedField, turnoLocal, setTurnoLocal,
-  handleFormSuccess, handleCopy, getNextEstadoName, preciosPago, preciosPagoLoading, preciosPagoError, theme, item
+  handleFormSuccess, handleCopy, getNextEstadoName, theme
 }: any) {
   switch (openDialog) {
     case 'corregir':
@@ -407,62 +394,56 @@ export function renderTurnosDialogs({
         <Dialog open onClose={() => setOpenDialog(null)} fullWidth maxWidth="sm">
           <DialogTitle>Datos de Pago</DialogTitle>
           <DialogContent>
-            {preciosPagoLoading ? (
+            {!turnoLocal.precios ? (
               <Box display="flex" alignItems="center" justifyContent="center" minHeight={200}>
                 <CircularProgress />
               </Box>
-            ) : preciosPagoError ? (
-              <Typography color="error">{preciosPagoError}</Typography>
-            ) : preciosPago && preciosPago.length > 0 ? (
+            ) : Object.keys(turnoLocal.precios).length > 0 ? (
               <Box sx={{ mt: 1 }}>
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                  {preciosPago
-                    .filter((row: any) => row.id === turnoLocal.id)
-                    .map((row: any, idx: number) => (
-                      <Box key={row.id || idx} sx={{ borderBottom: '1px solid #eee', pb: 1, mb: 2 }}>
-                        {Object.entries(row.precio).map(([label, value]: [string, any]) => {
-                          const prettyLabel = label
-                            .replace(/([A-Z])/g, ' $1')
-                            .replace(/^./, (str) => str.toUpperCase())
-                            .trim();
-                          return (
-                            isMobilePago ? (
-                              <Box key={label} sx={{ borderBottom: '1px solid #eee', pb: 1, mb: 1 }}>
-                                <Typography sx={{ fontWeight: 500, fontSize: 15 }}>{prettyLabel}</Typography>
-                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 0.5 }}>
-                                  <Typography sx={{ flex: 1 }}>{String(value)}</Typography>
-                                  <Typography sx={{ color: '#888', ml: 0.5, userSelect: 'none' }} component="span">$</Typography>
-                                  <IconButton size="small" onClick={() => handleCopy(String(value), `${row.id}-${label}`)}>
-                                    <ContentCopyIcon fontSize="small" />
-                                  </IconButton>
-                                  {copiedField === `${row.id}-${label}` && (
-                                    <Typography sx={{ color: theme.colores.azul, fontSize: 12, ml: 1 }}>Copiado!</Typography>
-                                  )}
-                                </Box>
-                              </Box>
-                            ) : (
-                              <Box key={label} sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 0.5 }}>
-                                <Typography sx={{ minWidth: 180, fontWeight: 500 }}>{prettyLabel}</Typography>
-                                <Box sx={{ display: 'flex', alignItems: 'center', flex: 1 }}>
-                                  <Typography sx={{ flex: 1 }}>{String(value)}</Typography>
-                                  <Typography sx={{ color: '#888', ml: 0.5, userSelect: 'none' }} component="span">$</Typography>
-                                </Box>
-                                <IconButton size="small" onClick={() => handleCopy(String(value), `${row.id}-${label}`)}>
-                                  <ContentCopyIcon fontSize="small" />
-                                </IconButton>
-                                {copiedField === `${row.id}-${label}` && (
-                                  <Typography sx={{ color: theme.colores.azul, fontSize: 12, ml: 1 }}>Copiado!</Typography>
-                                )}
-                              </Box>
-                            )
-                          );
-                        })}
-                      </Box>
-                    ))}
+                  <Box sx={{ borderBottom: '1px solid #eee', pb: 1, mb: 2 }}>
+                    {Object.entries(turnoLocal.precios).map(([label, value]: [string, any]) => {
+                      const prettyLabel = label
+                        .replace(/([A-Z])/g, ' $1')
+                        .replace(/^./, (str) => str.toUpperCase())
+                        .trim();
+                      return (
+                        isMobilePago ? (
+                          <Box key={label} sx={{ borderBottom: '1px solid #eee', pb: 1, mb: 1 }}>
+                            <Typography sx={{ fontWeight: 500, fontSize: 15 }}>{prettyLabel}</Typography>
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 0.5 }}>
+                              <Typography sx={{ flex: 1 }}>{String(value)}</Typography>
+                              <Typography sx={{ color: '#888', ml: 0.5, userSelect: 'none' }} component="span">$</Typography>
+                              <IconButton size="small" onClick={() => handleCopy(String(value), `${turnoLocal.id}-${label}`)}>
+                                <ContentCopyIcon fontSize="small" />
+                              </IconButton>
+                              {copiedField === `${turnoLocal.id}-${label}` && (
+                                <Typography sx={{ color: theme.colores.azul, fontSize: 12, ml: 1 }}>Copiado!</Typography>
+                              )}
+                            </Box>
+                          </Box>
+                        ) : (
+                          <Box key={label} sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 0.5 }}>
+                            <Typography sx={{ minWidth: 180, fontWeight: 500 }}>{prettyLabel}</Typography>
+                            <Box sx={{ display: 'flex', alignItems: 'center', flex: 1 }}>
+                              <Typography sx={{ flex: 1 }}>{String(value)}</Typography>
+                              <Typography sx={{ color: '#888', ml: 0.5, userSelect: 'none' }} component="span">$</Typography>
+                            </Box>
+                            <IconButton size="small" onClick={() => handleCopy(String(value), `${turnoLocal.id}-${label}`)}>
+                              <ContentCopyIcon fontSize="small" />
+                            </IconButton>
+                            {copiedField === `${turnoLocal.id}-${label}` && (
+                              <Typography sx={{ color: theme.colores.azul, fontSize: 12, ml: 1 }}>Copiado!</Typography>
+                            )}
+                          </Box>
+                        )
+                      );
+                    })}
+                  </Box>
                 </Box>
               </Box>
             ) : (
-              <Typography color="text.secondary">No hay datos para mostrar.</Typography>
+              <Typography color="text.secondary">No hay datos de pago para mostrar.</Typography>
             )}
           </DialogContent>
         </Dialog>
@@ -494,7 +475,7 @@ export function renderTurnosDialogs({
       );
     case 'factura':
       // Usar item directo si está disponible, si no, fallback a turnoLocal
-      const turnoFactura = (typeof item !== 'undefined' && item && item.id) ? item : turnoLocal;
+      const turnoFactura = turnoLocal;
       return (
         <Dialog open onClose={() => setOpenDialog(null)} fullWidth maxWidth="sm">
           <DialogTitle>Agregar Factura</DialogTitle>

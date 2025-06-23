@@ -29,12 +29,17 @@ export function ContainerCupos() {
   const { backendURL, theme } = useContext(ContextoGeneral);
   const [cupos, setCupos] = useState<any[]>([]);
   const [estadoCarga, setEstadoCarga] = useState("Cargando");
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedTab, setSelectedTab] = useState("CARDS");
   const { user } = useAuth();
 
   const refreshCupos = async () => {
-    setEstadoCarga("Cargando");
+    if (cupos.length === 0) {
+      setEstadoCarga("Cargando");
+    } else {
+      setIsRefreshing(true);
+    }
     try {
       // 1. Traer cupos (para obtener fechas)
       const cuposRes = await fetch(`${backendURL}/cargas/${idCarga}/cupos`, {
@@ -125,6 +130,8 @@ export function ContainerCupos() {
       setEstadoCarga("Cargado");
       setCupos([]);
       console.error("Error al obtener los cupos o turnos", e);
+    } finally {
+      setIsRefreshing(false);
     }
   };
 
@@ -231,44 +238,84 @@ export function ContainerCupos() {
         )}
       </Box>
 
-      {estadoCarga === "Cargando" && (
-        <Box
-          display="flex"
-          flexDirection="row"
-          width="100%"
-          height="100%"
-          justifyContent="center"
-          alignItems="center"
-          gap={3}
-          minHeight="60vh"
-        >
-          <CircularProgress />
-          <Typography variant="h5">
-            <b>Cargando...</b>
-          </Typography>
-        </Box>
-      )}
+      <Box sx={{ position: 'relative', width: '100%' }}>
+        {isRefreshing && (
+          <Box
+            sx={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: '100%',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              backgroundColor: 'rgba(255, 255, 255, 0.7)',
+              zIndex: 10,
+            }}
+          >
+            <CircularProgress />
+          </Box>
+        )}
 
-      {(!isIngeniero && selectedTab === "CARDS") || (isIngeniero) ? (
-        <CuposCardsContainer
-          cupos={cupos}
-          fields={fields}
-          headerNames={headerNames}
-          idCarga={idCarga}
-          refreshCupos={refreshCupos}
-          estadoCarga={estadoCarga}
-        />
-      ) : null}
-      {!isIngeniero && selectedTab === "GRID" && (
-        <CuposGridContainer cupos={cupos} refreshCupos={refreshCupos} estadoCarga={estadoCarga} />
-      )}
-      {!isIngeniero && selectedTab === "POR_DIA" && (
-        <CuposGridPorDiaContainer
-          cupos={cupos}
-          refreshCupos={refreshCupos}
-          estadoCarga={estadoCarga}
-        />
-      )}
+        {estadoCarga === "Cargando" ? (
+          <Box
+            display="flex"
+            flexDirection="row"
+            width="100%"
+            height="100%"
+            justifyContent="center"
+            alignItems="center"
+            gap={3}
+            minHeight="60vh"
+          >
+            <CircularProgress />
+            <Typography variant="h5">
+              <b>Cargando...</b>
+            </Typography>
+          </Box>
+        ) : estadoCarga === "Cargado" && cupos.length > 0 ? (
+          <Box width="100%">
+            {selectedTab === "CARDS" && (
+              <CuposCardsContainer
+                cupos={cupos}
+                refreshCupos={refreshCupos}
+                fields={fields}
+                headerNames={headerNames}
+                idCarga={idCarga}
+                estadoCarga={estadoCarga}
+              />
+            )}
+            {selectedTab === "GRID" && (
+              <CuposGridContainer
+                cupos={cupos}
+                refreshCupos={refreshCupos}
+                estadoCarga={estadoCarga}
+              />
+            )}
+            {selectedTab === "POR_DIA" && (
+              <CuposGridPorDiaContainer
+                cupos={cupos}
+                refreshCupos={refreshCupos}
+                estadoCarga={estadoCarga}
+              />
+            )}
+          </Box>
+        ) : (
+          <Box
+            display="flex"
+            flexDirection="column"
+            alignItems="center"
+            justifyContent="center"
+            height="50vh"
+          >
+            <ClearSharpIcon style={{ fontSize: "5rem", color: "gray" }} />
+            <Typography variant="h6" color="textSecondary">
+              No hay cupos disponibles.
+            </Typography>
+          </Box>
+        )}
+      </Box>
 
       <Dialog
         open={openDialog}
