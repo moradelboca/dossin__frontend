@@ -12,6 +12,7 @@ import {
   Typography,
   useMediaQuery,
   useTheme,
+  InputAdornment,
 } from '@mui/material';
 import React, { useContext, useEffect, useState } from 'react';
 import { ContextoGeneral } from '../../../Contexto';
@@ -19,6 +20,7 @@ import useValidation from '../../../hooks/useValidation';
 import MainButton from '../../../botones/MainButtom';
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { Dialog as MuiDialog } from '@mui/material';
+
 
 interface TipoFactura {
   id: number;
@@ -181,7 +183,8 @@ const FacturaForm: React.FC<FacturaFormProps> = ({
       const puntoDeVenta = data.puntoDeVenta;
       const tipoFacturaId = data.tipoFactura?.id;
       const cuitEmisor = cuitEmpresa;
-      const precioGrano = data.precioGrano;
+      // Convertir a precio por kg antes de enviar
+      const precioGrano = data.precioGrano ? (Number(data.precioGrano) / 1000) : 0;
       setPendingSubmit(true);
 
       // First, update the Turno with precioGrano
@@ -331,11 +334,15 @@ const FacturaForm: React.FC<FacturaFormProps> = ({
         type="number"
         value={data.precioGrano}
         onChange={(e) => {
-          const value = e.target.value.replace(/[^0-9.]/g, '');
-          // Limit to 6 digits before decimal point
+          let value = e.target.value.replace(/[^0-9.]/g, '');
+          // Evitar que arranque con 0 salvo que sea '0.'
+          if (value.startsWith('0') && value.length > 1 && value[1] !== '.') {
+            value = value.replace(/^0+/, '');
+          }
+          // Limit to 7 digits before decimal point
           const parts = value.split('.');
-          if (parts[0].length > 6) {
-            parts[0] = parts[0].slice(0, 6);
+          if (parts[0].length > 7) {
+            parts[0] = parts[0].slice(0, 7);
           }
           const newValue = parts.join('.');
           setData((prev: any) => ({ ...prev, precioGrano: newValue }));
@@ -359,7 +366,14 @@ const FacturaForm: React.FC<FacturaFormProps> = ({
           max: "999999",
           inputMode: 'decimal'
         }}
+        InputProps={{
+          startAdornment: <InputAdornment position="start">$</InputAdornment>,
+        }}
       />
+      {/* ADVERTENCIA: precio por tonelada debajo y en gris */}
+      <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5, ml: 0.5 }}>
+        Ingrese el precio del grano por tonelada. El sistema lo convertirá automáticamente a precio por kg.
+      </Typography>
       <Box
         sx={{
           display: "flex",

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
-import { Autocomplete, Box, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Stack, TextField, Typography } from "@mui/material";
+import { Autocomplete, Box, CircularProgress, Dialog, DialogContent, IconButton, Stack, TextField, Typography } from "@mui/material";
 import React, { useContext, useEffect, useState } from "react";
 import { FormularioProps } from "../../../interfaces/FormularioProps";
 import { ContextoGeneral } from "../../Contexto";
@@ -302,7 +302,7 @@ const EmpresaForm: React.FC<FormularioProps> = ({
         InputProps={{
           inputComponent: CuilFormat as any,
         }}
-        value={data.cuit}
+        value={data.cuit !== null && data.cuit !== undefined ? String(data.cuit) : ""}
         onChange={handleChange("cuit")}
         error={!!errors.cuit}
         helperText={errors.cuit}
@@ -318,7 +318,7 @@ const EmpresaForm: React.FC<FormularioProps> = ({
           variant="outlined"
           size="small"
           fullWidth
-          value={data.razonSocial}
+          value={data.razonSocial ?? ""}
           onChange={handleChange("razonSocial")}
           error={!!errors.razonSocial}
           helperText={errors.razonSocial}
@@ -329,7 +329,7 @@ const EmpresaForm: React.FC<FormularioProps> = ({
           variant="outlined"
           size="small"
           fullWidth
-          value={data.nombreFantasia}
+          value={data.nombreFantasia ?? ""}
           onChange={handleChange("nombreFantasia")}
           error={!!errors.nombreFantasia}
           helperText={errors.nombreFantasia}
@@ -385,7 +385,7 @@ const EmpresaForm: React.FC<FormularioProps> = ({
           InputProps={{
             inputComponent: NumeroFormat as any,
           }}
-          value={numeroCel}
+          value={numeroCel ?? ""}
           onChange={handleNumeroCelularChange}
           error={!!errors.numeroCel}
           helperText={errors.numeroCel}
@@ -496,9 +496,6 @@ const EmpresaForm: React.FC<FormularioProps> = ({
         maxWidth="sm"
         fullWidth
       >
-        <DialogTitle variant="h6" sx={{ borderBottom: '1px solid', borderColor: 'divider' }}>
-          Confirmar Eliminación
-        </DialogTitle>
         <DialogContent sx={{ py: 3 }}>
           <DeleteEntidad
             idEntidad={Number(data.cuit)}
@@ -509,28 +506,7 @@ const EmpresaForm: React.FC<FormularioProps> = ({
             setDatos={setDatos}
           />
         </DialogContent>
-        <DialogActions sx={{ px: 3, py: 2, gap: 2 }}>
-          <MainButton
-            onClick={handleCloseDialog}
-            text="Cancelar"
-            backgroundColor="transparent"
-            textColor="#163660"
-            borderRadius="8px"
-            hoverBackgroundColor="rgba(22, 54, 96, 0.1)"
-            width="120px"
-            divWidth="120px"
-          />
-          <MainButton
-            onClick={() => {/* Lógica de confirmación aquí */}}
-            text="Confirmar"
-            backgroundColor="#d32f2f"
-            textColor="#fff"
-            borderRadius="8px"
-            hoverBackgroundColor="#b71c1c"
-            width="120px"
-            divWidth="120px"
-          />
-        </DialogActions>
+       
       </Dialog>
     </Stack>
   );

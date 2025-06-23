@@ -10,6 +10,7 @@ interface Colaborador {
   cuil: string;
   nombre: string;
   apellido: string;
+  empresas?: { cuit: string }[];
 }
 
 interface AutocompleteColaboradoresProps {
@@ -17,6 +18,8 @@ interface AutocompleteColaboradoresProps {
   onChange: (value: string | null) => void;
   error?: boolean;
   helperText?: string | null;
+  empresaSeleccionada?: string | null; // cuit de la empresa seleccionada
+  disabled?: boolean;
 }
 
 const AutocompleteColaboradores: React.FC<AutocompleteColaboradoresProps> = ({
@@ -24,6 +27,8 @@ const AutocompleteColaboradores: React.FC<AutocompleteColaboradoresProps> = ({
   onChange,
   error = false,
   helperText = '',
+  empresaSeleccionada = null,
+  disabled = false,
 }) => {
   const { backendURL, theme } = useContext(ContextoGeneral);
   const [colaboradores, setColaboradores] = useState<Colaborador[]>([]);
@@ -55,10 +60,19 @@ const AutocompleteColaboradores: React.FC<AutocompleteColaboradoresProps> = ({
     }
   }, [value, colaboradores]);
 
+  // Filtrar colaboradores por empresa seleccionada si existe
+  const colaboradoresFiltrados = React.useMemo(() => {
+    if (!empresaSeleccionada) return [];
+    return colaboradores.filter(col =>
+      col.empresas && Array.isArray(col.empresas) &&
+      col.empresas.some(emp => emp.cuit && emp.cuit.toString() === empresaSeleccionada)
+    );
+  }, [colaboradores, empresaSeleccionada]);
+
   const handleAgregarNuevo = () => setOpenDialog(true);
   const handleCloseDialog = () => setOpenDialog(false);
 
-  const opciones = [...colaboradores, '__add__'];
+  const opciones = disabled ? [] : [...colaboradoresFiltrados, '__add__'];
 
   return (
     <>
@@ -69,17 +83,17 @@ const AutocompleteColaboradores: React.FC<AutocompleteColaboradoresProps> = ({
           getOptionLabel={(option) =>
             typeof option === 'string' && option === '__add__'
               ? ''
-              : (option as Colaborador).nombre + ' ' + (option as Colaborador).apellido
+              : (option as any).nombre + ' ' + (option as any).apellido
           }
           value={
-            value ? colaboradores.find(col => col.cuil === value) || null : null
+            value ? colaboradoresFiltrados.find(col => col.cuil === value) || null : null
           }
           onChange={(_, newValue) => {
             if (typeof newValue === 'string' && newValue === '__add__') {
               handleAgregarNuevo();
               return;
             }
-            onChange(newValue ? (newValue as Colaborador).cuil : null);
+            onChange(newValue ? (newValue as any).cuil : null);
           }}
           renderOption={(props, option) => {
             const { key, ...rest } = props;
@@ -92,7 +106,7 @@ const AutocompleteColaboradores: React.FC<AutocompleteColaboradoresProps> = ({
                 </li>
               );
             }
-            const col = option as Colaborador;
+            const col = option as any;
             return <li key={key} {...rest}>{`${col.nombre} ${col.apellido}`}</li>;
           }}
           sx={{
@@ -104,7 +118,7 @@ const AutocompleteColaboradores: React.FC<AutocompleteColaboradoresProps> = ({
           renderInput={(params) => (
             <TextField
               {...params}
-              label="Camionero"
+              label={disabled ? "Seleccione primero una empresa transportista" : "Camionero"}
               variant="outlined"
               error={error || localError}
               helperText={helperText || (localError ? "El colaborador no coincide con los datos disponibles" : "")}
@@ -112,8 +126,10 @@ const AutocompleteColaboradores: React.FC<AutocompleteColaboradoresProps> = ({
                 '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: theme.colores.azul },
                 '& .MuiInputLabel-root.Mui-focused': { color: theme.colores.azul },
               }}
+              disabled={disabled}
             />
           )}
+          disabled={disabled}
         />
       </div>
       <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="sm" fullWidth>
