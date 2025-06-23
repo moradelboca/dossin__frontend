@@ -182,9 +182,9 @@ export default function SelectorTarifa() {
             <FormControlLabel
                 control={
                     <Checkbox
-                        value={datosNuevaCarga["incluyeIVA"]}
+                        checked={!!datosNuevaCarga["incluyeIVA"]}
                         onChange={(e) => {
-                            datosNuevaCarga["incluyeIVA"] = e.target.checked;
+                            setDatosNuevaCarga(prev => ({ ...prev, incluyeIVA: e.target.checked }));
                         }}
                         sx={{
                             color: "#163660",
