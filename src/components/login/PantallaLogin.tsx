@@ -104,12 +104,6 @@ const PantallaLogin = () => {
             />
           </Box>
 
-          {estado && (
-            <Typography variant="body1" mb={2} sx={{ color: '#e57373' }}>
-              Su cuenta no se encontró. Por favor, comuníquese con un administrador.
-            </Typography>
-          )}
-
           <Typography
             variant="h4"
             gutterBottom
@@ -165,6 +159,11 @@ const PantallaLogin = () => {
           >
             Iniciar sesión con Google
           </Button>
+          {estado && (
+            <Typography variant="body1" mb={2} sx={{ color: '#e57373' }}>
+              Su cuenta no se encontró. Por favor, comuníquese con un administrador.
+            </Typography>
+          )}
         </Box>
       </Grid>
     </Grid>
