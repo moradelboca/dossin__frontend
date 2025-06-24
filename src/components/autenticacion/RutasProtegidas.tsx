@@ -47,7 +47,7 @@ const RutasProtegidas = ({ children, allowedRoles }: ProtectedRouteProps) => {
           signal: controller.signal
         });
         const data = await response.json();
-        if (!response.ok || !data.token)  {
+        if (!response.ok)  {
           logout();
           setVerificando(false);
           return;
