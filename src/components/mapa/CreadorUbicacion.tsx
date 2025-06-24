@@ -317,6 +317,7 @@ import {
             width: "100%",
             maxWidth: 300,
             margin: '10px auto 0 auto',
+            marginBottom: '20px',
           }}
         >
           <MainButton
@@ -339,27 +340,29 @@ import {
             hoverBackgroundColor={theme.colores.azulOscuro}
             divWidth={isMobile ? "100%" : "300px"}
           />
-          <IconButton
-            onClick={handleClickDeleteCarga}
-            sx={{
-              ml: isMobile ? 0 : 1,
-              mt: isMobile ? 1 : 0,
-              width: 40,
-              height: 40,
-              borderRadius: '50%',
-              background: 'transparent',
-              transition: 'background 0.2s',
-              '&:hover': {
-                background: 'rgba(214, 131, 132, 0.12)',
-              },
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              p: 0,
-            }}
-          >
-            <DeleteOutlineIcon sx={{ fontSize: 20, color: "#d68384" }} />
-          </IconButton>
+          {datosNuevaUbicacion.id && (
+            <IconButton
+              onClick={handleClickDeleteCarga}
+              sx={{
+                ml: isMobile ? 0 : 1,
+                mt: isMobile ? 1 : 0,
+                width: 40,
+                height: 40,
+                borderRadius: '50%',
+                background: 'transparent',
+                transition: 'background 0.2s',
+                '&:hover': {
+                  background: 'rgba(214, 131, 132, 0.12)',
+                },
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                p: 0,
+              }}
+            >
+              <DeleteOutlineIcon sx={{ fontSize: 20, color: "#d68384" }} />
+            </IconButton>
+          )}
         </Box>
       </>
     );
