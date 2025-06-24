@@ -99,13 +99,6 @@ const MobileLogin = () => {
           />
         </Box>
 
-        {/* Mostrar mensaje si existe el query param 'estado' */}
-        {estado && (
-          <Typography variant="body1" mb={2} sx={{ color: '#e57373' }}>
-            Su cuenta no se encontró. Por favor, comuníquese con un administrador.
-          </Typography>
-        )}
-
         {/* Texto centrado */}
         <Box sx={{ textAlign: "center", flex: 1, display: "flex", flexDirection: "column", justifyContent: "center" }}>
           <Typography
@@ -163,6 +156,12 @@ const MobileLogin = () => {
             SIGN IN
           </Button>
         </Box>
+         {/* Mostrar mensaje si existe el query param 'estado' */}
+        {estado && (
+          <Typography variant="body1" mb={2} sx={{ color: '#000000' }}>
+            Su cuenta no se encontró. Por favor, comuníquese con un administrador.
+          </Typography>
+        )}
       </Box>
 
       {/* Diálogo para el inicio de sesión */}
