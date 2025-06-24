@@ -8,12 +8,15 @@ import hermex from "../../assets/hermex.png";
 import { Google } from "@mui/icons-material";
 import { useContext, useState, useEffect } from "react";
 import { ContextoGeneral } from "../Contexto";
+import { useSearchParams } from "react-router-dom";
 
 const MobileLogin = () => {
   const { theme } = useContext(ContextoGeneral);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [openDialog, setOpenDialog] = useState(false);
   const images = [hermes, hermes1, hermes3, hermes4, hermes5];
+  const [searchParams] = useSearchParams();
+  const estado = searchParams.get("estado");
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -95,6 +98,13 @@ const MobileLogin = () => {
             }}
           />
         </Box>
+
+        {/* Mostrar mensaje si existe el query param 'estado' */}
+        {estado && (
+          <Typography variant="body1" mb={2} sx={{ color: '#e57373' }}>
+            Su cuenta no se encontró. Por favor, comuníquese con un administrador.
+          </Typography>
+        )}
 
         {/* Texto centrado */}
         <Box sx={{ textAlign: "center", flex: 1, display: "flex", flexDirection: "column", justifyContent: "center" }}>
