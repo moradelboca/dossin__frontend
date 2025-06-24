@@ -205,7 +205,7 @@ function App() {
                 }}
               >
                 <CssBaseline>
-                {(!accessToken && stage === "production") ? (
+                {(!accessToken && stage != "production") ? (
                     <Routes>
                       <Route path="/login" element={<PantallaLogin />} />
                       <Route

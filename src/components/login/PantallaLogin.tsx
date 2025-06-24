@@ -1,9 +1,12 @@
 import { Box, Grid, Button, Typography, useMediaQuery, useTheme as useMuiTheme } from "@mui/material";
-import hermes from "../../assets/hermes.jpg";
 import hermes1 from "../../assets/hermes1.jpg";
+import hermes2 from "../../assets/hermes2.jpg";
 import hermes3 from "../../assets/hermes3.jpg";
 import hermes4 from "../../assets/hermes4.jpg";
 import hermes5 from "../../assets/hermes5.jpg";
+import hermes6 from "../../assets/hermes6.jpg";
+import hermes7 from "../../assets/hermes7.jpg";
+import hermes8 from "../../assets/hermes8.jpg";
 import hermex from "../../assets/hermex.png";
 import { Google } from "@mui/icons-material";
 import { useContext, useState, useEffect } from "react";
@@ -16,14 +19,14 @@ const PantallaLogin = () => {
   const muiTheme = useMuiTheme();
   const isMobile = useMediaQuery(muiTheme.breakpoints.down('md'));
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const images = [hermes, hermes1, hermes3, hermes4, hermes5];
+  const images = [ hermes1, hermes2, hermes3, hermes4, hermes5, hermes6, hermes7, hermes8];
   const [searchParams] = useSearchParams();
   const estado = searchParams.get("estado");
 
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length);
-    }, 5000); // Cambiar imagen cada 5 segundos
+    }, 4000); 
 
     return () => clearInterval(interval);
   }, []);

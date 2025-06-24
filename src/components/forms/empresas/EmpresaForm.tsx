@@ -499,13 +499,15 @@ const EmpresaForm: React.FC<FormularioProps> = ({
           width="120px"
           divWidth="120px"
         />
-        <IconButton
-          onClick={handleClickDeleteCarga}
-          sx={{ ml: 1, width: 40, height: 40, borderRadius: '50%', background: 'transparent', transition: 'background 0.2s', '&:hover': { background: 'rgba(214, 131, 132, 0.12)' }, display: 'flex', alignItems: 'center', justifyContent: 'center', p: 0 }}
-          title="Eliminar entidad"
-        >
-          <DeleteOutlineIcon sx={{ fontSize: 20, color: '#d68384' }} />
-        </IconButton>
+        {data.cuit && (
+          <IconButton
+            onClick={handleClickDeleteCarga}
+            sx={{ ml: 1, width: 40, height: 40, borderRadius: '50%', background: 'transparent', transition: 'background 0.2s', '&:hover': { background: 'rgba(214, 131, 132, 0.12)' }, display: 'flex', alignItems: 'center', justifyContent: 'center', p: 0 }}
+            title="Eliminar entidad"
+          >
+            <DeleteOutlineIcon sx={{ fontSize: 20, color: '#d68384' }} />
+          </IconButton>
+        )}
       </Box>
   
       {/* Diálogo de Confirmación */}

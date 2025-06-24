@@ -27,7 +27,7 @@ const WebSocketComponent = () => {
       console.log("Socket desconectado");
       showNotificacion(
         "Se perdió la conexión con el servidor. Muchos datos no se actualizarán hasta que se recupere la conexión.",
-        "error"
+        "warning"
       );
     });
 
