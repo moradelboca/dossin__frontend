@@ -140,6 +140,16 @@ const AcopladoForm: React.FC<FormularioProps> = ({
   const handleClickDeleteCarga = () => setOpenDialogDelete(true);
   const handleCloseDialog = () => setOpenDialogDelete(false);
 
+  // Estilos para azul en focus
+  const azulStyles = {
+    '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
+      borderColor: theme.colores.azul,
+    },
+    '& .MuiInputLabel-root.Mui-focused': {
+      color: theme.colores.azul,
+    },
+  };
+
   return (
     <Box sx={{ p: isMobile ? 2 : 4 }}>
       <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
@@ -149,11 +159,12 @@ const AcopladoForm: React.FC<FormularioProps> = ({
           name="patente"
           variant="outlined"
           fullWidth
-          value={data.patente}
+          value={data.patente ?? ""}
           onChange={handleChange("patente")}
           error={!!errors.patente}
           helperText={errors.patente}
           disabled={!!seleccionado?.patente}
+          sx={azulStyles}
         />
 
         <Autocomplete
@@ -168,6 +179,7 @@ const AcopladoForm: React.FC<FormularioProps> = ({
               variant="outlined"
               error={!!errors.tipoAcoplado}
               helperText={!tipoSeleccionado ? "Seleccione un tipo de acoplado" : ""}
+              sx={azulStyles}
             />
           )}
         />
@@ -177,30 +189,33 @@ const AcopladoForm: React.FC<FormularioProps> = ({
           label="URL RTO"
           variant="outlined"
           fullWidth
-          value={data.urlRTO}
+          value={data.urlRTO ?? ""}
           onChange={handleChange("urlRTO")}
           error={!!errors.urlRTO}
           helperText={errors.urlRTO}
+          sx={azulStyles}
         />
 
         <TextField
           label="URL Póliza de Seguro"
           variant="outlined"
           fullWidth
-          value={data.urlPolizaSeguro}
+          value={data.urlPolizaSeguro ?? ""}
           onChange={handleChange("urlPolizaSeguro")}
           error={!!errors.urlPolizaSeguro}
           helperText={errors.urlPolizaSeguro}
+          sx={azulStyles}
         />
 
         <TextField
           label="URL Ruta"
           variant="outlined"
           fullWidth
-          value={data.urlRuta}
+          value={data.urlRuta ?? ""}
           onChange={handleChange("urlRuta")}
           error={!!errors.urlRuta}
           helperText={errors.urlRuta}
+          sx={azulStyles}
         />
 
         <Box
@@ -236,8 +251,12 @@ const AcopladoForm: React.FC<FormularioProps> = ({
               divWidth={isMobile ? '100%' : 'auto'}
             />
           {seleccionado && (
-            <IconButton onClick={handleClickDeleteCarga}>
-              <DeleteOutlineIcon sx={{ fontSize: 20, color: "#d68384" }} />
+            <IconButton
+              onClick={handleClickDeleteCarga}
+              sx={{ ml: 1, width: 40, height: 40, borderRadius: '50%', background: 'transparent', transition: 'background 0.2s', '&:hover': { background: 'rgba(214, 131, 132, 0.12)' }, display: 'flex', alignItems: 'center', justifyContent: 'center', p: 0 }}
+              title="Eliminar acoplado"
+            >
+              <DeleteOutlineIcon sx={{ fontSize: 20, color: '#d68384' }} />
             </IconButton>
           )}
         </Box>

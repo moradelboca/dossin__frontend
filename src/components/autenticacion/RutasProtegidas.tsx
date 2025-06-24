@@ -52,9 +52,6 @@ const RutasProtegidas = ({ children, allowedRoles }: ProtectedRouteProps) => {
           setVerificando(false);
           return;
         }
-        Cookies.set("accessToken", data.token, { 
-          sameSite: "strict"
-        });
         login({
           id: data.usuario.id,
           email: data.usuario.email,

@@ -82,7 +82,23 @@ export default function DeleteEntidad(props: IDeleteEntidad) {
             }}
         >
             <Typography variant="h6" color="textPrimary" align="center">
-                ¿Está seguro de que quiere eliminar la entidad?
+                {(() => {
+                    switch (endpointEntidad) {
+                        case 'colaboradores':
+                            return '¿Está seguro de que quiere eliminar el colaborador?';
+                        case 'empresas':
+                        case 'empresa':
+                            return '¿Está seguro de que quiere eliminar la empresa?';
+                        case 'camiones':
+                        case 'camion':
+                            return '¿Está seguro de que quiere eliminar el camión?';
+                        case 'acoplados':
+                        case 'acoplado':
+                            return '¿Está seguro de que quiere eliminar el acoplado?';
+                        default:
+                            return '¿Está seguro de que quiere eliminar la entidad?';
+                    }
+                })()}
             </Typography>
             <ClearSharpIcon
                 onClick={handleCloseDialog}

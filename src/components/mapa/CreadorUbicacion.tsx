@@ -152,6 +152,16 @@ import {
     // https://maps.app.goo.gl/ seguido de una cadena alfanumérica
     const regexUrl = /^https:\/\/maps\.app\.goo\.gl\/[A-Za-z0-9]+$/;
   
+    // Estilos para azul en focus
+    const azulStyles = {
+        '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
+            borderColor: theme.colores.azul,
+        },
+        '& .MuiInputLabel-root.Mui-focused': {
+            color: theme.colores.azul,
+        },
+    };
+  
     const handleSave = () => {
       if (!datosNuevaUbicacion) return;
   
@@ -260,7 +270,7 @@ import {
             error={errorUrl}
             value={datosNuevaUbicacion.urlMaps}
             inputProps={{ maxLength: 200 }}
-            sx={{ width: "100%"}}
+            sx={{ width: "100%", ...azulStyles }}
           />
           <TextField
             id="outlined-basic"
@@ -269,7 +279,7 @@ import {
             onChange={setNombre}
             value={datosNuevaUbicacion.nombre}
             inputProps={{ maxLength: 50 }}
-            sx={{ width: "100%" }}
+            sx={{ width: "100%", ...azulStyles }}
           />
           <Autocomplete
             options={tipoUbicacion}
@@ -277,7 +287,7 @@ import {
             value={selectedTipo}
             onChange={seleccionarTipo}
             renderInput={(params) => (
-              <TextField {...params} label="Tipo" sx={{ width: "100%"}} error={errorTipo} />
+              <TextField {...params} label="Tipo" sx={{ width: "100%", ...azulStyles }} error={errorTipo} />
             )}
             sx={{
               width: "100%",
@@ -329,7 +339,25 @@ import {
             hoverBackgroundColor={theme.colores.azulOscuro}
             divWidth={isMobile ? "100%" : "300px"}
           />
-          <IconButton onClick={() => handleClickDeleteCarga()} sx={{ ml: isMobile ? 0 : 1, mt: isMobile ? 1 : 0, maxWidth: '300px', width: isMobile ? "100%" : "300px" }}>
+          <IconButton
+            onClick={handleClickDeleteCarga}
+            sx={{
+              ml: isMobile ? 0 : 1,
+              mt: isMobile ? 1 : 0,
+              width: 40,
+              height: 40,
+              borderRadius: '50%',
+              background: 'transparent',
+              transition: 'background 0.2s',
+              '&:hover': {
+                background: 'rgba(214, 131, 132, 0.12)',
+              },
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              p: 0,
+            }}
+          >
             <DeleteOutlineIcon sx={{ fontSize: 20, color: "#d68384" }} />
           </IconButton>
         </Box>

@@ -37,6 +37,7 @@ interface EditarTurnoFormProps {
   handleClose: () => void;
   tieneBitren?: boolean | null;
   acopladoExtraRequired?: boolean;
+  estadoTurno?: string;
 }
 
 interface TabPanelProps {
@@ -69,6 +70,7 @@ const EditarTurnoForm: React.FC<EditarTurnoFormProps> = ({
   handleClose,
   tieneBitren,
   acopladoExtraRequired = false,
+  estadoTurno,
 }) => {
   const isAllowed = useAllowed(ROLES_PERMITIDOS_ADELANTOS);
   const [activeTab, setActiveTab] = useState(0);
@@ -278,6 +280,7 @@ const EditarTurnoForm: React.FC<EditarTurnoFormProps> = ({
           handleClose={handleClose}
           tieneBitren={tieneBitren}
           acopladoExtraRequired={acopladoExtraRequired}
+          estadoTurno={estadoTurno}
         />
       </TabPanel>
 

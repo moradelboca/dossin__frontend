@@ -351,11 +351,55 @@ const CardMobile: React.FC<CardMobileProps> = ({
             )}
           </Box>
           <Box>
-            <Typography variant="subtitle1" fontWeight="bold">
-              {transformarCampo(tituloField || fields[0], manejoTurnos.turnoLocal) || "Sin título"}
+            <Typography variant="subtitle1" fontWeight="bold"
+              sx={(() => {
+                // Título: chofer
+                let errorCampo = null;
+                if (manejoTurnos.turnoLocal.estado?.nombre?.toLowerCase() === 'con errores' && Array.isArray(manejoTurnos.turnoLocal.errores)) {
+                  errorCampo = manejoTurnos.turnoLocal.errores.find((err: any) => err.campo === 'cuilColaborador');
+                }
+                return errorCampo ? { color: '#e57373', fontWeight: 700 } : {};
+              })()}
+            >
+              {(() => {
+                let errorCampo = null;
+                if (manejoTurnos.turnoLocal.estado?.nombre?.toLowerCase() === 'con errores' && Array.isArray(manejoTurnos.turnoLocal.errores)) {
+                  errorCampo = manejoTurnos.turnoLocal.errores.find((err: any) => err.campo === 'cuilColaborador');
+                }
+                if (errorCampo) {
+                  const valor = manejoTurnos.turnoLocal['colaborador'];
+                  if (typeof valor === 'object' && valor !== null) {
+                    return valor.nombre || valor.cuil || JSON.stringify(valor);
+                  }
+                  return valor || 'Dato erróneo';
+                }
+                return transformarCampo(tituloField || fields[0], manejoTurnos.turnoLocal) || "Sin título";
+              })()}
             </Typography>
-            <Typography variant="body2" color="text.secondary">
-              {subtituloField ? transformarCampo(subtituloField, manejoTurnos.turnoLocal) : ""}
+            <Typography variant="body2" color="text.secondary"
+              sx={(() => {
+                // Subtítulo: empresa
+                let errorCampo = null;
+                if (manejoTurnos.turnoLocal.estado?.nombre?.toLowerCase() === 'con errores' && Array.isArray(manejoTurnos.turnoLocal.errores)) {
+                  errorCampo = manejoTurnos.turnoLocal.errores.find((err: any) => err.campo === 'cuitEmpresa');
+                }
+                return errorCampo ? { color: '#e57373', fontWeight: 700 } : {};
+              })()}
+            >
+              {(() => {
+                let errorCampo = null;
+                if (manejoTurnos.turnoLocal.estado?.nombre?.toLowerCase() === 'con errores' && Array.isArray(manejoTurnos.turnoLocal.errores)) {
+                  errorCampo = manejoTurnos.turnoLocal.errores.find((err: any) => err.campo === 'cuitEmpresa');
+                }
+                if (errorCampo) {
+                  const valor = manejoTurnos.turnoLocal['empresa'];
+                  if (typeof valor === 'object' && valor !== null) {
+                    return valor.razonSocial || valor.cuit || JSON.stringify(valor);
+                  }
+                  return valor || 'Dato erróneo';
+                }
+                return subtituloField ? transformarCampo(subtituloField, manejoTurnos.turnoLocal) : "";
+              })()}
             </Typography>
           </Box>
         </Box>
@@ -378,26 +422,53 @@ const CardMobile: React.FC<CardMobileProps> = ({
         unmountOnExit
       >
         <Box sx={{ padding: 2, backgroundColor: "#ffffff" }}>
-          {filteredFields.map((field, idx) => (
-            <Box
-              key={idx}
-              marginBottom={1}
-              display={usarSinDesplegable ? "flex" : "block"}
-              justifyContent={usarSinDesplegable ? "space-between" : "normal"}
-              alignItems="center"
-            >
-              <Typography
-                variant="body2"
-                fontWeight="bold"
-                sx={usarSinDesplegable ? { marginRight: 1 } : {}}
+          {filteredFields.map((field, idx) => {
+            // Buscar si hay error para este campo
+            let errorCampo = null;
+            if (manejoTurnos.turnoLocal.estado?.nombre?.toLowerCase() === 'con errores' && Array.isArray(manejoTurnos.turnoLocal.errores)) {
+              // Mapear los nombres de los campos de errores a los fields
+              const fieldMap: Record<string, string> = {
+                cuilColaborador: 'colaborador',
+                cuitEmpresa: 'empresa',
+                patenteCamion: 'camion',
+                patenteAcoplado: 'acoplado',
+                patenteAcopladoExtra: 'acopladoExtra',
+              };
+              errorCampo = manejoTurnos.turnoLocal.errores.find((err: any) => fieldMap[err.campo] === field.split('.')[0] || err.campo === field);
+            }
+            // Obtener el valor original ingresado (aunque sea erróneo)
+            let valorOriginal = undefined;
+            if (errorCampo) {
+              valorOriginal = manejoTurnos.turnoLocal[field.split('.')[0]];
+            }
+            return (
+              <Box
+                key={idx}
+                marginBottom={1}
+                display={usarSinDesplegable ? "flex" : "block"}
+                justifyContent={usarSinDesplegable ? "space-between" : "normal"}
+                alignItems="center"
               >
-                {filteredHeaderNames[idx]}:
-              </Typography>
-              <Typography variant="body2">
-                {transformarCampo(field, manejoTurnos.turnoLocal)}
-              </Typography>
-            </Box>
-          ))}
+                <Typography
+                  variant="body2"
+                  fontWeight="bold"
+                  sx={usarSinDesplegable ? { marginRight: 1 } : {}}
+                >
+                  {filteredHeaderNames[idx]}:
+                </Typography>
+                <Typography
+                  variant="body2"
+                  sx={errorCampo ? { color: '#e57373', fontWeight: 600 } : {}}
+                >
+                  {errorCampo
+                    ? (typeof valorOriginal === 'object' && valorOriginal !== null
+                        ? valorOriginal.patente || valorOriginal.nombre || valorOriginal.cuil || valorOriginal.cuit || JSON.stringify(valorOriginal)
+                        : valorOriginal || 'Dato erróneo')
+                    : transformarCampo(field, manejoTurnos.turnoLocal)}
+                </Typography>
+              </Box>
+            );
+          })}
           {renderButtons()}
           {childrenCollapse}
         </Box>

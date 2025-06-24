@@ -466,15 +466,18 @@ export function renderTurnosDialogs({
               turnoId={turnoFactura.id}
               precioGrano={turnoFactura.precioGrano}
               initialFactura={turnoFactura.factura}
-              onSuccess={async () => {
+              onSuccess={async (updatedFactura) => {
                 try {
-                  const nextEstadoId = getNextEstadoId(turnoFactura.estado?.nombre);
-                  if (!nextEstadoId) throw new Error('No se puede determinar el próximo estado');
-                  await fetch(`${import.meta.env.VITE_BACKEND_URL || ''}/turnos/${turnoFactura.id}`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ idEstado: nextEstadoId }),
-                  });
+                  // Solo cambiar de estado si se está asociando una factura (no si se borra/desasocia)
+                  if (updatedFactura) {
+                    const nextEstadoId = getNextEstadoId(turnoFactura.estado?.nombre);
+                    if (!nextEstadoId) throw new Error('No se puede determinar el próximo estado');
+                    await fetch(`${import.meta.env.VITE_BACKEND_URL || ''}/turnos/${turnoFactura.id}`, {
+                      method: 'PUT',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ idEstado: nextEstadoId }),
+                    });
+                  }
                 } catch (err) {
                   //console.error(err);
                 }

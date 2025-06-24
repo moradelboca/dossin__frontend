@@ -1,6 +1,8 @@
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
 import { SxProps, Theme } from "@mui/material";
+import { useContext } from "react";
+import { ContextoGeneral } from "../../Contexto";
 
 interface AutocompletarProps {
     title?: string;
@@ -24,6 +26,16 @@ export default function AutocompletarUbicacionMapa(props: AutocompletarProps) {
         setUbicacionSeleccionada,
         handleMarkerClick,
     } = props;
+
+    const { theme } = useContext(ContextoGeneral);
+    const azulStyles = {
+        '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
+            borderColor: theme.colores.azul,
+        },
+        '& .MuiInputLabel-root.Mui-focused': {
+            color: theme.colores.azul,
+        },
+    };
 
     const ubicacionesFiltradas = ubicaciones.filter(
         (ubicacion) => filtro === "Todas" || ubicacion.tipoUbicacion === filtro
@@ -66,7 +78,7 @@ export default function AutocompletarUbicacionMapa(props: AutocompletarProps) {
             onChange={(event, seleccionado) => {
                 seleccionarUbicacion(event, seleccionado);
             }}
-            renderInput={(params) => <TextField {...params} label={title} />}
+            renderInput={(params) => <TextField {...params} label={title} sx={azulStyles} />}
             renderGroup={(params) => {
                 const { key, group, children } = params;
                 return (

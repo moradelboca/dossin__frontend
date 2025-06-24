@@ -1,10 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useContext, useState, useEffect } from "react";
-import { Button, TextField, Box, Autocomplete } from "@mui/material";
+import {  TextField, Box, Autocomplete } from "@mui/material";
 import useValidation from "../../hooks/useValidation";
 import { ContextoGeneral } from "../../Contexto";
 import { FormularioProps } from "../../../interfaces/FormularioProps";
 import { useAuth } from "../../autenticacion/ContextoAuth";
+import MainButton from '../../botones/MainButtom';
 
 
 const InconvenienteForm: React.FC<FormularioProps> = ({
@@ -21,6 +22,16 @@ const InconvenienteForm: React.FC<FormularioProps> = ({
   const [usuarios, setUsuarios] = useState<any[]>([]);
   const [tiposInconvenientes, setTiposInconvenientes] = useState<any[]>([]);
   const [nivelesUrgencia, setNivelesUrgencia] = useState<any[]>([]);
+
+  // Estilos para azul en focus
+  const azulStyles = {
+    '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
+      borderColor: theme.colores.azul,
+    },
+    '& .MuiInputLabel-root.Mui-focused': {
+      color: theme.colores.azul,
+    },
+  };
 
   // Fetch para obtener los usuarios
   console.log(`${authURL}/auth/usuarios`)
@@ -130,118 +141,120 @@ const InconvenienteForm: React.FC<FormularioProps> = ({
 
   return (
     <Box>
-      <TextField
-        margin="dense"
-        label="Título"
-        name="titulo"
-        variant="outlined"
-        fullWidth
-        value={data.titulo}
-        onChange={handleChange("titulo")}
-        error={!!errors.titulo}
-        helperText={errors.titulo}
-      />
-      <TextField
-        margin="dense"
-        label="Descripción"
-        name="descripcion"
-        variant="outlined"
-        fullWidth
-        multiline
-        rows={4}
-        value={data.descripcion}
-        onChange={handleChange("descripcion")}
-        error={!!errors.descripcion}
-        helperText={errors.descripcion}
-      />
-      <Autocomplete
-        options={tiposInconvenientes.map((tipo) => tipo.nombre)}
-        value={tipoInconveniente}
-        onChange={(_, newValue) => setTipoInconveniente(newValue)}
-        renderInput={(params) => (
-          <TextField
-            {...params}
-            label="Tipo de Inconveniente"
-            variant="outlined"
-            error={!!errors.tipoInconveniente}
-            helperText={errors.tipoInconveniente}
-          />
-        )}
-      />
-      <Autocomplete
-        options={nivelesUrgencia.map((nivel) => nivel.nombre)}
-        value={urgencia}
-        onChange={(_, newValue) => setUrgencia(newValue)}
-        renderInput={(params) => (
-          <TextField
-            {...params}
-            label="Urgencia"
-            variant="outlined"
-            error={!!errors.urgencia}
-            helperText={errors.urgencia}
-          />
-        )}
-      />
-      <TextField
-        margin="dense"
-        label="Creado Por"
-        variant="outlined"
-        fullWidth
-        value={user?.email || ""}
-        disabled
-      />
-      <Autocomplete
-        options={usuarios}
-        value={asignadoA}
-        getOptionLabel={(option) => option.email}
-        onChange={(_, newValue) => setAsignadoA(newValue)}
-        renderInput={(params) => (
-          <TextField
-            {...params}
-            label="Asignado A"
-            variant="outlined"
-            error={!!errors.asignadoA}
-            helperText={errors.asignadoA}
-          />
-        )}
-      />
-      <Box display="flex" justifyContent="space-between" mt={2} gap={2}>
-        <Button
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+        <TextField
+          margin="dense"
+          label="Título"
+          name="titulo"
+          variant="outlined"
+          fullWidth
+          value={data.titulo ?? ""}
+          onChange={handleChange("titulo")}
+          error={!!errors.titulo}
+          helperText={errors.titulo}
+          sx={azulStyles}
+        />
+        <TextField
+          margin="dense"
+          label="Descripción"
+          name="descripcion"
+          variant="outlined"
+          fullWidth
+          multiline
+          rows={4}
+          value={data.descripcion ?? ""}
+          onChange={handleChange("descripcion")}
+          error={!!errors.descripcion}
+          helperText={errors.descripcion}
+          sx={azulStyles}
+        />
+        <Autocomplete
+          options={tiposInconvenientes.map((tipo) => tipo.nombre)}
+          value={tipoInconveniente}
+          onChange={(_, newValue) => setTipoInconveniente(newValue)}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label="Tipo de Inconveniente"
+              variant="outlined"
+              error={!!errors.tipoInconveniente}
+              helperText={errors.tipoInconveniente}
+              sx={azulStyles}
+            />
+          )}
+        />
+        <Autocomplete
+          options={nivelesUrgencia.map((nivel) => nivel.nombre)}
+          value={urgencia}
+          onChange={(_, newValue) => setUrgencia(newValue)}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label="Urgencia"
+              variant="outlined"
+              error={!!errors.urgencia}
+              helperText={errors.urgencia}
+              sx={azulStyles}
+            />
+          )}
+        />
+        <TextField
+          margin="dense"
+          label="Creado Por"
+          variant="outlined"
+          fullWidth
+          value={user?.email || ""}
+          disabled
+          sx={azulStyles}
+        />
+        <Autocomplete
+          options={usuarios}
+          value={asignadoA}
+          getOptionLabel={(option) => option.email}
+          onChange={(_, newValue) => setAsignadoA(newValue)}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label="Asignado a"
+              variant="outlined"
+              error={!!errors.asignadoA}
+              helperText={errors.asignadoA}
+              sx={azulStyles}
+            />
+          )}
+        />
+      </Box>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'row',
+          gap: 2,
+          justifyContent: 'flex-end',
+          alignItems: 'center',
+          mt: 4,
+          position: 'relative',
+        }}
+      >
+        <MainButton
           onClick={handleClose}
-          sx={{
-            backgroundColor: "transparent",
-            color: theme.colores.azul,
-            borderRadius: "8px",
-            px: 3,
-            py: 1,
-            fontWeight: 500,
-            textTransform: "none",
-            '&:hover': {
-              backgroundColor: 'rgba(22, 54, 96, 0.1)',
-              color: theme.colores.azul,
-            },
-          }}
-        >
-          Cancelar
-        </Button>
-        <Button
+          text="Cancelar"
+          backgroundColor="transparent"
+          textColor={theme.colores.azul}
+          borderRadius="8px"
+          hoverBackgroundColor="rgba(22, 54, 96, 0.1)"
+          width="120px"
+          divWidth="120px"
+        />
+        <MainButton
           onClick={handleSubmit}
-          sx={{
-            backgroundColor: theme.colores.azul,
-            color: '#fff',
-            borderRadius: '8px',
-            px: 3,
-            py: 1,
-            fontWeight: 500,
-            textTransform: 'none',
-            '&:hover': {
-              backgroundColor: theme.colores.azulOscuro || theme.colores.azul,
-              color: '#fff',
-            },
-          }}
-        >
-          Guardar
-        </Button>
+          text="Guardar"
+          backgroundColor={theme.colores.azul}
+          textColor="#fff"
+          borderRadius="8px"
+          hoverBackgroundColor={theme.colores.azulOscuro}
+          width="120px"
+          divWidth="120px"
+        />
       </Box>
     </Box>
   );
