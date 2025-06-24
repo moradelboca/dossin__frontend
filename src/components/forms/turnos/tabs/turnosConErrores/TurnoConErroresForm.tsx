@@ -196,6 +196,7 @@ const TurnoConErroresForm: React.FC<TurnoConErroresFormProps> = ({
             setErrores(e => ({ ...e, empresa: '' }));
           }}
           helperText={errores.empresa || (empresaError ? "La empresa ingresada no existe, por favor corrija." : undefined)}
+          rolEmpresa="Empresa Transportista"
         />
       )}
       {fieldsToShow.includes("patenteCamion") && (

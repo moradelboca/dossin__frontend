@@ -1,6 +1,7 @@
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
+import { ContextoGeneral } from "../Contexto";
 
 interface AutocompletarProps {
   title: string;
@@ -13,6 +14,8 @@ interface AutocompletarProps {
 
 export default function AutocompletarUbicacionLocalidad(props: AutocompletarProps) {
   const { title, localidades, datosNuevaUbicacion, setDatosNuevaUbicacion, error, estadoCarga } = props;
+
+  const { theme } = useContext(ContextoGeneral);
 
   // Busca la localidad inicial (si existe) comparando el id
   const initialLocalidad = localidades.find(
@@ -46,6 +49,15 @@ export default function AutocompletarUbicacionLocalidad(props: AutocompletarProp
     }
   };
 
+  const azulStyles = {
+    '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
+      borderColor: theme.colores.azul,
+    },
+    '& .MuiInputLabel-root.Mui-focused': {
+      color: theme.colores.azul,
+    },
+  };
+
   return (
     <Autocomplete
       disablePortal
@@ -55,7 +67,7 @@ export default function AutocompletarUbicacionLocalidad(props: AutocompletarProp
       value={selectedLocalidad}
       onChange={seleccionarUbicacion}
       renderInput={(params) => (
-        <TextField {...params} error={error} label={title} />
+        <TextField {...params} error={error} label={title} sx={azulStyles} />
       )}
       loading={estadoCarga}
     />

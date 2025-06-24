@@ -14,6 +14,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { ContextoGeneral } from "../../Contexto";
 import DeleteEntidad from "../../dialogs/DeleteEntidad";
 import useValidation from "../../hooks/useValidation";
+import MainButton from '../../botones/MainButtom';
 
 interface UsuariosFormProps {
   seleccionado?: any;
@@ -28,7 +29,7 @@ const UsuariosForm: React.FC<UsuariosFormProps> = ({
   setDatos,
   handleClose,
 }) => {
-  const { authURL } = useContext(ContextoGeneral);
+  const { authURL, theme } = useContext(ContextoGeneral);
   const [roles, setRoles] = useState<any[]>([]);
   const [rolSeleccionado, setRolSeleccionado] = useState<any>(null);
   const [openDialogDelete, setOpenDialogDelete] = useState(false);
@@ -130,36 +131,51 @@ const UsuariosForm: React.FC<UsuariosFormProps> = ({
   const handleClickDelete = () => setOpenDialogDelete(true);
   const handleCloseDialog = () => setOpenDialogDelete(false);
 
+  // Estilos para azul en focus
+  const azulStyles = {
+    '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
+      borderColor: theme.colores.azul,
+    },
+    '& .MuiInputLabel-root.Mui-focused': {
+      color: theme.colores.azul,
+    },
+  };
+
   return (
     <>
-      <TextField
-        margin="dense"
-        label="Email"
-        name="email"
-        variant="outlined"
-        fullWidth
-        value={data.email}
-        onChange={handleChange("email")}
-        error={!!errors.email}
-        helperText={errors.email}
-      />
-
-      <Autocomplete
-        disablePortal
-        options={roles}
-        getOptionLabel={(option) => option.nombre}
-        value={rolSeleccionado}
-        onChange={(_e, newValue) => setRolSeleccionado(newValue)}
-        isOptionEqualToValue={(option, value) => option.id === value.id}
-        renderInput={(params) => (
+      <Box sx={{ width: '100%' }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
           <TextField
-            {...params}
-            label="Rol"
-            error={!!errors.rolId}
-            helperText={errors.rolId}
+            margin="dense"
+            label="Email"
+            name="email"
+            variant="outlined"
+            fullWidth
+            value={data.email ?? ""}
+            onChange={handleChange("email")}
+            error={!!errors.email}
+            helperText={errors.email}
+            sx={azulStyles}
           />
-        )}
-      />
+          <Autocomplete
+            disablePortal
+            options={roles}
+            getOptionLabel={(option) => option.nombre}
+            value={rolSeleccionado}
+            onChange={(_e, newValue) => setRolSeleccionado(newValue)}
+            isOptionEqualToValue={(option, value) => option.id === value.id}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label="Rol"
+                error={!!errors.rolId}
+                helperText={errors.rolId}
+                sx={azulStyles}
+              />
+            )}
+          />
+        </Box>
+      </Box>
 
       {seleccionado && (
         <FormControlLabel
@@ -174,20 +190,44 @@ const UsuariosForm: React.FC<UsuariosFormProps> = ({
         />
       )}
 
-      <Box display="flex" justifyContent="space-between" mt={2}>
-        <Button onClick={handleClose} color="primary">
-          Cancelar
-        </Button>
-        <Button 
-          onClick={handleSubmit} 
-          color="primary"
-          variant="contained"
-        >
-          Guardar
-        </Button>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'row',
+          gap: 2,
+          justifyContent: 'flex-end',
+          alignItems: 'center',
+          mt: 4,
+          position: 'relative',
+        }}
+      >
+        <MainButton
+          onClick={handleClose}
+          text="Cancelar"
+          backgroundColor="transparent"
+          textColor={theme.colores.azul}
+          borderRadius="8px"
+          hoverBackgroundColor="rgba(22, 54, 96, 0.1)"
+          width="120px"
+          divWidth="120px"
+        />
+        <MainButton
+          onClick={handleSubmit}
+          text="Guardar"
+          backgroundColor={theme.colores.azul}
+          textColor="#fff"
+          borderRadius="8px"
+          hoverBackgroundColor={theme.colores.azulOscuro}
+          width="120px"
+          divWidth="120px"
+        />
         {seleccionado && (
-          <IconButton onClick={handleClickDelete}>
-            <DeleteOutlineIcon sx={{ fontSize: 20, color: "#d68384" }} />
+          <IconButton
+            onClick={handleClickDelete}
+            sx={{ ml: 1, width: 40, height: 40, borderRadius: '50%', background: 'transparent', transition: 'background 0.2s', '&:hover': { background: 'rgba(214, 131, 132, 0.12)' }, display: 'flex', alignItems: 'center', justifyContent: 'center', p: 0 }}
+            title="Eliminar usuario"
+          >
+            <DeleteOutlineIcon sx={{ fontSize: 20, color: '#d68384' }} />
           </IconButton>
         )}
       </Box>

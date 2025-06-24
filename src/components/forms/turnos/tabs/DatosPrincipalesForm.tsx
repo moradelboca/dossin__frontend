@@ -15,6 +15,7 @@ interface DatosPrincipalesFormProps {
   handleClose: () => void;
   tieneBitren?: boolean | null;
   acopladoExtraRequired?: boolean;
+  estadoTurno?: string;
 }
 
 const DatosPrincipalesForm: React.FC<DatosPrincipalesFormProps> = ({
@@ -24,6 +25,7 @@ const DatosPrincipalesForm: React.FC<DatosPrincipalesFormProps> = ({
   handleClose,
   tieneBitren,
   acopladoExtraRequired = false,
+  estadoTurno,
 }) => {
   const { backendURL } = useContext(ContextoGeneral);
   const { theme } = useContext(ContextoGeneral);
@@ -117,17 +119,22 @@ const DatosPrincipalesForm: React.FC<DatosPrincipalesFormProps> = ({
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-      <AutocompleteColaboradores
-        value={colaboradorSeleccionado}
-        onChange={setColaboradorSeleccionado}
-        error={!!errors.cuilColaborador}
-        helperText={errors.cuilColaborador}
-      />
       <AutocompleteEmpresas
         value={empresaTransportistaSeleccionada}
         onChange={setEmpresaTransportistaSeleccionada}
         error={!!errors.cuitEmpresa}
         helperText={errors.cuitEmpresa}
+        rolEmpresa="Empresa Transportista"
+      />
+      <AutocompleteColaboradores
+        value={colaboradorSeleccionado}
+        onChange={setColaboradorSeleccionado}
+        error={!!errors.cuilColaborador}
+        helperText={estadoTurno === 'Validado'
+          ? (empresaTransportistaSeleccionada ? errors.cuilColaborador : "Seleccione primero una empresa transportista")
+          : errors.cuilColaborador}
+        empresaSeleccionada={estadoTurno === 'Validado' ? empresaTransportistaSeleccionada : undefined}
+        disabled={estadoTurno === 'Validado' ? !empresaTransportistaSeleccionada : false}
       />
       <AutocompleteCamiones
         value={patenteCamionSeleccionada}

@@ -20,6 +20,7 @@ import useValidation from '../../../hooks/useValidation';
 import MainButton from '../../../botones/MainButtom';
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { Dialog as MuiDialog } from '@mui/material';
+import { useNotificacion } from '../../../Notificaciones/NotificacionSnackbar';
 
 
 interface TipoFactura {
@@ -58,6 +59,7 @@ const FacturaForm: React.FC<FacturaFormProps> = ({
   const {theme} = useContext(ContextoGeneral);
   const tema = useTheme();
   const isMobile = useMediaQuery(tema.breakpoints.down("sm"));
+  const { showNotificacion } = useNotificacion();
 
   // Estados para opciones (tipos de factura)
   const [tiposFacturaOptions, setTiposFacturaOptions] = useState<TipoFactura[]>([]);
@@ -73,13 +75,13 @@ const FacturaForm: React.FC<FacturaFormProps> = ({
         tipoFactura: initialFactura?.tipoFactura || null,
         puntoDeVenta: initialFactura?.puntoDeVenta || '',
         nroFactura: initialFactura?.nroFactura || '',
-        precioGrano: precioGrano || '',
+        precioGrano: precioGrano !== undefined && precioGrano !== null ? (Number(precioGrano) * 1000) : '',
       }
     : {
         tipoFactura: null as TipoFactura | null,
         puntoDeVenta: '',
         nroFactura: '',
-        precioGrano: precioGrano || ''
+        precioGrano: precioGrano !== undefined && precioGrano !== null ? (Number(precioGrano) * 1000) : ''
       };
 
   // Reglas de validación.
@@ -122,7 +124,7 @@ const FacturaForm: React.FC<FacturaFormProps> = ({
         tipoFactura: initialFactura.tipoFactura || null,
         puntoDeVenta: initialFactura.puntoDeVenta || '',
         nroFactura: initialFactura.nroFactura || '',
-        precioGrano: precioGrano !== undefined ? precioGrano : '',
+        precioGrano: precioGrano !== undefined && precioGrano !== null ? (Number(precioGrano) * 1000) : '',
       });
     }
   }, [initialFactura, isUpdateMode, setData, precioGrano]);
@@ -140,6 +142,16 @@ const FacturaForm: React.FC<FacturaFormProps> = ({
 
   const handleDelete = async () => {
     try {
+      // 1. Desasociar la factura del turno (sin idEstado)
+      await fetch(`${backendURL}/turnos/${turnoId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': 'true',
+        },
+        body: JSON.stringify({ factura: null }),
+      });
+      // 2. Eliminar la factura
       const response = await fetch(`${backendURL}/facturas/${initialFactura?.id}`, {
         method: 'DELETE',
         headers: {
@@ -150,9 +162,16 @@ const FacturaForm: React.FC<FacturaFormProps> = ({
       if (!response.ok) throw new Error(await response.text());
       onSuccess(null);
       handleCloseDeleteDialog();
-    } catch (error) {
-      console.error('Error al borrar la factura:', error);
-      handleCloseDeleteDialog();
+    } catch (error: any) {
+      // Si el error es por que la factura tiene otros turnos asociados
+      if (error && error.message && error.message.includes('Error al eliminar la factura')) {
+        showNotificacion('La factura se desasoció del turno con éxito, pero no se pudo borrar porque tiene otros turnos asociados.', 'warning');
+        onSuccess(null); // Recargar turnos
+        handleCloseDeleteDialog();
+      } else {
+        console.error('Error al borrar la factura:', error);
+        handleCloseDeleteDialog();
+      }
     }
   };
 
@@ -162,7 +181,7 @@ const FacturaForm: React.FC<FacturaFormProps> = ({
       const response = await fetch(`${backendURL}/turnos/${turnoId}`, {
         method: 'PUT',
         headers,
-        body: JSON.stringify({ idFactura: facturaId  }),
+        body: JSON.stringify({ idFactura: facturaId }),
       });
       if (!response.ok) throw new Error(await response.text());
       const updatedTurno = await response.json();
@@ -420,7 +439,7 @@ const FacturaForm: React.FC<FacturaFormProps> = ({
           </Typography>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseDeleteDialog} variant="text">
+          <Button onClick={handleCloseDeleteDialog} variant="text" sx={{ color: theme.colores.azul }}>
             No
           </Button>
           <Button onClick={handleDelete} variant="text" color="error">

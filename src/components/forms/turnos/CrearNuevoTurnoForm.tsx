@@ -15,6 +15,7 @@ interface CrearNuevoTurnoFormProps {
   fechaCupo?: string;
   tieneBitren?: boolean | null;
   acopladoExtraRequired?: boolean;
+  estadoTurno?: string;
 }
 
 const CrearNuevoTurnoForm: React.FC<CrearNuevoTurnoFormProps> = ({
@@ -24,6 +25,7 @@ const CrearNuevoTurnoForm: React.FC<CrearNuevoTurnoFormProps> = ({
   fechaCupo,
   tieneBitren,
   acopladoExtraRequired = false,
+  estadoTurno,
 }) => {
   const { backendURL, theme } = useContext(ContextoGeneral);
 
@@ -116,9 +118,11 @@ const CrearNuevoTurnoForm: React.FC<CrearNuevoTurnoFormProps> = ({
           value={colaboradorSeleccionado}
           onChange={setColaboradorSeleccionado}
           error={!!errors.cuilColaborador}
-          helperText={empresaTransportistaSeleccionada ? errors.cuilColaborador : "Seleccione primero una empresa transportista"}
-          empresaSeleccionada={empresaTransportistaSeleccionada}
-          disabled={!empresaTransportistaSeleccionada}
+          helperText={(!estadoTurno || estadoTurno === 'Validado')
+            ? (empresaTransportistaSeleccionada ? errors.cuilColaborador : "Seleccione primero una empresa transportista")
+            : errors.cuilColaborador}
+          empresaSeleccionada={(!estadoTurno || estadoTurno === 'Validado') ? empresaTransportistaSeleccionada : undefined}
+          disabled={(!estadoTurno || estadoTurno === 'Validado') ? !empresaTransportistaSeleccionada : false}
         />
         <AutocompleteCamiones
           value={patenteCamionSeleccionada}

@@ -3,6 +3,8 @@ import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
 import { useMediaQuery } from "@mui/material";
+import { useContext, useState, useEffect } from "react";
+import { ContextoGeneral } from "../../Contexto";
 
 interface Telefono {
     setCodigoSeleccionado: (value: string) => void;
@@ -14,15 +16,31 @@ interface Telefono {
 export default function AutocompletarPais(props: Telefono) {
     const { setCodigoSeleccionado, error, defaultPhone, fullWidth } = props;
     const isMobile = useMediaQuery("768px");
+    const { theme } = useContext(ContextoGeneral);
     
     const defaultCountry = countries.find(country => country.phone === defaultPhone) || null;
+    const [selectedCountry, setSelectedCountry] = useState(defaultCountry);
+
+    useEffect(() => {
+        setSelectedCountry(defaultCountry);
+    }, [defaultPhone]);
 
     const handleChange = (_event: any, value: any) => {
+        setSelectedCountry(value);
         if (value) {
             setCodigoSeleccionado(value.phone);
         } else {
             setCodigoSeleccionado("");
         }
+    };
+
+    const azulStyles = {
+        '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
+            borderColor: theme.colores.azul,
+        },
+        '& .MuiInputLabel-root.Mui-focused': {
+            color: theme.colores.azul,
+        },
     };
 
     return (
@@ -35,7 +53,7 @@ export default function AutocompletarPais(props: Telefono) {
                 minWidth: "120px" 
             }}
             getOptionLabel={(option) => option.phone}
-            value={defaultCountry}
+            value={selectedCountry}
             componentsProps={{ 
                 popper: { 
                     style: { 
@@ -77,7 +95,8 @@ export default function AutocompletarPais(props: Telefono) {
                         width: fullWidth ? "100%" : "120px",
                         "& .MuiInputBase-root": {
                             height: isMobile ? "56px" : "auto"
-                        }
+                        },
+                        ...azulStyles
                     }}
                     label="Característica"
                     inputProps={{

@@ -62,7 +62,7 @@ const AutocompleteColaboradores: React.FC<AutocompleteColaboradoresProps> = ({
 
   // Filtrar colaboradores por empresa seleccionada si existe
   const colaboradoresFiltrados = React.useMemo(() => {
-    if (!empresaSeleccionada) return [];
+    if (!empresaSeleccionada) return colaboradores;
     return colaboradores.filter(col =>
       col.empresas && Array.isArray(col.empresas) &&
       col.empresas.some(emp => emp.cuit && emp.cuit.toString() === empresaSeleccionada)
