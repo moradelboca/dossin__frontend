@@ -22,7 +22,7 @@ const WebSocketComponent = () => {
       console.log("Conectado a socket.io con ID:", socketRef.current?.id);
     });
 
-    socketRef.current.on("nueva-alerta", (payload) => {
+    socketRef.current.on("nueva-alerta", ({ payload }) => {
       console.log(payload);
       if (payload?.asignadoA && user?.email && payload.asignadoA === user.email) {
         showNotificacion("Hay un nuevo inconveniente, por favor revisa la ventana de Inconvenietes", "warning");
