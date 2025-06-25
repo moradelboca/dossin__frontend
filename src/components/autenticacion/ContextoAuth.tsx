@@ -34,7 +34,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const logout = async () => {
     setUser(null);
     try {
-      const response = await fetch(`${authURL}/auth/logout`);
+      const response = await fetch(`${authURL}/auth/logout`, {
+        method: "GET",
+        credentials: "include",
+      });
       if (response.ok) {
         window.open("https://admin.dossin.com.ar/login", "_self");
       } else {
