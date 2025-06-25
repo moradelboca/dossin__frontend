@@ -1,6 +1,6 @@
 // ContextoAuth.tsx
 import { createContext, useState, useContext, ReactNode } from "react";
-import Cookies from "js-cookie";
+import { ContextoGeneral } from "../Contexto";
 
 interface RolUsuario {
   id: number;
@@ -25,15 +25,24 @@ const AuthContext = createContext<AuthContextProps | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
+  const { authURL } = useContext(ContextoGeneral);
 
   const login = (userData: User) => {
     setUser(userData);
   };
 
-  const logout = () => {
+  const logout = async () => {
     setUser(null);
-    Cookies.remove("accessToken");
-    window.open("https://admin.dossin.com.ar/login", "_self");
+    try {
+      const response = await fetch(`${authURL}/auth/logout`);
+      if (response.ok) {
+        window.open("https://admin.dossin.com.ar/login", "_self");
+      } else {
+        console.error("Logout request failed with status:", response.status);
+      }
+    } catch (error) {
+      console.error("Logout request failed, not redirecting.", error);
+    }
   };
 
   return (
