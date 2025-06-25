@@ -1,6 +1,5 @@
 // ContextoAuth.tsx
 import { createContext, useState, useContext, ReactNode } from "react";
-import Cookies from "js-cookie";
 import { ContextoGeneral } from "../Contexto";
 
 interface RolUsuario {
