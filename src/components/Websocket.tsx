@@ -18,6 +18,8 @@ const WebSocketComponent = () => {
       transports: ["websocket"],
     });
 
+    if (!socketRef.current) return;  
+
     socketRef.current.on("connect", () => {
       console.log("Conectado a socket.io con ID:", socketRef.current?.id);
     });
