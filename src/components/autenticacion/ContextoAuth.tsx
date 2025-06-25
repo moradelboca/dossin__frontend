@@ -31,11 +31,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setUser(userData);
   };
 
-  const logout = async () => {
+   const logout = async () => {
     setUser(null);
     try {
       const response = await fetch(`${authURL}/auth/logout`, {
         method: "GET",
+        headers: {
+          "ngrok-skip-browser-warning": "true"
+        },
         credentials: "include",
       });
       if (response.ok) {
