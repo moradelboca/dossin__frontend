@@ -2,11 +2,14 @@ import { useEffect, useRef, useContext } from "react";
 import { ContextoGeneral } from "./Contexto";
 import { io, Socket } from "socket.io-client";
 import { useNotificacion } from "./Notificaciones/NotificacionSnackbar";
+import { useAuth } from "./autenticacion/ContextoAuth";
 
 const WebSocketComponent = () => {
   const socketRef = useRef<Socket | null>(null);
   const { backendURL } = useContext(ContextoGeneral);
   const { showNotificacion } = useNotificacion();
+  const { user } = useAuth();
+
   
   useEffect(() => {
     // Sacamos el /api del final
@@ -20,7 +23,12 @@ const WebSocketComponent = () => {
     });
 
     socketRef.current.on("nueva-alerta", () => {
-      showNotificacion("Hay un nuevo inconveniente, por favor revisa la ventana de Inconvenietes", "warning");
+    socketRef.current.on("nueva-alerta", (payload) => {
+      console.log(payload);
+      if (payload?.asignadoA && user?.email && payload.asignadoA === user.email) {
+        showNotificacion("Hay un nuevo inconveniente, por favor revisa la ventana de Inconvenietes", "warning");
+      }
+    });
     });
 
     socketRef.current.on("disconnect", () => {
