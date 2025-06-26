@@ -10,9 +10,22 @@ const WebSocketComponent = () => {
   const { showNotificacion } = useNotificacion();
   const { user } = useAuth();
 
-  
   useEffect(() => {
-    // Sacamos el /api del final
+    // Si ya hay un socket y un usuario, no hagas nada.
+    if (socketRef.current && user) {
+      return;
+    }
+
+    // Si no hay usuario, desconecta y limpia.
+    if (!user) {
+      if (socketRef.current) {
+        socketRef.current.disconnect();
+        socketRef.current = null;
+      }
+      return;
+    }
+
+    // Si hay un usuario pero no un socket, conecta.
     socketRef.current = io(backendURL.slice(0, -4), {
       path: "/socket",
       transports: ["websocket"],
@@ -23,8 +36,6 @@ const WebSocketComponent = () => {
     });
 
     socketRef.current.on("nueva-alerta", ({ payload }) => {
-      console.log(payload?.asignadoA);
-      if (user) {console.log(user.email); console.log(user);}
       if (payload?.asignadoA && user?.email && payload.asignadoA === user.email) {
         showNotificacion("Hay un nuevo inconveniente, por favor revisa la ventana de Inconvenietes", "warning");
       }
@@ -38,10 +49,15 @@ const WebSocketComponent = () => {
       );
     });
 
+    // La función de limpieza solo se ejecutará al desmontar,
+    // o si el usuario se vuelve nulo.
     return () => {
-      socketRef.current?.disconnect();
+      if (socketRef.current) {
+        socketRef.current.disconnect();
+        socketRef.current = null;
+      }
     };
-  }, []);
+  }, [user]);
 
   return null;
 };
