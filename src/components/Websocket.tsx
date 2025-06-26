@@ -48,15 +48,6 @@ const WebSocketComponent = () => {
         "warning"
       );
     });
-
-    // La función de limpieza solo se ejecutará al desmontar,
-    // o si el usuario se vuelve nulo.
-    return () => {
-      if (socketRef.current) {
-        socketRef.current.disconnect();
-        socketRef.current = null;
-      }
-    };
   }, [user]);
 
   return null;
