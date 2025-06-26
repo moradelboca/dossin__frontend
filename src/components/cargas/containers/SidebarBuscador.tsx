@@ -95,11 +95,14 @@ const SidebarBuscador: React.FC<SidebarBuscadorProps> = ({
         top: 0,
         bgcolor: "background.paper",
         zIndex: 1,
+        borderRadius: 2,
+        boxShadow: 1,
       }}
     >
       <Box sx={{ display: "flex", gap: 1 }}>
         <Autocomplete
-          disablePortal
+          disablePortal={false}
+          slotProps={{ popper: { sx: { zIndex: 2000 } } }}
           options={filterOptions}
           getOptionLabel={(option) => option.label}
           value={filterOptions.find(opt => opt.value === filterType) || filterOptions[0]}

@@ -28,6 +28,8 @@ const MainContent: React.FC<MainContentProps> = ({
         height: "100%",
         overflowY: { xs: "auto", lg: "hidden" }, 
         backgroundColor: "#ffffff",
+        borderRadius: 3,
+        boxShadow: 2,
       }}
     >
       {/* Header */}
