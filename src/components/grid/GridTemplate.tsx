@@ -68,6 +68,9 @@ export function GridTemplate({
         <Box flex={1} sx={{ 
           width: "100%",
           position: 'relative',
+          minHeight: 0,
+          height: '100%',
+          overflow: 'auto',
           '& .MuiDataGrid-virtualScroller': {
             overflowX: 'scroll'
           }
@@ -78,6 +81,8 @@ export function GridTemplate({
             getRowId={getRowId}
             localeText={esES.components.MuiDataGrid.defaultProps.localeText}
             sx={{
+              height: '100%',
+              minHeight: 0,
               "& .MuiDataGrid-columnHeader": {
                 backgroundColor: theme.colores.grisClaro,
                 color: theme.colores.grisOscuro,

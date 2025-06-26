@@ -20,6 +20,9 @@ export default function TabCamiones() {
                 height: '100%',
                 minHeight: 0,
                 backgroundColor: theme.colores.grisClaro,
+                display: 'flex',
+                flexDirection: 'column',
+                overflow: 'hidden',
             }}
         >
             <Tabs
@@ -41,7 +44,7 @@ export default function TabCamiones() {
                 <Tab value="one" label="Camiones" />
                 <Tab value="two" label="Acoplados" />
             </Tabs>
-            <Box sx={{ padding: 2, height: '100%', minHeight: 0 }}>
+            <Box sx={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden', p: 2 }}>
                 {value === "one" && <Camiones />}
                 {value === "two" && <Acoplados />}
             </Box>

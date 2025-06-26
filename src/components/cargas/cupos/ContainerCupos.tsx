@@ -198,6 +198,7 @@ export function ContainerCupos() {
       alignItems="center"
       width="100%"
       marginTop={2}
+      sx={{ height: '100%', overflowY: 'auto' }}
     >
       <Box
         display="flex"
