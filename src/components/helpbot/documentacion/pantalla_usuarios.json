@@ -1,0 +1,79 @@
+{
+  "descripcion": "La pantalla de Usuarios te permite ver, agregar, editar y gestionar todas las cuentas de usuario del sistema. Es fundamental para administrar accesos, roles y permisos de cada persona que usa la plataforma.",
+  "como_llegar": [
+    "Hacé clic en el ícono de 'Usuarios' en la barra lateral izquierda.",
+    "Se abre la tabla con todos los usuarios registrados y las herramientas para gestionarlos."
+  ],
+  "elementos_principales": {
+    "Panel superior": [
+      "Título grande 'Usuarios' arriba a la izquierda.",
+      "Buscador para filtrar usuarios por email, nombre, apellido, etc.",
+      "Botón '+ AGREGAR USUARIO' arriba a la derecha para crear una nueva cuenta.",
+      "Botón 'FILTROS' para aplicar filtros avanzados.",
+      "Botón 'EXPORTAR' para descargar la lista (por ejemplo, en Excel).",
+      "Botón 'COLUMNAS' para elegir qué columnas mostrar en la tabla."
+    ],
+    "Tabla de usuarios": [
+      "Cada fila es un usuario y cada columna muestra un dato: Id, Email, Nombre, Apellido, Nombre de usuario, Imagen, Rol, Activo, Editar.",
+      "Columna 'Editar' con ícono de lápiz para modificar los datos del usuario.",
+      "Columna 'Activo' indica si la cuenta está habilitada o deshabilitada."
+    ],
+    "Paginación": [
+      "Abajo a la derecha, podés elegir cuántas filas ver por página y navegar entre páginas si hay muchos usuarios."
+    ]
+  },
+  "acciones_principales": [
+    {
+      "nombre": "Agregar usuario",
+      "descripcion": "Hacé clic en '+ AGREGAR USUARIO', completá los datos obligatorios (email, nombre, apellido, rol, etc.) y guardá. Si el email ya existe, el sistema te avisa y no deja guardar."
+    },
+    {
+      "nombre": "Editar usuario",
+      "descripcion": "En la columna 'Editar', hacé clic en el lápiz. Se abre el formulario con los datos ya cargados. Modificá lo que necesites y guardá los cambios."
+    },
+    {
+      "nombre": "Eliminar usuario",
+      "descripcion": "Si tu rol lo permite, podés eliminar un usuario desde el formulario de edición o desde la tabla (ícono de basurita). El sistema pide confirmación antes de borrar."
+    },
+    {
+      "nombre": "Activar o desactivar usuario",
+      "descripcion": "En la columna 'Activo', podés habilitar o deshabilitar la cuenta de un usuario según corresponda."
+    },
+    {
+      "nombre": "Buscar usuario",
+      "descripcion": "Usá el buscador para filtrar rápidamente por email, nombre, apellido, etc. La tabla se actualiza al instante."
+    },
+    {
+      "nombre": "Filtrar y exportar",
+      "descripcion": "Aplicá filtros avanzados con el botón 'FILTROS' o exportá la lista con 'EXPORTAR'."
+    },
+    {
+      "nombre": "Personalizar columnas",
+      "descripcion": "Con el botón 'COLUMNAS' elegís qué datos ver en la tabla, según lo que te resulte más útil."
+    }
+  ],
+  "preguntas_frecuentes": [
+    {
+      "pregunta": "¿Cómo agrego un nuevo usuario?",
+      "respuesta": "Hacé clic en '+ AGREGAR USUARIO', completá el formulario y guardá."
+    },
+    {
+      "pregunta": "¿Por qué no puedo editar o eliminar un usuario?",
+      "respuesta": "Solo los roles con permiso pueden editar o eliminar usuarios. Si no ves la opción, consultá la sección de permisos o contactá a un administrador."
+    },
+    {
+      "pregunta": "¿Qué significa la columna 'Activo'?",
+      "respuesta": "Indica si la cuenta del usuario está habilitada (puede acceder al sistema) o deshabilitada (no puede ingresar)."
+    },
+    {
+      "pregunta": "¿Puedo cambiar el rol de un usuario?",
+      "respuesta": "Sí, si tenés permiso, podés editar el usuario y asignarle un nuevo rol desde el formulario de edición."
+    }
+  ],
+  "consejos_utiles": [
+    "Solo los roles con permiso pueden crear, editar o borrar usuarios. Si no ves la opción, consultá la sección de permisos.",
+    "Mantené actualizada la información de los usuarios, sobre todo el email y el rol asignado.",
+    "Deshabilitar un usuario es útil si no querés que acceda al sistema pero no querés borrar su historial.",
+    "Usá los filtros y la búsqueda para encontrar rápido a quien necesitás, sobre todo si tenés muchos usuarios."
+  ]
+} 

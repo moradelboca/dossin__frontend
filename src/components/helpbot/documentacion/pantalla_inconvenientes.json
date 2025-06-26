@@ -1,0 +1,75 @@
+{
+  "descripcion": "La pantalla de Inconvenientes te permite ver, reportar y gestionar todos los problemas o incidencias del sistema. Podés agregar nuevos inconvenientes, cambiar su estado (pendiente, activo, resuelto), asignarlos a usuarios y ver el historial y detalles de cada uno. Es clave para el seguimiento y la resolución rápida de problemas.",
+  "como_llegar": [
+    "Hacé clic en el ícono de 'Inconvenientes' en la barra lateral izquierda.",
+    "Se abre la tabla con todos los inconvenientes reportados y las herramientas para gestionarlos."
+  ],
+  "elementos_principales": {
+    "Panel superior": [
+      "Título grande 'Inconvenientes' arriba a la izquierda.",
+      "Botón '+ AGREGAR INCONVENIENTE' arriba a la izquierda para reportar un nuevo inconveniente."
+    ],
+    "Tabla de inconvenientes": [
+      "Cada fila es un inconveniente y cada columna muestra un dato: Nombre, Tipo, Estado, Urgencia, Fecha, Creado por, Asignado a, Acción.",
+      "Columna 'Acción' muestra botones para cambiar el estado (Atender, Resolver) según corresponda.",
+      "Columna 'Estado' usa colores: Activo (amarillo), Pendiente (rojo), Resuelto (verde).",
+      "Columna 'Urgencia' usa colores: Alta (rojo), Media (amarillo), Leve (verde).",
+      "Columna 'Tipo' muestra el tipo de inconveniente (Sistema, Oficina, Turno con errores, etc.) con un chip de color.",
+      "Columna 'Creado por' y 'Asignado a' muestran el email y avatar del usuario correspondiente.",
+      "Ícono de flecha para expandir y ver la descripción completa del inconveniente."
+    ],
+    "Paginación": [
+      "Abajo a la derecha, podés elegir cuántas filas ver por página y navegar entre páginas si hay muchos inconvenientes."
+    ]
+  },
+  "acciones_principales": [
+    {
+      "nombre": "Agregar inconveniente",
+      "descripcion": "Hacé clic en '+ AGREGAR INCONVENIENTE', completá el formulario con los datos obligatorios (título, tipo, urgencia, descripción, asignado a, etc.) y guardá."
+    },
+    {
+      "nombre": "Editar inconveniente",
+      "descripcion": "En la fila del inconveniente, hacé clic en el ícono de lápiz (si está disponible). Se abre el formulario con los datos ya cargados. Modificá lo que necesites y guardá los cambios."
+    },
+    {
+      "nombre": "Eliminar inconveniente",
+      "descripcion": "Si tu rol lo permite, podés eliminar un inconveniente desde la tabla (ícono de basurita). El sistema pide confirmación antes de borrar. Borrar un inconveniente puede afectar reportes y alertas."
+    },
+    {
+      "nombre": "Cambiar estado",
+      "descripcion": "En la columna de acción, hacé clic en 'Atender' para pasar de Pendiente a Activo, o en 'Resolver' para pasar de Activo a Resuelto. El sistema actualiza el estado y puede pedirte información adicional."
+    },
+    {
+      "nombre": "Ver detalles",
+      "descripcion": "Hacé clic en la flecha de la derecha para expandir y ver la descripción completa y el historial del inconveniente."
+    }
+  ],
+  "preguntas_frecuentes": [
+    {
+      "pregunta": "¿Cómo veo los inconvenientes reportados?",
+      "respuesta": "Todos los inconvenientes aparecen en la tabla. Usá el buscador o los filtros para encontrarlos más rápido."
+    },
+    {
+      "pregunta": "¿Cómo agrego un nuevo inconveniente?",
+      "respuesta": "Hacé clic en '+ AGREGAR INCONVENIENTE', completá el formulario y guardá."
+    },
+    {
+      "pregunta": "¿Cómo edito o elimino un inconveniente?",
+      "respuesta": "Hacé clic en el lápiz para editar o en el ícono de basurita para eliminar. El sistema pide confirmación antes de borrar."
+    },
+    {
+      "pregunta": "¿Cómo cambio el estado de un inconveniente?",
+      "respuesta": "En la columna de acción, hacé clic en el botón correspondiente (Atender, Resolver) según el estado actual."
+    },
+    {
+      "pregunta": "¿Por qué no puedo borrar o editar un inconveniente?",
+      "respuesta": "Solo los roles con permiso pueden borrar o editar inconvenientes. Si no ves la opción, consultá la sección de permisos o contactá a un administrador."
+    }
+  ],
+  "consejos_utiles": [
+    "Solo los roles con permiso pueden crear, editar o borrar inconvenientes. Si no ves la opción, consultá la sección de permisos.",
+    "Borrar o modificar un inconveniente puede afectar reportes y alertas. Revisá bien antes de hacerlo, sobre todo si es un inconveniente crítico.",
+    "Usá los filtros y la búsqueda para encontrar rápido los inconvenientes más urgentes o los que te fueron asignados.",
+    "Antes de eliminar un inconveniente, asegurate de que no esté asociado a entidades críticas o reportes importantes."
+  ]
+} 

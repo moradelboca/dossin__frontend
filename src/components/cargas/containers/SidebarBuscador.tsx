@@ -7,7 +7,7 @@ import {
   Select,
   MenuItem,
   FormControl,
-  InputLabel,
+  Autocomplete,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import { ContextoGeneral } from "../../Contexto";
@@ -23,12 +23,37 @@ const SidebarBuscador: React.FC<SidebarBuscadorProps> = ({
   provinciasCarga,
   provinciasDescarga,
 }) => {
-  const { backendURL } = useContext(ContextoGeneral);
+  const { backendURL, theme } = useContext(ContextoGeneral);
   const [filterType, setFilterType] = useState<string>("sin-filtro");
   const [filterValue, setFilterValue] = useState("");
   const [showValueInput, setShowValueInput] = useState(false);
   const [cargamentos, setCargamentos] = useState<any[]>([]);
   const [cargandoCargamentos, setCargandoCargamentos] = useState(true);
+
+  // Estilos azul para focus
+  const azulStyles = {
+    '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
+      borderColor: theme.colores.azul,
+    },
+    '& .MuiInputLabel-root.Mui-focused': {
+      color: theme.colores.azul,
+    },
+    '& .MuiSelect-icon': {
+      color: theme.colores.azul,
+    },
+    '& .MuiOutlinedInput-notchedOutline': {
+      borderColor: theme.colores.gris,
+    },
+  };
+
+  // Opciones para el filtro principal
+  const filterOptions = [
+    { value: "sin-filtro", label: "Todas las provincias" },
+    { value: "id", label: "ID" },
+    { value: "provincia-carga", label: "Provincia Carga" },
+    { value: "provincia-descarga", label: "Provincia Descarga" },
+    { value: "cargamento", label: "Cargamento" },
+  ];
 
   useEffect(() => {
     fetch(`${backendURL}/cargamentos`, {
@@ -54,21 +79,6 @@ const SidebarBuscador: React.FC<SidebarBuscadorProps> = ({
     handleSearch();
   }, [filterValue]);
 
-  const handleFilterTypeChange = (event: any) => {
-    const type = event.target.value;
-    setFilterType(type);
-    setShowValueInput(type !== "sin-filtro");
-
-    // Aplicar filtro inmediatamente al cambiar tipo
-    if (type === "sin-filtro") {
-      onFilterChange("sin-filtro", null);
-      setFilterValue("");
-    } else {
-      setFilterValue("");
-      onFilterChange(type, ""); // Limpiar filtro anterior
-    }
-  };
-
   const handleSearch = () => {
     onFilterChange(filterType, filterValue);
   };
@@ -88,21 +98,28 @@ const SidebarBuscador: React.FC<SidebarBuscadorProps> = ({
       }}
     >
       <Box sx={{ display: "flex", gap: 1 }}>
-        <FormControl fullWidth size="small">
-          <InputLabel id="filter-type-label">Filtrar por</InputLabel>
-          <Select
-            defaultValue=""
-            labelId="filter-type-label"
-            onChange={handleFilterTypeChange}
-            displayEmpty
-          >
-            <MenuItem value="sin-filtro">Todas las provincias</MenuItem>
-            <MenuItem value="id">ID</MenuItem>
-            <MenuItem value="provincia-carga">Provincia Carga</MenuItem>
-            <MenuItem value="provincia-descarga">Provincia Descarga</MenuItem>
-            <MenuItem value="cargamento">Cargamento</MenuItem>
-          </Select>
-        </FormControl>
+        <Autocomplete
+          disablePortal
+          options={filterOptions}
+          getOptionLabel={(option) => option.label}
+          value={filterOptions.find(opt => opt.value === filterType) || filterOptions[0]}
+          onChange={(_e, newValue) => {
+            const type = newValue?.value || "sin-filtro";
+            setFilterType(type);
+            setShowValueInput(type !== "sin-filtro");
+            if (type === "sin-filtro") {
+              onFilterChange("sin-filtro", null);
+              setFilterValue("");
+            } else {
+              setFilterValue("");
+              onFilterChange(type, "");
+            }
+          }}
+          renderInput={(params) => (
+            <TextField {...params} label="Filtrar por" sx={azulStyles} />
+          )}
+          sx={{ ...azulStyles, width: "100%" }}
+        />
       </Box>
 
       {showValueInput && (
@@ -124,11 +141,12 @@ const SidebarBuscador: React.FC<SidebarBuscadorProps> = ({
                   </InputAdornment>
                 ),
               }}
+              sx={azulStyles}
             />
           )}
 
           {filterType === "provincia-carga" && (
-            <FormControl fullWidth size="small">
+            <FormControl fullWidth size="small" sx={azulStyles}>
               <Select
                 value={filterValue}
                 onChange={(e) => setFilterValue(e.target.value)}
@@ -138,6 +156,7 @@ const SidebarBuscador: React.FC<SidebarBuscadorProps> = ({
                     ? provinciasCarga.find((p) => p.id === selected)?.nombre
                     : "Seleccione provincia"
                 }
+                sx={azulStyles}
               >
                 {provinciasCarga.map((provincia) => (
                   <MenuItem key={provincia.id} value={provincia.id}>
@@ -149,7 +168,7 @@ const SidebarBuscador: React.FC<SidebarBuscadorProps> = ({
           )}
 
           {filterType === "provincia-descarga" && (
-            <FormControl fullWidth size="small">
+            <FormControl fullWidth size="small" sx={azulStyles}>
               <Select
                 value={filterValue}
                 onChange={(e) => setFilterValue(e.target.value)}
@@ -159,6 +178,7 @@ const SidebarBuscador: React.FC<SidebarBuscadorProps> = ({
                     ? provinciasDescarga.find((p) => p.id === selected)?.nombre
                     : "Seleccione provincia"
                 }
+                sx={azulStyles}
               >
                 {provinciasDescarga.map((provincia) => (
                   <MenuItem key={provincia.id} value={provincia.id}>
@@ -170,7 +190,7 @@ const SidebarBuscador: React.FC<SidebarBuscadorProps> = ({
           )}
 
           {filterType === "cargamento" && (
-            <FormControl fullWidth size="small">
+            <FormControl fullWidth size="small" sx={azulStyles}>
               <Select
                 value={filterValue}
                 onChange={(e) => setFilterValue(e.target.value)}
@@ -181,6 +201,7 @@ const SidebarBuscador: React.FC<SidebarBuscadorProps> = ({
                     ? cargamentos.find((c) => c.id === selected)?.nombre
                     : "Seleccione cargamento"
                 }
+                sx={azulStyles}
               >
                 {cargamentos.map((cargamento) => (
                   <MenuItem key={cargamento.id} value={cargamento.id}>

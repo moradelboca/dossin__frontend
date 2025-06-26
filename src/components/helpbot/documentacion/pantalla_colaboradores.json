@@ -1,120 +1,71 @@
 {
-  "descripcion": "La pantalla de 'Colaboradores' te permite gestionar toda la información de las personas que trabajan con tu empresa, principalmente los choferes. Desde aquí podés ver, agregar, editar y buscar colaboradores de forma rápida y sencilla.",
-  "como_llegar": "Para llegar a esta pantalla, hacé clic en el ícono de 'Choferes' (representado por un grupo de personas) en el menú de navegación principal, ubicado en el lado izquierdo de la pantalla. Esto te llevará directamente a la lista de colaboradores.",
+  "descripcion": "La pantalla de Colaboradores te permite ver, buscar, agregar y editar a todas las personas que trabajan con tu empresa, como choferes y encargados. Es una tabla clara y fácil de usar, donde podés filtrar, exportar y personalizar las columnas que ves.",
+  "como_llegar": [
+    "Hacé clic en el ícono de 'Colaboradores' (el de las personas) en la barra lateral izquierda.",
+    "Entrás directo a la lista de colaboradores, donde podés ver y gestionar toda la información relevante."
+  ],
   "elementos_principales": {
-    "panel_izquierdo": {
-      "titulo": "Menú de Navegación",
-      "descripcion": "Es el menú principal de la aplicación, siempre visible a la izquierda. Te permite navegar entre las diferentes secciones como 'Dashboard', 'Cargas', 'Choferes', etc."
-    },
-    "panel_central": {
-      "titulo": "Panel de Colaboradores",
-      "descripcion": "Es el área principal de la pantalla donde se muestra toda la información y las acciones relacionadas con los colaboradores.",
-      "elementos": [
-        {
-          "nombre": "Título de la pantalla",
-          "descripcion": "En la parte superior izquierda del panel central, verás el título 'Colaboradores'."
-        },
-        {
-          "nombre": "Buscador",
-          "descripcion": "Debajo del título, hay un campo de búsqueda que dice 'Buscar...'. Te permite encontrar un colaborador rápidamente escribiendo su nombre, apellido, CUIL, etc."
-        },
-        {
-          "nombre": "Botones de acción",
-          "descripcion": "A la derecha del buscador, encontrarás varios botones:",
-          "sub_elementos": [
-            {
-              "nombre": "+ AGREGAR COLABORADOR",
-              "descripcion": "Abre un formulario para crear un nuevo colaborador."
-            },
-            {
-              "nombre": "FILTROS",
-              "descripcion": "Permite aplicar filtros a la lista para ver solo los colaboradores que cumplen con ciertos criterios."
-            },
-            {
-              "nombre": "EXPORTAR",
-              "descripcion": "Exporta la lista de colaboradores en un formato de archivo, como Excel o CSV."
-            },
-            {
-              "nombre": "COLUMNAS",
-              "descripcion": "Te permite elegir qué columnas de información querés ver en la tabla."
-            }
-          ]
-        },
-        {
-          "nombre": "Tabla de Colaboradores",
-          "descripcion": "La tabla muestra la lista de colaboradores con su información principal. Cada fila es un colaborador y cada columna es un dato específico.",
-          "columnas": [
-            "Cuil: CUIT/CUIL del colaborador.",
-            "Nombre: Nombre de pila del colaborador.",
-            "Numero Celular: Teléfono de contacto.",
-            "Apellido: Apellido del colaborador.",
-            "URL Linti: Enlace al perfil LINTI (Licencia Nacional de Transporte Interjurisdiccional).",
-            "Localidad: Ciudad y provincia donde reside.",
-            "Cuit Empresas: CUIT de la empresa o empresas a las que está asociado.",
-            "Rol: El rol que cumple dentro del sistema (ej. Encargado).",
-            "Editar: Contiene el botón para modificar los datos del colaborador."
-          ]
-        },
-        {
-          "nombre": "Paginación",
-          "descripcion": "En la parte inferior derecha de la tabla, encontrarás los controles de paginación ('Filas por página', '1-1 de 1'). Esto te permite navegar entre las diferentes páginas si tenés muchos colaboradores."
-        }
-      ]
-    }
+    "Panel superior": [
+      "Título grande 'Colaboradores' arriba a la izquierda.",
+      "Buscador para filtrar por nombre, apellido, CUIL, etc.",
+      "Botón '+ AGREGAR COLABORADOR' arriba a la derecha para crear uno nuevo.",
+      "Botón 'FILTROS' para aplicar filtros avanzados.",
+      "Botón 'EXPORTAR' para descargar la lista (por ejemplo, en Excel).",
+      "Botón 'COLUMNAS' para elegir qué columnas mostrar en la tabla."
+    ],
+    "Tabla de colaboradores": [
+      "Cada fila es un colaborador y cada columna muestra un dato: Cuil, Nombre, Número Celular, Apellido, URL Linti, Localidad, Cuit Empresas, Rol, Editar.",
+      "Columna 'Editar' con ícono de lápiz para modificar los datos del colaborador.",
+      "Columna 'Rol' muestra si es Chofer, Encargado, etc. Esto puede afectar qué acciones puede hacer cada uno en el sistema."
+    ],
+    "Paginación": [
+      "Abajo a la derecha, podés elegir cuántas filas ver por página y navegar entre páginas si hay muchos colaboradores."
+    ]
   },
-  "acciones_principales": {
-    "agregar_colaborador": {
-      "titulo": "Agregar un nuevo colaborador",
-      "pasos": [
-        "Hacé clic en el botón '+ AGREGAR COLABORADOR'.",
-        "Se abrirá un formulario para que completes los datos del nuevo colaborador.",
-        "Llená los campos obligatorios como nombre, apellido y CUIL.",
-        "Hacé clic en 'Guardar'.",
-        "El nuevo colaborador aparecerá en la lista."
-      ]
+  "acciones_principales": [
+    {
+      "nombre": "Agregar colaborador",
+      "descripcion": "Hacé clic en '+ AGREGAR COLABORADOR', completá los datos obligatorios (nombre, apellido, CUIL, empresa, etc.) y guardá. Si el CUIL ya existe, el sistema te avisa y no deja guardar."
     },
-    "editar_colaborador": {
-      "titulo": "Editar un colaborador existente",
-      "pasos": [
-        "Buscá el colaborador que querés editar en la tabla.",
-        "En la columna 'Editar', hacé clic en el ícono del lápiz.",
-        "Se abrirá el mismo formulario de creación, pero con los datos del colaborador ya cargados.",
-        "Modificá la información que necesites y hacé clic en 'Guardar'.",
-        "Los cambios se verán reflejados en la tabla."
-      ]
+    {
+      "nombre": "Editar colaborador",
+      "descripcion": "En la columna 'Editar', hacé clic en el lápiz. Se abre el formulario con los datos ya cargados. Modificá lo que necesites y guardá los cambios."
     },
-    "buscar_colaborador": {
-      "titulo": "Buscar un colaborador",
-      "pasos": [
-        "Escribí el nombre, apellido, CUIL o cualquier otro dato del colaborador en la barra de búsqueda.",
-        "La tabla se actualizará automáticamente para mostrar solo los resultados que coincidan."
-      ]
+    {
+      "nombre": "Eliminar colaborador",
+      "descripcion": "Si tu rol lo permite, podés eliminar un colaborador desde el formulario de edición o desde la tabla (ícono de basurita). El sistema pide confirmación antes de borrar."
     },
-    "eliminar_colaborador": {
-        "titulo": "Eliminar un colaborador",
-        "pasos": [
-          "Para eliminar un colaborador, hacé clic en el ícono de la papelera en la fila correspondiente (esta acción puede estar dentro del formulario de edición, dependiendo de la configuración).",
-          "El sistema te pedirá una confirmación antes de borrarlo.",
-          "Tené en cuenta que esta acción es irreversible y solo ciertos roles tienen permiso para hacerlo."
-        ]
+    {
+      "nombre": "Buscar colaborador",
+      "descripcion": "Usá el buscador para filtrar rápidamente por nombre, apellido, CUIL, etc. La tabla se actualiza al instante."
+    },
+    {
+      "nombre": "Filtrar y exportar",
+      "descripcion": "Aplicá filtros avanzados con el botón 'FILTROS' o exportá la lista con 'EXPORTAR'."
+    },
+    {
+      "nombre": "Personalizar columnas",
+      "descripcion": "Con el botón 'COLUMNAS' elegís qué datos ver en la tabla, según lo que te resulte más útil."
     }
-  },
+  ],
   "preguntas_frecuentes": [
     {
       "pregunta": "¿Qué significa 'URL Linti'?",
-      "respuesta": "Es el enlace al perfil del colaborador en el sistema LINTI, que es el registro para el transporte interjurisdiccional en Argentina. Es importante para verificar habilitaciones."
+      "respuesta": "Es el enlace al perfil del colaborador en el sistema LINTI, que es el registro nacional para choferes de transporte interjurisdiccional."
+    },
+    {
+      "pregunta": "¿Por qué no puedo editar o eliminar un colaborador?",
+      "respuesta": "Probablemente tu rol no tiene permiso para esa acción. Si necesitás hacerlo, contactá a un administrador."
     },
     {
       "pregunta": "¿Qué pasa si ingreso un CUIL que ya existe?",
-      "respuesta": "El sistema no te permitirá crear un nuevo colaborador con un CUIL que ya está registrado para evitar duplicados. Deberás verificar la información."
-    },
-    {
-      "pregunta": "No puedo editar ni eliminar a un colaborador, ¿por qué?",
-      "respuesta": "Es probable que tu rol de usuario no tenga los permisos necesarios para realizar esas acciones. Contactá a un administrador si creés que es un error."
+      "respuesta": "El sistema no permite duplicados. Si el CUIL ya está registrado, no vas a poder guardar el colaborador nuevo."
     }
   ],
   "consejos_utiles": [
-    "Mantené la información de tus colaboradores siempre actualizada, especialmente su número de celular y su estado en LINTI.",
-    "Utilizá los filtros para encontrar rápidamente grupos de colaboradores, por ejemplo, todos los de una misma localidad."
+    "Mantené los datos de tus colaboradores actualizados, sobre todo el número de celular y la empresa asociada.",
+    "Si necesitás agregar un tipo de colaborador que no aparece, pedile ayuda a un administrador.",
+    "Usá los filtros y la búsqueda para encontrar rápido a quien necesitás, sobre todo si tenés muchos colaboradores.",
+    "Solo los roles con permiso pueden crear, editar o borrar colaboradores. Si no ves la opción, consultá la sección de permisos."
   ]
 } 

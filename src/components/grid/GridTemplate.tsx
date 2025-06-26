@@ -29,12 +29,14 @@ export function GridTemplate({
     <Box
       sx={{
         backgroundColor: theme.colores.grisClaro,
-        height: "91vh",
-        width: "100%",
+        height: '100%',
+        width: '100%',
         p: 3,
-        display: "flex",
-        flexDirection: "column",
-        overflow: 'hidden', // 1. Contenedor principal sin overflow
+        display: 'flex',
+        flexDirection: 'column',
+        overflow: 'hidden',
+        minHeight: 0,
+        minWidth: 0,
       }}
     >
       <Typography

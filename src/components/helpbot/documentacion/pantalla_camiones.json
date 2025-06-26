@@ -1,0 +1,77 @@
+{
+  "descripcion": "La pantalla de Camiones y Acoplados te permite ver, agregar y editar todos los vehículos registrados en el sistema. Podés alternar entre las pestañas de Camiones y Acoplados, buscar por patente, filtrar, exportar y personalizar las columnas de la tabla. Es fundamental para mantener actualizada la flota y sus datos.",
+  "como_llegar": [
+    "Hacé clic en el ícono de 'Camiones' en la barra lateral izquierda.",
+    "Se abre la pantalla con dos pestañas: Camiones y Acoplados."
+  ],
+  "elementos_principales": {
+    "Tabs superiores": [
+      "Pestaña 'Camiones' para ver y gestionar los camiones registrados.",
+      "Pestaña 'Acoplados' para ver y gestionar los acoplados registrados."
+    ],
+    "Panel superior": [
+      "Buscador para filtrar por patente u otros datos.",
+      "Botón '+ AGREGAR CAMION' o '+ AGREGAR ACOPLADO' arriba a la derecha para crear un nuevo registro.",
+      "Botón 'FILTROS' para aplicar filtros avanzados.",
+      "Botón 'EXPORTAR' para descargar la lista (por ejemplo, en Excel).",
+      "Botón 'COLUMNAS' para elegir qué columnas mostrar en la tabla."
+    ],
+    "Tabla de vehículos": [
+      "Cada fila es un camión o acoplado y cada columna muestra un dato relevante: Patente, URL RTO, URL Póliza de Seguro, URL Ruta, Editar.",
+      "Columna 'Editar' con ícono de lápiz para modificar los datos del vehículo."
+    ],
+    "Paginación": [
+      "Abajo a la derecha, podés elegir cuántas filas ver por página y navegar entre páginas si hay muchos vehículos."
+    ]
+  },
+  "acciones_principales": [
+    {
+      "nombre": "Agregar camión o acoplado",
+      "descripcion": "Hacé clic en '+ AGREGAR CAMION' o '+ AGREGAR ACOPLADO', completá los datos obligatorios (patente, documentación, etc.) y guardá. Si la patente ya existe, el sistema te avisa y no deja guardar."
+    },
+    {
+      "nombre": "Editar camión o acoplado",
+      "descripcion": "En la columna 'Editar', hacé clic en el lápiz. Se abre el formulario con los datos ya cargados. Modificá lo que necesites y guardá los cambios."
+    },
+    {
+      "nombre": "Eliminar camión o acoplado",
+      "descripcion": "Si tu rol lo permite, podés eliminar un camión o acoplado desde el formulario de edición o desde la tabla (ícono de basurita). El sistema pide confirmación antes de borrar."
+    },
+    {
+      "nombre": "Buscar vehículo",
+      "descripcion": "Usá el buscador para filtrar rápidamente por patente u otros datos. La tabla se actualiza al instante."
+    },
+    {
+      "nombre": "Filtrar y exportar",
+      "descripcion": "Aplicá filtros avanzados con el botón 'FILTROS' o exportá la lista con 'EXPORTAR'."
+    },
+    {
+      "nombre": "Personalizar columnas",
+      "descripcion": "Con el botón 'COLUMNAS' elegís qué datos ver en la tabla, según lo que te resulte más útil."
+    }
+  ],
+  "preguntas_frecuentes": [
+    {
+      "pregunta": "¿Cómo veo los camiones y acoplados registrados?",
+      "respuesta": "Todos los vehículos aparecen en la tabla de la pestaña correspondiente. Usá el buscador o los filtros para encontrarlos más rápido."
+    },
+    {
+      "pregunta": "¿Cómo agrego un nuevo camión o acoplado?",
+      "respuesta": "Hacé clic en '+ AGREGAR CAMION' o '+ AGREGAR ACOPLADO', completá el formulario y guardá."
+    },
+    {
+      "pregunta": "¿Cómo edito o elimino un camión o acoplado?",
+      "respuesta": "Hacé clic en el lápiz para editar o en el ícono de basurita para eliminar. El sistema pide confirmación antes de borrar."
+    },
+    {
+      "pregunta": "¿Por qué no puedo borrar o editar un vehículo?",
+      "respuesta": "Solo los roles con permiso pueden borrar o editar vehículos. Si no ves la opción, consultá la sección de permisos o contactá a un administrador."
+    }
+  ],
+  "consejos_utiles": [
+    "Solo los roles con permiso pueden crear, editar o borrar camiones y acoplados. Si no ves la opción, consultá la sección de permisos.",
+    "Mantené actualizada la documentación de cada vehículo (RTO, seguro, ruta, etc.) para evitar inconvenientes.",
+    "Usá los filtros y la búsqueda para encontrar rápido el vehículo que necesitás, sobre todo si tenés una flota grande.",
+    "Antes de eliminar un vehículo, asegurate de que no esté asociado a cargas, turnos u otros datos importantes."
+  ]
+} 

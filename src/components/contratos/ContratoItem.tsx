@@ -79,7 +79,7 @@ interface ContratoItemProps {
         alignItems={"flex-start"}
         justifyContent={"center"}
       >
-        <Card sx={{ maxWidth: 300, minWidth: 300 }}>
+        <Card sx={{ maxWidth: 300, minWidth: 300, borderRadius: 3 }}>
           <CardContent>
             <Typography
               variant="h5"

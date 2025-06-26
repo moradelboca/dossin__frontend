@@ -235,9 +235,11 @@ const Clima = () => {
         <Box
             sx={{
                 backgroundColor: theme.colores.grisClaro,
-                height: "91vh",
-                width: "100%",
+                height: '100%',
+                width: '100%',
                 padding: 3,
+                minHeight: 0,
+                minWidth: 0,
             }}
         >
             <Typography
