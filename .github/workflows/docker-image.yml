@@ -37,6 +37,7 @@ jobs:
             VITE_AUTH_URL=${{ secrets.VITE_AUTH_URL }}
             VITE_DASHBOARD_URL=${{ secrets.VITE_DASHBOARD_URL }}
             VITE_STAGE=${{ secrets.VITE_STAGE }}
+            VITE_OPENAI_API_KEY=${{ secrets.VITE_OPENAI_API_KEY }}
             
       - name: Log out from GitHub Container Registry
         run: docker logout ghcr.io
