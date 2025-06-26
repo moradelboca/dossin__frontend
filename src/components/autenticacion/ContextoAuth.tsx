@@ -28,6 +28,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const { authURL } = useContext(ContextoGeneral);
 
   const login = (userData: User) => {
+    console.log("Logueando usuario", userData);
     setUser(userData);
   };
 
