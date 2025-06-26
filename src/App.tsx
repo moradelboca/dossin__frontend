@@ -57,7 +57,10 @@ function MainLayout({
           width: rolId === 3 || isMobile
             ? "100%"
             : `calc(100% - ${anchoCerrado}px)`,
-          overflowX: "hidden",
+          height: 'calc(100vh - 65px)',
+          minHeight: 0,
+          minWidth: 0,
+          overflow: 'hidden',
         }}
       >
         <Routes>
@@ -205,7 +208,7 @@ function App() {
                 }}
               >
                 <CssBaseline>
-                {(!accessToken && stage != "production") ? (
+                {(!accessToken && stage === "production") ? (
                     <Routes>
                       <Route path="/login" element={<PantallaLogin />} />
                       <Route

@@ -17,8 +17,8 @@ export default function TabCamiones() {
         <Box
             sx={{
                 width: "100%",
-                height: "80%",
-
+                height: '100%',
+                minHeight: 0,
                 backgroundColor: theme.colores.grisClaro,
             }}
         >
@@ -41,7 +41,7 @@ export default function TabCamiones() {
                 <Tab value="one" label="Camiones" />
                 <Tab value="two" label="Acoplados" />
             </Tabs>
-            <Box sx={{ padding: 2, height: "100%" }}>
+            <Box sx={{ padding: 2, height: '100%', minHeight: 0 }}>
                 {value === "one" && <Camiones />}
                 {value === "two" && <Acoplados />}
             </Box>

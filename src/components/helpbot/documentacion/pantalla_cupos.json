@@ -1,0 +1,299 @@
+{
+  "descripcion": "En la pantalla de Cupos podés ver, crear y gestionar los cupos y turnos de cada carga. Tenés tres vistas principales: 'Cards' (tarjetas), 'Grid' (tabla) y 'Por Día'. Cada cupo muestra la fecha, la cantidad de turnos disponibles y confirmados, y te permite ver o crear turnos. Los turnos pueden tener diferentes estados, cada uno con su color y acciones posibles.",
+  "como_llegar": [
+    "Hacé clic en el ícono de 'Cargas' en la barra lateral izquierda.",
+    "Seleccioná la carga que te interesa.",
+    "En el panel derecho, buscá el recuadro que dice 'Cupos' y apretá el botón '+'.",
+    "Se abre la pantalla de Cupos, donde podés cambiar entre las vistas 'Cards', 'Grid' y 'Por Día' usando las pestañas de arriba."
+  ],
+  "elementos_principales": {
+    "Panel superior": [
+      "Tabs para cambiar entre vistas: 'Cards', 'Grid', 'Por Día'.",
+      "Botón 'QUIERO CREAR UN NUEVO CUPO' arriba a la derecha para agregar un cupo nuevo."
+    ],
+    "Vista Cards (tarjetas)": [
+      "Cada tarjeta muestra la fecha del cupo, turnos disponibles y confirmados.",
+      "Botón 'Crear turno' para agregar un turno a ese cupo.",
+      "Botón 'Ver más' para ver detalles y editar/eliminar el cupo.",
+      "Abajo aparecen tarjetas de turnos, cada una con el nombre del chofer, empresa, patentes y estado del turno (con color).",
+      "Botones de acción según el estado del turno: 'PAGAR', '+ FACTURA', 'CORREGIR', 'VER PAGO', ícono de basurita para eliminar, etc."
+    ],
+    "Vista Grid (tabla)": [
+      "Muestra los cupos como filas agrupadas por fecha.",
+      "Cada fila de turno muestra: nombre, apellido, CUIL chofer, CUIT empresa, patentes, pesos, precio, factura, orden de pago y acciones.",
+      "Botones para filtrar, pausar y exportar la tabla arriba de la grilla."
+    ],
+    "Vista Por Día": [
+      "Permite seleccionar una fecha y ver todos los turnos de ese día en formato tabla.",
+      "Mismos campos y acciones que la vista Grid."
+    ]
+  },
+  "estados_turnos": [
+    {
+      "nombre": "Con Errores",
+      "color": "rojo fuerte",
+      "descripcion": "El turno tiene datos incompletos o incorrectos. Solo se puede corregir o eliminar.",
+      "acciones": ["Corregir", "Eliminar", "Registrar adelanto"]
+    },
+    {
+      "nombre": "Creado",
+      "color": "gris azulado",
+      "descripcion": "Turno recién creado, pendiente de validación.",
+      "acciones": ["Editar", "Eliminar", "Registrar adelanto", "Validar"]
+    },
+    {
+      "nombre": "Validado",
+      "color": "amarillo vibrante",
+      "descripcion": "Turno validado, listo para autorizar.",
+      "acciones": ["Corregir", "Eliminar", "Registrar adelanto", "Autorizar"]
+    },
+    {
+      "nombre": "Cancelado",
+      "color": "gris oscuro",
+      "descripcion": "Turno cancelado, solo se puede consultar.",
+      "acciones": ["Ver detalles"]
+    },
+    {
+      "nombre": "Autorizado",
+      "color": "azul fuerte",
+      "descripcion": "Turno autorizado, listo para cargar tara.",
+      "acciones": ["Cargar tara", "Eliminar", "Registrar adelanto"]
+    },
+    {
+      "nombre": "Tarado",
+      "color": "verde agua",
+      "descripcion": "Tara cargada, listo para cargar peso bruto.",
+      "acciones": ["Cargar peso bruto", "Eliminar", "Registrar adelanto"]
+    },
+    {
+      "nombre": "Cargado",
+      "color": "naranja",
+      "descripcion": "Peso bruto cargado, listo para carta de porte.",
+      "acciones": ["Cargar carta de porte", "Eliminar", "Registrar adelanto", "Ver carta de porte"]
+    },
+    {
+      "nombre": "En viaje",
+      "color": "violeta",
+      "descripcion": "Turno en viaje, esperando descarga.",
+      "acciones": ["Cargar kg descargados", "Eliminar", "Registrar adelanto"]
+    },
+    {
+      "nombre": "Descargado",
+      "color": "verde",
+      "descripcion": "Turno descargado, listo para facturar.",
+      "acciones": ["Cargar factura", "Eliminar", "Registrar adelanto"]
+    },
+    {
+      "nombre": "Facturado",
+      "color": "púrpura",
+      "descripcion": "Turno facturado, listo para registrar pago.",
+      "acciones": ["Ver pago", "Pagar", "Eliminar", "Registrar adelanto"]
+    },
+    {
+      "nombre": "Pagado",
+      "color": "verde oscuro",
+      "descripcion": "Turno pagado, solo consulta.",
+      "acciones": ["Ver detalles", "Registrar adelanto"]
+    }
+  ],
+  "acciones_principales": [
+    {
+      "nombre": "Crear cupo",
+      "descripcion": "Hacé clic en 'QUIERO CREAR UN NUEVO CUPO', completá el formulario y guardá."
+    },
+    {
+      "nombre": "Editar cupo",
+      "descripcion": "Buscá el cupo y hacé clic en 'Ver más'. Ahí podés sumar o restar turnos."
+    },
+    {
+      "nombre": "Eliminar cupo",
+      "descripcion": "En 'Ver más', hacé clic en el ícono de basurita para borrar el cupo."
+    },
+    {
+      "nombre": "Crear turno",
+      "descripcion": "En la tarjeta del cupo, hacé clic en 'Crear turno' y completá los datos."
+    },
+    {
+      "nombre": "Gestionar turnos",
+      "descripcion": "Según el estado del turno, vas a ver diferentes botones: corregir, pagar, cargar tara, cargar carta de porte, etc. Hacé clic en el botón correspondiente y seguí los pasos del formulario."
+    }
+  ],
+  "preguntas_frecuentes": [
+    "¿Cómo veo los cupos de una carga?",
+    "¿Cómo creo, edito o elimino un cupo?",
+    "¿Cómo gestiono los turnos asociados a un cupo?",
+    "¿Por qué no puedo modificar un turno?",
+    "¿Qué significa cada color/estado de los turnos?",
+    "¿Cómo paso un turno de un estado a otro?"
+  ],
+  "consejos_utiles": [
+    "Si no ves la opción de editar o eliminar, probablemente tu rol no tiene permiso.",
+    "Los botones y acciones cambian según el estado del turno.",
+    "Si necesitás cargar un dato específico (tara, carta de porte, factura, etc.), buscá el botón correspondiente en la tarjeta o fila del turno.",
+    "Si un dato no aparece en los autocompletados (chofer, empresa, camión, acoplado), pedile a un administrador que lo agregue.",
+    "El número de CTG debe ser único para cada turno.",
+    "Si tenés dudas sobre los permisos, consultá la sección de permisos."
+  ],
+  "formularios_turnos": [
+    {
+      "nombre": "Formulario de Corrección (Turno con Errores)",
+      "cuando_aparece": "Cuando un turno tiene datos incompletos o erróneos (estado 'Con Errores').",
+      "campos": [
+        "Colaborador (chofer): seleccioná el chofer correcto usando el autocompletado.",
+        "Empresa: seleccioná la empresa asociada.",
+        "Patente Camión: ingresá o seleccioná la patente del camión.",
+        "Patente Acoplado: ingresá o seleccioná la patente del acoplado.",
+        "Patente Acoplado Extra: solo si corresponde (bitren)."
+      ],
+      "como_usar": [
+        "Completá o corregí todos los campos obligatorios.",
+        "Si algún dato no aparece, pedile a un administrador que lo agregue.",
+        "Al guardar, si todo está correcto, el turno pasa a estado 'Validado'."
+      ],
+      "validaciones": [
+        "Todos los campos son obligatorios.",
+        "No se puede guardar si falta algún dato.",
+        "El sistema muestra un mensaje de error si hay problemas."
+      ],
+      "consejos": [
+        "Si no encontrás un chofer, empresa o vehículo, consultá con un administrador.",
+        "Revisá bien los datos antes de guardar para evitar errores futuros."
+      ]
+    },
+    {
+      "nombre": "Formulario de Tara (Cargar Tara)",
+      "cuando_aparece": "Cuando el turno está en estado 'Autorizado'.",
+      "campos": [
+        "Peso tara (kg): ingresá el peso vacío del camión. Solo números positivos."
+      ],
+      "como_usar": [
+        "Ingresá el valor de tara y hacé clic en guardar.",
+        "El turno avanzará al estado 'Tarado'."
+      ],
+      "validaciones": [
+        "El campo es obligatorio y debe ser un número positivo.",
+        "Si falta el dato o es incorrecto, el sistema muestra un error."
+      ],
+      "consejos": [
+        "Verificá que el valor de tara sea correcto para evitar problemas en el pesaje posterior."
+      ]
+    },
+    {
+      "nombre": "Formulario de Peso Bruto (Cargar Peso Bruto)",
+      "cuando_aparece": "Cuando el turno está en estado 'Tarado'.",
+      "campos": [
+        "Peso bruto (kg): ingresá el peso del camión cargado. Solo números positivos."
+      ],
+      "como_usar": [
+        "Ingresá el valor de peso bruto y guardá.",
+        "El turno avanzará al estado 'Cargado'."
+      ],
+      "validaciones": [
+        "El campo es obligatorio y debe ser un número positivo.",
+        "Si falta el dato o es incorrecto, el sistema muestra un error."
+      ],
+      "consejos": [
+        "Asegurate de que el camión esté completamente cargado antes de registrar el peso bruto."
+      ]
+    },
+    {
+      "nombre": "Formulario de Carta de Porte y CTG",
+      "cuando_aparece": "Cuando el turno está en estado 'Cargado'.",
+      "campos": [
+        "Número de carta de porte: obligatorio, solo dígitos.",
+        "Número de CTG: obligatorio, solo dígitos y debe ser único."
+      ],
+      "como_usar": [
+        "Ingresá ambos números y guardá.",
+        "Si ya existe una carta de porte para el turno, podés actualizarla o eliminarla desde el mismo formulario."
+      ],
+      "validaciones": [
+        "Ambos campos son obligatorios.",
+        "El número de CTG debe ser único (el sistema no permite duplicados).",
+        "Si hay error, el sistema lo indica y no deja guardar."
+      ],
+      "consejos": [
+        "Verificá que el número de CTG no esté repetido en otro turno.",
+        "Si necesitás actualizar la carta de porte, hacelo desde este formulario."
+      ]
+    },
+    {
+      "nombre": "Formulario de Pesaje Descargado (Kg Descargados)",
+      "cuando_aparece": "Cuando el turno está en estado 'En viaje'.",
+      "campos": [
+        "Kilogramos descargados: obligatorio, solo números positivos."
+      ],
+      "como_usar": [
+        "Ingresá el valor descargado y guardá para actualizar el turno."
+      ],
+      "validaciones": [
+        "El campo es obligatorio y debe ser un número positivo.",
+        "Si falta el dato o es incorrecto, el sistema muestra un error."
+      ],
+      "consejos": [
+        "Asegurate de registrar el peso descargado apenas se complete la descarga para mantener los datos actualizados."
+      ]
+    },
+    {
+      "nombre": "Formulario de Factura",
+      "cuando_aparece": "Cuando el turno está en estado 'Descargado'.",
+      "campos": [
+        "Tipo de factura: seleccioná el tipo (A, B, etc.).",
+        "Fecha: ingresá la fecha de la factura.",
+        "IVA: seleccioná el porcentaje de IVA.",
+        "Total sin IVA: ingresá el monto.",
+        "Punto de venta: número correspondiente.",
+        "Número de comprobante: número de la factura.",
+        "Turnos asociados: podés asociar la factura a varios turnos si corresponde."
+      ],
+      "como_usar": [
+        "Completá todos los campos y guardá para asociar la factura al turno.",
+        "Si la factura ya existe, el sistema preguntará si querés asociarla también a este turno."
+      ],
+      "validaciones": [
+        "Todos los campos son obligatorios.",
+        "El sistema valida que los datos sean correctos antes de guardar."
+      ],
+      "consejos": [
+        "Verificá que los datos de la factura coincidan con los documentos oficiales.",
+        "Si la factura ya está asociada a otro turno, revisá si corresponde asociarla también a este."
+      ]
+    },
+    {
+      "nombre": "Formulario de Adelantos (Gasoil o Efectivo)",
+      "cuando_aparece": "Disponible en casi todos los estados del turno.",
+      "campos": [
+        "Tipo de adelanto: elegí entre Gasoil o Efectivo.",
+        "Datos requeridos según el tipo: monto, fecha, etc."
+      ],
+      "como_usar": [
+        "Elegí la pestaña correspondiente (Gasoil o Efectivo).",
+        "Completá los datos requeridos y guardá para registrar el adelanto."
+      ],
+      "validaciones": [
+        "Los campos varían según el tipo de adelanto, pero todos los obligatorios deben estar completos.",
+        "El sistema muestra un error si falta algún dato."
+      ],
+      "consejos": [
+        "Registrá los adelantos apenas se realicen para mantener la información financiera al día."
+      ]
+    },
+    {
+      "nombre": "Formulario de Orden de Pago (Pago)",
+      "cuando_aparece": "Cuando el turno está en estado 'Facturado'.",
+      "campos": [
+        "Número de orden de pago: obligatorio."
+      ],
+      "como_usar": [
+        "Ingresá el número y guardá para actualizar el estado del turno a 'Pagado'."
+      ],
+      "validaciones": [
+        "El campo es obligatorio.",
+        "El sistema muestra un error si falta el dato."
+      ],
+      "consejos": [
+        "Verificá que el número de orden de pago sea correcto antes de guardar."
+      ]
+    }
+  ]
+} 

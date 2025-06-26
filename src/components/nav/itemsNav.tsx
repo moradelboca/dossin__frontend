@@ -25,7 +25,7 @@ export interface NavItem {
     // Items protegidos:
     { label: "Cargas", ruta: "/cargas", rolesPermitidos: [1, 2, 3, 4], icono: <ViewInAr /> },
     { label: "Contratos", ruta: "/contratos", rolesPermitidos: [1, 2], icono: <AssignmentOutlinedIcon /> },
-    { label: "Choferes", ruta: "/colaboradores", rolesPermitidos: [1, 2, 4], icono: <GroupsOutlined /> },
+    { label: "Colaboradores", ruta: "/colaboradores", rolesPermitidos: [1, 2, 4], icono: <GroupsOutlined /> },
     { label: "Ubicaciones", ruta: "/ubicaciones", rolesPermitidos: [1, 2, 4], icono: <AddLocationAltOutlined /> },
     { label: "Empresas", ruta: "/empresas", rolesPermitidos: [1, 2, 4], icono: <DomainAddOutlined /> },
     { label: "Camiones", ruta: "/camiones", rolesPermitidos: [1, 2, 4], icono: <LocalShippingOutlined /> },

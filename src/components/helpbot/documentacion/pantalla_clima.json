@@ -1,0 +1,61 @@
+{
+  "descripcion": "La pantalla de Clima te permite consultar el pronóstico del tiempo para diferentes ubicaciones relevantes para tu operación. Podés buscar una localidad, ver el pronóstico extendido, alternar entre ubicaciones frecuentes y visualizar la evolución de temperatura, probabilidad de precipitación y precipitaciones en un gráfico interactivo.",
+  "como_llegar": [
+    "Hacé clic en el ícono de 'Clima' (el de la nube) en la barra lateral izquierda.",
+    "Se abre la pantalla de Pronóstico del Tiempo con el buscador de ubicación y el gráfico principal."
+  ],
+  "elementos_principales": {
+    "Panel izquierdo": [
+      "Buscador de ubicación para elegir la localidad o campo de interés.",
+      "Lista de ubicaciones frecuentes o guardadas para cambiar rápidamente de lugar.",
+      "Checkbox 'Ver datos diarios' para alternar entre pronóstico horario y diario."
+    ],
+    "Panel principal": [
+      "Gráfico interactivo que muestra la evolución de la Temperatura (°C), Probabilidad de Precipitación (%) y Precipitación (mm) para la ubicación seleccionada.",
+      "Leyenda de colores para identificar cada variable en el gráfico.",
+      "Eje de fechas en la parte inferior para ver la evolución a lo largo de los días."
+    ]
+  },
+  "acciones_principales": [
+    {
+      "nombre": "Buscar ubicación",
+      "descripcion": "Usá el buscador para seleccionar la localidad o campo que te interesa. El gráfico se actualizará automáticamente con el pronóstico para ese lugar."
+    },
+    {
+      "nombre": "Ver pronóstico",
+      "descripcion": "Visualizá el gráfico para analizar la temperatura, probabilidad de lluvia y precipitaciones previstas para los próximos días."
+    },
+    {
+      "nombre": "Cambiar entre ubicaciones",
+      "descripcion": "Seleccioná otra ubicación frecuente de la lista para ver su pronóstico rápidamente."
+    },
+    {
+      "nombre": "Alternar datos diarios",
+      "descripcion": "Marcá o desmarcá el checkbox 'Ver datos diarios' para cambiar entre pronóstico horario y diario."
+    }
+  ],
+  "preguntas_frecuentes": [
+    {
+      "pregunta": "¿Cómo busco el pronóstico para otra localidad?",
+      "respuesta": "Usá el buscador de ubicación y seleccioná la localidad que te interesa."
+    },
+    {
+      "pregunta": "¿Qué significan las líneas y colores del gráfico?",
+      "respuesta": "Cada color representa una variable: celeste para Temperatura, naranja para Probabilidad de Precipitación y azul para Precipitación acumulada."
+    },
+    {
+      "pregunta": "¿Puedo ver el pronóstico diario en vez de horario?",
+      "respuesta": "Sí, activá el checkbox 'Ver datos diarios' para ver el resumen por día."
+    },
+    {
+      "pregunta": "¿Por qué no veo datos para mi ubicación?",
+      "respuesta": "Puede que la ubicación no tenga datos disponibles o que no esté correctamente escrita. Probá con otra localidad cercana."
+    }
+  ],
+  "consejos_utiles": [
+    "Usá el pronóstico para planificar tareas de campo, logística y cosecha.",
+    "Si una ubicación es importante, agregala a tus frecuentes para acceder más rápido.",
+    "El gráfico es interactivo: podés pasar el mouse sobre los puntos para ver valores exactos.",
+    "Si no ves datos, revisá la ortografía de la localidad o consultá con un administrador."
+  ]
+} 

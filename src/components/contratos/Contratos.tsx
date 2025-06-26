@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState, useRef } from "react";
 import { ContextoGeneral } from "../Contexto";
 import {
   Box,
@@ -12,6 +12,7 @@ import ContratoForm from "../forms/contratos/ContratoForm";
 import { ContratoItem } from "./ContratoItem";
 import useContratosConCargas from "../hooks/contratos/useContratosConCargas";
 import ContratosMobile from "./ContratosMobile";
+import CircularProgress from "@mui/material/CircularProgress";
 
 const DialogContrato = ({
   open,
@@ -49,6 +50,16 @@ export default function Contratos() {
 
   const isMobile = useMediaQuery("(max-width:768px)");
 
+  const [cargando, setCargando] = useState(true);
+  const firstLoad = useRef(true);
+  useEffect(() => {
+    if (firstLoad.current) {
+      firstLoad.current = false;
+      return;
+    }
+    setCargando(false);
+  }, [contratosConCargas]);
+
   useEffect(() => {
     refreshContratos();
   }, []);
@@ -77,8 +88,29 @@ export default function Contratos() {
     );
   }
 
+  if (cargando) {
+    return (
+      <Box sx={{ backgroundColor: theme.colores.grisClaro, height: '100%', minHeight: 0, minWidth: 0, width: '100%', p: 2, overflowY: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <Box display="flex" flexDirection="row" alignItems="center" gap={3}>
+          <CircularProgress sx={{ padding: '5px', width: '30px', height: '30px'}} />
+          <Typography variant="h5" ><b>Cargando...</b></Typography>
+        </Box>
+      </Box>
+    );
+  }
+
+  if (!contratosConCargas || contratosConCargas.length === 0) {
+    return (
+      <Box sx={{ backgroundColor: theme.colores.grisClaro, height: '100%', minHeight: 0, minWidth: 0, width: '100%', p: 2, overflowY: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <Typography variant="h6" color={theme.colores.azul} sx={{ opacity: 0.7 }}>
+          No hay contratos disponibles.
+        </Typography>
+      </Box>
+    );
+  }
+
   return (
-    <Box p={2}>
+    <Box sx={{ backgroundColor: theme.colores.grisClaro, height: '100%', minHeight: 0, minWidth: 0, width: '100%', p: 2, overflowY: 'auto' }}>
       <Box sx={{ display: "flex", flexDirection: "column", mb: 2 }}>
         <Typography
           variant="h5"

@@ -380,7 +380,7 @@ const Inconvenientes: React.FC = () => {
   }
 
   return (
-    <Box m={3}>
+    <Box sx={{ backgroundColor: theme.colores.grisClaro, height: '100%', minHeight: 0, minWidth: 0, width: '100%', p: 3, m: 0 }}>
       <Typography
         variant="h5"
         component="div"

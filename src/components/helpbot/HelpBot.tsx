@@ -20,10 +20,10 @@ interface ChatMessage {
 }
 
 const PAGINAS = [
-  { label: "Dashboard", ruta: "/" },
+  //{ label: "Dashboard", ruta: "/" },
   { label: "Cargas", ruta: "/cargas" },
   { label: "Contratos", ruta: "/contratos" },
-  { label: "Choferes", ruta: "/colaboradores" },
+  { label: "Colaboradores", ruta: "/colaboradores" },
   { label: "Ubicaciones", ruta: "/ubicaciones" },
   { label: "Empresas", ruta: "/empresas" },
   { label: "Camiones", ruta: "/camiones" },
@@ -69,14 +69,67 @@ const HelpBot: React.FC = () => {
   const helpBotSystemPrompt = `DOCUMENTOS:
 [fragmentos relevantes de la documentación, insertados por el sistema]
 
+LISTA DE PÁGINAS VÁLIDAS:
+- Cargas (/cargas)
+- Contratos (/contratos)
+- Colaboradores (/colaboradores)
+- Ubicaciones (/ubicaciones)
+- Empresas (/empresas)
+- Camiones (/camiones)
+- Inconvenientes (/inconvenientes)
+- Clima (/clima)
+- Calculadora (/calculadora)
+- Administrador (/admin)
+
+IMPORTANTE: Cuando completes el campo "pagina" en la respuesta, usá exactamente uno de los labels o rutas de la lista de páginas válidas. Si no corresponde ninguna, devolvé null.
+
 PREGUNTA:
 [lo que pregunta el usuario]
 
 INSTRUCCIONES:
-1. Antes de responder, revisá primero la información de permisos. Si el usuario no tiene permiso para la acción, respondé solo eso y no sigas.
-2. Si tiene permiso, explicá el flujo usando la documentación de pantallas, priorizando la pantalla relevante según la pregunta o el contexto.
-3. Solo usá la documentación de acciones si el usuario pide detalles paso a paso o información muy específica sobre cómo realizar la acción.
-Respondé de forma clara, cálida y paso a paso, usando solo la información de los DOCUMENTOS. Si hay acciones relacionadas, sugerilas al final. Si no sabés la respuesta, decí que no sabés.`;
+1. Antes de responder, revisá primero la información de permisos (permisos.json). Si el usuario no tiene permiso para la acción, respondé solo eso y no sigas.
+2. Si tiene permiso, revisá la documentación de pantallas (pantalla_xxx.json) para ver si la acción se puede realizar en la página actual (te paso la ruta). Si NO se puede, decí en qué página sí se puede hacer y sugerí ir a esa página.
+3. Si la acción se puede hacer en la página actual, explicá el procedimiento paso a paso usando SOLO la documentación de esa pantalla.
+4. Si hay varias pantallas que mencionan la acción, priorizá la que describe el proceso completo de la acción (por ejemplo, para 'editar carga', priorizá la pantalla de Cargas si ahí se explica cómo editar).
+5. Solo usá la documentación de acciones si el usuario pide detalles paso a paso o información muy específica sobre cómo realizar la acción.
+6. Respondé de forma clara, cálida y paso a paso, usando solo la información de los DOCUMENTOS. Si hay acciones relacionadas, sugerilas al final.
+7. Si no sabés la respuesta o no hay suficiente información en los DOCUMENTOS, devolvé un JSON con permiso en false y los demás campos en null.
+8. Respondé SIEMPRE en formato JSON válido, exactamente como en el ejemplo.
+
+EJEMPLOS:
+Pregunta: ¿Cómo edito un turno?
+Respuesta:
+{
+  "permiso": true,
+  "message": "Para editar un turno, primero andá a la página de Cargas, seleccioná la carga que te interesa y después elegí el cupo específico. Ahí vas a poder seleccionar el turno que necesitás modificar y editarlo según lo que requieras.",
+  "pagina": "Cargas",
+  "sugerencias": ["¿Querés saber cómo eliminar un turno?"]
+}
+
+Pregunta: ¿Cómo edito una carga?
+Respuesta:
+{
+  "permiso": true,
+  "message": "Para editar una carga, debés ir a la página de Cargas. Ahí podés seleccionar la carga y editarla según lo que necesites.",
+  "pagina": "Cargas",
+  "sugerencias": ["¿Querés saber cómo eliminar una carga?"]
+}
+
+Pregunta: ¿Cómo creo una carga?
+Respuesta:
+{
+  "permiso": true,
+  "message": "Para crear una carga, primero andá a la página de Contratos, seleccioná el contrato y hacé clic en 'Crear carga +'.",
+  "pagina": "Contratos",
+  "sugerencias": ["¿Querés saber cómo editar una carga después de crearla?"]
+}
+Si no hay suficiente información en los DOCUMENTOS para responder, devolvé:
+{
+  "permiso": false,
+  "message": null,
+  "pagina": null,
+  "sugerencias": null
+}`;
 
   const handleSend = async () => {
     if (!input.trim()) return;
@@ -108,7 +161,7 @@ Respondé de forma clara, cálida y paso a paso, usando solo la información de 
         const userMessageText = `Rol: ${user?.rol?.nombre || user?.rol?.id}\nPágina: ${window.location.pathname}\nHistorial: ${historySummary}\nMensaje: ${inputWithIntent}`;
         const openaiPayload = {
           model: "gpt-4.1",
-          messages: [
+          input: [
             {
               role: "system",
               content: helpBotSystemPrompt
@@ -116,44 +169,44 @@ Respondé de forma clara, cálida y paso a paso, usando solo la información de 
             {
               role: "user",
               content: userMessageText
-                }
+            }
           ],
           tools: [
             {
               type: "function",
-              function: {
-                name: "respuesta_json",
-                description: "Devuelve la respuesta estructurada para el helpbot.",
-                parameters: {
-                  type: "object",
-                  properties: {
-                    permiso: { type: "boolean", description: "Si el usuario tiene permiso para la acción" },
-                    message: { type: ["string", "null"], description: "Mensaje de ayuda o explicación" },
-                    pagina: { type: ["string", "null"], description: "Página sugerida o relevante" },
-                    sugerencias: {
-                      type: ["array", "null"],
-                      items: { type: "string" },
-                      description: "Sugerencias adicionales para el usuario"
-                    }
-                  },
-                  required: ["permiso", "message", "pagina"]
-                }
-              }
+              name: "respuesta_json",
+              description: "Devuelve la respuesta estructurada para el helpbot.",
+              parameters: {
+                type: "object",
+                required: ["permiso", "message", "pagina", "sugerencias"],
+                properties: {
+                  permiso: { type: "boolean", description: "Si el usuario tiene permiso para la acción" },
+                  message: { type: ["string", "null"], description: "Mensaje de ayuda o explicación" },
+                  pagina: { type: ["string", "null"], description: "Página sugerida o relevante" },
+                  sugerencias: {
+                    type: ["array", "null"],
+                    items: { type: "string" },
+                    description: "Sugerencias adicionales para el usuario"
+                  }
+                },
+                additionalProperties: false
+              },
+              strict: true
             },
             {
-              "type": "file_search",
-              "vector_store_ids": [
-              "vs_68595443a6208191bc452748082d28ac"
+              type: "file_search",
+              vector_store_ids: [
+                "vs_685c1fea77f0819183cdd52fe95a060b"
               ]
             }
           ],
-          tool_choice: "auto",
-          temperature: 1,
-          max_tokens: 2048,
-          top_p: 1
+          temperature: 0.2,
+          max_output_tokens: 2048,
+          top_p: 1,
+          store: true
         };
         console.log('HelpBot: Payload enviado a la IA:', openaiPayload);
-        const response: Response = await fetchWithTimeout('https://api.openai.com/v1/chat/completions', {
+        const response: Response = await fetchWithTimeout('https://api.openai.com/v1/responses', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -163,27 +216,46 @@ Respondé de forma clara, cálida y paso a paso, usando solo la información de 
         }, 30000);
         const data = await response.json();
         console.log('HelpBot: Respuesta completa de la API:', data);
-        if (
-          data.choices &&
-          data.choices[0] &&
-          data.choices[0].message &&
-          data.choices[0].message.tool_calls &&
-          data.choices[0].message.tool_calls[0] &&
-          data.choices[0].message.tool_calls[0].function &&
-          typeof data.choices[0].message.tool_calls[0].function.arguments === 'string'
-        ) {
-        try {
-            aiResponse = JSON.parse(data.choices[0].message.tool_calls[0].function.arguments);
-          aiContent = aiResponse && typeof aiResponse === 'object' && 'message' in aiResponse ? aiResponse.message || '' : '';
-        } catch (e) {
-          aiContent = 'Error: la IA no devolvió un JSON válido.';
-            aiResponse = undefined;
-            console.error('HelpBot: Error parseando JSON de la IA:', e, data.choices[0].message.tool_calls[0].function.arguments);
+
+        // --- INICIO: Extracción robusta de la respuesta de la IA ---
+        let found = false;
+        if (data.output && Array.isArray(data.output)) {
+          // 1. Buscar el primer output con 'arguments' string parseable
+          for (const out of data.output) {
+            if (typeof out.arguments === 'string') {
+              try {
+                aiResponse = JSON.parse(out.arguments);
+                aiContent = aiResponse && typeof aiResponse === 'object' && 'message' in aiResponse ? aiResponse.message || '' : '';
+                found = true;
+                break;
+              } catch (e) {
+                // Si no es JSON válido, seguir buscando
+                continue;
+              }
+            }
           }
-        } else {
+          // 2. Si no se encontró, buscar en los campos 'content' de cada output
+          if (!found) {
+            for (const out of data.output) {
+              if (out.content && Array.isArray(out.content)) {
+                for (const c of out.content) {
+                  if (typeof c.text === 'string' && c.text.trim()) {
+                    aiContent = c.text;
+                    aiResponse = undefined;
+                    found = true;
+                    break;
+                  }
+                }
+              }
+              if (found) break;
+            }
+          }
+        }
+        if (!found) {
           aiContent = 'No se pudo obtener respuesta de la IA.';
           aiResponse = undefined;
         }
+        // --- FIN: Extracción robusta de la respuesta de la IA ---
         break;
       } catch (e) {
         aiContent = `Error de red o formato: ${e instanceof Error ? e.message : String(e)}`;
@@ -307,24 +379,27 @@ Respondé de forma clara, cálida y paso a paso, usando solo la información de 
                   // Buscar la ruta de la página sugerida si existe
                   let paginaObj = null;
                   let paginaNombre = typeof pagina === 'string' ? pagina : '';
-                  if (pagina) {
-                    // Si la IA devuelve 'pantalla_cargas.md', 'pantalla_contratos.md', etc., mapear al label correcto
-                    const match = /^pantalla_(.+)\.md$/i.exec(pagina);
-                    if (match) {
-                      const label = match[1].charAt(0).toUpperCase() + match[1].slice(1);
-                      paginaObj = PAGINAS.find(p => p.label.toLowerCase() === label.toLowerCase());
-                      if (paginaObj) paginaNombre = paginaObj.label;
-                    } else {
-                      paginaObj = PAGINAS.find(p => p.label.toLowerCase() === pagina.toLowerCase());
-                      if (paginaObj) paginaNombre = paginaObj.label;
-                    }
+                  // --- INICIO: Mapeo flexible de página sugerida ---
+                  function normalizar(str: string): string {
+                    return (str || '')
+                      .toLowerCase()
+                      .normalize('NFD').replace(/\p{Diacritic}/gu, '')
+                      .replace(/^pantalla_/, '')
+                      .replace(/\.md$/, '')
+                      .replace(/^\//, '')
+                      .trim();
                   }
-                  // No mostrar sugerencia si la página sugerida es igual a la actual
+                  const paginaNorm = normalizar(paginaNombre);
+                  paginaObj = PAGINAS.find(p => normalizar(p.label) === paginaNorm || normalizar(p.ruta) === paginaNorm);
+                  if (paginaObj) paginaNombre = paginaObj.label;
+                  // --- FIN: Mapeo flexible de página sugerida ---
+                  // Mostrar sugerencia solo si la página sugerida es distinta a la actual
                   let mostrarSugerencia = false;
                   if (paginaObj) {
                     mostrarSugerencia = paginaObj.ruta !== window.location.pathname;
                   } else if (pagina) {
-                    mostrarSugerencia = paginaNombre.toLowerCase() !== window.location.pathname.replace(/^\//, '').toLowerCase();
+                    // Si no hay match exacto, comparar normalizados
+                    mostrarSugerencia = paginaNorm !== normalizar(window.location.pathname);
                   }
                   // Si hay sugerencia, mostrar como botón que guarda la intención
                   const handleIntentRedirect = () => {
@@ -337,7 +412,8 @@ Respondé de forma clara, cálida y paso a paso, usando solo la información de 
                     <Box key={i} sx={{ mb: 1, textAlign: 'left', ml: 0, mr: 6 }}>
                       <Box sx={{ display: 'inline-block', bgcolor: gris, color: azulOscuro, px: 2, py: 1, borderRadius: 2, maxWidth: '100%', wordBreak: 'break-word', whiteSpace: 'pre-line', fontSize: 15 }}>
                         {message}
-                        {pagina && mostrarSugerencia && paginaObj && (
+                        {/* Mostrar sugerencia de navegación como botón o solo texto, pero no ambos */}
+                        {pagina && mostrarSugerencia && paginaObj ? (
                           <Box mt={1}>
                             <Button
                               variant="outlined"
@@ -348,13 +424,12 @@ Respondé de forma clara, cálida y paso a paso, usando solo la información de 
                               Sugerencia: Ir a la página {paginaNombre}
                             </Button>
                           </Box>
-                        )}
-                        {pagina && mostrarSugerencia && !paginaObj && (
-                          <Box mt={1}>
-                            <span style={{ textDecoration: 'underline', color: azulOscuro, fontWeight: 700 }}>
-                              Sugerencia: Ir a la página {paginaNombre}
-                            </span>
-                          </Box>
+                        ) : (
+                          paginaNombre && (
+                            <Box mt={1} sx={{ fontSize: 13, color: grisOscuro }}>
+                              <b>Página sugerida:</b> {paginaNombre}
+                            </Box>
+                          )
                         )}
                         {sugerencias && sugerencias.length > 0 && (
                           <Box mt={1}>
@@ -393,8 +468,25 @@ Respondé de forma clara, cálida y paso a paso, usando solo la información de 
                 onChange={e => setInput(e.target.value)}
                 onKeyDown={e => { if (e.key === 'Enter') handleSend(); }}
                 disabled={loading}
-                sx={{ mr: 1, background: '#fff', borderRadius: 1, border: `1px solid ${azul}` }}
-                InputProps={{ style: { color: azulOscuro } }}
+                sx={{
+                  mr: 1,
+                  background: '#fff',
+                  borderRadius: 1,
+                  border: `1px solid ${azul}`,
+                  '& .MuiOutlinedInput-root': {
+                    '&.Mui-focused fieldset': {
+                      borderColor: azul,
+                    },
+                  },
+                }}
+                InputProps={{
+                  style: { color: azulOscuro },
+                  sx: {
+                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                      borderColor: azul,
+                    },
+                  },
+                }}
               />
               <Button variant="contained" onClick={handleSend} disabled={loading || !input.trim()} sx={{ bgcolor: azul, color: '#fff', fontWeight: 700, '&:hover': { bgcolor: azulOscuro } }}>
                 Enviar
@@ -432,9 +524,8 @@ Respondé de forma clara, cálida y paso a paso, usando solo la información de 
   return (
     <>
       {iconButton}
-      {chatWidget}
+      {open && chatWidget}
     </>
   );
 };
-
-export default HelpBot; 
+export default HelpBot;

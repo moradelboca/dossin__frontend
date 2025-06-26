@@ -1,0 +1,63 @@
+{
+  "descripcion": "La pantalla de Ubicaciones te permite ver, agregar y gestionar todos los puntos de carga, descarga y balanza en un mapa interactivo. Es ideal para ubicar rápidamente dónde están tus operaciones y acceder a los detalles de cada lugar.",
+  "como_llegar": [
+    "Hacé clic en el ícono de 'Ubicaciones' (el de la chincheta/mapa) en la barra lateral izquierda.",
+    "Se abre el mapa con todos los puntos registrados y las herramientas para gestionarlos."
+  ],
+  "elementos_principales": {
+    "Panel superior": [
+      "Selector para elegir el tipo de ubicación (carga, descarga, balanza, etc.).",
+      "Buscador para filtrar ubicaciones por nombre o tipo.",
+      "Botón 'Agregar ubicación' (ícono de +) para crear una nueva ubicación.",
+      "Botón para centrar el mapa en tu ubicación actual.",
+      "Botón para cambiar el tipo de mapa (capas)."
+    ],
+    "Mapa interactivo": [
+      "Muestra todos los puntos de ubicación como marcadores sobre el mapa de Argentina.",
+      "Podés hacer zoom y moverte libremente por el mapa.",
+      "Al hacer clic en un marcador, se abre un diálogo con los detalles de la ubicación (nombre, tipo, dirección, etc.) y botones para editar o eliminar."
+    ]
+  },
+  "acciones_principales": [
+    {
+      "nombre": "Agregar ubicación",
+      "descripcion": "Hacé clic en el botón '+', completá el formulario con los datos obligatorios (nombre, tipo, dirección, etc.) y guardá. Si el nombre ya existe, el sistema te avisa y no deja guardar."
+    },
+    {
+      "nombre": "Ver detalles de una ubicación",
+      "descripcion": "Hacé clic en el marcador de la ubicación en el mapa. Se abre un diálogo con toda la información y las acciones disponibles."
+    },
+    {
+      "nombre": "Editar ubicación",
+      "descripcion": "En el diálogo de detalles, hacé clic en 'Editar'. Se abre el formulario con los datos ya cargados. Modificá lo que necesites y guardá los cambios."
+    },
+    {
+      "nombre": "Eliminar ubicación",
+      "descripcion": "En el diálogo de detalles, hacé clic en el ícono de basurita. El sistema pide confirmación antes de borrar. Revisá dependencias antes de eliminar, ya que puede estar asociada a cargas, cupos u otros datos."
+    }
+  ],
+  "preguntas_frecuentes": [
+    {
+      "pregunta": "¿Cómo veo las ubicaciones registradas?",
+      "respuesta": "Todas las ubicaciones aparecen como marcadores en el mapa. Usá el buscador o los filtros para encontrarlas más rápido."
+    },
+    {
+      "pregunta": "¿Cómo agrego una nueva ubicación?",
+      "respuesta": "Hacé clic en '+', completá el formulario y guardá."
+    },
+    {
+      "pregunta": "¿Cómo edito o elimino una ubicación?",
+      "respuesta": "Hacé clic en el marcador, luego en 'Editar' o en el ícono de basurita para eliminar."
+    },
+    {
+      "pregunta": "¿Por qué no puedo borrar una ubicación?",
+      "respuesta": "Solo los roles con permiso pueden borrar ubicaciones. Además, si la ubicación está asociada a cargas u otros datos, primero revisá esas dependencias."
+    }
+  ],
+  "consejos_utiles": [
+    "Solo los roles con permiso pueden crear, editar o borrar ubicaciones. Si no ves la opción, consultá la sección de permisos.",
+    "Si necesitás agregar un tipo de ubicación que no aparece, pedile ayuda a un administrador.",
+    "Usá el buscador y los filtros para encontrar ubicaciones rápido, sobre todo si tenés muchas.",
+    "Antes de eliminar una ubicación, asegurate de que no esté asociada a cargas, turnos u otros datos importantes."
+  ]
+} 

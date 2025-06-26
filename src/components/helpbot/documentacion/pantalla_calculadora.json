@@ -1,0 +1,59 @@
+{
+  "descripcion": "La pantalla de Calculadora te permite estimar rápidamente tarifas y costos de transporte según los datos que ingreses. Es útil para simular escenarios y tomar decisiones sobre fletes, descuentos y contra flete.",
+  "como_llegar": [
+    "Hacé clic en el ícono de 'Calculadora' (el de la calculadora) en la barra lateral izquierda.",
+    "Se abre la pantalla con el formulario de cálculo y la tabla de resultados."
+  ],
+  "elementos_principales": {
+    "Formulario de cálculo": [
+      "Campo 'Kilómetros a recorrer' para ingresar la distancia del viaje.",
+      "Campo 'Toneladas a transportar' para indicar la carga.",
+      "Campo 'Precio del grano de referencia' para usar como base del cálculo.",
+      "Campo 'Porcentaje de Descuento' para simular descuentos sobre la tarifa.",
+      "Campo 'Contra flete' para sumar costos adicionales si corresponde.",
+      "Botón 'CALCULAR TARIFA' para obtener los resultados."
+    ],
+    "Tabla de resultados": [
+      "Muestra los conceptos calculados: Tarifa ($/tn), Tarifa total ($), Tarifa con descuento, Tarifa total con descuento, Tarifa total con descuento y contraflete, Tarifa por KM, Tarifa por KM con descuento, Incidencia con descuento (%), Incidencia con descuento y contraflete (%).",
+      "Cada fila muestra el nombre del concepto y el valor calculado según los datos ingresados."
+    ]
+  },
+  "acciones_principales": [
+    {
+      "nombre": "Ingresar datos",
+      "descripcion": "Completá los campos del formulario con los datos del viaje y la carga que querés simular."
+    },
+    {
+      "nombre": "Calcular tarifa",
+      "descripcion": "Hacé clic en 'CALCULAR TARIFA' para ver los resultados en la tabla de la derecha."
+    },
+    {
+      "nombre": "Interpretar resultados",
+      "descripcion": "Leé la tabla de resultados para conocer el costo por tonelada, por kilómetro, el impacto de descuentos y contraflete, y la incidencia sobre el precio del grano."
+    }
+  ],
+  "preguntas_frecuentes": [
+    {
+      "pregunta": "¿Para qué sirve la calculadora?",
+      "respuesta": "Te ayuda a estimar tarifas y costos de transporte de manera rápida, simulando diferentes escenarios de distancia, carga, descuentos y contraflete."
+    },
+    {
+      "pregunta": "¿Qué pasa si dejo un campo vacío?",
+      "respuesta": "Para obtener resultados correctos, completá todos los campos obligatorios. Si falta un dato, la calculadora puede mostrar valores vacíos o incorrectos."
+    },
+    {
+      "pregunta": "¿Puedo usar decimales en los campos?",
+      "respuesta": "Sí, podés ingresar valores decimales en los campos de kilómetros, toneladas, precio y contraflete."
+    },
+    {
+      "pregunta": "¿El cálculo es vinculante?",
+      "respuesta": "No, la calculadora es solo una herramienta de simulación y referencia. Los valores finales pueden variar según acuerdos comerciales reales."
+    }
+  ],
+  "consejos_utiles": [
+    "Probá diferentes escenarios cambiando los valores para ver cómo impactan en la tarifa final.",
+    "Si no entendés algún concepto de la tabla de resultados, consultá con un administrador o supervisor.",
+    "La calculadora no reemplaza la negociación real, pero es muy útil para tener una referencia rápida.",
+    "Asegurate de ingresar los datos correctamente para evitar confusiones en los resultados."
+  ]
+} 
