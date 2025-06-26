@@ -24,7 +24,7 @@ const WebSocketComponent = () => {
 
     socketRef.current.on("nueva-alerta", ({ payload }) => {
       console.log(payload?.asignadoA);
-      console.log(user?.email);
+      if (user) {console.log(user.email); console.log(user);}
       if (payload?.asignadoA && user?.email && payload.asignadoA === user.email) {
         showNotificacion("Hay un nuevo inconveniente, por favor revisa la ventana de Inconvenietes", "warning");
       }
