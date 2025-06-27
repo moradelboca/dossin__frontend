@@ -71,8 +71,34 @@ const RutasProtegidas = ({ children, allowedRoles }: ProtectedRouteProps) => {
 
     verificarToken();
 
+    // Timer de 40 minutos para refrescar el token si el usuario sigue activo
+    let timerId: number | undefined;
+    if (!verificando && user) {
+      // Este timer ejecutará la lógica de refresco del token después de 40 minutos
+      timerId = window.setTimeout(async () => {
+        // Mostrar popup al usuario
+        const seguirActivo = window.confirm(
+          "Parece que estas inactivo! Quedan 20 minutos para que tu sesión expire. ¿Deseas seguir activo?"
+        );
+        if (seguirActivo) {
+          // Si el usuario acepta, vuelve a verificar el token
+          await verificarToken();
+        } else {
+          // Si el usuario cancela, puedes hacer logout o no hacer nada
+          // logout(); // Descomenta si quieres cerrar sesión automáticamente
+        }
+      }, 5 * 60 * 1000);
+      sessionStorage.setItem("timerId", String(timerId));
+    }
+
     return () => {
       controller.abort();
+      // Limpiar el timer si existe
+      const storedId = sessionStorage.getItem("timerId");
+      if (storedId) {
+        clearTimeout(Number(storedId));
+        sessionStorage.removeItem("timerId");
+      }
     };
   }, [location.pathname]);
 
