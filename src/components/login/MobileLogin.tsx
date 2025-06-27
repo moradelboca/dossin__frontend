@@ -161,7 +161,7 @@ const MobileLogin = () => {
         </Box>
          {/* Mostrar mensaje si existe el query param 'estado' */}
         {estado && (
-          <Typography variant="body1" mb={2} sx={{ color: '#000000' }}>
+          <Typography variant="body1" mb={2} sx={{ color: '#FFBE00' }}>
             Su cuenta no se encontró. Por favor, comuníquese con un administrador.
           </Typography>
         )}
