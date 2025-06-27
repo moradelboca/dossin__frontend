@@ -94,7 +94,7 @@ const RutasProtegidas = ({ children, allowedRoles }: ProtectedRouteProps) => {
           // Si el usuario cancela, puedes hacer logout o no hacer nada
           // logout(); // Descomenta si quieres cerrar sesión automáticamente
         }
-      }, 5 * 60 * 1000);
+      }, 40 * 60 * 1000);
       sessionStorage.setItem("timerId", String(timerId));
     };
 
