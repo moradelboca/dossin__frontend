@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import {
   Box,
   FormControl,
@@ -9,6 +9,7 @@ import {
   SelectChangeEvent,
 } from "@mui/material";
 import { CuposGridContainer } from "./CuposGridContainer";
+import { ContextoGeneral } from "../../../Contexto";
 
 // Si ya tenés el tipo Cupo exportado desde otro lado, podés importarlo.
 // Por ejemplo: import { Cupo } from "./types";
@@ -29,6 +30,7 @@ export function CuposGridPorDiaContainer({
   refreshCupos,
   estadoCarga
 }: CuposGridPorDiaContainerProps & { estadoCarga: string }) {
+  const { theme } = useContext(ContextoGeneral);
   // Extraer todas las fechas únicas de los cupos
   const availableDates = Array.from(new Set(cupos.map((cupo) => cupo.fecha)));
 
@@ -54,12 +56,24 @@ export function CuposGridPorDiaContainer({
   return (
     <Box m={3}>
       <FormControl fullWidth>
-        <InputLabel id="date-select-label">Seleccionar Fecha</InputLabel>
+        <InputLabel id="date-select-label"
+          sx={{
+            '&.Mui-focused': { color: theme.colores.azul },
+          }}
+        >Seleccionar Fecha</InputLabel>
         <Select
           labelId="date-select-label"
           value={selectedDate}
           label="Seleccionar Fecha"
           onChange={handleDateChange}
+          sx={{
+            '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+              borderColor: theme.colores.azul,
+            },
+            '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
+              borderColor: theme.colores.azul,
+            },
+          }}
         >
           {availableDates.map((date) => (
             <MenuItem key={date} value={date}>

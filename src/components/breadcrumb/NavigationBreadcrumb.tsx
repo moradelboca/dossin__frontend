@@ -36,7 +36,7 @@ export const NavigationBreadcrumb: React.FC = () => {
   const { theme } = useContext(ContextoGeneral);
 
   return (
-    <Box sx={{ width: '100%', p: 1, background: 'transparent', zIndex: 1000 }}>
+    <Box sx={{ width: '100%', p: 1, background: 'transparent' }}>
       <Paper elevation={1} sx={{ p: 1.5, background: '#f7fafd', borderRadius: 2, display: 'inline-block', minWidth: 200 }}>
         <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} aria-label="breadcrumb">
           {history.map((entry, idx) => {

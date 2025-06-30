@@ -1,0 +1,43 @@
+const ToneladasTotalesMock = {
+  "fechaDesde": "2025-05-01",
+  "fechaHasta": "2025-06-03",
+  "toneladasTotales": 780,
+  "datos": [
+    { "fecha": "2025-05-01", "toneladas": 10 },
+    { "fecha": "2025-05-02", "toneladas": 15 },
+    { "fecha": "2025-05-03", "toneladas": 20 },
+    { "fecha": "2025-05-04", "toneladas": 25 },
+    { "fecha": "2025-05-05", "toneladas": 30 },
+    { "fecha": "2025-05-06", "toneladas": 18 },
+    { "fecha": "2025-05-07", "toneladas": 22 },
+    { "fecha": "2025-05-08", "toneladas": 35 },
+    { "fecha": "2025-05-09", "toneladas": 40 },
+    { "fecha": "2025-05-10", "toneladas": 50 },
+    { "fecha": "2025-05-11", "toneladas": 28 },
+    { "fecha": "2025-05-12", "toneladas": 32 },
+    { "fecha": "2025-05-13", "toneladas": 45 },
+    { "fecha": "2025-05-14", "toneladas": 38 },
+    { "fecha": "2025-05-15", "toneladas": 55 },
+    { "fecha": "2025-05-16", "toneladas": 60 },
+    { "fecha": "2025-05-17", "toneladas": 42 },
+    { "fecha": "2025-05-18", "toneladas": 36 },
+    { "fecha": "2025-05-19", "toneladas": 48 },
+    { "fecha": "2025-05-20", "toneladas": 52 },
+    { "fecha": "2025-05-21", "toneladas": 33 },
+    { "fecha": "2025-05-22", "toneladas": 27 },
+    { "fecha": "2025-05-23", "toneladas": 44 },
+    { "fecha": "2025-05-24", "toneladas": 39 },
+    { "fecha": "2025-05-25", "toneladas": 41 },
+    { "fecha": "2025-05-26", "toneladas": 29 },
+    { "fecha": "2025-05-27", "toneladas": 34 },
+    { "fecha": "2025-05-28", "toneladas": 37 },
+    { "fecha": "2025-05-29", "toneladas": 46 },
+    { "fecha": "2025-05-30", "toneladas": 49 },
+    { "fecha": "2025-05-31", "toneladas": 53 },
+    { "fecha": "2025-06-01", "toneladas": 58 },
+    { "fecha": "2025-06-02", "toneladas": 62 },
+    { "fecha": "2025-06-03", "toneladas": 65 }
+  ]
+};
+
+export default ToneladasTotalesMock; 
