@@ -158,8 +158,10 @@ export function CreadorCupos(props: any) {
       <Box
         display="flex"
         flexDirection="column"
-        width="350px"
-        padding={2}
+        width="100%"
+        maxWidth="400px"
+        mx="auto"
+        py={1}
         alignItems={"center"}
       >
         <ThemeProvider theme={tema}>

@@ -11,6 +11,7 @@ import { ListItemButton } from "@mui/material";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { ProtectedComponent } from "../protectedComponent/ProtectedComponent";
 import { navItems, NavItem } from "./itemsNav"; // Asegúrate de la ruta correcta
+import Tooltip from '@mui/material/Tooltip';
 
 const CustomMuiDrawer = styled(MuiDrawer)<{
   ancho?: number;
@@ -82,22 +83,24 @@ export default function Navside({
                 component={Link}
                 to={item.ruta}
               >
-                <ListItemButton
-                  sx={{
-                    padding: navAbierto ? "0px 5px" : "5px",
-                    borderRadius: "10px",
-                  }}
-                >
-                  <ListItemIcon sx={{ color: "#fff", minWidth: "unset" }}>
-                    {item.icono}
-                  </ListItemIcon>
-                  {navAbierto && (
-                    <ListItemText
-                      primary={item.label}
-                      sx={{ marginLeft: "10px", color: "#fff" }}
-                    />
-                  )}
-                </ListItemButton>
+                <Tooltip title={!navAbierto ? item.label : ""} placement="right" arrow>
+                  <ListItemButton
+                    sx={{
+                      padding: navAbierto ? "0px 5px" : "5px",
+                      borderRadius: "10px",
+                    }}
+                  >
+                    <ListItemIcon sx={{ color: "#fff", minWidth: "unset" }}>
+                      {item.icono}
+                    </ListItemIcon>
+                    {navAbierto && (
+                      <ListItemText
+                        primary={item.label}
+                        sx={{ marginLeft: "10px", color: "#fff" }}
+                      />
+                    )}
+                  </ListItemButton>
+                </Tooltip>
               </ListItem>
             );
 

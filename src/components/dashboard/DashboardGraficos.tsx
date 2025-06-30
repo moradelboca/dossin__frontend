@@ -17,10 +17,13 @@ import { useMediaQuery } from '@mui/material';
 
 interface DashboardGraficosProps {
   opcion: "cargas" | "fechas";
+  startDate?: string;
+  endDate?: string;
+  dateRangeType?: string;
 }
 
-const DashboardGraficos: React.FC<DashboardGraficosProps> = ({ opcion }) => {
-  const { theme } = useContext(ContextoGeneral);
+const DashboardGraficos: React.FC<DashboardGraficosProps> = ({ opcion, startDate, endDate, dateRangeType }) => {
+  const { theme, backendURL } = useContext(ContextoGeneral);
   // Se abre el diálogo según el tipo de filtro
   const [dialogOpen, setDialogOpen] = useState<
     "cargas" | "fechas" | "provincias" | null
@@ -28,6 +31,8 @@ const DashboardGraficos: React.FC<DashboardGraficosProps> = ({ opcion }) => {
 
   // Estado para las selecciones de filtros.
   // Ahora usamos "fechas" en lugar de "dias"
+  const [cargamentos, setCargamentos] = useState<{ id: number, nombre: string }[]>([]);
+  const [selectedCargamentoIds, setSelectedCargamentoIds] = useState<number[]>([]);
   const [selections, setSelections] = useState({
     cargas: [] as string[],
     fechas: [] as string[], // cada fecha se guarda como "YYYY-MM-DD"
@@ -36,26 +41,70 @@ const DashboardGraficos: React.FC<DashboardGraficosProps> = ({ opcion }) => {
 
   const isLargeScreen = useMediaQuery("(min-width:1200px)");
 
-  // Opciones disponibles para cada tipo.
-  // Para fechas ya no se usan opciones fijas; se seleccionan mediante calendario.
+  React.useEffect(() => {
+    fetch(`${backendURL}/cargamentos`, {
+      headers: {
+        'Content-Type': 'application/json',
+        'ngrok-skip-browser-warning': 'true',
+      },
+    })
+      .then(r => r.ok ? r.json() : Promise.reject())
+      .then(data => setCargamentos(data))
+      .catch(() => setCargamentos([]));
+  }, [backendURL]);
+
+  // Cuando cambia selections.cargas, actualiza selectedCargamentoIds
+  React.useEffect(() => {
+    const ids = cargamentos
+      .filter(c => selections.cargas.includes(c.nombre))
+      .map(c => c.id);
+    setSelectedCargamentoIds(ids);
+  }, [selections.cargas, cargamentos]);
+
+  // Preselección de provincias y cargamentos al cargar los datos
+  React.useEffect(() => {
+    if (cargamentos.length > 0) {
+      setSelections((prev) => ({
+        ...prev,
+        cargas: cargamentos.map(c => c.nombre),
+        provincias: [
+          "Córdoba",
+          "Buenos Aires",
+          "Santa Fe",
+          "Santiago del Estero",
+          "San Luis"
+        ]
+      }));
+    }
+  }, [cargamentos]);
+
+  // Opciones disponibles para cada tipo (solo nombres de cargamentos)
   const opciones = {
-    cargas: [
-      "Maíz",
-      "Soja",
-      "Trigo",
-      "Girasol",
-      "tipo carga 1",
-      "tipo carga 2",
-      "General",
-    ],
+    cargas: cargamentos.map(c => c.nombre),
     provincias: [
       "Buenos Aires",
-      "Cordoba",
-      "Santa Fe",
+      "Catamarca",
+      "Chaco",
+      "Chubut",
+      "Córdoba",
+      "Corrientes",
+      "Entre Ríos",
+      "Formosa",
+      "Jujuy",
+      "La Pampa",
+      "La Rioja",
       "Mendoza",
+      "Misiones",
+      "Neuquén",
+      "Río Negro",
       "Salta",
-      "provincia 2",
-      "provincia 1",
+      "San Juan",
+      "San Luis",
+      "Santa Cruz",
+      "Santa Fe",
+      "Santiago del Estero",
+      "Tierra del Fuego",
+      "Tucumán"
     ],
   };
 
@@ -127,7 +176,6 @@ const DashboardGraficos: React.FC<DashboardGraficosProps> = ({ opcion }) => {
   
 
   // Ajustar tamaños de fuente responsive
-  const titleFontSize = isLargeScreen ? '0.8rem' : '0.9rem';
   const chartHeight = isLargeScreen ? "85%" : 400;
   const chartContainerStyles = isLargeScreen
   ? { flex: 1, minHeight: 300 }
@@ -142,25 +190,31 @@ const DashboardGraficos: React.FC<DashboardGraficosProps> = ({ opcion }) => {
         '& .recharts-surface': { fontSize: isLargeScreen ? '12px' : '14px' }
       }}>
         {/* Sección de Provincias */}
-        <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mb: 2 }}>
-          <Typography sx={{ fontWeight: "bold", mr: 2, fontSize: titleFontSize }}>
+        <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5, mb: 1, alignItems: 'center', minHeight: 32 }}>
+          <Typography sx={{ fontWeight: 500, mr: 1, fontSize: '0.75rem' }}>
             Provincias:
           </Typography>
           {renderChips(selections.provincias, "provincias")}
-          <IconButton onClick={() => handleClickAbrirDialog("provincias")}>
-            <BorderColorIcon sx={{ fontSize: isLargeScreen ? 18 : 20 }} />
+          <IconButton onClick={() => handleClickAbrirDialog("provincias")}
+            size="small"
+            sx={{ ml: 0.5, p: 0.5 }}>
+            <BorderColorIcon sx={{ fontSize: 16 }} />
           </IconButton>
         </Box>
 
-        {/* Sección de Cargas/Fechas */}
-        <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mb: 2 }}>
-          <Typography sx={{ fontWeight: "bold", mr: 2, fontSize: titleFontSize }}>
-            {opcion === "cargas" ? "Cargas:" : "Fechas:"}
+        {/* Sección de Cargas (únicamente) */}
+        <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5, mb: 1, alignItems: 'center', minHeight: 32 }}>
+          <Typography sx={{ fontWeight: 500, mr: 1, fontSize: '0.75rem' }}>
+            {opcion === "cargas" ? "Cargamento:" : null}
           </Typography>
-          {renderChips(selections[opcion], opcion)}
-          <IconButton onClick={() => handleClickAbrirDialog(opcion)}>
-            <BorderColorIcon sx={{ fontSize: isLargeScreen ? 18 : 20 }} />
-          </IconButton>
+          {opcion === "cargas" && renderChips(selections["cargas"], "cargas")}
+          {opcion === "cargas" && (
+            <IconButton onClick={() => handleClickAbrirDialog("cargas")}
+              size="small"
+              sx={{ ml: 0.5, p: 0.5 }}>
+              <BorderColorIcon sx={{ fontSize: 16 }} />
+            </IconButton>
+          )}
         </Box>
 
         {/* Gráfico con altura responsive */}
@@ -169,11 +223,17 @@ const DashboardGraficos: React.FC<DashboardGraficosProps> = ({ opcion }) => {
             <DashboardCargas
               selections={selections}
               chartHeight={chartHeight}
+              startDate={startDate}
+              endDate={endDate}
+              cargamentosSeleccionados={selectedCargamentoIds}
             />
           ) : (
             <DashboardFechas
               selections={selections}
               chartHeight={chartHeight}
+              startDate={startDate}
+              endDate={endDate}
+              dateRangeType={dateRangeType}
             />
           )}
         </Box>

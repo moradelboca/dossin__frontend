@@ -93,10 +93,10 @@ const SidebarBuscador: React.FC<SidebarBuscadorProps> = ({
         p: 1,
         position: "sticky",
         top: 0,
-        bgcolor: "background.paper",
-        zIndex: 1,
+        bgcolor: "#fff",
+        zIndex: 20,
         borderRadius: 2,
-        boxShadow: 1,
+        boxShadow: 2,
       }}
     >
       <Box sx={{ display: "flex", gap: 1 }}>

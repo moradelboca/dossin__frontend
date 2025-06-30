@@ -9,6 +9,7 @@ import {
   PolarRadiusAxis,
   ResponsiveContainer,
 } from "recharts";
+import { CargamentoProvinciaPrueba } from "../CargamentoProvinciaPrueba";
 
 // Definición del tipo para los datos de cargas
 type Cargas = {
@@ -24,81 +25,74 @@ interface DashboardCargasProps {
   chartHeight: number | string;
 }
 
+// El mock se moverá a un archivo aparte para simular la información del endpoint en local.
 
-const DashboardCargas: React.FC<DashboardCargasProps> = ({ selections, chartHeight }) => {
+const DashboardCargas: React.FC<DashboardCargasProps & { startDate?: string, endDate?: string, cargamentosSeleccionados?: number[] }> = ({ selections, chartHeight, startDate, endDate, cargamentosSeleccionados }) => {
   const { dashboardURL } = useContext(ContextoGeneral);
   const [fetchedData, setFetchedData] = useState<Cargas[]>([]);
 
-  // Función para realizar fetch según cada tipo de carga seleccionado
-  const fetchCargasData = async () => {
-    const cargaTypes = selections.cargas;
-    const headers = {
-      "Content-Type": "application/json",
-      "ngrok-skip-browser-warning": "true",
-    };
-    try {
-      const results = await Promise.all(
-        cargaTypes.map(async (carga) => {
-          console.log(carga);
-          const endpoint =
-            carga === "General"
-              ? `${dashboardURL}/turnos/provincia`
-              : `${dashboardURL}/turnos/provincia/${encodeURIComponent(carga)}`;
-          try {
-            const res = await fetch(endpoint, { headers });
-            if (!res.ok) {
-              throw new Error(`Error en la petición para ${carga}`);
-            }
-            const data = await res.json();
-            // Normalizamos la data para asegurarnos de que sea un arreglo
-            const normalizedData = Array.isArray(data) ? data : [data];
-            const result: Record<string, number> = {};
-            normalizedData.forEach((item: any) => {
-              if (item && typeof item === "object") {
-                Object.keys(item).forEach((prov) => {
-                  // Filtramos solo las provincias seleccionadas
-                  if (
-                    selections.provincias.includes(prov) &&
-                    item[prov] &&
-                    item[prov].Cantidad !== undefined
-                  ) {
-                    result[prov] = item[prov].Cantidad;
-                  }
-                });
-              }
-            });
-            return { carga, result };
-          } catch (err) {
-            console.error(`Error en fetch para ${carga}:`, err);
-            return { carga, result: {} };
-          }
-        })
-      );
-
-      // Combinar los resultados obtenidos
-      const combined: Record<string, any> = {};
-      results.forEach(({ carga, result }) => {
-        Object.entries(result).forEach(([prov, cantidad]) => {
-          if (selections.provincias.includes(prov)) {
-            if (!combined[prov]) {
-              combined[prov] = { provincia: prov };
-            }
-            combined[prov][carga] = cantidad;
+  useEffect(() => {
+    const fetchData = async () => {
+      const isLocal = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+      let data;
+      if (isLocal) {
+        data = CargamentoProvinciaPrueba;
+      } else {
+        const params = new URLSearchParams();
+        if (startDate) params.append('fechaDesde', startDate);
+        if (endDate) params.append('fechaHasta', endDate);
+        const res = await fetch(`${dashboardURL}/cargas/cargamento-provincia?${params.toString()}`, {
+          headers: {
+            "Content-Type": "application/json",
+            "ngrok-skip-browser-warning": "true",
           }
         });
+        data = await res.json();
+      }
+      // Procesar data: [{ provincia, Maiz: 100, Trigo: 200, ... }, ...]
+      // Necesitamos el mapping de id a nombre de cargamento
+      const idToNombre: Record<number, string> = {};
+      if (Array.isArray(selections.cargas) && Array.isArray(cargamentosSeleccionados)) {
+        selections.cargas.forEach((nombre: string, idx: number) => {
+          if (cargamentosSeleccionados[idx] !== undefined) {
+            idToNombre[cargamentosSeleccionados[idx]] = nombre;
+          }
+        });
+      }
+      // Provincias únicas
+      const provinciasSet = new Set<string>();
+      data.datos.forEach((dia: any) => {
+        dia.cargamentos.forEach((c: any) => {
+          provinciasSet.add(c.provincia);
+        });
       });
-      setFetchedData(Object.values(combined));
-    } catch (err) {
-      console.error("Error al combinar los datos:", err);
-    }
-  };
-
-  useEffect(() => {
-    if (selections.cargas.length > 0 && selections.provincias.length > 0) {
-      fetchCargasData();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selections.cargas, selections.provincias, dashboardURL]);
+      // Solo mostrar las provincias seleccionadas
+      const provincias = Array.isArray(selections.provincias) && selections.provincias.length > 0
+        ? selections.provincias
+        : Array.from(provinciasSet);
+      // Construir estructura
+      const chartData: any[] = provincias.map((provincia) => {
+        const entry: any = { provincia };
+        if (Array.isArray(cargamentosSeleccionados)) {
+          cargamentosSeleccionados.forEach((tipoId: number) => {
+            let total = 0;
+            data.datos.forEach((dia: any) => {
+              dia.cargamentos.forEach((c: any) => {
+                if (c.provincia === provincia && c.tipo === tipoId) {
+                  total += parseFloat(c.toneladas);
+                }
+              });
+            });
+            const nombre = idToNombre[tipoId] || `Tipo ${tipoId}`;
+            entry[nombre] = total;
+          });
+        }
+        return entry;
+      });
+      setFetchedData(chartData);
+    };
+    fetchData();
+  }, [dashboardURL, startDate, endDate, cargamentosSeleccionados, selections.cargas, selections.provincias]);
 
   // Paleta de colores para cada radar
   const colorPalette = [
@@ -106,17 +100,20 @@ const DashboardCargas: React.FC<DashboardCargasProps> = ({ selections, chartHeig
     "#ff6347", "#ff4500", "#00ced1", "#32cd32", "#8a2be2",
   ];
 
+  // Nombres de los cargamentos seleccionados
+  const nombresCargamentos = selections.cargas;
+
   return (
     <ResponsiveContainer width="100%" height={chartHeight}>
-      <RadarChart data={fetchedData}>
+      <RadarChart outerRadius={90} data={fetchedData}>
         <PolarGrid />
         <PolarAngleAxis dataKey="provincia" />
         <PolarRadiusAxis />
-        {selections.cargas.map((item, index) => (
+        {nombresCargamentos.map((nombre, index) => (
           <Radar
-            key={item}
-            name={item}
-            dataKey={item}
+            key={nombre}
+            name={nombre}
+            dataKey={nombre}
             stroke={colorPalette[index % colorPalette.length]}
             fill={colorPalette[index % colorPalette.length]}
             fillOpacity={0.6}
