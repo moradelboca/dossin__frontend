@@ -2,8 +2,6 @@
 import React, { useContext, useState } from "react";
 import {
   Box,
-  AppBar,
-  Toolbar,
   Typography,
   Button,
 } from "@mui/material";
@@ -68,44 +66,49 @@ export function CargasMobile({
     <Box
       sx={{
         width: "100%",
-        height: "100%",
+        height: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
         position: "relative",
       }}
     >
-      {/* AppBar con botón para abrir/cerrar la lista de cargas */}
-      <AppBar
-        position="fixed"
+      {/* Cuadro blanco con 'Cargas' y botón de lista */}
+      <Box
         sx={{
-          top: 64, // Ajusta según la altura de tu navbar principal
-          backgroundColor: "#FFFFFF",
-          boxShadow: openDrawer ? 1 : "none",
+          width: '100%',
+          backgroundColor: '#fff',
+          borderRadius: 2,
+          boxShadow: 2,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          px: 2,
+          py: 1.5,
+          position: 'relative',
+          zIndex: 2,
+          mt: 0,
         }}
       >
-        <Toolbar sx={{ minHeight: "64px!important" }}>
-          <Typography
-            variant="h6"
-            sx={{ flexGrow: 1, color: theme.colores.azul }}
-          >
-            Cargas
-          </Typography>
-
-          <Button
-            onClick={toggleDrawer}
-            variant="contained"
-            sx={{
-              background: theme.colores.azul,
-              color: "#FFFFFF",
-              borderRadius: "5%",
-              textTransform: "none",
-              padding: "6px 12px",
-            }}
-            startIcon={!openDrawer ? <MenuIcon /> : null}
-          >
-            {openDrawer ? "Cancelar" : "Lista"}
-          </Button>
-        </Toolbar>
-
-        {/* Panel que se despliega con la lista de cargas */}
+        <Typography
+          variant="h6"
+          sx={{ color: theme.colores.azul }}
+        >
+          Cargas
+        </Typography>
+        <Button
+          onClick={toggleDrawer}
+          variant="contained"
+          sx={{
+            background: theme.colores.azul,
+            color: "#FFFFFF",
+            borderRadius: "5%",
+            textTransform: "none",
+            padding: "6px 12px",
+          }}
+          startIcon={!openDrawer ? <MenuIcon /> : null}
+        >
+          {openDrawer ? "Cancelar" : "Lista"}
+        </Button>
         <SwipeableDrawer
           anchor="bottom"
           open={openDrawer}
@@ -139,16 +142,17 @@ export function CargasMobile({
             onCrearCarga={handleCrearCarga}
           />
         </SwipeableDrawer>
-      </AppBar>
+      </Box>
 
       {/* Mapa ocupando el resto de la pantalla */}
       <Box
         sx={{
           width: "100%",
-          height: "100%",
-          paddingTop: "64px",
+          flex: 1,
+          minHeight: 0,
           position: "relative",
-          zIndex: 0, // Asegura que esté detrás del drawer
+          zIndex: 1,
+          display: 'flex',
         }}
       >
         <Mapa2

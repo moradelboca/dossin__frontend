@@ -23,6 +23,7 @@ import { CuposGridPorDiaContainer } from "./tabsCupos/CuposGridPorDiaContainer";
 //import { cuposPrueba } from "./cuposPrueba";
 import CuposMobile from "../../mobile/cupos/CuposMobile";
 import { useAuth } from "../../autenticacion/ContextoAuth";
+import InfoTooltip from '../../InfoTooltip';
 
 export function ContainerCupos() {
   const { idCarga } = useParams();
@@ -207,29 +208,55 @@ export function ContainerCupos() {
         width="100%"
         padding={2}
       >
-        {!isIngeniero && (
-          <Tabs
-            value={selectedTab}
-            onChange={handleChangeTab}
-            textColor="inherit"
-            sx={{
-              color: theme.colores.azul,
-              "& .MuiTab-root": {
-                color: "gray",
-              },
-              "& .Mui-selected": {
+        <Box display="flex" alignItems="center" gap={2}>
+          {!isIngeniero && (
+            <Tabs
+              value={selectedTab}
+              onChange={handleChangeTab}
+              textColor="inherit"
+              sx={{
                 color: theme.colores.azul,
+                "& .MuiTab-root": {
+                  color: "gray",
+                },
+                "& .Mui-selected": {
+                  color: theme.colores.azul,
+                },
+                "& .MuiTabs-indicator": {
+                  backgroundColor: theme.colores.azul,
+                },
+              }}
+            >
+              <Tab value="CARDS" label="CARDS" />
+              <Tab value="GRID" label="GRID" />
+              <Tab value="POR_DIA" label="POR DÍA" />
+            </Tabs>
+          )}
+          <InfoTooltip
+            placement="bottom"
+            title="¿Qué podés hacer en Cupos?"
+            sections={[
+              "En esta pantalla podés ver, crear y gestionar los cupos y turnos de cada carga.",
+              {
+                label: "Vistas",
+                items: [
+                  "Tarjetas: Visualizá cada fecha de cupo como una tarjeta, con los turnos y sus estados destacados.",
+                  "Tabla: Mostrá los turnos en formato tabla, con opciones para filtrar, seleccionar columnas y exportar los datos.",
+                  "Por Día: Filtrá y consultá los turnos de una fecha específica de manera rápida."
+                ]
               },
-              "& .MuiTabs-indicator": {
-                backgroundColor: theme.colores.azul,
+              {
+                label: "Botones principales",
+                items: [
+                  "Quiero crear un nuevo cupo: Agregá una nueva fecha de cupo.",
+                  "Ver más: Accedé a los detalles y edición de un cupo.",
+                  "Crear turno: Agregá un nuevo turno a un cupo existente."
+                ]
               },
-            }}
-          >
-            <Tab value="CARDS" label="CARDS" />
-            <Tab value="GRID" label="GRID" />
-            <Tab value="POR_DIA" label="POR DÍA" />
-          </Tabs>
-        )}
+              "Si no ves un turno o no podés realizar alguna acción, puede ser por falta de permisos según tu rol."
+            ]}
+          />
+        </Box>
         {!isIngeniero && (
           <BotonIcon
             onClick={handleClickCrearCupo}

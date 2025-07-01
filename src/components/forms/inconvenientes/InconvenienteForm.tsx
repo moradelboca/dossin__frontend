@@ -12,6 +12,7 @@ const InconvenienteForm: React.FC<FormularioProps> = ({
   datos,
   setDatos,
   handleClose,
+  seleccionado,
 }) => {
   const { backendURL, authURL, theme } = useContext(ContextoGeneral);
   const { user } = useAuth();
@@ -22,6 +23,7 @@ const InconvenienteForm: React.FC<FormularioProps> = ({
   const [usuarios, setUsuarios] = useState<any[]>([]);
   const [tiposInconvenientes, setTiposInconvenientes] = useState<any[]>([]);
   const [nivelesUrgencia, setNivelesUrgencia] = useState<any[]>([]);
+  const [descripcion, setDescripcion] = useState<string>("");
 
   // Estilos para azul en focus
   const azulStyles = {
@@ -48,15 +50,25 @@ const InconvenienteForm: React.FC<FormularioProps> = ({
       .catch(() => console.error("Error al obtener los usuarios"));
   }, [authURL]);
 
-  // Si en datos ya viene asignadoA (por ejemplo en un PUT), autocompletamos el campo
+  // Inicializar descripcion y asignadoA desde 'seleccionado' si está presente
   useEffect(() => {
-    if (usuarios.length && datos.asignadoA) {
-      const userFound = usuarios.find((usr) => usr.id === datos.asignadoA);
+    if (seleccionado && seleccionado.descripcion) {
+      setDescripcion(seleccionado.descripcion);
+    }
+  }, [seleccionado]);
+
+  useEffect(() => {
+    if (usuarios.length && seleccionado && seleccionado.asignadoA) {
+      // Buscar por id o por email
+      let userFound = usuarios.find((usr) => usr.id === seleccionado.asignadoA?.id);
+      if (!userFound && seleccionado.asignadoA?.email) {
+        userFound = usuarios.find((usr) => usr.email === seleccionado.asignadoA.email);
+      }
       if (userFound) {
         setAsignadoA(userFound);
       }
     }
-  }, [usuarios, datos.asignadoA]);
+  }, [usuarios, seleccionado]);
 
   useEffect(() => {
     fetch(`${backendURL}/inconvenientes/tiposinconvenientes`, {
@@ -84,10 +96,10 @@ const InconvenienteForm: React.FC<FormularioProps> = ({
       .catch((error) => {console.error("Error al obtener los Niveles de Urgencia: \n", error);});
   }, [backendURL]);
 
-  const { data, errors, handleChange, validateAll } = useValidation(
+  const { data, errors, handleChange, validateAll, setData } = useValidation(
     {
       titulo: "",
-      descripcion: "",
+      descripcion: descripcion,
       tipoInconveniente: "",
       urgencia: "",
       asignadoA: "",
@@ -101,6 +113,11 @@ const InconvenienteForm: React.FC<FormularioProps> = ({
       asignadoA: () => (!asignadoA ? "Seleccione a quien asignar el inconveniente" : null),
     }
   );
+
+  // Sincronizar el campo descripcion de useValidation cuando cambia descripcion local
+  useEffect(() => {
+    setData((prev: any) => ({ ...prev, descripcion }));
+  }, [descripcion, setData]);
 
   const handleSubmit = () => {
     if (validateAll()) {
@@ -140,8 +157,8 @@ const InconvenienteForm: React.FC<FormularioProps> = ({
   };
 
   return (
-    <Box>
-      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+    <Box sx={{ p: 2 }}>
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, p: 1 }}>
         <TextField
           margin="dense"
           label="Título"
@@ -163,7 +180,18 @@ const InconvenienteForm: React.FC<FormularioProps> = ({
           multiline
           rows={4}
           value={data.descripcion ?? ""}
-          onChange={handleChange("descripcion")}
+          onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+            const value = e.target.value;
+            setDescripcion(value);
+            handleChange("descripcion")({
+              ...e,
+              target: {
+                ...e.target,
+                value,
+                name: "descripcion"
+              }
+            } as React.ChangeEvent<HTMLInputElement>);
+          }}
           error={!!errors.descripcion}
           helperText={errors.descripcion}
           sx={azulStyles}

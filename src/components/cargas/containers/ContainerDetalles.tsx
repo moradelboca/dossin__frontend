@@ -99,6 +99,10 @@ export default function ContainerDetalles() {
           border: "1px solid #ccc",
           position: "relative",
           paddingY: 2,
+          flex: 1,
+          minHeight: 0,
+          display: 'flex',
+          flexDirection: 'column',
         }}
       >
         {slides.length === 0 ? (

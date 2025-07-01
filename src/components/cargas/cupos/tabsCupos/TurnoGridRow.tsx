@@ -6,6 +6,7 @@ import useTransformarCampo from '../../../hooks/useTransformarCampo';
 import Dialog from '@mui/material/Dialog';
 import DeleteTurno from '../../../cargas/creadores/DeleteTurno';
 import { useManejoTurnos, renderTurnosDialogs } from '../../../cards/mobile/manejoTurnos';
+import { getExplicacionEstado } from '../../../cards/mobile/explicacionTurnos';
 import { useAllowed } from '../../../hooks/auth/useAllowed';
 import EstadoTurnoForm from '../../../forms/turnos/tabs/EstadoTurnoForm';
 import { useAuth } from '../../../autenticacion/ContextoAuth';
@@ -15,6 +16,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogActions from '@mui/material/DialogActions';
+import InfoTooltip from '../../../InfoTooltip';
 
 interface TurnoGridRowProps {
   turno: any;
@@ -155,51 +157,67 @@ const TurnoGridRow: React.FC<TurnoGridRowProps> = ({ turno, cupo, refreshCupos, 
           <TableCell key={idx}>{transformarCampo(field, manejoTurnos.turnoLocal)}</TableCell>
         ))}
         <TableCell>
-          {manejoTurnos.turnoLocal.estado?.nombre && (
-            isAdmin ? (
-              <Box
-                sx={{
-                  px: 2,
-                  py: 0.5,
-                  borderRadius: '16px',
-                  border: `2px solid ${manejoTurnos.turnoLocal.estado.id === 4 ? '#d68384' : manejoTurnos.getEstadoColor(manejoTurnos.turnoLocal.estado.nombre.toLowerCase())}`,
-                  color: manejoTurnos.turnoLocal.estado.id === 4 ? '#d68384' : manejoTurnos.getEstadoColor(manejoTurnos.turnoLocal.estado.nombre.toLowerCase()),
-                  fontWeight: 'bold',
-                  fontSize: '0.85rem',
-                  background: '#fff',
-                  textTransform: 'capitalize',
-                  minWidth: '80px',
-                  textAlign: 'center',
-                  display: 'inline-block',
-                  cursor: 'pointer',
-                  transition: 'box-shadow 0.2s',
-                  boxShadow: openEstadoDialog ? '0 0 0 2px #16366055' : undefined,
-                }}
-                onClick={() => setOpenEstadoDialog(true)}
-              >
-                {manejoTurnos.turnoLocal.estado.nombre}
-              </Box>
-            ) : (
-              <Box
-                sx={{
-                  px: 2,
-                  py: 0.5,
-                  borderRadius: '16px',
-                  border: `2px solid ${manejoTurnos.turnoLocal.estado.id === 4 ? '#d68384' : manejoTurnos.getEstadoColor(manejoTurnos.turnoLocal.estado.nombre.toLowerCase())}`,
-                  color: manejoTurnos.turnoLocal.estado.id === 4 ? '#d68384' : manejoTurnos.getEstadoColor(manejoTurnos.turnoLocal.estado.nombre.toLowerCase()),
-                  fontWeight: 'bold',
-                  fontSize: '0.85rem',
-                  background: '#fff',
-                  textTransform: 'capitalize',
-                  minWidth: '80px',
-                  textAlign: 'center',
-                  display: 'inline-block',
-                }}
-              >
-                {manejoTurnos.turnoLocal.estado.nombre}
-              </Box>
-            )
-          )}
+          <Box display="flex" alignItems="center" gap={1}>
+            {manejoTurnos.turnoLocal.estado?.nombre && (
+              isAdmin ? (
+                <Box
+                  sx={{
+                    px: 2,
+                    py: 0.5,
+                    borderRadius: '16px',
+                    border: `2px solid ${manejoTurnos.turnoLocal.estado.id === 4 ? '#d68384' : manejoTurnos.getEstadoColor(manejoTurnos.turnoLocal.estado.nombre.toLowerCase())}`,
+                    color: manejoTurnos.turnoLocal.estado.id === 4 ? '#d68384' : manejoTurnos.getEstadoColor(manejoTurnos.turnoLocal.estado.nombre.toLowerCase()),
+                    fontWeight: 'bold',
+                    fontSize: '0.85rem',
+                    background: '#fff',
+                    textTransform: 'capitalize',
+                    minWidth: '80px',
+                    textAlign: 'center',
+                    display: 'inline-block',
+                    cursor: 'pointer',
+                    transition: 'box-shadow 0.2s',
+                    boxShadow: openEstadoDialog ? '0 0 0 2px #16366055' : undefined,
+                  }}
+                  onClick={() => setOpenEstadoDialog(true)}
+                >
+                  {manejoTurnos.turnoLocal.estado.nombre}
+                </Box>
+              ) : (
+                <Box
+                  sx={{
+                    px: 2,
+                    py: 0.5,
+                    borderRadius: '16px',
+                    border: `2px solid ${manejoTurnos.turnoLocal.estado.id === 4 ? '#d68384' : manejoTurnos.getEstadoColor(manejoTurnos.turnoLocal.estado.nombre.toLowerCase())}`,
+                    color: manejoTurnos.turnoLocal.estado.id === 4 ? '#d68384' : manejoTurnos.getEstadoColor(manejoTurnos.turnoLocal.estado.nombre.toLowerCase()),
+                    fontWeight: 'bold',
+                    fontSize: '0.85rem',
+                    background: '#fff',
+                    textTransform: 'capitalize',
+                    minWidth: '80px',
+                    textAlign: 'center',
+                    display: 'inline-block',
+                  }}
+                >
+                  {manejoTurnos.turnoLocal.estado.nombre}
+                </Box>
+              )
+            )}
+            {/* Tooltip de explicación de estado */}
+            {(() => {
+              const explicacion = getExplicacionEstado(manejoTurnos.turnoLocal.estado?.nombre);
+              if (!explicacion) return null;
+              return (
+                <InfoTooltip
+                  title={explicacion.title}
+                  sections={explicacion.sections}
+                  placement="top"
+                  iconSize="medium"
+                  contexto={`Componente: Tabla de turnos\nID turno: ${manejoTurnos.turnoLocal.id || ''}\nEstado: ${manejoTurnos.turnoLocal.estado?.nombre || ''}\nFecha cupo: ${manejoTurnos.turnoLocal.fechaCupo || manejoTurnos.turnoLocal.fecha || ''}`}
+                />
+              );
+            })()}
+          </Box>
           {/* Dialog para cambiar estado */}
           <Dialog open={openEstadoDialog} onClose={() => setOpenEstadoDialog(false)} maxWidth="xs" fullWidth>
             <EstadoTurnoForm
