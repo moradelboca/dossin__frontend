@@ -99,7 +99,7 @@ export default function DrawerCargaMobile({
     },
   }}
 >
-      <Box sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
+      <Box sx={{ height: "100%", display: "flex", flexDirection: "column", flex: 1, minHeight: 0 }}>
         {/* Flecha superior para colapsar/expandir */}
         <Box
           sx={{

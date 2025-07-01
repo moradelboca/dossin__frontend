@@ -92,8 +92,12 @@ const MainContent: React.FC<MainContentProps> = ({
             flexDirection: "column",
             overflow: "hidden"
           }}>
-            <ContainerProximosCupos />
-            <ContainerDetalles/>
+            <Box sx={{ flexShrink: 0 }}>
+              <ContainerProximosCupos />
+            </Box>
+            <Box sx={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
+              <ContainerDetalles/>
+            </Box>
           </Box>
         </Box>
 

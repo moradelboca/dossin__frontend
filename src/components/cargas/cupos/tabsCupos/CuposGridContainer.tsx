@@ -207,7 +207,7 @@ export const CuposGridContainer: React.FC<CuposGridContainerProps & { estadoCarg
  
   return (
     <Box m={3}>
-      {/* Barra de botones */}
+      {/* Barra de botones y ayuda */}
       <Box display="flex" alignItems="center" gap={2} mb={2}>
         <Tooltip title="Filtrar">
           <IconButton

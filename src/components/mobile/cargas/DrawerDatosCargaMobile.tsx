@@ -117,33 +117,35 @@ export default function DrawerDatosCargaMobile({
   ];
 
   return (
-    <Box sx={{ p: 2, overflowY: "auto", backgroundColor: "#ffffff" }}>
-      {fields.map((field, idx) => (
-        <Box
-          key={idx}
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            mb: 2,
-          }}
-        >
-          {/* Sección de Label + Valor (en vertical) */}
-          <Box sx={{ display: "flex", flexDirection: "column" }}>
-            <Typography variant="body2" fontWeight="bold">
-              {field.label}
-            </Typography>
-            <Typography variant="body2" sx={{ color: "#90979f" }}>
-              {field.value}
-            </Typography>
-          </Box>
+    <Box sx={{ p: 2, backgroundColor: "#ffffff", height: '100%', display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}>
+      <Box sx={{ flex: 1, overflowY: 'auto' }}>
+        {fields.map((field, idx) => (
+          <Box
+            key={idx}
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              mb: 2,
+            }}
+          >
+            {/* Sección de Label + Valor (en vertical) */}
+            <Box sx={{ display: "flex", flexDirection: "column" }}>
+              <Typography variant="body2" fontWeight="bold">
+                {field.label}
+              </Typography>
+              <Typography variant="body2" sx={{ color: "#90979f" }}>
+                {field.value}
+              </Typography>
+            </Box>
 
-          {/* Ícono de edición a la derecha */}
-          <IconButton onClick={() => handleEdit(field.label)}>
-            <EditIcon sx={{ fontSize: 16 }} />
-          </IconButton>
-        </Box>
-      ))}
+            {/* Ícono de edición a la derecha */}
+            <IconButton onClick={() => handleEdit(field.label)}>
+              <EditIcon sx={{ fontSize: 16 }} />
+            </IconButton>
+          </Box>
+        ))}
+      </Box>
     </Box>
   );
 }

@@ -438,10 +438,13 @@ const ChoferForm: React.FC<FormularioProps> = ({
                         />
                     )}
                     renderOption={(props, option) => {
+                        // Extraer key del objeto props
+                        const { key, ...rest } = props;
                         if (option.cuit === '__add__') {
                             return (
                                 <li
-                                    {...props}
+                                    key={key}
+                                    {...rest}
                                     style={{
                                         display: 'flex',
                                         justifyContent: 'center',
@@ -460,7 +463,7 @@ const ChoferForm: React.FC<FormularioProps> = ({
                             );
                         }
                         return (
-                            <li {...props}>
+                            <li key={key} {...rest}>
                                 {option.nombreFantasia} - {option.cuit}
                             </li>
                         );

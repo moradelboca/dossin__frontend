@@ -19,6 +19,7 @@ import SelectorProveedor from "../selectores/SelectorProveedor";
 
 import { ContextoGeneral } from "../../Contexto";
 import { useAuth } from "../../autenticacion/ContextoAuth";
+import InfoTooltip from '../../InfoTooltip';
 
 // Interfaces para tipar el estado y las props
 interface DatosNuevaCarga {
@@ -138,22 +139,93 @@ const CrearCargaStepper: React.FC<CrearCargaStepperProps> = ({
       {
         titulo: "Seleccionar ubicacion y horarios",
         componente: <SelectorDeUbicacion />,
+        tooltip: {
+          title: 'Ubicación y horarios',
+          sections: [
+            'Seleccioná la ubicación de carga y descarga, y completá los horarios de inicio y fin para cada etapa.',
+            {
+              label: 'Consejos',
+              items: [
+                'Verificá que las ubicaciones existan en el sistema. Si no, deberás crearlas antes.',
+                'Los horarios deben ser coherentes: la hora de inicio debe ser menor a la de fin.',
+                'Si la carga requiere balanza, completá también la ubicación y horarios de balanza.'
+              ]
+            },
+            'Asegurate de que la información sea precisa, ya que impacta en la logística y la planificación.'
+          ]
+        }
       },
       {
         titulo: "Seleccionar kilometros y cargamento",
         componente: <SelectorProveedor />,
+        tooltip: {
+          title: 'Kilómetros y cargamento',
+          sections: [
+            'Ingresá la cantidad de kilómetros a recorrer y seleccioná el tipo de cargamento.',
+            {
+              label: 'A tener en cuenta',
+              items: [
+                'La distancia afecta el cálculo de la tarifa y la logística.',
+                'El cargamento debe estar previamente registrado en el sistema.'
+              ]
+            },
+            'Si no encontrás el cargamento, consultá con administración para darlo de alta.'
+          ]
+        }
       },
       {
         titulo: "Seleccionar tarifa",
         componente: <SelectorTarifa />,
+        tooltip: {
+          title: 'Tarifa',
+          sections: [
+            'Seleccioná el tipo de tarifa (por tonelada, por viaje, etc.) e ingresá el valor correspondiente.',
+            {
+              label: 'Recomendaciones',
+              items: [
+                'Verificá que la tarifa sea la acordada con el proveedor o cliente.',
+                'Si la tarifa incluye IVA, marcá la opción correspondiente.'
+              ]
+            },
+            'La tarifa impacta en la facturación y en los reportes de costos.'
+          ]
+        }
       },
       {
         titulo: "Selecciona tipos de acoplados permitidos",
         componente: <SelectorDeAcoplados />,
+        tooltip: {
+          title: 'Tipos de acoplados',
+          sections: [
+            'Seleccioná uno o más tipos de acoplados que estarán permitidos para esta carga.',
+            {
+              label: 'Tips',
+              items: [
+                'Solo los camiones con los acoplados seleccionados podrán tomar turnos para esta carga.',
+                'Si no seleccionás ninguno, no se podrán asignar turnos.'
+              ]
+            },
+            'Podés agregar nuevos tipos de acoplados desde el panel de administración si es necesario.'
+          ]
+        }
       },
       {
         titulo: "Mas informacion",
         componente: <SelectorMasInfo />,
+        tooltip: {
+          title: 'Más información',
+          sections: [
+            'Completá datos adicionales como tolerancia, descripción, y cualquier observación relevante.',
+            {
+              label: 'Importante',
+              items: [
+                'La tolerancia define el margen de error permitido en la carga/descarga.',
+                'Una buena descripción ayuda a todos los usuarios a entender particularidades de la carga.'
+              ]
+            },
+            'Revisá toda la información antes de finalizar.'
+          ]
+        }
       },
     ],
     []
@@ -335,7 +407,18 @@ const CrearCargaStepper: React.FC<CrearCargaStepperProps> = ({
                     </Box>
                   )}
                 >
-                  {paso.titulo}
+                  <Box display="flex" alignItems="center" gap={1}>
+                    {paso.titulo}
+                    {pasoActivo === index && (
+                      <InfoTooltip
+                        title={paso.tooltip.title}
+                        sections={paso.tooltip.sections}
+                        placement="right"
+                        iconSize="small"
+                        contexto={`Formulario: Crear/Editar carga\nPaso: ${paso.titulo}`}
+                      />
+                    )}
+                  </Box>
                 </StepLabel>
                 <StepContent>
                   <Box sx={{ mb: 2 }}>
