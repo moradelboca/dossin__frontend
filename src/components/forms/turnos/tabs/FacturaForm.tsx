@@ -88,10 +88,16 @@ const FacturaForm: React.FC<FacturaFormProps> = ({
   const rules = {
         tipoFactura: (value: TipoFactura | null) =>
           value ? null : 'El tipo de factura es obligatorio',
-        puntoDeVenta: (value: string) =>
-          value ? null : 'El número de punto de venta es obligatorio',
-        nroFactura: (value: string) =>
-          value ? null : 'El número de comprobante es obligatorio',
+        puntoDeVenta: (value: string) => {
+          if (!value) return 'El número de punto de venta es obligatorio';
+          if (value.length !== 4) return 'El punto de venta debe tener 4 dígitos';
+          return null;
+        },
+        nroFactura: (value: string) => {
+          if (!value) return 'El número de comprobante es obligatorio';
+          if (value.length !== 8) return 'El número de factura debe tener 8 dígitos';
+          return null;
+        },
         precioGrano: (value: string | number) =>
           value ? null : 'El precio del grano es obligatorio',
       };
@@ -194,7 +200,15 @@ const FacturaForm: React.FC<FacturaFormProps> = ({
   // Manejo del submit (update o creación)
   const handleSubmit = async () => {
     if (!validateAll()) {
-      console.log('Errores en la validación:', errors);
+      // Forzar errores en los campos si no cumplen longitud
+      const newErrors = { ...errors };
+      if (!data.puntoDeVenta || data.puntoDeVenta.length !== 4) {
+        newErrors.puntoDeVenta = !data.puntoDeVenta ? 'El número de punto de venta es obligatorio' : 'El punto de venta debe tener 4 dígitos';
+      }
+      if (!data.nroFactura || data.nroFactura.length !== 8) {
+        newErrors.nroFactura = !data.nroFactura ? 'El número de comprobante es obligatorio' : 'El número de factura debe tener 8 dígitos';
+      }
+      setData((prev: any) => ({ ...prev })); // Forzar re-render
       return;
     }
     try {

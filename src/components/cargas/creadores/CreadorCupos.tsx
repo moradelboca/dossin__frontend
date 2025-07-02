@@ -198,6 +198,14 @@ export function CreadorCupos(props: any) {
                 },
               }}
               variant="outlined"
+              sx={{
+                '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                  borderColor: theme.colores.azul,
+                },
+                '& .MuiInputLabel-root.Mui-focused': {
+                  color: theme.colores.azul,
+                },
+              }}
             />
             {errorFecha && (
               <Typography color="#ff3333">

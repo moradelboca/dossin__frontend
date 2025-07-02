@@ -17,6 +17,7 @@ import {
   Stack,
   Button,
   useMediaQuery,
+  Dialog,
 } from "@mui/material";
 import { KeyboardArrowDown, KeyboardArrowUp } from "@mui/icons-material";
 import CreadorEntidad from "../dialogs/CreadorEntidad";
@@ -25,6 +26,7 @@ import { inconvenientesPruebas } from "./inconvenientePruebas";
 import InconvenientesMobile from "./InconvenientesMobile";
 import { usuariosPruebas } from "./usuariosPruebas";
 import { useAuth } from "../autenticacion/ContextoAuth";
+import TurnoConErroresForm from '../forms/turnos/tabs/turnosConErrores/TurnoConErroresForm';
 
 // interface Usuario { ... } // Elimino o comento esta interfaz
 
@@ -100,6 +102,28 @@ const Row: React.FC<{
   theme: any;
 }> = ({ row, handleEstadoChange, theme }) => {
   const [open, setOpen] = useState(false);
+  const [openCorregir, setOpenCorregir] = useState(false);
+  const [turnoConErrores, setTurnoConErrores] = useState<any>(null);
+  const [loadingTurno, setLoadingTurno] = useState(false);
+  const [turnoErrorMsg, setTurnoErrorMsg] = useState<string | null>(null);
+  const { backendURL } = useContext(ContextoGeneral);
+
+  // Renderizar Avatar con imagen o inicial
+  const renderAvatar = (email: string | undefined, imagen?: string | null) => (
+    <Avatar
+      src={imagen || undefined}
+      alt={email}
+      sx={{
+        bgcolor: imagen ? 'transparent' : theme.colores.azul,
+        width: 40,
+        height: 40,
+        border: imagen ? '1px solid #ccc' : undefined,
+      }}
+      imgProps={{ referrerPolicy: "no-referrer" }}
+    >
+      {!imagen && email ? email[0].toUpperCase() : null}
+    </Avatar>
+  );
 
   // Determinar el próximo estado y texto del botón
   let actionButton = null;
@@ -122,23 +146,6 @@ const Row: React.FC<{
       </Button>
     );
   }
-
-  // Renderizar Avatar con imagen o inicial
-  const renderAvatar = (email: string | undefined, imagen?: string | null) => (
-    <Avatar
-      src={imagen || undefined}
-      alt={email}
-      sx={{
-        bgcolor: imagen ? 'transparent' : theme.colores.azul,
-        width: 40,
-        height: 40,
-        border: imagen ? '1px solid #ccc' : undefined,
-      }}
-      imgProps={{ referrerPolicy: "no-referrer" }}
-    >
-      {!imagen && email ? email[0].toUpperCase() : null}
-    </Avatar>
-  );
 
   return (
     <>
@@ -206,6 +213,53 @@ const Row: React.FC<{
                 Descripción
               </Typography>
               <Typography>{row.descripcion}</Typography>
+              {/* Botón corregir turno si corresponde */}
+              {row.tipoInconveniente.nombre.toLowerCase() === 'turno con errores' && row.estado.nombre.toLowerCase() === 'activo' && (
+                <Button
+                  sx={{ color: theme.colores.azul, background: 'transparent', boxShadow: 'none', textTransform: 'none', mt: 2 }}
+                  onClick={async () => {
+                    setLoadingTurno(true);
+                    setOpenCorregir(true);
+                    setTurnoErrorMsg(null);
+                    try {
+                      const res = await fetch(`${backendURL}/turnos/${row.titulo}`);
+                      if (!res.ok) {
+                        const errorText = await res.text();
+                        throw new Error(`Error al buscar turno: ${errorText}`);
+                      }
+                      const data = await res.json();
+                      setTurnoConErrores(data);
+                    } catch (e: any) {
+                      setTurnoConErrores(null);
+                      setTurnoErrorMsg(e?.message || 'Error desconocido al cargar el turno');
+                    } finally {
+                      setLoadingTurno(false);
+                    }
+                  }}
+                >
+                  Corregir turno
+                </Button>
+              )}
+              {/* Modal de corrección */}
+              {openCorregir && (
+                <Dialog open={openCorregir} onClose={() => setOpenCorregir(false)} maxWidth="xs" fullWidth>
+                  <Box sx={{ p: 2 }}>
+                    {loadingTurno ? (
+                      <Typography>Cargando turno...</Typography>
+                    ) : turnoConErrores ? (
+                      <TurnoConErroresForm
+                        seleccionado={turnoConErrores}
+                        datos={[]}
+                        setDatos={() => {}}
+                        handleClose={() => setOpenCorregir(false)}
+                        idCarga={turnoConErrores.carga || turnoConErrores.idCarga}
+                      />
+                    ) : (
+                      <Typography color="error">{turnoErrorMsg || 'No se pudo cargar el turno.'}</Typography>
+                    )}
+                  </Box>
+                </Dialog>
+              )}
             </Box>
           </Collapse>
         </TableCell>

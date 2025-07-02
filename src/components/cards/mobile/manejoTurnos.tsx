@@ -272,15 +272,17 @@ export function renderTurnosDialogs({
                   { label: 'Rte. Comercial Venta secundaria 2', value: formatearEmpresa(cartaPorteData.contrato?.remitenteVentaSecundaria2) },
                   { label: 'Flete pagador', value: formatearEmpresa(cartaPorteData.contrato?.fletePagador) },
                   { label: 'Representante recibidor', value: formatearEmpresa(cartaPorteData.contrato?.representanteRecibidor) },
-                 
-                  { label: 'Chofer', value: cartaPorteData.turno?.colaborador?.nombre + ' ' + cartaPorteData.turno?.colaborador?.apellido },
+                  { label: 'Kilómetros del viaje', value: cartaPorteData.carga?.cantidadKm },
+                  { label: 'Empresa transportista', value: formatearEmpresa(cartaPorteData.turno?.empresa || cartaPorteData.carga?.empresa) },
+                  { label: 'Chofer', value: (cartaPorteData.turno?.colaborador?.nombre || '') + ' ' + (cartaPorteData.turno?.colaborador?.apellido || '') + (cartaPorteData.turno?.colaborador?.cuil ? ' - ' + cartaPorteData.turno?.colaborador?.cuil : '') },
                   { label: 'Patente camión', value: cartaPorteData.turno?.camion?.patente },
                   { label: 'Patente acoplado', value: cartaPorteData.turno?.acoplado?.patente },
                   { label: 'Patente acoplado extra', value: cartaPorteData.turno?.acopladoExtra?.patente },
                   { label: 'Tarifa', value: cartaPorteData.carga?.tarifa },
-                  { label: 'Kg tara', value: cartaPorteData.turnoCompleto?.[0]?.kgTara },
-                  { label: 'Kg bruto', value: cartaPorteData.turnoCompleto?.[0]?.kgBruto },
-                  { label: 'Kg neto', value: cartaPorteData.turnoCompleto?.[0]?.kgNeto },
+                  { label: 'Kg tara', value: cartaPorteData.turno?.kgTara ?? cartaPorteData.turnoCompleto?.kgTara },
+                  { label: 'Kg bruto', value: cartaPorteData.turno?.kgBruto ?? cartaPorteData.turnoCompleto?.kgBruto },
+                  { label: 'Kg neto', value: cartaPorteData.turno?.kgNeto ?? cartaPorteData.turnoCompleto?.kgNeto },
+                  { label: 'Kg cargados', value: cartaPorteData.turno?.kgCargados ?? cartaPorteData.turnoCompleto?.kgCargados },
                 ].filter((row: any) => row.value !== undefined && row.value !== null).map((row: any) => (
                   isMobile ? (
                     <Box key={row.label} sx={{ borderBottom: '1px solid #eee', pb: 1, mb: 1 }}>

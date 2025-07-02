@@ -36,7 +36,6 @@ const InconvenienteForm: React.FC<FormularioProps> = ({
   };
 
   // Fetch para obtener los usuarios
-  console.log(`${authURL}/auth/usuarios`)
   useEffect(() => {
     fetch(`${authURL}/auth/usuarios`, {
       method: "GET",
@@ -48,7 +47,7 @@ const InconvenienteForm: React.FC<FormularioProps> = ({
       .then((response) => response.json())
       .then((data) => setUsuarios(data))
       .catch(() => console.error("Error al obtener los usuarios"));
-  }, [authURL]);
+  }, []);
 
   // Inicializar descripcion y asignadoA desde 'seleccionado' si está presente
   useEffect(() => {
