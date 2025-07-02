@@ -144,6 +144,14 @@ const CrearCargaStepper: React.FC<CrearCargaStepperProps> = ({
           sections: [
             'Seleccioná la ubicación de carga y descarga, y completá los horarios de inicio y fin para cada etapa.',
             {
+              label: '¿Qué significa "requiere balanza"?',
+              items: [
+                'Si marcás que la carga requiere balanza, significa que el campo NO tiene balanza propia y se utilizará una balanza de un tercero (fuera del campo).',
+                'En este caso, es fundamental seleccionar correctamente la ubicación de la balanza, ya que los camioneros deberán ir primero a la balanza para pesar el camión antes de dirigirse al campo.',
+                'Esto afecta la logística: el recorrido será primero a la balanza y luego al campo, no directamente al campo.'
+              ]
+            },
+            {
               label: 'Consejos',
               items: [
                 'Verificá que las ubicaciones existan en el sistema. Si no, deberás crearlas antes.',
@@ -180,6 +188,13 @@ const CrearCargaStepper: React.FC<CrearCargaStepperProps> = ({
           title: 'Tarifa',
           sections: [
             'Seleccioná el tipo de tarifa (por tonelada, por viaje, etc.) e ingresá el valor correspondiente.',
+            {
+              label: '¿Qué significa "incluye IVA"?',
+              items: [
+                'Si marcás la opción "incluye IVA", el monto que ingresás ya tiene el IVA incluido dentro de ese número.',
+                'Si NO se marca, el sistema calculará el IVA por fuera y le sumará automáticamente un 21% al monto que ingreses.'
+              ]
+            },
             {
               label: 'Recomendaciones',
               items: [

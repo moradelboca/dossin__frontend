@@ -529,7 +529,15 @@ const ChoferForm: React.FC<FormularioProps> = ({
                     getOptionLabel={(option) => option.nombre}
                     isOptionEqualToValue={(option, value) => option.id === value?.id}
                     renderInput={(params) => (
-                        <TextField {...params} label="Rol" variant="outlined" fullWidth sx={azulStyles} />
+                        <TextField 
+                            {...params} 
+                            label="Rol" 
+                            variant="outlined" 
+                            fullWidth 
+                            sx={azulStyles}
+                            error={!!errors.idRol}
+                            helperText={errors.idRol}
+                        />
                     )}
                 />
             </Stack>
