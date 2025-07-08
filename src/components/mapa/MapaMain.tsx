@@ -23,6 +23,7 @@ import AutocompletarUbicacionMapa from "../cargas/autocompletar/AutocompletarUbi
 import { AddLocationAltOutlined, Search } from "@mui/icons-material";
 import { CreadorUbicacion } from "./CreadorUbicacion";
 import React from "react";
+import InfoTooltip from "../InfoTooltip";
 
 const { BaseLayer, Overlay } = LayersControl;
 
@@ -291,6 +292,15 @@ useEffect(() => {
                         >
                             <AddLocationAltOutlined />
                         </IconButton>
+                        <InfoTooltip
+                            title="¿Cómo ingresar la URL de Google Maps y borrar ubicaciones?"
+                            placement="right"
+                            sections={[
+                                "Al ingresar la URL de Google Maps, extraemos automáticamente la latitud y longitud del link. A veces puede fallar por cuestiones de Google. En esos casos, revisá que el pin esté bien ubicado en el mapa.",
+                                "Normalmente funciona mejor hacer click al lado del pin en Google Maps (no sobre el pin), es decir, clickear un punto vacío cerca del lugar deseado.",
+                                "Si no te deja borrar una ubicación, probablemente esté siendo usada en una carga."
+                            ]}
+                        />
                     </Box>
                 )}
             </Box>

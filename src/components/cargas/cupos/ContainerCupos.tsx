@@ -32,10 +32,14 @@ export function ContainerCupos() {
   const [estadoCarga, setEstadoCarga] = useState("Cargando");
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
-  const [selectedTab, setSelectedTab] = useState("CARDS");
   const { user } = useAuth();
 
-  const refreshCupos = async () => {
+  // Mover isMobile e isIngeniero antes de refreshCupos para evitar ReferenceError
+  const isMobile = useMediaQuery("(max-width:768px)");
+  const isIngeniero = user?.rol?.id === 3;
+  const [selectedTab, setSelectedTab] = useState<'CARDS' | 'GRID' | 'POR_DIA'>("CARDS");
+
+  const refreshCupos = async (modo: 'CARDS' | 'GRID' | 'POR_DIA' = selectedTab) => {
     if (cupos.length === 0) {
       setEstadoCarga("Cargando");
     } else {
@@ -51,82 +55,90 @@ export function ContainerCupos() {
         },
       });
       const cuposData = await cuposRes.json();
-      // 2. Para cada fecha, traer los turnos de ese cupo (ahora secuencial)
-      const cuposConTurnos = [];
-      for (const cupo of cuposData) {
-        // Validación defensiva
-        if (!idCarga || !cupo.fecha || typeof idCarga !== 'string' || typeof cupo.fecha !== 'string') {
-          console.warn('No se hace fetch de turnos por datos inválidos:', { idCarga, fecha: cupo.fecha });
-          cuposConTurnos.push({
-            ...cupo,
-            turnos: [],
-            turnosConErrores: [],
-            _error: 'Datos inválidos para fetch de turnos',
-          });
-          continue;
-        }
-        try {
-          const url = `${backendURL}/cargas/${idCarga}/cupos/${cupo.fecha}/turnos`;
-         // console.log('Haciendo fetch de turnos:', url);
-          const turnosRes = await fetch(url, {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              "ngrok-skip-browser-warning": "true",
-            },
-          });
-          if (!turnosRes.ok) {
-            console.error('Error HTTP al obtener turnos', { url, status: turnosRes.status });
+      // ---
+      // Si es modo CARDS (o mobile), solo usar la info de /cupos
+      // Si es modo GRID o POR_DIA, traer también los turnos por fecha
+      // ---
+      if (modo === 'CARDS' || isMobile || isIngeniero) {
+        setCupos(cuposData); // cuposData ya tiene la info necesaria para las cards
+        setEstadoCarga("Cargado");
+      } else {
+        // 2. Para cada fecha, traer los turnos de ese cupo (ahora secuencial)
+        const cuposConTurnos = [];
+        for (const cupo of cuposData) {
+          // Validación defensiva
+          if (!idCarga || !cupo.fecha || typeof idCarga !== 'string' || typeof cupo.fecha !== 'string') {
+            console.warn('No se hace fetch de turnos por datos inválidos:', { idCarga, fecha: cupo.fecha });
             cuposConTurnos.push({
               ...cupo,
               turnos: [],
               turnosConErrores: [],
-              _error: `HTTP ${turnosRes.status}`,
+              _error: 'Datos inválidos para fetch de turnos',
             });
             continue;
           }
-          const turnosData = await turnosRes.json();
-          // turnosData puede venir como { turnos: [...] } o como array directo
-          const turnos = Array.isArray(turnosData)
-            ? turnosData
-            : turnosData.turnos || [];
-          // turnosConErrores puede venir o no
-          const turnosConErrores = turnosData.turnosConErrores || [];
-          // Normalizar los campos de patente
-          const normalizarTurno = (turno: any) => ({
-            ...turno,
-            camion:
-              typeof turno.camion === "string"
-                ? { patente: turno.camion }
-                : turno.camion,
-            acoplado:
-              typeof turno.acoplado === "string"
-                ? { patente: turno.acoplado }
-                : turno.acoplado,
-            acopladoExtra:
-              typeof turno.acopladoExtra === "string"
-                ? { patente: turno.acopladoExtra }
-                : turno.acopladoExtra,
-          });
-          cuposConTurnos.push({
-            ...cupo,
-            turnos: Array.isArray(turnos) ? turnos.map(normalizarTurno) : [],
-            turnosConErrores: Array.isArray(turnosConErrores)
-              ? turnosConErrores.map(normalizarTurno)
-              : [],
-          });
-        } catch (err) {
-          console.error('Excepción al obtener turnos', { idCarga, fecha: cupo.fecha, err });
-          cuposConTurnos.push({
-            ...cupo,
-            turnos: [],
-            turnosConErrores: [],
-            _error: 'Excepción en fetch de turnos',
-          });
+          try {
+            const url = `${backendURL}/cargas/${idCarga}/cupos/${cupo.fecha}/turnos`;
+            const turnosRes = await fetch(url, {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+                "ngrok-skip-browser-warning": "true",
+              },
+            });
+            if (!turnosRes.ok) {
+              console.error('Error HTTP al obtener turnos', { url, status: turnosRes.status });
+              cuposConTurnos.push({
+                ...cupo,
+                turnos: [],
+                turnosConErrores: [],
+                _error: `HTTP ${turnosRes.status}`,
+              });
+              continue;
+            }
+            const turnosData = await turnosRes.json();
+            // turnosData puede venir como { turnos: [...] } o como array directo
+            const turnos = Array.isArray(turnosData)
+              ? turnosData
+              : turnosData.turnos || [];
+            // turnosConErrores puede venir o no
+            const turnosConErrores = turnosData.turnosConErrores || [];
+            // Normalizar los campos de patente
+            const normalizarTurno = (turno: any) => ({
+              ...turno,
+              camion:
+                typeof turno.camion === "string"
+                  ? { patente: turno.camion }
+                  : turno.camion,
+              acoplado:
+                typeof turno.acoplado === "string"
+                  ? { patente: turno.acoplado }
+                  : turno.acoplado,
+              acopladoExtra:
+                typeof turno.acopladoExtra === "string"
+                  ? { patente: turno.acopladoExtra }
+                  : turno.acopladoExtra,
+            });
+            cuposConTurnos.push({
+              ...cupo,
+              turnos: Array.isArray(turnos) ? turnos.map(normalizarTurno) : [],
+              turnosConErrores: Array.isArray(turnosConErrores)
+                ? turnosConErrores.map(normalizarTurno)
+                : [],
+            });
+          } catch (err) {
+            console.error('Excepción al obtener turnos', { idCarga, fecha: cupo.fecha, err });
+            cuposConTurnos.push({
+              ...cupo,
+              turnos: [],
+              turnosConErrores: [],
+              _error: 'Excepción en fetch de turnos',
+            });
+          }
         }
+        setCupos(cuposConTurnos);
+        setEstadoCarga("Cargado");
       }
-      setCupos(cuposConTurnos);
-      setEstadoCarga("Cargado");
     } catch (e) {
       setEstadoCarga("Cargado");
       setCupos([]);
@@ -137,8 +149,9 @@ export function ContainerCupos() {
   };
 
   useEffect(() => {
-    refreshCupos();
-  }, []);
+    refreshCupos(selectedTab as any);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedTab, isMobile, isIngeniero]);
 
   // useEffect(() => {
   //   setCupos(cuposPrueba);
@@ -146,7 +159,7 @@ export function ContainerCupos() {
   // }, []);
 
   const handleChangeTab = (_event: React.SyntheticEvent, newValue: string) => {
-    setSelectedTab(newValue);
+    setSelectedTab(newValue as 'CARDS' | 'GRID' | 'POR_DIA');
   };
 
   const handleClickCrearCupo = () => {
@@ -172,11 +185,6 @@ export function ContainerCupos() {
     "Patente Acoplado",
     "Patente Acoplado Extra",
   ];
-
-  const isMobile = useMediaQuery("(max-width:768px)");
-
-  // Si el usuario es Ingeniero (rol 3), forzar vista CARDS y ocultar tabs
-  const isIngeniero = user?.rol?.id === 3;
 
   if (isMobile) {
     return (
@@ -270,19 +278,20 @@ export function ContainerCupos() {
         {isRefreshing && (
           <Box
             sx={{
-              position: 'absolute',
+              position: 'fixed',
               top: 0,
               left: 0,
-              width: '100%',
-              height: '100%',
+              width: '100vw',
+              height: '100vh',
               display: 'flex',
               justifyContent: 'center',
               alignItems: 'center',
               backgroundColor: 'rgba(255, 255, 255, 0.7)',
               zIndex: 10,
+              pointerEvents: 'none',
             }}
           >
-            <CircularProgress />
+            <CircularProgress sx={{ pointerEvents: 'auto' }} />
           </Box>
         )}
 

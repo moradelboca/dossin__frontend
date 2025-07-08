@@ -120,6 +120,11 @@ const PorcentajeFormat = React.forwardRef<any, CustomProps>(function PorcentajeF
   );
 });
 
+function formatMoney(value: any) {
+  if (typeof value !== 'number' && isNaN(Number(value))) return value;
+  return Number(value).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
 const TarifaApp: React.FC = () => {
   const { theme } = useContext(ContextoGeneral);
   const isMobile = useMediaQuery("(max-width:768px)");
@@ -215,15 +220,15 @@ const TarifaApp: React.FC = () => {
     },
   ];
   const rows = [
-    { id: 1, concepto: "Tarifa ($/tn)", valor: tarifaPorTonelada?.toFixed(2) || "-" },
-    { id: 2, concepto: "Tarifa total ($)", valor: tarifaSinDescuento?.toFixed(2) || "-" },
-    { id: 3, concepto: "Tarifa con descuento ($/tn)", valor: tarifaPorToneladaConDescuento?.toFixed(2) || "-" },
-    { id: 4, concepto: "Tarifa total con descuento ($)", valor: tarifaConDescuento?.toFixed(2) || "-" },
-    { id: 5, concepto: "Tarifa total c/ descuento y Contraflete ($)", valor: tarifaPorToneladaConDescuentoContra?.toFixed(2) || "-" },
-    { id: 6, concepto: "Tarifa por KM ($/km)", valor: tarifaPorKm?.toFixed(2) || "-" },
-    { id: 7, concepto: "Tarifa por KM c/ Descuento ($/km)", valor: tarifaPorKmConDescuento?.toFixed(2) || "-" },
-    { id: 8, concepto: "Incidencia c/ descuento (%)", valor: incidenciaConDescuento?.toFixed(2) || "-" },
-    { id: 9, concepto: "Incidencia c/ desc. y contraflete (%)", valor: incideciasConDescContra?.toFixed(2) || "-" },
+    { id: 1, concepto: "Tarifa ($/tn)", valor: tarifaPorTonelada != null ? formatMoney(tarifaPorTonelada) : "-" },
+    { id: 2, concepto: "Tarifa total ($)", valor: tarifaSinDescuento != null ? formatMoney(tarifaSinDescuento) : "-" },
+    { id: 3, concepto: "Tarifa con descuento ($/tn)", valor: tarifaPorToneladaConDescuento != null ? formatMoney(tarifaPorToneladaConDescuento) : "-" },
+    { id: 4, concepto: "Tarifa total con descuento ($)", valor: tarifaConDescuento != null ? formatMoney(tarifaConDescuento) : "-" },
+    { id: 5, concepto: "Tarifa total c/ descuento y Contraflete ($)", valor: tarifaPorToneladaConDescuentoContra != null ? formatMoney(tarifaPorToneladaConDescuentoContra) : "-" },
+    { id: 6, concepto: "Tarifa por KM ($/km)", valor: tarifaPorKm != null ? formatMoney(tarifaPorKm) : "-" },
+    { id: 7, concepto: "Tarifa por KM c/ Descuento ($/km)", valor: tarifaPorKmConDescuento != null ? formatMoney(tarifaPorKmConDescuento) : "-" },
+    { id: 8, concepto: "Incidencia c/ descuento (%)", valor: incidenciaConDescuento != null ? incidenciaConDescuento.toFixed(2) : "-" },
+    { id: 9, concepto: "Incidencia c/ desc. y contraflete (%)", valor: incideciasConDescContra != null ? incideciasConDescContra.toFixed(2) : "-" },
   ];
 
   // Estilo para el borde y label azul al enfocar

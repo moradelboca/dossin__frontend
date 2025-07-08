@@ -390,13 +390,17 @@ export function renderTurnosDialogs({
                         .replace(/([A-Z])/g, ' $1')
                         .replace(/^./, (str) => str.toUpperCase())
                         .trim();
+                      const isMoney = [
+                        'montoNeto', 'iva', 'montoBruto', 'retencion', 'descuentoBruto', 'adelanto', 'totalAPagar',
+                        'Monto Neto', 'Iva', 'Monto Bruto', 'Retencion', 'Descuento Bruto', 'Adelanto', 'Total A Pagar'
+                      ].some(key => label.toLowerCase().replace(/\s/g, '') === key.toLowerCase().replace(/\s/g, ''));
                       return (
                         isMobilePago ? (
                           <Box key={label} sx={{ borderBottom: '1px solid #eee', pb: 1, mb: 1 }}>
                             <Typography sx={{ fontWeight: 500, fontSize: 15 }}>{prettyLabel}</Typography>
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 0.5 }}>
-                              <Typography sx={{ flex: 1 }}>{String(value)}</Typography>
-                              <Typography sx={{ color: '#888', ml: 0.5, userSelect: 'none' }} component="span">$</Typography>
+                              <Typography sx={{ flex: 1 }}>{isMoney ? formatMoney(value) : String(value)}</Typography>
+                              {isMoney && <Typography sx={{ color: '#888', ml: 0.5, userSelect: 'none' }} component="span">$</Typography>}
                               <IconButton size="small" onClick={() => handleCopy(String(value), `${turnoLocal.id}-${label}`)}>
                                 <ContentCopyIcon fontSize="small" />
                               </IconButton>
@@ -409,8 +413,8 @@ export function renderTurnosDialogs({
                           <Box key={label} sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 0.5 }}>
                             <Typography sx={{ minWidth: 180, fontWeight: 500 }}>{prettyLabel}</Typography>
                             <Box sx={{ display: 'flex', alignItems: 'center', flex: 1 }}>
-                              <Typography sx={{ flex: 1 }}>{String(value)}</Typography>
-                              <Typography sx={{ color: '#888', ml: 0.5, userSelect: 'none' }} component="span">$</Typography>
+                              <Typography sx={{ flex: 1 }}>{isMoney ? formatMoney(value) : String(value)}</Typography>
+                              {isMoney && <Typography sx={{ color: '#888', ml: 0.5, userSelect: 'none' }} component="span">$</Typography>}
                             </Box>
                             <IconButton size="small" onClick={() => handleCopy(String(value), `${turnoLocal.id}-${label}`)}>
                               <ContentCopyIcon fontSize="small" />
@@ -516,4 +520,9 @@ function formatearEmpresa(empresa: any): string {
   const cuit = empresa.cuit || '';
   if (razon && cuit) return `${razon} - ${cuit}`;
   return razon || cuit;
+}
+
+function formatMoney(value: any) {
+  if (typeof value !== 'number' && isNaN(Number(value))) return value;
+  return Number(value).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 } 

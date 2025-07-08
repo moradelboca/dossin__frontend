@@ -125,9 +125,8 @@ export default function Contratos() {
         </Typography>
         <Box
           sx={{ display: "flex", justifyContent: "flex-end", mt: 1, mr: 3 }}
-          onClick={() => { setSeleccionado(null); setOpen(true); }}
         >
-          <Button sx={{ color: theme.colores.azul }}>Agregar contrato +</Button>
+          <Button sx={{ color: theme.colores.azul }} onClick={() => { setSeleccionado(null); setOpen(true); }}>Agregar contrato +</Button>
         </Box>
       </Box>
 

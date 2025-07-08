@@ -271,6 +271,13 @@ import {
             value={datosNuevaUbicacion.urlMaps}
             inputProps={{ maxLength: 200 }}
             sx={{ width: "100%", ...azulStyles }}
+            helperText={
+              errorUrl
+                ? (datosNuevaUbicacion.urlMaps.trim() === ''
+                    ? 'Ingresá una URL de Google Maps.'
+                    : 'El link debe ser del tipo https://maps.app.goo.gl/...')
+                : ''
+            }
           />
           <TextField
             id="outlined-basic"
