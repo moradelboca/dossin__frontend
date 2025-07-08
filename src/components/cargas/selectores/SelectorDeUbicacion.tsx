@@ -65,7 +65,7 @@ export default function SelectorDeUbicacion() {
             <Box
                 sx={{
                     width: '100%',
-                    maxWidth: { xs: '75vw', sm: 800 },
+                    maxWidth: { xs: 400, sm: 800 },
                     mx: 'auto',
                     display: 'flex',
                     flexDirection: { xs: 'column', md: 'row' },
@@ -76,11 +76,12 @@ export default function SelectorDeUbicacion() {
             >
                 <Box
                     sx={{
-                        display: 'flex',
-                        flexDirection: { xs: 'column', md: 'row' },
-                        gap: 2,
-                        width: '100%',
+                        display: { xs: 'block', md: 'flex' },
+                        flexDirection: { md: 'row' },
+                        gap: { xs: 0, md: 2 },
                         mx: 'auto',
+                        alignItems: { md: 'flex-start' },
+                        justifyContent: { md: 'center' },
                     }}
                 >
                     <Box
@@ -93,7 +94,10 @@ export default function SelectorDeUbicacion() {
                             p: 2,
                             flex: 1,
                             minWidth: 0,
-                            width: '100%',
+                            width: { xs: '100%', md: '50%' },
+                            maxWidth: 400,
+                            mx: 'auto',
+                            mb: { xs: 2, md: 0 },
                         }}
                     >
                         <Box sx={{ width: '100%' }}>
@@ -135,7 +139,10 @@ export default function SelectorDeUbicacion() {
                             p: 2,
                             flex: 1,
                             minWidth: 0,
-                            width: '100%',
+                            width: { xs: '100%', md: '50%' },
+                            maxWidth: 400,
+                            mx: 'auto',
+                            mt: { xs: 0, md: 0 },
                         }}
                     >
                         <Box sx={{ width: '100%' }}>
@@ -198,7 +205,8 @@ export default function SelectorDeUbicacion() {
                         border: '1px solid rgba(22, 54, 96, 0.6)',
                         borderRadius: '8px',
                         p: 2,
-                        width: '100%',
+                        width: { xs: '100%', md: '50%' },
+                        maxWidth: 400,
                         mt: 1,
                         mx: 'auto',
                     }}

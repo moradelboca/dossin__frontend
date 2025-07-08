@@ -169,15 +169,14 @@ const CrearCargaStepper: React.FC<CrearCargaStepperProps> = ({
         tooltip: {
           title: 'Kilómetros y cargamento',
           sections: [
-            'Ingresá la cantidad de kilómetros a recorrer y seleccioná el tipo de cargamento.',
+            'Seleccioná un solo cargamento de los que figuran en el sistema. Si el cargamento que necesitás no está, generá un inconveniente solicitando que lo agreguen.',
             {
-              label: 'A tener en cuenta',
+              label: 'Sobre los kilómetros',
               items: [
-                'La distancia afecta el cálculo de la tarifa y la logística.',
-                'El cargamento debe estar previamente registrado en el sistema.'
+                'Ingresá la cantidad de kilómetros exactos que indica Google Maps para el trayecto.',
+                'Estos kilómetros se usan para la carta de porte y para otros cálculos importantes, así que deben ser precisos.'
               ]
-            },
-            'Si no encontrás el cargamento, consultá con administración para darlo de alta.'
+            }
           ]
         }
       },

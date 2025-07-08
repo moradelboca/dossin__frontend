@@ -27,6 +27,7 @@ import InconvenientesMobile from "./InconvenientesMobile";
 import { usuariosPruebas } from "./usuariosPruebas";
 import { useAuth } from "../autenticacion/ContextoAuth";
 import TurnoConErroresForm from '../forms/turnos/tabs/turnosConErrores/TurnoConErroresForm';
+import InfoTooltip from "../InfoTooltip";
 
 // interface Usuario { ... } // Elimino o comento esta interfaz
 
@@ -452,6 +453,24 @@ const Inconvenientes: React.FC = () => {
       <Button sx={{ color: theme.colores.azul }} onClick={() => setOpen(true)}>
         + Agregar Inconveniente
       </Button>
+      <InfoTooltip
+        title="¿Por qué y cómo usar los inconvenientes?"
+        placement="right"
+        sections={[
+          "Los inconvenientes son la mejor manera de que el encargado o rol específico pueda resolver el problema correspondiente.",
+          "Nos permiten sacar estadísticas e identificar cuellos de botella.",
+          "Es importante tener criterio al elegir el grado de urgencia:",
+          {
+            label: "Niveles de urgencia",
+            items: [
+              "Alta: Crucial para el funcionamiento de un proceso clave, requiere resolución inmediata.",
+              "Media: Importante, pero puede esperar unos días para resolverse.",
+              "Leve: No es urgente, puede resolverse en 1 o 2 semanas."
+            ]
+          },
+          "Usá los inconvenientes para que no se pierdan necesidades importantes."
+        ]}
+      />
       <TableContainer component={Paper}>
         <Table>
           <TableHead>
