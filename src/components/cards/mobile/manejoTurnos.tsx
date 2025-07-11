@@ -26,6 +26,53 @@ export function useManejoTurnos({ item, cupo, refreshCupos }: any) {
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [turnoLocal, setTurnoLocal] = useState(item);
 
+  // Estado y handlers para nota
+  const [anchorElNota, setAnchorElNota] = useState<null | HTMLElement>(null);
+  const [notaLocal, setNotaLocal] = useState<string>("");
+  const [notaLoading, setNotaLoading] = useState(false);
+  const openNota = Boolean(anchorElNota);
+  const handleOpenNota = (e: React.MouseEvent<HTMLElement>, nota: string) => {
+    e.stopPropagation();
+    setAnchorElNota(e.currentTarget);
+    setNotaLocal(nota || '');
+  };
+  const handleCloseNota = () => setAnchorElNota(null);
+  const handleGuardarNota = async (turnoId: number) => {
+    setNotaLoading(true);
+    try {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL || ''}/turnos/${turnoId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nota: notaLocal }),
+      });
+      if (!response.ok) throw new Error(await response.text());
+      if (refreshCupos) refreshCupos();
+      setAnchorElNota(null);
+    } catch (err) {
+      // Manejar error
+    } finally {
+      setNotaLoading(false);
+    }
+  };
+  const handleBorrarNota = async (turnoId: number) => {
+    setNotaLoading(true);
+    try {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL || ''}/turnos/${turnoId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nota: '' }),
+      });
+      if (!response.ok) throw new Error(await response.text());
+      if (refreshCupos) refreshCupos();
+      setNotaLocal('');
+      setAnchorElNota(null);
+    } catch (err) {
+      // Manejar error
+    } finally {
+      setNotaLoading(false);
+    }
+  };
+
   useEffect(() => { setTurnoLocal(item); }, [item]);
 
   useEffect(() => {
@@ -135,7 +182,8 @@ export function useManejoTurnos({ item, cupo, refreshCupos }: any) {
 
   return {
     openDialog, setOpenDialog, autorizarLoading, setAutorizarLoading, cartaPorteData, cartaPorteLoading, cartaPorteError, copiedField, setCopiedField, openDeleteDialog, setOpenDeleteDialog, turnoLocal, setTurnoLocal,
-    getEstadoColor, handleFormSuccess, transformarCampo, handleCopy, getNextEstadoName
+    getEstadoColor, handleFormSuccess, transformarCampo, handleCopy, getNextEstadoName,
+    anchorElNota, openNota, notaLocal, setNotaLocal, notaLoading, handleOpenNota, handleCloseNota, handleGuardarNota, handleBorrarNota,
   };
 }
 
