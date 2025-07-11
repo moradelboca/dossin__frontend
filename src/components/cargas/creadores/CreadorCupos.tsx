@@ -91,34 +91,36 @@ export function CreadorCupos(props: any) {
       return;
     }
 
-    for (const fecha of selectedDates) {
+    // Crear un array de promesas para todos los POST
+    const promesas = selectedDates.map((fecha) => {
       const cupoDeCarga = {
         fecha: fecha.format("YYYY-MM-DD"),
         cupos: cupoSeleccionado,
       };
-      fetch(`${backendURL}/cargas/${idCarga}/cupos`, {
+      return fetch(`${backendURL}/cargas/${idCarga}/cupos`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(cupoDeCarga),
+      }).then((response) => {
+        if (!response.ok) {
+          return response.text().then((text) => {
+            throw new Error(text || "Error al crear la carga");
+          });
+        }
+        return response.json();
+      });
+    });
+
+    Promise.all(promesas)
+      .then(() => {
+        handleCloseDialog();
+        refreshCupos();
       })
-        .then((response) => {
-          if (!response.ok) {
-            return response.text().then((text) => {
-              throw new Error(text || "Error al crear la carga");
-            });
-          }
-          return response.json();
-        })
-        .then(() => {
-          handleCloseDialog();
-          refreshCupos();
-        })
-        .catch((error) => {
-          setMensajeError(
-            `Error al crear el cupo: ${error.message || "Error desconocido"}`
-          );
-        });
-    }
+      .catch((error) => {
+        setMensajeError(
+          `Error al crear el cupo: ${error.message || "Error desconocido"}`
+        );
+      });
   };
 
   const handleDateChange = (date: Dayjs | null) => {

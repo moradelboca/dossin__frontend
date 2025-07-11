@@ -19,6 +19,8 @@ import EstadoTurnoForm from '../../forms/turnos/tabs/EstadoTurnoForm';
 import { useAuth } from '../../autenticacion/ContextoAuth';
 import { puedeVerEstado } from '../../../utils/turnoEstadoPermisos';
 import InfoTooltip from '../../InfoTooltip';
+import NoteAltOutlinedIcon from '@mui/icons-material/NoteAltOutlined';
+import Popover from '@mui/material/Popover';
 
 interface CardMobileProps {
   item: any;
@@ -68,6 +70,11 @@ const CardMobile: React.FC<CardMobileProps> = ({
   const isAdmin = useAllowed([1]);
   const [openEstadoDialog, setOpenEstadoDialog] = React.useState(false);
   const [openCancelarDialog, setOpenCancelarDialog] = React.useState(false);
+  const [anchorElNota, setAnchorElNota] = React.useState<null | HTMLElement>(null);
+  const [notaLocal, setNotaLocal] = React.useState<string>("");
+  const [notaLoading, setNotaLoading] = React.useState(false);
+  const openNota = Boolean(anchorElNota);
+  const handleCloseNota = () => setAnchorElNota(null);
   if (rolId && estadoId && !puedeVerEstado(estadoId, rolId)) {
     return null;
   }
@@ -193,6 +200,20 @@ const CardMobile: React.FC<CardMobileProps> = ({
               </IconButton>
             </Tooltip>
           )}
+          {/* Ícono de nota */}
+          <Tooltip title={manejoTurnos.turnoLocal.nota ? 'Ver/Editar nota' : 'Agregar nota'}>
+            <IconButton
+              sx={{ color: manejoTurnos.turnoLocal.nota ? theme.colores.azul : '#bdbdbd', mt: 1 }}
+              onClick={(e) => {
+                e.stopPropagation();
+                setAnchorElNota(e.currentTarget);
+                setNotaLocal(manejoTurnos.turnoLocal.nota || '');
+              }}
+              aria-label="nota turno"
+            >
+              <NoteAltOutlinedIcon fontSize="medium" />
+            </IconButton>
+          </Tooltip>
         </Box>
         {/* Diálogo de confirmación para eliminar el turno usando DeleteTurno */}
         <Dialog open={manejoTurnos.openDeleteDialog} onClose={() => manejoTurnos.setOpenDeleteDialog(false)} maxWidth="sm" fullWidth>
@@ -490,6 +511,98 @@ const CardMobile: React.FC<CardMobileProps> = ({
         </Box>
         {renderTurnosDialogs({ ...manejoTurnos, theme, cupo, refreshCupos, item })}
       </Collapse>
+      {/* Popover para nota */}
+      <Popover
+        open={openNota}
+        anchorEl={anchorElNota}
+        onClose={handleCloseNota}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+        PaperProps={{
+          sx: {
+            p: 2,
+            bgcolor: 'rgba(240,240,240,0.95)',
+            border: '1.5px solid #e0e0e0',
+            borderRadius: 2,
+            minWidth: 260,
+            maxWidth: 320,
+            boxShadow: 3,
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 2,
+          }
+        }}
+      >
+        <Typography variant="subtitle2" sx={{ color: theme.colores.azul, fontWeight: 600, mb: 1 }}>
+          Nota del turno
+        </Typography>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+          <textarea
+            value={notaLocal}
+            onChange={e => setNotaLocal(e.target.value)}
+            rows={4}
+            style={{ width: '100%', borderRadius: 8, border: '1px solid #e0e0e0', padding: 8, background: '#fff', fontFamily: 'inherit', fontSize: 15, resize: 'vertical' }}
+            placeholder="Escribí una nota para este turno..."
+            disabled={notaLoading}
+          />
+          <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
+            {manejoTurnos.turnoLocal.nota && (
+              <Button
+                size="small"
+                color="error"
+                disabled={notaLoading}
+                onClick={async () => {
+                  setNotaLoading(true);
+                  try {
+                    const response = await fetch(`${import.meta.env.VITE_BACKEND_URL || ''}/turnos/${manejoTurnos.turnoLocal.id}`, {
+                      method: 'PUT',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ nota: '' }),
+                    });
+                    if (!response.ok) throw new Error(await response.text());
+                    if (refreshCupos) refreshCupos();
+                    manejoTurnos.setTurnoLocal((prev: any) => ({ ...prev, nota: '' }));
+                    setNotaLocal('');
+                    setAnchorElNota(null);
+                  } catch (err) {
+                    // Manejar error
+                  } finally {
+                    setNotaLoading(false);
+                  }
+                }}
+              >
+                Borrar
+              </Button>
+            )}
+            <Button
+              size="small"
+              variant="contained"
+              sx={{ backgroundColor: theme.colores.azul, color: '#fff', '&:hover': { backgroundColor: theme.colores.azulOscuro } }}
+              disabled={notaLoading}
+              onClick={async () => {
+                setNotaLoading(true);
+                try {
+                  const response = await fetch(`${import.meta.env.VITE_BACKEND_URL || ''}/turnos/${manejoTurnos.turnoLocal.id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ nota: notaLocal }),
+                  });
+                  if (!response.ok) throw new Error(await response.text());
+                  if (refreshCupos) refreshCupos();
+                  manejoTurnos.setTurnoLocal((prev: any) => ({ ...prev, nota: notaLocal }));
+                  setAnchorElNota(null);
+                } catch (err) {
+                  // Manejar error
+                } finally {
+                  setNotaLoading(false);
+                }
+              }}
+            >
+              Guardar
+            </Button>
+          </Box>
+        </Box>
+      </Popover>
     </Box>
   );
 };

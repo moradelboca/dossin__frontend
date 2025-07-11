@@ -17,6 +17,9 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogActions from '@mui/material/DialogActions';
 import InfoTooltip from '../../../InfoTooltip';
+import NoteAltOutlinedIcon from '@mui/icons-material/NoteAltOutlined';
+import Popover from '@mui/material/Popover';
+import Typography from '@mui/material/Typography';
 
 interface TurnoGridRowProps {
   turno: any;
@@ -141,9 +144,79 @@ const TurnoGridRow: React.FC<TurnoGridRowProps> = ({ turno, cupo, refreshCupos, 
         </Tooltip>
       );
     }
+    // Ícono de nota
+    botones.push(
+      <Tooltip title={manejoTurnos.turnoLocal.nota ? 'Ver/Editar nota' : 'Agregar nota'} key="nota">
+        <IconButton
+          sx={{ color: manejoTurnos.turnoLocal.nota ? theme.colores.azul : '#bdbdbd' }}
+          onClick={e => manejoTurnos.handleOpenNota(e, manejoTurnos.turnoLocal.nota)}
+          aria-label="nota turno"
+          size="small"
+        >
+          <NoteAltOutlinedIcon fontSize="small" />
+        </IconButton>
+      </Tooltip>
+    );
     return (
       <Box sx={{ display: 'flex', flexDirection: 'row', gap: 1, alignItems: 'center' }}>
         {botones}
+        {/* Popover para nota */}
+        <Popover
+          open={manejoTurnos.openNota}
+          anchorEl={manejoTurnos.anchorElNota}
+          onClose={manejoTurnos.handleCloseNota}
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+          transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+          PaperProps={{
+            sx: {
+              p: 2,
+              bgcolor: 'rgba(240,240,240,0.95)',
+              border: '1.5px solid #e0e0e0',
+              borderRadius: 2,
+              minWidth: 260,
+              maxWidth: 320,
+              boxShadow: 3,
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 2,
+            }
+          }}
+        >
+          <Typography variant="subtitle2" sx={{ color: theme.colores.azul, fontWeight: 600, mb: 1 }}>
+            Nota del turno
+          </Typography>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+            <textarea
+              value={manejoTurnos.notaLocal}
+              onChange={e => manejoTurnos.setNotaLocal(e.target.value)}
+              rows={4}
+              style={{ width: '100%', borderRadius: 8, border: '1px solid #e0e0e0', padding: 8, background: '#fff', fontFamily: 'inherit', fontSize: 15, resize: 'vertical' }}
+              placeholder="Escribí una nota para este turno..."
+              disabled={manejoTurnos.notaLoading}
+            />
+            <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
+              {manejoTurnos.turnoLocal.nota && (
+                <Button
+                  size="small"
+                  color="error"
+                  disabled={manejoTurnos.notaLoading}
+                  onClick={() => manejoTurnos.handleBorrarNota(manejoTurnos.turnoLocal.id)}
+                >
+                  Borrar
+                </Button>
+              )}
+              <Button
+                size="small"
+                variant="contained"
+                sx={{ backgroundColor: theme.colores.azul, color: '#fff', '&:hover': { backgroundColor: theme.colores.azulOscuro } }}
+                disabled={manejoTurnos.notaLoading}
+                onClick={() => manejoTurnos.handleGuardarNota(manejoTurnos.turnoLocal.id)}
+              >
+                Guardar
+              </Button>
+            </Box>
+          </Box>
+        </Popover>
       </Box>
     );
   };
