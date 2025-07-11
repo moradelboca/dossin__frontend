@@ -178,14 +178,14 @@ export function useManejoTurnos({ item, cupo, refreshCupos }: any) {
 
   return {
     openDialog, setOpenDialog, autorizarLoading, setAutorizarLoading, cartaPorteData, cartaPorteLoading, cartaPorteError, copiedField, setCopiedField, openDeleteDialog, setOpenDeleteDialog, turnoLocal, setTurnoLocal,
-    getEstadoColor, handleFormSuccess, transformarCampo, handleCopy, getNextEstadoName,
+    getEstadoColor, handleFormSuccess, handleCopy, getNextEstadoName,
     anchorElNota, openNota, notaLocal, setNotaLocal, notaLoading, handleOpenNota, handleCloseNota, handleGuardarNota, handleBorrarNota,
   };
 }
 
 export function renderTurnosDialogs({
   openDialog, setOpenDialog, autorizarLoading, setAutorizarLoading, cartaPorteData, cartaPorteLoading, cartaPorteError, copiedField, turnoLocal, setTurnoLocal,
-  handleFormSuccess, handleCopy, getNextEstadoName, theme, item
+  handleFormSuccess, handleCopy, getNextEstadoName, theme
 }: any) {
   switch (openDialog) {
     case 'corregir':
