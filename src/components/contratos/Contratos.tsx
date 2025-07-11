@@ -130,15 +130,33 @@ export default function Contratos() {
         </Box>
       </Box>
 
-      {contratosConCargas.map((contrato) => (
-        <Box key={contrato.id} mb={3}>
-        <ContratoItem
-          contrato={contrato}
-          onEditContrato={handleOpenDialog}
-          refreshContratos={refreshContratos}
-        />
+      {contratosConCargas.length > 0 ? (
+        contratosConCargas.map((contrato) => (
+          <Box key={contrato.id} mb={3}>
+          <ContratoItem
+            contrato={contrato}
+            onEditContrato={handleOpenDialog}
+            refreshContratos={refreshContratos}
+          />
+          </Box>
+        ))
+      ) : (
+        <Box
+          display="flex"
+          flexDirection="column"
+          alignItems="center"
+          justifyContent="center"
+          height="50vh"
+          gap={2}
+        >
+          <Typography variant="h6" color="textSecondary">
+            No hay contratos disponibles
+          </Typography>
+          <Typography variant="body2" color="textSecondary" textAlign="center">
+            Hacé clic en "Agregar contrato +" para crear tu primer contrato
+          </Typography>
         </Box>
-      ))}
+      )}
 
       <DialogContrato
         open={open}

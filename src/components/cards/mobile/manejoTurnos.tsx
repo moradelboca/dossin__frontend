@@ -2,7 +2,6 @@ import  { useState, useEffect, useContext } from "react";
 import { Box, Button, Dialog, DialogTitle, DialogContent, Typography, IconButton, CircularProgress } from "@mui/material";
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import { ContextoGeneral } from "../../Contexto";
-import useTransformarCampo from "../../hooks/useTransformarCampo";
 import TurnoConErroresForm from "../../forms/turnos/tabs/turnosConErrores/TurnoConErroresForm";
 import { TaraForm, PesoBrutoForm } from "../../forms/turnos/tabs/TaraForm";
 import CartaPorteForm from "../../forms/turnos/tabs/CartaPorteForm";
@@ -14,7 +13,6 @@ import { getNextEstadoId } from "../../../utils/turnosEstados";
 
 export function useManejoTurnos({ item, cupo, refreshCupos }: any) {
   const { theme } = useContext(ContextoGeneral);
-  const transformarCampo = useTransformarCampo();
 
   // Dialog states for forms
   const [openDialog, setOpenDialog] = useState<null | 'corregir' | 'autorizar' | 'tara' | 'cartaPorte' | 'cargarCarta' | 'pesaje' | 'pago' | 'datospago' | 'factura' | 'adelanto'>(null);
@@ -138,10 +136,8 @@ export function useManejoTurnos({ item, cupo, refreshCupos }: any) {
             const contratosRes = await fetch(`${backendURL}/contratos`, { headers: { 'ngrok-skip-browser-warning': 'true' } });
             const contratos = await contratosRes.json();
             contrato = contratos.find((contrato: any) => Array.isArray(contrato.cargas) && contrato.cargas.some((c: any) => c.id === carga.id));
-          }
-          
+          }          
           const turnoCompleto = turnoLocal.precios ? turnoLocal : null;
-          
           setCartaPorteData({ turno, carga, contrato, cupo, turnoCompleto });
         } catch (err: any) {
           setCartaPorteError('Error al cargar los datos de la carta de porte');
@@ -510,7 +506,7 @@ export function renderTurnosDialogs({
       );
     case 'factura':
       // Usar item directo si está disponible, si no, fallback a turnoLocal
-      const turnoFactura = (typeof item !== 'undefined' && item && item.id) ? item : turnoLocal;
+      const turnoFactura = turnoLocal;
       return (
         <Dialog open onClose={() => setOpenDialog(null)} fullWidth maxWidth="sm">
           <DialogTitle>Agregar Factura</DialogTitle>

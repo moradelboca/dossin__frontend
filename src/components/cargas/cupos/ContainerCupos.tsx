@@ -52,6 +52,7 @@ export function ContainerCupos() {
   const [estadoCarga, setEstadoCarga] = useState<"Cargando" | "Cargado" | "Error">("Cargando");
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
+
   const [selectedTab, setSelectedTab] = useState<"CARDS" | "GRID" | "POR_DIA">("CARDS");
   const [fechaSeleccionada] = useState<string | null>(null);
   
