@@ -29,12 +29,14 @@ export function GridTemplate({
     <Box
       sx={{
         backgroundColor: theme.colores.grisClaro,
-        height: "91vh",
-        width: "100%",
+        height: '100%',
+        width: '100%',
         p: 3,
-        display: "flex",
-        flexDirection: "column",
-        overflow: 'hidden', // 1. Contenedor principal sin overflow
+        display: 'flex',
+        flexDirection: 'column',
+        overflow: 'hidden',
+        minHeight: 0,
+        minWidth: 0,
       }}
     >
       <Typography
@@ -66,6 +68,9 @@ export function GridTemplate({
         <Box flex={1} sx={{ 
           width: "100%",
           position: 'relative',
+          minHeight: 0,
+          height: '100%',
+          overflow: 'auto',
           '& .MuiDataGrid-virtualScroller': {
             overflowX: 'scroll'
           }
@@ -76,6 +81,8 @@ export function GridTemplate({
             getRowId={getRowId}
             localeText={esES.components.MuiDataGrid.defaultProps.localeText}
             sx={{
+              height: '100%',
+              minHeight: 0,
               "& .MuiDataGrid-columnHeader": {
                 backgroundColor: theme.colores.grisClaro,
                 color: theme.colores.grisOscuro,

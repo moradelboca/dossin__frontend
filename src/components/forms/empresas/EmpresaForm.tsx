@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
-import { Autocomplete, Box, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Stack, TextField, Typography } from "@mui/material";
+import { Autocomplete, Box, CircularProgress, Dialog, DialogContent, IconButton, Stack, TextField, Typography } from "@mui/material";
 import React, { useContext, useEffect, useState } from "react";
 import { FormularioProps } from "../../../interfaces/FormularioProps";
 import { ContextoGeneral } from "../../Contexto";
@@ -40,6 +40,16 @@ const EmpresaForm: React.FC<FormularioProps> = ({
   // States para el tema de las notificaciones
   const { showNotificacion } = useNotificacion();
 
+  const { theme } = useContext(ContextoGeneral);
+  // Estilos para azul en focus
+  const azulStyles = {
+    '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
+      borderColor: theme.colores.azul,
+    },
+    '& .MuiInputLabel-root.Mui-focused': {
+      color: theme.colores.azul,
+    },
+  };
 
   // Validations
   const { data, errors, handleChange, validateAll } = useValidation(
@@ -297,17 +307,16 @@ const EmpresaForm: React.FC<FormularioProps> = ({
         label="CUIT"
         name="cuit"
         variant="outlined"
-        size="small"
         fullWidth
         InputProps={{
           inputComponent: CuilFormat as any,
         }}
-        value={data.cuit}
+        value={data.cuit !== null && data.cuit !== undefined ? String(data.cuit) : ""}
         onChange={handleChange("cuit")}
         error={!!errors.cuit}
         helperText={errors.cuit}
         disabled={!!seleccionado?.cuit}
-        sx={{ mb: 1 }}
+        sx={{ mb: 1, ...azulStyles }}
       />
   
       {/* Razón Social y Nombre Fantasía */}
@@ -316,23 +325,23 @@ const EmpresaForm: React.FC<FormularioProps> = ({
           label="Razón Social"
           name="razonSocial"
           variant="outlined"
-          size="small"
           fullWidth
-          value={data.razonSocial}
+          value={data.razonSocial ?? ""}
           onChange={handleChange("razonSocial")}
           error={!!errors.razonSocial}
           helperText={errors.razonSocial}
+          sx={azulStyles}
         />
         <TextField
           label="Nombre Fantasía"
           name="nombreFantasia"
           variant="outlined"
-          size="small"
           fullWidth
-          value={data.nombreFantasia}
+          value={data.nombreFantasia ?? ""}
           onChange={handleChange("nombreFantasia")}
           error={!!errors.nombreFantasia}
           helperText={errors.nombreFantasia}
+          sx={azulStyles}
         />
       </Stack>
   
@@ -349,7 +358,6 @@ const EmpresaForm: React.FC<FormularioProps> = ({
             {...params}
             label="Localidad"
             variant="outlined"
-            size="small"
             error={!!errors.idLocalidad}
             helperText={errors.idLocalidad}
             InputProps={{
@@ -361,6 +369,7 @@ const EmpresaForm: React.FC<FormularioProps> = ({
                 </>
               ),
             }}
+            sx={azulStyles}
           />
         )}
       />
@@ -380,15 +389,15 @@ const EmpresaForm: React.FC<FormularioProps> = ({
         <TextField
           label="Número de Celular"
           variant="outlined"
-          size="small"
           fullWidth
           InputProps={{
             inputComponent: NumeroFormat as any,
           }}
-          value={numeroCel}
+          value={numeroCel ?? ""}
           onChange={handleNumeroCelularChange}
           error={!!errors.numeroCel}
           helperText={errors.numeroCel}
+          sx={azulStyles}
         />
       </Box>
   
@@ -407,7 +416,6 @@ const EmpresaForm: React.FC<FormularioProps> = ({
             label="Roles"
             placeholder="Selecciona roles"
             variant="outlined"
-            size="small"
             error={!!errors.roles}
             helperText={errors.roles}
             InputProps={{
@@ -419,6 +427,7 @@ const EmpresaForm: React.FC<FormularioProps> = ({
                 </>
               ),
             }}
+            sx={azulStyles}
           />
         )}
       />
@@ -428,50 +437,53 @@ const EmpresaForm: React.FC<FormularioProps> = ({
         <TextField
           label="URL Constancia Afip"
           variant="outlined"
-          size="small"
           fullWidth
-          value={data.urlConstanciaAfip}
+          value={data.urlConstanciaAfip ?? ""}
           onChange={handleChange("urlConstanciaAfip")}
           error={!!errors.urlConstanciaAfip}
           helperText={errors.urlConstanciaAfip}
+          sx={azulStyles}
         />
         <TextField
           label="URL Constancia CBU"
           variant="outlined"
-          size="small"
           fullWidth
-          value={data.urlConstanciaCBU}
+          value={data.urlConstanciaCBU ?? ""}
           onChange={handleChange("urlConstanciaCBU")}
           error={!!errors.urlConstanciaCBU}
           helperText={errors.urlConstanciaCBU}
+          sx={azulStyles}
         />
         <TextField
           label="Email"
           name="email"
           variant="outlined"
-          size="small"
           fullWidth
-          value={data.email}
+          value={data.email ?? ""}
           onChange={handleChange("email")}
           error={!!errors.email}
           helperText={errors.email}
+          sx={azulStyles}
         />
       </Stack>
   
       {/* Acciones */}
-      <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mt: 3, alignItems: 'center' }}>
-        <IconButton 
-          onClick={handleClickDeleteCarga} 
-          sx={{ color: 'error.main', mr: 'auto' }}
-          title="Eliminar entidad"
-        >
-          <DeleteOutlineIcon />
-        </IconButton>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'row',
+          gap: 2,
+          justifyContent: 'flex-end',
+          alignItems: 'center',
+          mt: 4,
+          position: 'relative',
+        }}
+      >
         <MainButton
           onClick={handleClose}
           text="Cancelar"
           backgroundColor="transparent"
-          textColor="#163660"
+          textColor={theme.colores.azul}
           borderRadius="8px"
           hoverBackgroundColor="rgba(22, 54, 96, 0.1)"
           width="120px"
@@ -480,13 +492,22 @@ const EmpresaForm: React.FC<FormularioProps> = ({
         <MainButton
           onClick={handleSubmit}
           text="Guardar"
-          backgroundColor="#163660"
+          backgroundColor={theme.colores.azul}
           textColor="#fff"
           borderRadius="8px"
-          hoverBackgroundColor="#0E2A45"
+          hoverBackgroundColor={theme.colores.azulOscuro}
           width="120px"
           divWidth="120px"
         />
+        {data.cuit && (
+          <IconButton
+            onClick={handleClickDeleteCarga}
+            sx={{ ml: 1, width: 40, height: 40, borderRadius: '50%', background: 'transparent', transition: 'background 0.2s', '&:hover': { background: 'rgba(214, 131, 132, 0.12)' }, display: 'flex', alignItems: 'center', justifyContent: 'center', p: 0 }}
+            title="Eliminar entidad"
+          >
+            <DeleteOutlineIcon sx={{ fontSize: 20, color: '#d68384' }} />
+          </IconButton>
+        )}
       </Box>
   
       {/* Diálogo de Confirmación */}
@@ -496,9 +517,6 @@ const EmpresaForm: React.FC<FormularioProps> = ({
         maxWidth="sm"
         fullWidth
       >
-        <DialogTitle variant="h6" sx={{ borderBottom: '1px solid', borderColor: 'divider' }}>
-          Confirmar Eliminación
-        </DialogTitle>
         <DialogContent sx={{ py: 3 }}>
           <DeleteEntidad
             idEntidad={Number(data.cuit)}
@@ -509,28 +527,7 @@ const EmpresaForm: React.FC<FormularioProps> = ({
             setDatos={setDatos}
           />
         </DialogContent>
-        <DialogActions sx={{ px: 3, py: 2, gap: 2 }}>
-          <MainButton
-            onClick={handleCloseDialog}
-            text="Cancelar"
-            backgroundColor="transparent"
-            textColor="#163660"
-            borderRadius="8px"
-            hoverBackgroundColor="rgba(22, 54, 96, 0.1)"
-            width="120px"
-            divWidth="120px"
-          />
-          <MainButton
-            onClick={() => {/* Lógica de confirmación aquí */}}
-            text="Confirmar"
-            backgroundColor="#d32f2f"
-            textColor="#fff"
-            borderRadius="8px"
-            hoverBackgroundColor="#b71c1c"
-            width="120px"
-            divWidth="120px"
-          />
-        </DialogActions>
+       
       </Dialog>
     </Stack>
   );

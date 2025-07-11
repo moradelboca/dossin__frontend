@@ -235,9 +235,14 @@ const Clima = () => {
         <Box
             sx={{
                 backgroundColor: theme.colores.grisClaro,
-                height: "91vh",
-                width: "100%",
-                padding: 3,
+                height: '100%',
+                width: '100%',
+                minHeight: 0,
+                minWidth: 0,
+                display: 'flex',
+                flexDirection: 'column',
+                overflow: 'hidden',
+                p: 3,
             }}
         >
             <Typography
@@ -253,7 +258,7 @@ const Clima = () => {
                 Pronóstico del Tiempo
             </Typography>
             {isMobile ? (
-                <Box display="flex" flexDirection="column" gap={2} height="100%" mt={2}>
+                <Box display="flex" flexDirection="column" gap={2} height="100%" mt={2} sx={{ flex: 1, minHeight: 0, overflow: 'hidden' }}>
                     <AutocompletarUbicacionMapa
                         ubicaciones={ubicaciones}
                         title="Buscar ubicación"
@@ -278,7 +283,7 @@ const Clima = () => {
                         label="Ver datos diarios"
                         sx={{ mb: 2, alignSelf: 'flex-start' }}
                     />
-                    <Box display="flex" alignItems="center" justifyContent="center" sx={{ height: 'calc(100vh - 220px)', width: '100%', maxHeight: { xs: 400, sm: '60vh' } }}>
+                    <Box display="flex" alignItems="center" justifyContent="center" sx={{ flex: 1, minHeight: 0, width: '100%', maxHeight: { xs: 400, sm: '60vh' }, overflow: 'auto' }}>
                         {weatherData ? (
                             <Line data={chartData} options={chartOptions} height={Math.min(400, window.innerHeight * 0.6)} width={undefined} />
                         ) : (
@@ -287,9 +292,9 @@ const Clima = () => {
                     </Box>
                 </Box>
             ) : (
-                <Box display="flex" flexDirection="row" gap={2} height="100%" mt={2}>
+                <Box display="flex" flexDirection="row" gap={2} height="100%" mt={2} sx={{ flex: 1, minHeight: 0, overflow: 'hidden' }}>
                     {/* Panel izquierdo: Autocomplete y tarjetas */}
-                    <Box sx={{ minWidth: 320, maxWidth: 340, display: "flex", flexDirection: "column", gap: 2 }}>
+                    <Box sx={{ minWidth: 320, maxWidth: 340, display: "flex", flexDirection: "column", gap: 2, overflow: 'hidden' }}>
                         <AutocompletarUbicacionMapa
                             ubicaciones={ubicaciones}
                             title="Buscar ubicación"
@@ -332,7 +337,7 @@ const Clima = () => {
                         </Box>
                     </Box>
                     {/* Panel derecho: Gráfico */}
-                    <Box flex={1} display="flex" flexDirection="column" alignItems="center" justifyContent="flex-start" sx={{ height: "100%", maxHeight: "550px" }}>
+                    <Box flex={1} display="flex" flexDirection="column" alignItems="center" justifyContent="flex-start" sx={{ height: "100%", minHeight: 0, maxHeight: "550px", overflow: 'auto' }}>
                         <FormControlLabel
                             control={
                                 <Checkbox

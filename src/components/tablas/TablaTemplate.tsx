@@ -162,8 +162,8 @@ export default function TablaTemplate({
   const columns: GridColDef[] = fields.map((field, i) => ({
     field,
     headerName: headerNames[i],
-    minWidth: calcMinWidth(field, headerNames[i]),
-    flex: 1,
+    minWidth: field === 'roles' ? 120 : calcMinWidth(field, headerNames[i]),
+    flex: field === 'roles' ? 0.7 : 1,
     resizable: true,
     renderHeader: () => (
       <strong style={{ color: theme.colores.grisOscuro }}>

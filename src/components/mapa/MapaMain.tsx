@@ -23,6 +23,7 @@ import AutocompletarUbicacionMapa from "../cargas/autocompletar/AutocompletarUbi
 import { AddLocationAltOutlined, Search } from "@mui/icons-material";
 import { CreadorUbicacion } from "./CreadorUbicacion";
 import React from "react";
+import InfoTooltip from "../InfoTooltip";
 
 const { BaseLayer, Overlay } = LayersControl;
 
@@ -117,8 +118,19 @@ useEffect(() => {
         setOpenDialog(false);
     };
     const tipoUbicacionOptions = ["Todas", "Carga", "Descarga", "Balanza"];
+
+    // Estilos azul para focus
+    const azulStyles = {
+        '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
+            borderColor: theme.colores.azul,
+        },
+        '& .MuiInputLabel-root.Mui-focused': {
+            color: theme.colores.azul,
+        },
+    };
+
     return (
-        <Box position={"relative"}>
+        <Box position="relative" sx={{ height: 'calc(100vh - 65px)', width: '100%', minHeight: 0, minWidth: 0, overflow: 'hidden' }}>
             {/* Controles */}
             <Box>
                 {isMobile ? (
@@ -165,7 +177,7 @@ useEffect(() => {
         {/* Autocompletar (mantiene fondo blanco para inputs) */}
         <AutocompletarUbicacionMapa
           ubicaciones={ubicaciones}
-          title="Buscar ubicación"
+          title="Seleccioná una ubicación"
           filtro={tipoUbicacionSeleccionado}
           estadoCarga={estadoCarga}
           setUbicacionSeleccionada={setUbicacionSeleccionada}
@@ -177,12 +189,13 @@ useEffect(() => {
         <Autocomplete
           options={tipoUbicacionOptions}
           renderInput={(params) => (
-            <TextField {...params} label="Filtrar por tipo" />
+            <TextField {...params} label="Filtrar por tipo" sx={azulStyles} />
           )}
           sx={{
             width: 200,
             backgroundColor: 'white',
             borderRadius: '6px',
+            ...azulStyles,
           }}
           onChange={(_e, value) =>
             setTipoUbicacionSeleccionado(value || 'Todas')
@@ -240,7 +253,7 @@ useEffect(() => {
                     >
                         <AutocompletarUbicacionMapa
                             ubicaciones={ubicaciones}
-                            title="Ubicación de Carga"
+                            title="Seleccioná una ubicación"
                             filtro={tipoUbicacionSeleccionado}
                             estadoCarga={estadoCarga}
                             setUbicacionSeleccionada={setUbicacionSeleccionada}
@@ -250,12 +263,13 @@ useEffect(() => {
                         <Autocomplete
                             options={tipoUbicacionOptions}
                             renderInput={(params) => (
-                                <TextField {...params} label="Tipo" />
+                                <TextField {...params} label="Tipo" sx={azulStyles} />
                             )}
                             sx={{
                                 width: 100,
                                 background: "white",
                                 borderRadius: "6px",
+                                ...azulStyles,
                             }}
                             onChange={(_event, value) => {
                                 setTipoUbicacionSeleccionado(value || "Todas");
@@ -278,6 +292,15 @@ useEffect(() => {
                         >
                             <AddLocationAltOutlined />
                         </IconButton>
+                        <InfoTooltip
+                            title="¿Cómo ingresar la URL de Google Maps y borrar ubicaciones?"
+                            placement="right"
+                            sections={[
+                                "Al ingresar la URL de Google Maps, extraemos automáticamente la latitud y longitud del link. A veces puede fallar por cuestiones de Google. En esos casos, revisá que el pin esté bien ubicado en el mapa.",
+                                "Normalmente funciona mejor hacer click al lado del pin en Google Maps (no sobre el pin), es decir, clickear un punto vacío cerca del lugar deseado.",
+                                "Si no te deja borrar una ubicación, probablemente esté siendo usada en una carga."
+                            ]}
+                        />
                     </Box>
                 )}
             </Box>
@@ -287,7 +310,7 @@ useEffect(() => {
                 center={[-33.099765, -64.3654802]}
                 zoom={5}
                 scrollWheelZoom={false}
-                style={{ height: "91vh" }}
+                style={{ height: "100%", width: "100%" }}
             >
                 <ZoomToLocation
                     lat={ubicacionSeleccionada?.latitud}

@@ -13,10 +13,12 @@ import Tooltip from '@mui/material/Tooltip';
 import DeleteIcon from '@mui/icons-material/Delete';
 import DeleteTurno from '../../cargas/creadores/DeleteTurno';
 import { useManejoTurnos, renderTurnosDialogs } from './manejoTurnos';
+import { getExplicacionEstado } from './explicacionTurnos';
 import { useAllowed } from '../../hooks/auth/useAllowed';
 import EstadoTurnoForm from '../../forms/turnos/tabs/EstadoTurnoForm';
 import { useAuth } from '../../autenticacion/ContextoAuth';
 import { puedeVerEstado } from '../../../utils/turnoEstadoPermisos';
+import InfoTooltip from '../../InfoTooltip';
 
 interface CardMobileProps {
   item: any;
@@ -163,33 +165,35 @@ const CardMobile: React.FC<CardMobileProps> = ({
     // Botones extra
     const isContableOrLogistica = rolId === 2 || rolId === 4;
     return (
-      <Box sx={{ display: 'flex', width: '100%', alignItems: 'stretch', mt: 2 }}>
+      <Box sx={{ width: '100%', mt: 2, display: 'flex', flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'flex-start' }}>
         <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
           {botones}
           {rolId !== 3 && outlinedButton({ children: 'Adelanto', onClick: () => safeOpenDialog('adelanto'), sx: { mt: 1, ...outlinedButton({}).props.sx } })}
         </Box>
-        {isAdmin && (
-          <Tooltip title="Eliminar turno">
-            <IconButton
-              onClick={() => manejoTurnos.setOpenDeleteDialog(true)}
-              sx={{ color: '#d68384', background: 'transparent', '&:hover': { background: '#fbe9e7' }, borderRadius: 2, height: 48, width: 48 }}
-              aria-label="eliminar turno"
-            >
-              <DeleteIcon fontSize="large" />
-            </IconButton>
-          </Tooltip>
-        )}
-        {isContableOrLogistica && (
-          <Tooltip title="Cancelar turno">
-            <IconButton
-              onClick={() => setOpenCancelarDialog(true)}
-              sx={{ color: '#d68384', background: 'transparent', '&:hover': { background: '#fbe9e7' }, borderRadius: 2, height: 48, width: 48 }}
-              aria-label="cancelar turno"
-            >
-              <DeleteIcon fontSize="large" />
-            </IconButton>
-          </Tooltip>
-        )}
+        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', minWidth: 48 }}>
+          {isAdmin && (
+            <Tooltip title="Eliminar turno">
+              <IconButton
+                onClick={() => manejoTurnos.setOpenDeleteDialog(true)}
+                sx={{ color: '#d68384', background: 'transparent', '&:hover': { background: '#fbe9e7' }, borderRadius: 2, height: 48, width: 48, ml: 1 }}
+                aria-label="eliminar turno"
+              >
+                <DeleteIcon fontSize="large" />
+              </IconButton>
+            </Tooltip>
+          )}
+          {isContableOrLogistica && (
+            <Tooltip title="Cancelar turno">
+              <IconButton
+                onClick={() => setOpenCancelarDialog(true)}
+                sx={{ color: '#d68384', background: 'transparent', '&:hover': { background: '#fbe9e7' }, borderRadius: 2, height: 48, width: 48, ml: 1 }}
+                aria-label="cancelar turno"
+              >
+                <DeleteIcon fontSize="large" />
+              </IconButton>
+            </Tooltip>
+          )}
+        </Box>
         {/* Diálogo de confirmación para eliminar el turno usando DeleteTurno */}
         <Dialog open={manejoTurnos.openDeleteDialog} onClose={() => manejoTurnos.setOpenDeleteDialog(false)} maxWidth="sm" fullWidth>
           <DeleteTurno
@@ -253,55 +257,67 @@ const CardMobile: React.FC<CardMobileProps> = ({
     >
       {/* Estado pill label como botón para admin */}
       {manejoTurnos.turnoLocal.estado?.nombre && !ocultarBotonesAccion && (
-        isAdmin ? (
-          <Box
-            sx={{
-              position: 'absolute',
-              top: 8,
-              right: 8,
-              px: 2,
-              py: 0.5,
-              borderRadius: '16px',
-              border: `2px solid ${manejoTurnos.turnoLocal.estado.id === 4 ? '#d68384' : manejoTurnos.getEstadoColor(manejoTurnos.turnoLocal.estado.nombre.toLowerCase())}`,
-              color: manejoTurnos.turnoLocal.estado.id === 4 ? '#d68384' : manejoTurnos.getEstadoColor(manejoTurnos.turnoLocal.estado.nombre.toLowerCase()),
-              fontWeight: 'bold',
-              fontSize: '0.85rem',
-              background: '#fff',
-              zIndex: 2,
-              textTransform: 'capitalize',
-              minWidth: '80px',
-              textAlign: 'center',
-              cursor: 'pointer',
-              transition: 'box-shadow 0.2s',
-              boxShadow: openEstadoDialog ? '0 0 0 2px #16366055' : undefined,
-            }}
-            onClick={() => setOpenEstadoDialog(true)}
-          >
-            {manejoTurnos.turnoLocal.estado.nombre}
-          </Box>
-        ) : (
-          <Box
-            sx={{
-              position: 'absolute',
-              top: 8,
-              right: 8,
-              px: 2,
-              py: 0.5,
-              borderRadius: '16px',
-              border: `2px solid ${manejoTurnos.turnoLocal.estado.id === 4 ? '#d68384' : manejoTurnos.getEstadoColor(manejoTurnos.turnoLocal.estado.nombre.toLowerCase())}`,
-              color: manejoTurnos.turnoLocal.estado.id === 4 ? '#d68384' : manejoTurnos.getEstadoColor(manejoTurnos.turnoLocal.estado.nombre.toLowerCase()),
-              fontWeight: 'bold',
-              fontSize: '0.85rem',
-              background: '#fff',
-              zIndex: 2,
-              textTransform: 'capitalize',
-              minWidth: '80px',
-              textAlign: 'center',
-            }}
-          >
-            {manejoTurnos.turnoLocal.estado.nombre}
-          </Box>
-        )
+        <Box sx={{ position: 'absolute', top: 8, right: 8, display: 'flex', alignItems: 'center', gap: 1 }}>
+          {isAdmin ? (
+            <Box
+              sx={{
+                px: 2,
+                py: 0.5,
+                borderRadius: '16px',
+                border: `2px solid ${manejoTurnos.turnoLocal.estado.id === 4 ? '#d68384' : manejoTurnos.getEstadoColor(manejoTurnos.turnoLocal.estado.nombre.toLowerCase())}`,
+                color: manejoTurnos.turnoLocal.estado.id === 4 ? '#d68384' : manejoTurnos.getEstadoColor(manejoTurnos.turnoLocal.estado.nombre.toLowerCase()),
+                fontWeight: 'bold',
+                fontSize: '0.85rem',
+                background: '#fff',
+                zIndex: 2,
+                textTransform: 'capitalize',
+                minWidth: '80px',
+                textAlign: 'center',
+                cursor: 'pointer',
+                transition: 'box-shadow 0.2s',
+                boxShadow: openEstadoDialog ? '0 0 0 2px #16366055' : undefined,
+              }}
+              onClick={() => setOpenEstadoDialog(true)}
+            >
+              {manejoTurnos.turnoLocal.estado.nombre}
+            </Box>
+          ) : (
+            <Box
+              sx={{
+                px: 2,
+                py: 0.5,
+                borderRadius: '16px',
+                border: `2px solid ${manejoTurnos.turnoLocal.estado.id === 4 ? '#d68384' : manejoTurnos.getEstadoColor(manejoTurnos.turnoLocal.estado.nombre.toLowerCase())}`,
+                color: manejoTurnos.turnoLocal.estado.id === 4 ? '#d68384' : manejoTurnos.getEstadoColor(manejoTurnos.turnoLocal.estado.nombre.toLowerCase()),
+                fontWeight: 'bold',
+                fontSize: '0.85rem',
+                background: '#fff',
+                zIndex: 2,
+                textTransform: 'capitalize',
+                minWidth: '80px',
+                textAlign: 'center',
+              }}
+            >
+              {manejoTurnos.turnoLocal.estado.nombre}
+            </Box>
+          )}
+          {/* Tooltip de explicación de estado SIEMPRE visible junto al pill */}
+          {(() => {
+            const explicacion = getExplicacionEstado(manejoTurnos.turnoLocal.estado?.nombre);
+            if (!explicacion) return null;
+            return (
+              <Box ml={1} display="flex" alignItems="center">
+                <InfoTooltip
+                  title={explicacion.title}
+                  sections={explicacion.sections}
+                  placement="top"
+                  iconSize="medium"
+                  contexto={`Componente: Tarjeta de turno\nID turno: ${manejoTurnos.turnoLocal.id || ''}\nEstado: ${manejoTurnos.turnoLocal.estado?.nombre || ''}\nFecha cupo: ${manejoTurnos.turnoLocal.fechaCupo || manejoTurnos.turnoLocal.fecha || ''}`}
+                />
+              </Box>
+            );
+          })()}
+        </Box>
       )}
       {/* Dialog para cambiar estado */}
       {!ocultarBotonesAccion && (
@@ -351,11 +367,55 @@ const CardMobile: React.FC<CardMobileProps> = ({
             )}
           </Box>
           <Box>
-            <Typography variant="subtitle1" fontWeight="bold">
-              {transformarCampo(tituloField || fields[0], manejoTurnos.turnoLocal) || "Sin título"}
+            <Typography variant="subtitle1" fontWeight="bold"
+              sx={(() => {
+                // Título: chofer
+                let errorCampo = null;
+                if (manejoTurnos.turnoLocal.estado?.nombre?.toLowerCase() === 'con errores' && Array.isArray(manejoTurnos.turnoLocal.errores)) {
+                  errorCampo = manejoTurnos.turnoLocal.errores.find((err: any) => err.campo === 'cuilColaborador');
+                }
+                return errorCampo ? { color: '#e57373', fontWeight: 700 } : {};
+              })()}
+            >
+              {(() => {
+                let errorCampo = null;
+                if (manejoTurnos.turnoLocal.estado?.nombre?.toLowerCase() === 'con errores' && Array.isArray(manejoTurnos.turnoLocal.errores)) {
+                  errorCampo = manejoTurnos.turnoLocal.errores.find((err: any) => err.campo === 'cuilColaborador');
+                }
+                if (errorCampo) {
+                  const valor = manejoTurnos.turnoLocal['colaborador'];
+                  if (typeof valor === 'object' && valor !== null) {
+                    return valor.nombre || valor.cuil || JSON.stringify(valor);
+                  }
+                  return valor || 'Dato erróneo';
+                }
+                return transformarCampo(tituloField || fields[0], manejoTurnos.turnoLocal) || "Sin título";
+              })()}
             </Typography>
-            <Typography variant="body2" color="text.secondary">
-              {subtituloField ? transformarCampo(subtituloField, manejoTurnos.turnoLocal) : ""}
+            <Typography variant="body2" color="text.secondary"
+              sx={(() => {
+                // Subtítulo: empresa
+                let errorCampo = null;
+                if (manejoTurnos.turnoLocal.estado?.nombre?.toLowerCase() === 'con errores' && Array.isArray(manejoTurnos.turnoLocal.errores)) {
+                  errorCampo = manejoTurnos.turnoLocal.errores.find((err: any) => err.campo === 'cuitEmpresa');
+                }
+                return errorCampo ? { color: '#e57373', fontWeight: 700 } : {};
+              })()}
+            >
+              {(() => {
+                let errorCampo = null;
+                if (manejoTurnos.turnoLocal.estado?.nombre?.toLowerCase() === 'con errores' && Array.isArray(manejoTurnos.turnoLocal.errores)) {
+                  errorCampo = manejoTurnos.turnoLocal.errores.find((err: any) => err.campo === 'cuitEmpresa');
+                }
+                if (errorCampo) {
+                  const valor = manejoTurnos.turnoLocal['empresa'];
+                  if (typeof valor === 'object' && valor !== null) {
+                    return valor.razonSocial || valor.cuit || JSON.stringify(valor);
+                  }
+                  return valor || 'Dato erróneo';
+                }
+                return subtituloField ? transformarCampo(subtituloField, manejoTurnos.turnoLocal) : "";
+              })()}
             </Typography>
           </Box>
         </Box>
@@ -378,26 +438,53 @@ const CardMobile: React.FC<CardMobileProps> = ({
         unmountOnExit
       >
         <Box sx={{ padding: 2, backgroundColor: "#ffffff" }}>
-          {filteredFields.map((field, idx) => (
-            <Box
-              key={idx}
-              marginBottom={1}
-              display={usarSinDesplegable ? "flex" : "block"}
-              justifyContent={usarSinDesplegable ? "space-between" : "normal"}
-              alignItems="center"
-            >
-              <Typography
-                variant="body2"
-                fontWeight="bold"
-                sx={usarSinDesplegable ? { marginRight: 1 } : {}}
+          {filteredFields.map((field, idx) => {
+            // Buscar si hay error para este campo
+            let errorCampo = null;
+            if (manejoTurnos.turnoLocal.estado?.nombre?.toLowerCase() === 'con errores' && Array.isArray(manejoTurnos.turnoLocal.errores)) {
+              // Mapear los nombres de los campos de errores a los fields
+              const fieldMap: Record<string, string> = {
+                cuilColaborador: 'colaborador',
+                cuitEmpresa: 'empresa',
+                patenteCamion: 'camion',
+                patenteAcoplado: 'acoplado',
+                patenteAcopladoExtra: 'acopladoExtra',
+              };
+              errorCampo = manejoTurnos.turnoLocal.errores.find((err: any) => fieldMap[err.campo] === field.split('.')[0] || err.campo === field);
+            }
+            // Obtener el valor original ingresado (aunque sea erróneo)
+            let valorOriginal = undefined;
+            if (errorCampo) {
+              valorOriginal = manejoTurnos.turnoLocal[field.split('.')[0]];
+            }
+            return (
+              <Box
+                key={idx}
+                marginBottom={1}
+                display={usarSinDesplegable ? "flex" : "block"}
+                justifyContent={usarSinDesplegable ? "space-between" : "normal"}
+                alignItems="center"
               >
-                {filteredHeaderNames[idx]}:
-              </Typography>
-              <Typography variant="body2">
-                {transformarCampo(field, manejoTurnos.turnoLocal)}
-              </Typography>
-            </Box>
-          ))}
+                <Typography
+                  variant="body2"
+                  fontWeight="bold"
+                  sx={usarSinDesplegable ? { marginRight: 1 } : {}}
+                >
+                  {filteredHeaderNames[idx]}:
+                </Typography>
+                <Typography
+                  variant="body2"
+                  sx={errorCampo ? { color: '#e57373', fontWeight: 600 } : {}}
+                >
+                  {errorCampo
+                    ? (typeof valorOriginal === 'object' && valorOriginal !== null
+                        ? valorOriginal.patente || valorOriginal.nombre || valorOriginal.cuil || valorOriginal.cuit || JSON.stringify(valorOriginal)
+                        : valorOriginal || 'Dato erróneo')
+                    : transformarCampo(field, manejoTurnos.turnoLocal)}
+                </Typography>
+              </Box>
+            );
+          })}
           {renderButtons()}
           {childrenCollapse}
         </Box>

@@ -63,6 +63,7 @@ interface CuposGridContainerProps {
 
 // Definir todos los fields y headerNames posibles del endpoint /turnos
 const fields = [
+  "estado.nombre",
   "colaborador.nombre",
   "colaborador.apellido",
   "colaborador.cuil",
@@ -79,6 +80,7 @@ const fields = [
   "numeroOrdenPago"
 ];
 const headerNames = [
+  "Estado",
   "Nombre",
   "Apellido",
   "CUIL Chofer",
@@ -105,6 +107,7 @@ export const CuposGridContainer: React.FC<CuposGridContainerProps & { estadoCarg
   const { theme } = useContext(ContextoGeneral);
   // Columnas seleccionadas para mostrar (por defecto las más relevantes)
   const [selectedColumns, setSelectedColumns] = useState([
+    // "estado.nombre", // Estado NO seleccionado por defecto
     "colaborador.nombre",
     "colaborador.apellido",
     "colaborador.cuil",
@@ -201,20 +204,10 @@ export const CuposGridContainer: React.FC<CuposGridContainerProps & { estadoCarg
     handleCloseExport();
   };
 
-  // Handler seguro para editar turno
-  const handleEditTurno = (turno: any) => {
-    if (turno && turno.id) {
-      setSelectedTurno(turno);
-      setOpenDialog(true);
-    } else {
-      // Opcional: mostrar un error o ignorar
-      console.error("Turno inválido para editar", turno);
-    }
-  };
-
+ 
   return (
     <Box m={3}>
-      {/* Barra de botones */}
+      {/* Barra de botones y ayuda */}
       <Box display="flex" alignItems="center" gap={2} mb={2}>
         <Tooltip title="Filtrar">
           <IconButton
@@ -392,7 +385,6 @@ export const CuposGridContainer: React.FC<CuposGridContainerProps & { estadoCarg
                       {selectedColumns.map((field) => (
                         <TableCell key={field}>{headerNames[fields.indexOf(field)]}</TableCell>
                       ))}
-                      <TableCell>Estado</TableCell>
                       <TableCell>Acciones</TableCell>
                     </TableRow>
                   </TableHead>
@@ -404,7 +396,6 @@ export const CuposGridContainer: React.FC<CuposGridContainerProps & { estadoCarg
                           cupo={cupo}
                           refreshCupos={refreshCupos}
                           fields={selectedColumns}
-                          onEdit={() => handleEditTurno(turno)}
                         />
                       </React.Fragment>
                     ))}

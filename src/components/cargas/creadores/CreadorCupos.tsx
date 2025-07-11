@@ -158,8 +158,10 @@ export function CreadorCupos(props: any) {
       <Box
         display="flex"
         flexDirection="column"
-        width="350px"
-        padding={2}
+        width="100%"
+        maxWidth="400px"
+        mx="auto"
+        py={1}
         alignItems={"center"}
       >
         <ThemeProvider theme={tema}>
@@ -196,6 +198,14 @@ export function CreadorCupos(props: any) {
                 },
               }}
               variant="outlined"
+              sx={{
+                '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                  borderColor: theme.colores.azul,
+                },
+                '& .MuiInputLabel-root.Mui-focused': {
+                  color: theme.colores.azul,
+                },
+              }}
             />
             {errorFecha && (
               <Typography color="#ff3333">

@@ -25,6 +25,8 @@ import WebSocketComponent from "./components/Websocket";
 import PantallaLogin from "./components/login/PantallaLogin";
 import Cookies from "js-cookie";
 import { HelpBot } from './components/helpbot';
+import { NavigationHistoryProvider } from './components/breadcrumb/NavigationHistoryContext';
+import { NavigationBreadcrumb } from './components/breadcrumb/NavigationBreadcrumb';
 
 function MainLayout({
   navAbierto,
@@ -42,7 +44,7 @@ function MainLayout({
   const { user } = useAuth();
   const rolId = user?.rol?.id;
   return (
-    <>
+    <NavigationHistoryProvider>
       <WebSocketComponent />
       <Nav
         navAbierto={navAbierto}
@@ -57,9 +59,15 @@ function MainLayout({
           width: rolId === 3 || isMobile
             ? "100%"
             : `calc(100% - ${anchoCerrado}px)`,
-          overflowX: "hidden",
+          height: 'calc(100vh - 65px)',
+          minHeight: 0,
+          minWidth: 0,
+          display: 'flex',
+          flexDirection: 'column',
         }}
       >
+        <NavigationBreadcrumb />
+        <Box sx={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
         <Routes>
           <Route
             path="/"
@@ -179,7 +187,8 @@ function MainLayout({
           />
         </Routes>
       </Box>
-    </>
+      </Box>
+    </NavigationHistoryProvider>
   );
 }
 
@@ -189,8 +198,7 @@ function App() {
   const anchoCerrado = 60;
   const isMobile = useMediaQuery("(max-width:768px)");
   const accessToken = Cookies.get("accessToken");
-  const { stage } = useContext(ContextoGeneral);
-
+  const { stage, theme } = useContext(ContextoGeneral);
 
   return (
       <BrowserRouter>
@@ -201,7 +209,9 @@ function App() {
                 sx={{
                   display: "flex",
                   height: "100vh",
-                  width: "100vw",
+                  width: "100%",
+                  overflowX: 'hidden',
+                  background: theme.colores.grisClaro,
                 }}
               >
                 <CssBaseline>

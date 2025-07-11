@@ -27,8 +27,10 @@ export function useManejoTurnos({ item, cupo, refreshCupos }: any) {
   useEffect(() => { setTurnoLocal(item); }, [item]);
 
   useEffect(() => {
-    if (['cartaPorte', 'corregir', 'autorizar', 'datospago'].includes(openDialog || '') && item?.id) {
-      if (!turnoLocal.precios) {
+    // Si se abre un dialogo que necesita datos completos del turno (como precios o adelantos), y no los tenemos, los buscamos.
+    if (['cartaPorte', 'corregir', 'autorizar', 'datospago', 'adelanto'].includes(openDialog || '') && item?.id) {
+      // Usamos 'precios' como indicador de que tenemos los datos completos.
+      if (!turnoLocal.precios) { 
         (async () => {
           try {
             const backendURL = import.meta.env.VITE_BACKEND_URL || '';
@@ -37,28 +39,12 @@ export function useManejoTurnos({ item, cupo, refreshCupos }: any) {
             const turnoCompleto = await res.json();
             setTurnoLocal(turnoCompleto);
           } catch (e) {
-            //console.error(e)
+            // console.error(e)
           }
         })();
       }
     }
   }, [openDialog, item, turnoLocal.precios]);
-
-  useEffect(() => {
-    if ((openDialog === 'cartaPorte' || openDialog === 'corregir' || openDialog === 'autorizar') && item && cupo && item.id && cupo.carga && cupo.fecha) {
-      if (!item.estado || !item.tara || item.kgCargados === undefined) {
-        (async () => {
-          try {
-            const backendURL = import.meta.env.VITE_BACKEND_URL || '';
-            await fetch(`${backendURL}/turnos/${item.id}`, {
-              method: 'GET',
-              headers: { 'Content-Type': 'application/json', 'ngrok-skip-browser-warning': 'true' },
-            });
-          } catch (e) {}
-        })();
-      }
-    }
-  }, [openDialog, item, cupo]);
 
   const getEstadoColor = (estado: string) => {
     switch (estado?.toLowerCase()) {
@@ -103,17 +89,8 @@ export function useManejoTurnos({ item, cupo, refreshCupos }: any) {
             const contratosRes = await fetch(`${backendURL}/contratos`, { headers: { 'ngrok-skip-browser-warning': 'true' } });
             const contratos = await contratosRes.json();
             contrato = contratos.find((contrato: any) => Array.isArray(contrato.cargas) && contrato.cargas.some((c: any) => c.id === carga.id));
-          }
-          const idCarga = cupo?.carga || item.carga || item.idCarga;
-          const fecha = cupo?.fecha || item.fecha || item.fechaCupo;
-          const idTurno = item.id;
-          let turnoCompleto = null;
-          if (idCarga && fecha && idTurno) {
-            const res = await fetch(`${backendURL}/turnos/${idTurno}`);
-            if (!res.ok) throw new Error(await res.text());
-            turnoCompleto = await res.json();
-            setTurnoLocal(turnoCompleto);
-          }
+          }          
+          const turnoCompleto = turnoLocal.precios ? turnoLocal : null;
           setCartaPorteData({ turno, carga, contrato, cupo, turnoCompleto });
         } catch (err: any) {
           setCartaPorteError('Error al cargar los datos de la carta de porte');
@@ -125,7 +102,7 @@ export function useManejoTurnos({ item, cupo, refreshCupos }: any) {
       setCartaPorteData(null);
       setCartaPorteError(null);
     }
-  }, [openDialog, item, cupo]);
+  }, [openDialog, item, cupo, turnoLocal]);
 
   const handleCopy = (value: string, field: string) => {
     // Si el valor tiene formato 'razonSocial - cuit', solo copiar el cuit
@@ -154,13 +131,13 @@ export function useManejoTurnos({ item, cupo, refreshCupos }: any) {
 
   return {
     openDialog, setOpenDialog, autorizarLoading, setAutorizarLoading, cartaPorteData, cartaPorteLoading, cartaPorteError, copiedField, setCopiedField, openDeleteDialog, setOpenDeleteDialog, turnoLocal, setTurnoLocal,
-    getEstadoColor, handleFormSuccess, handleCopy, getNextEstadoName
+    getEstadoColor, handleFormSuccess, transformarCampo, handleCopy, getNextEstadoName
   };
 }
 
 export function renderTurnosDialogs({
   openDialog, setOpenDialog, autorizarLoading, setAutorizarLoading, cartaPorteData, cartaPorteLoading, cartaPorteError, copiedField, turnoLocal, setTurnoLocal,
-  handleFormSuccess, handleCopy, getNextEstadoName, theme
+  handleFormSuccess, handleCopy, getNextEstadoName, theme, item
 }: any) {
   switch (openDialog) {
     case 'corregir':
@@ -291,15 +268,17 @@ export function renderTurnosDialogs({
                   { label: 'Rte. Comercial Venta secundaria 2', value: formatearEmpresa(cartaPorteData.contrato?.remitenteVentaSecundaria2) },
                   { label: 'Flete pagador', value: formatearEmpresa(cartaPorteData.contrato?.fletePagador) },
                   { label: 'Representante recibidor', value: formatearEmpresa(cartaPorteData.contrato?.representanteRecibidor) },
-                 
-                  { label: 'Chofer', value: cartaPorteData.turno?.colaborador?.nombre + ' ' + cartaPorteData.turno?.colaborador?.apellido },
+                  { label: 'Kilómetros del viaje', value: cartaPorteData.carga?.cantidadKm },
+                  { label: 'Empresa transportista', value: formatearEmpresa(cartaPorteData.turno?.empresa || cartaPorteData.carga?.empresa) },
+                  { label: 'Chofer', value: (cartaPorteData.turno?.colaborador?.nombre || '') + ' ' + (cartaPorteData.turno?.colaborador?.apellido || '') + (cartaPorteData.turno?.colaborador?.cuil ? ' - ' + cartaPorteData.turno?.colaborador?.cuil : '') },
                   { label: 'Patente camión', value: cartaPorteData.turno?.camion?.patente },
                   { label: 'Patente acoplado', value: cartaPorteData.turno?.acoplado?.patente },
                   { label: 'Patente acoplado extra', value: cartaPorteData.turno?.acopladoExtra?.patente },
                   { label: 'Tarifa', value: cartaPorteData.carga?.tarifa },
-                  { label: 'Kg tara', value: cartaPorteData.turnoCompleto?.[0]?.kgTara },
-                  { label: 'Kg bruto', value: cartaPorteData.turnoCompleto?.[0]?.kgBruto },
-                  { label: 'Kg neto', value: cartaPorteData.turnoCompleto?.[0]?.kgNeto },
+                  { label: 'Kg tara', value: cartaPorteData.turno?.kgTara ?? cartaPorteData.turnoCompleto?.kgTara },
+                  { label: 'Kg bruto', value: cartaPorteData.turno?.kgBruto ?? cartaPorteData.turnoCompleto?.kgBruto },
+                  { label: 'Kg neto', value: cartaPorteData.turno?.kgNeto ?? cartaPorteData.turnoCompleto?.kgNeto },
+                  { label: 'Kg cargados', value: cartaPorteData.turno?.kgCargados ?? cartaPorteData.turnoCompleto?.kgCargados },
                 ].filter((row: any) => row.value !== undefined && row.value !== null).map((row: any) => (
                   isMobile ? (
                     <Box key={row.label} sx={{ borderBottom: '1px solid #eee', pb: 1, mb: 1 }}>
@@ -407,13 +386,17 @@ export function renderTurnosDialogs({
                         .replace(/([A-Z])/g, ' $1')
                         .replace(/^./, (str) => str.toUpperCase())
                         .trim();
+                      const isMoney = [
+                        'montoNeto', 'iva', 'montoBruto', 'retencion', 'descuentoBruto', 'adelanto', 'totalAPagar',
+                        'Monto Neto', 'Iva', 'Monto Bruto', 'Retencion', 'Descuento Bruto', 'Adelanto', 'Total A Pagar'
+                      ].some(key => label.toLowerCase().replace(/\s/g, '') === key.toLowerCase().replace(/\s/g, ''));
                       return (
                         isMobilePago ? (
                           <Box key={label} sx={{ borderBottom: '1px solid #eee', pb: 1, mb: 1 }}>
                             <Typography sx={{ fontWeight: 500, fontSize: 15 }}>{prettyLabel}</Typography>
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 0.5 }}>
-                              <Typography sx={{ flex: 1 }}>{String(value)}</Typography>
-                              <Typography sx={{ color: '#888', ml: 0.5, userSelect: 'none' }} component="span">$</Typography>
+                              <Typography sx={{ flex: 1 }}>{isMoney ? formatMoney(value) : String(value)}</Typography>
+                              {isMoney && <Typography sx={{ color: '#888', ml: 0.5, userSelect: 'none' }} component="span">$</Typography>}
                               <IconButton size="small" onClick={() => handleCopy(String(value), `${turnoLocal.id}-${label}`)}>
                                 <ContentCopyIcon fontSize="small" />
                               </IconButton>
@@ -426,8 +409,8 @@ export function renderTurnosDialogs({
                           <Box key={label} sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 0.5 }}>
                             <Typography sx={{ minWidth: 180, fontWeight: 500 }}>{prettyLabel}</Typography>
                             <Box sx={{ display: 'flex', alignItems: 'center', flex: 1 }}>
-                              <Typography sx={{ flex: 1 }}>{String(value)}</Typography>
-                              <Typography sx={{ color: '#888', ml: 0.5, userSelect: 'none' }} component="span">$</Typography>
+                              <Typography sx={{ flex: 1 }}>{isMoney ? formatMoney(value) : String(value)}</Typography>
+                              {isMoney && <Typography sx={{ color: '#888', ml: 0.5, userSelect: 'none' }} component="span">$</Typography>}
                             </Box>
                             <IconButton size="small" onClick={() => handleCopy(String(value), `${turnoLocal.id}-${label}`)}>
                               <ContentCopyIcon fontSize="small" />
@@ -485,15 +468,18 @@ export function renderTurnosDialogs({
               turnoId={turnoFactura.id}
               precioGrano={turnoFactura.precioGrano}
               initialFactura={turnoFactura.factura}
-              onSuccess={async () => {
+              onSuccess={async (updatedFactura) => {
                 try {
-                  const nextEstadoId = getNextEstadoId(turnoFactura.estado?.nombre);
-                  if (!nextEstadoId) throw new Error('No se puede determinar el próximo estado');
-                  await fetch(`${import.meta.env.VITE_BACKEND_URL || ''}/turnos/${turnoFactura.id}`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ idEstado: nextEstadoId }),
-                  });
+                  // Solo cambiar de estado si se está asociando una factura (no si se borra/desasocia)
+                  if (updatedFactura) {
+                    const nextEstadoId = getNextEstadoId(turnoFactura.estado?.nombre);
+                    if (!nextEstadoId) throw new Error('No se puede determinar el próximo estado');
+                    await fetch(`${import.meta.env.VITE_BACKEND_URL || ''}/turnos/${turnoFactura.id}`, {
+                      method: 'PUT',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ idEstado: nextEstadoId }),
+                    });
+                  }
                 } catch (err) {
                   //console.error(err);
                 }
@@ -530,4 +516,9 @@ function formatearEmpresa(empresa: any): string {
   const cuit = empresa.cuit || '';
   if (razon && cuit) return `${razon} - ${cuit}`;
   return razon || cuit;
+}
+
+function formatMoney(value: any) {
+  if (typeof value !== 'number' && isNaN(Number(value))) return value;
+  return Number(value).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 } 

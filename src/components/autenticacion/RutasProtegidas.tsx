@@ -47,14 +47,11 @@ const RutasProtegidas = ({ children, allowedRoles }: ProtectedRouteProps) => {
           signal: controller.signal
         });
         const data = await response.json();
-        if (!response.ok || !data.token)  {
+        if (!response.ok)  {
           logout();
           setVerificando(false);
           return;
         }
-        Cookies.set("accessToken", data.token, { 
-          sameSite: "strict"
-        });
         login({
           id: data.usuario.id,
           email: data.usuario.email,
@@ -74,8 +71,45 @@ const RutasProtegidas = ({ children, allowedRoles }: ProtectedRouteProps) => {
 
     verificarToken();
 
+    // Timer de 5 minutos para refrescar el token si el usuario sigue activo
+    const iniciarTimerInactividad = () => {
+      // Limpiar timer anterior si existe
+      const storedId = sessionStorage.getItem("timerId");
+      if (storedId) {
+        clearTimeout(Number(storedId));
+        sessionStorage.removeItem("timerId");
+      }
+      // Este timer ejecutará la lógica de refresco del token después de 5 minutos
+      const timerId = window.setTimeout(async () => {
+        // Mostrar popup al usuario
+        const seguirActivo = window.confirm(
+          "Parece que estas inactivo! Quedan 20 minutos para que tu sesión expire. ¿Deseas seguir activo?"
+        );
+        if (seguirActivo) {
+          // Si el usuario acepta, vuelve a verificar el token
+          await verificarToken();
+          // Reiniciar el timer
+          iniciarTimerInactividad();
+        } else {
+          // Si el usuario cancela, puedes hacer logout o no hacer nada
+          // logout(); // Descomenta si quieres cerrar sesión automáticamente
+        }
+      }, 40 * 60 * 1000);
+      sessionStorage.setItem("timerId", String(timerId));
+    };
+
+    if (!verificando && user) {
+      iniciarTimerInactividad();
+    }
+
     return () => {
       controller.abort();
+      // Limpiar el timer si existe
+      const storedId = sessionStorage.getItem("timerId");
+      if (storedId) {
+        clearTimeout(Number(storedId));
+        sessionStorage.removeItem("timerId");
+      }
     };
   }, [location.pathname]);
 

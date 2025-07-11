@@ -34,11 +34,11 @@ const CartaPorteForm: React.FC<CartaPorteFormProps> = ({
   onCancel,
 }) => {
   // Estados para los campos
-  const [numeroCartaPorte, setNumeroCartaPorte] = useState<number | "">(
-    initialData?.numeroCartaPorte || ""
+  const [numeroCartaPorte, setNumeroCartaPorte] = useState<string>(
+    initialData?.numeroCartaPorte !== undefined ? String(initialData.numeroCartaPorte).padStart(13, '0') : ""
   );
-  const [ctg, setCtg] = useState<number | "">(
-    initialData?.CTG || ""
+  const [ctg, setCtg] = useState<string>(
+    initialData?.CTG !== undefined ? String(initialData.CTG) : ""
   );
   const [errors, setErrors] = useState<{ numeroCartaPorte?: string; ctg?: string }>({});
   
@@ -66,12 +66,12 @@ const CartaPorteForm: React.FC<CartaPorteFormProps> = ({
   useEffect(() => {
     setNumeroCartaPorte(
       initialData?.numeroCartaPorte !== undefined
-        ? initialData.numeroCartaPorte
+        ? String(initialData.numeroCartaPorte)
         : ""
     );
     setCtg(
       initialData?.CTG !== undefined
-        ? initialData.CTG
+        ? String(initialData.CTG)
         : ""
     );
   }, [initialData?.numeroCartaPorte, initialData?.CTG]);
@@ -83,7 +83,7 @@ const CartaPorteForm: React.FC<CartaPorteFormProps> = ({
   const validate = () => {
     const newErrors: { numeroCartaPorte?: string; ctg?: string } = {};
     if (!numeroCartaPorte) newErrors.numeroCartaPorte = "Número de Carta de Porte es obligatorio";
-    else if (String(numeroCartaPorte).length > 13) newErrors.numeroCartaPorte = "Máximo 13 dígitos";
+    else if (numeroCartaPorte.length > 13) newErrors.numeroCartaPorte = "Máximo 13 dígitos";
     if (!ctg) newErrors.ctg = "CTG es obligatorio";
     else if (String(ctg).length > 11) newErrors.ctg = "Máximo 11 dígitos";
     setErrors(newErrors);
@@ -119,7 +119,7 @@ const CartaPorteForm: React.FC<CartaPorteFormProps> = ({
   const handleDelete = async () => {
     if (!numeroCartaPorte) return;
     try {
-      const result = await handleCartaPorteDeletion(numeroCartaPorte);
+      const result = await handleCartaPorteDeletion(Number(numeroCartaPorte));
       onSuccess(result); // Enviar el resultado de la eliminación
     } catch (error) {
       console.error("Error al eliminar la Carta de Porte:", error);
@@ -136,7 +136,7 @@ const CartaPorteForm: React.FC<CartaPorteFormProps> = ({
         onChange={(e) => {
           const newValue = e.target.value;
           if (/^\d{0,13}$/.test(newValue)) {
-            setNumeroCartaPorte(newValue === "" ? "" : Number(newValue));
+            setNumeroCartaPorte(newValue);
           }
         }}
         inputProps={{ maxLength: 13 }}
@@ -153,7 +153,7 @@ const CartaPorteForm: React.FC<CartaPorteFormProps> = ({
         onChange={(e) => {
           const newValue = e.target.value;
           if (/^\d{0,11}$/.test(newValue)) {
-            setCtg(newValue === "" ? "" : Number(newValue));
+            setCtg(newValue);
           }
         }}
         inputProps={{ maxLength: 11 }}

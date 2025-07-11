@@ -41,14 +41,28 @@ const AdelantosTurnoForm: React.FC<AdelantosTurnoFormProps> = ({
     setTabIndex(newValue);
   };
 
+
+  const normalizeAdelantos = (adelantos: any) => {
+    if (Array.isArray(adelantos)) {
+      const efvo = adelantos.filter((a) => a.tipoMedioPago);
+      const gasoil = adelantos.filter((a) => a.tipoCombustible);
+      return { adelantosEfvo: efvo, adelantosGasoil: gasoil };
+    }
+    // Si ya viene como objeto, devolver tal cual
+    return adelantos || { adelantosEfvo: [], adelantosGasoil: [] };
+  };
+
+  const [adelantosState, setAdelantosState] = useState(() => normalizeAdelantos(adelantos));
+
   const tieneAdelantos =
-    (adelantos.adelantosEfvo && adelantos.adelantosEfvo.length > 0) ||
-    (adelantos.adelantosGasoil && adelantos.adelantosGasoil.length > 0);
+    (adelantosState.adelantosEfvo && adelantosState.adelantosEfvo.length > 0) ||
+    (adelantosState.adelantosGasoil && adelantosState.adelantosGasoil.length > 0);
+
 
   const [editAdelanto, setEditAdelanto] = useState<{ tipo: 'efvo' | 'gasoil'; data: any } | null>(null);
   const [deleteAdelanto, setDeleteAdelanto] = useState<{ tipo: 'efvo' | 'gasoil'; data: any } | null>(null);
   const [loading, setLoading] = useState(false);
-  const [adelantosState, setAdelantosState] = useState(adelantos);
+
 
   // Refrescar adelantos tras editar/borrar
   const refreshAdelantos = async () => {
@@ -86,6 +100,12 @@ const AdelantosTurnoForm: React.FC<AdelantosTurnoFormProps> = ({
       setLoading(false);
     }
   };
+
+
+  // Cuando cambian los props, normalizar de nuevo
+  React.useEffect(() => {
+    setAdelantosState(normalizeAdelantos(adelantos));
+  }, [adelantos]);
 
   if (!rolPermitido) {
     return (

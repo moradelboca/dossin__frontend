@@ -1,16 +1,18 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useContext, useState, useEffect } from "react";
-import { Button, TextField, Box, Autocomplete } from "@mui/material";
+import {  TextField, Box, Autocomplete } from "@mui/material";
 import useValidation from "../../hooks/useValidation";
 import { ContextoGeneral } from "../../Contexto";
 import { FormularioProps } from "../../../interfaces/FormularioProps";
 import { useAuth } from "../../autenticacion/ContextoAuth";
+import MainButton from '../../botones/MainButtom';
 
 
 const InconvenienteForm: React.FC<FormularioProps> = ({
   datos,
   setDatos,
   handleClose,
+  seleccionado,
 }) => {
   const { backendURL, authURL, theme } = useContext(ContextoGeneral);
   const { user } = useAuth();
@@ -21,9 +23,19 @@ const InconvenienteForm: React.FC<FormularioProps> = ({
   const [usuarios, setUsuarios] = useState<any[]>([]);
   const [tiposInconvenientes, setTiposInconvenientes] = useState<any[]>([]);
   const [nivelesUrgencia, setNivelesUrgencia] = useState<any[]>([]);
+  const [descripcion, setDescripcion] = useState<string>("");
+
+  // Estilos para azul en focus
+  const azulStyles = {
+    '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
+      borderColor: theme.colores.azul,
+    },
+    '& .MuiInputLabel-root.Mui-focused': {
+      color: theme.colores.azul,
+    },
+  };
 
   // Fetch para obtener los usuarios
-  console.log(`${authURL}/auth/usuarios`)
   useEffect(() => {
     fetch(`${authURL}/auth/usuarios`, {
       method: "GET",
@@ -35,17 +47,27 @@ const InconvenienteForm: React.FC<FormularioProps> = ({
       .then((response) => response.json())
       .then((data) => setUsuarios(data))
       .catch(() => console.error("Error al obtener los usuarios"));
-  }, [authURL]);
+  }, []);
 
-  // Si en datos ya viene asignadoA (por ejemplo en un PUT), autocompletamos el campo
+  // Inicializar descripcion y asignadoA desde 'seleccionado' si está presente
   useEffect(() => {
-    if (usuarios.length && datos.asignadoA) {
-      const userFound = usuarios.find((usr) => usr.id === datos.asignadoA);
+    if (seleccionado && seleccionado.descripcion) {
+      setDescripcion(seleccionado.descripcion);
+    }
+  }, [seleccionado]);
+
+  useEffect(() => {
+    if (usuarios.length && seleccionado && seleccionado.asignadoA) {
+      // Buscar por id o por email
+      let userFound = usuarios.find((usr) => usr.id === seleccionado.asignadoA?.id);
+      if (!userFound && seleccionado.asignadoA?.email) {
+        userFound = usuarios.find((usr) => usr.email === seleccionado.asignadoA.email);
+      }
       if (userFound) {
         setAsignadoA(userFound);
       }
     }
-  }, [usuarios, datos.asignadoA]);
+  }, [usuarios, seleccionado]);
 
   useEffect(() => {
     fetch(`${backendURL}/inconvenientes/tiposinconvenientes`, {
@@ -73,10 +95,10 @@ const InconvenienteForm: React.FC<FormularioProps> = ({
       .catch((error) => {console.error("Error al obtener los Niveles de Urgencia: \n", error);});
   }, [backendURL]);
 
-  const { data, errors, handleChange, validateAll } = useValidation(
+  const { data, errors, handleChange, validateAll, setData } = useValidation(
     {
       titulo: "",
-      descripcion: "",
+      descripcion: descripcion,
       tipoInconveniente: "",
       urgencia: "",
       asignadoA: "",
@@ -90,6 +112,11 @@ const InconvenienteForm: React.FC<FormularioProps> = ({
       asignadoA: () => (!asignadoA ? "Seleccione a quien asignar el inconveniente" : null),
     }
   );
+
+  // Sincronizar el campo descripcion de useValidation cuando cambia descripcion local
+  useEffect(() => {
+    setData((prev: any) => ({ ...prev, descripcion }));
+  }, [descripcion, setData]);
 
   const handleSubmit = () => {
     if (validateAll()) {
@@ -129,119 +156,132 @@ const InconvenienteForm: React.FC<FormularioProps> = ({
   };
 
   return (
-    <Box>
-      <TextField
-        margin="dense"
-        label="Título"
-        name="titulo"
-        variant="outlined"
-        fullWidth
-        value={data.titulo}
-        onChange={handleChange("titulo")}
-        error={!!errors.titulo}
-        helperText={errors.titulo}
-      />
-      <TextField
-        margin="dense"
-        label="Descripción"
-        name="descripcion"
-        variant="outlined"
-        fullWidth
-        multiline
-        rows={4}
-        value={data.descripcion}
-        onChange={handleChange("descripcion")}
-        error={!!errors.descripcion}
-        helperText={errors.descripcion}
-      />
-      <Autocomplete
-        options={tiposInconvenientes.map((tipo) => tipo.nombre)}
-        value={tipoInconveniente}
-        onChange={(_, newValue) => setTipoInconveniente(newValue)}
-        renderInput={(params) => (
-          <TextField
-            {...params}
-            label="Tipo de Inconveniente"
-            variant="outlined"
-            error={!!errors.tipoInconveniente}
-            helperText={errors.tipoInconveniente}
-          />
-        )}
-      />
-      <Autocomplete
-        options={nivelesUrgencia.map((nivel) => nivel.nombre)}
-        value={urgencia}
-        onChange={(_, newValue) => setUrgencia(newValue)}
-        renderInput={(params) => (
-          <TextField
-            {...params}
-            label="Urgencia"
-            variant="outlined"
-            error={!!errors.urgencia}
-            helperText={errors.urgencia}
-          />
-        )}
-      />
-      <TextField
-        margin="dense"
-        label="Creado Por"
-        variant="outlined"
-        fullWidth
-        value={user?.email || ""}
-        disabled
-      />
-      <Autocomplete
-        options={usuarios}
-        value={asignadoA}
-        getOptionLabel={(option) => option.email}
-        onChange={(_, newValue) => setAsignadoA(newValue)}
-        renderInput={(params) => (
-          <TextField
-            {...params}
-            label="Asignado A"
-            variant="outlined"
-            error={!!errors.asignadoA}
-            helperText={errors.asignadoA}
-          />
-        )}
-      />
-      <Box display="flex" justifyContent="space-between" mt={2} gap={2}>
-        <Button
+    <Box sx={{ p: 2 }}>
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, p: 1 }}>
+        <TextField
+          margin="dense"
+          label="Título"
+          name="titulo"
+          variant="outlined"
+          fullWidth
+          value={data.titulo ?? ""}
+          onChange={handleChange("titulo")}
+          error={!!errors.titulo}
+          helperText={errors.titulo}
+          sx={azulStyles}
+        />
+        <TextField
+          margin="dense"
+          label="Descripción"
+          name="descripcion"
+          variant="outlined"
+          fullWidth
+          multiline
+          rows={4}
+          value={data.descripcion ?? ""}
+          onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+            const value = e.target.value;
+            setDescripcion(value);
+            handleChange("descripcion")({
+              ...e,
+              target: {
+                ...e.target,
+                value,
+                name: "descripcion"
+              }
+            } as React.ChangeEvent<HTMLInputElement>);
+          }}
+          error={!!errors.descripcion}
+          helperText={errors.descripcion}
+          sx={azulStyles}
+        />
+        <Autocomplete
+          options={tiposInconvenientes.map((tipo) => tipo.nombre)}
+          value={tipoInconveniente}
+          onChange={(_, newValue) => setTipoInconveniente(newValue)}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label="Tipo de Inconveniente"
+              variant="outlined"
+              error={!!errors.tipoInconveniente}
+              helperText={errors.tipoInconveniente}
+              sx={azulStyles}
+            />
+          )}
+        />
+        <Autocomplete
+          options={nivelesUrgencia.map((nivel) => nivel.nombre)}
+          value={urgencia}
+          onChange={(_, newValue) => setUrgencia(newValue)}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label="Urgencia"
+              variant="outlined"
+              error={!!errors.urgencia}
+              helperText={errors.urgencia}
+              sx={azulStyles}
+            />
+          )}
+        />
+        <TextField
+          margin="dense"
+          label="Creado Por"
+          variant="outlined"
+          fullWidth
+          value={user?.email || ""}
+          disabled
+          sx={azulStyles}
+        />
+        <Autocomplete
+          options={usuarios}
+          value={asignadoA}
+          getOptionLabel={(option) => option.email}
+          onChange={(_, newValue) => setAsignadoA(newValue)}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label="Asignado a"
+              variant="outlined"
+              error={!!errors.asignadoA}
+              helperText={errors.asignadoA}
+              sx={azulStyles}
+            />
+          )}
+        />
+      </Box>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'row',
+          gap: 2,
+          justifyContent: 'flex-end',
+          alignItems: 'center',
+          mt: 4,
+          position: 'relative',
+        }}
+      >
+        <MainButton
           onClick={handleClose}
-          sx={{
-            backgroundColor: "transparent",
-            color: theme.colores.azul,
-            borderRadius: "8px",
-            px: 3,
-            py: 1,
-            fontWeight: 500,
-            textTransform: "none",
-            '&:hover': {
-              backgroundColor: 'rgba(22, 54, 96, 0.1)',
-              color: theme.colores.azul,
-            },
-          }}
-        >
-          Cancelar
-        </Button>
-        <Button
+          text="Cancelar"
+          backgroundColor="transparent"
+          textColor={theme.colores.azul}
+          borderRadius="8px"
+          hoverBackgroundColor="rgba(22, 54, 96, 0.1)"
+          width="120px"
+          divWidth="120px"
+        />
+        <MainButton
           onClick={handleSubmit}
-          sx={{
-            backgroundColor: theme.colores.azul,
-            color: '#fff',
-            borderRadius: '8px',
-            px: 3,
-            py: 1,
-            fontWeight: 500,
-            textTransform: 'none',
-            '&:hover': {
-              backgroundColor: theme.colores.azulOscuro || theme.colores.azul,
-              color: '#fff',
-            },
-          }}
-        >
-          Guardar
-        </Button>
+          text="Guardar"
+          backgroundColor={theme.colores.azul}
+          textColor="#fff"
+          borderRadius="8px"
+          hoverBackgroundColor={theme.colores.azulOscuro}
+          width="120px"
+          divWidth="120px"
+        />
       </Box>
     </Box>
   );

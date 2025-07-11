@@ -19,6 +19,7 @@ import SelectorProveedor from "../selectores/SelectorProveedor";
 
 import { ContextoGeneral } from "../../Contexto";
 import { useAuth } from "../../autenticacion/ContextoAuth";
+import InfoTooltip from '../../InfoTooltip';
 
 // Interfaces para tipar el estado y las props
 interface DatosNuevaCarga {
@@ -138,22 +139,107 @@ const CrearCargaStepper: React.FC<CrearCargaStepperProps> = ({
       {
         titulo: "Seleccionar ubicacion y horarios",
         componente: <SelectorDeUbicacion />,
+        tooltip: {
+          title: 'Ubicación y horarios',
+          sections: [
+            'Seleccioná la ubicación de carga y descarga, y completá los horarios de inicio y fin para cada etapa.',
+            {
+              label: '¿Qué significa "requiere balanza"?',
+              items: [
+                'Si marcás que la carga requiere balanza, significa que el campo NO tiene balanza propia y se utilizará una balanza de un tercero (fuera del campo).',
+                'En este caso, es fundamental seleccionar correctamente la ubicación de la balanza, ya que los camioneros deberán ir primero a la balanza para pesar el camión antes de dirigirse al campo.',
+                'Esto afecta la logística: el recorrido será primero a la balanza y luego al campo, no directamente al campo.'
+              ]
+            },
+            {
+              label: 'Consejos',
+              items: [
+                'Verificá que las ubicaciones existan en el sistema. Si no, deberás crearlas antes.',
+                'Los horarios deben ser coherentes: la hora de inicio debe ser menor a la de fin.',
+                'Si la carga requiere balanza, completá también la ubicación y horarios de balanza.'
+              ]
+            },
+            'Asegurate de que la información sea precisa, ya que impacta en la logística y la planificación.'
+          ]
+        }
       },
       {
         titulo: "Seleccionar kilometros y cargamento",
         componente: <SelectorProveedor />,
+        tooltip: {
+          title: 'Kilómetros y cargamento',
+          sections: [
+            'Seleccioná un solo cargamento de los que figuran en el sistema. Si el cargamento que necesitás no está, generá un inconveniente solicitando que lo agreguen.',
+            {
+              label: 'Sobre los kilómetros',
+              items: [
+                'Ingresá la cantidad de kilómetros exactos que indica Google Maps para el trayecto.',
+                'Estos kilómetros se usan para la carta de porte y para otros cálculos importantes, así que deben ser precisos.'
+              ]
+            }
+          ]
+        }
       },
       {
         titulo: "Seleccionar tarifa",
         componente: <SelectorTarifa />,
+        tooltip: {
+          title: 'Tarifa',
+          sections: [
+            'Seleccioná el tipo de tarifa (por tonelada, por viaje, etc.) e ingresá el valor correspondiente.',
+            {
+              label: '¿Qué significa "incluye IVA"?',
+              items: [
+                'Si marcás la opción "incluye IVA", el monto que ingresás ya tiene el IVA incluido dentro de ese número.',
+                'Si NO se marca, el sistema calculará el IVA por fuera y le sumará automáticamente un 21% al monto que ingreses.'
+              ]
+            },
+            {
+              label: 'Recomendaciones',
+              items: [
+                'Verificá que la tarifa sea la acordada con el proveedor o cliente.',
+                'Si la tarifa incluye IVA, marcá la opción correspondiente.'
+              ]
+            },
+            'La tarifa impacta en la facturación y en los reportes de costos.'
+          ]
+        }
       },
       {
         titulo: "Selecciona tipos de acoplados permitidos",
         componente: <SelectorDeAcoplados />,
+        tooltip: {
+          title: 'Tipos de acoplados',
+          sections: [
+            'Seleccioná uno o más tipos de acoplados que estarán permitidos para esta carga.',
+            {
+              label: 'Tips',
+              items: [
+                'Solo los camiones con los acoplados seleccionados podrán tomar turnos para esta carga.',
+                'Si no seleccionás ninguno, no se podrán asignar turnos.'
+              ]
+            },
+            'Podés agregar nuevos tipos de acoplados desde el panel de administración si es necesario.'
+          ]
+        }
       },
       {
         titulo: "Mas informacion",
         componente: <SelectorMasInfo />,
+        tooltip: {
+          title: 'Más información',
+          sections: [
+            'Completá datos adicionales como tolerancia, descripción, y cualquier observación relevante.',
+            {
+              label: 'Importante',
+              items: [
+                'La tolerancia define el margen de error permitido en la carga/descarga.',
+                'Una buena descripción ayuda a todos los usuarios a entender particularidades de la carga.'
+              ]
+            },
+            'Revisá toda la información antes de finalizar.'
+          ]
+        }
       },
     ],
     []
@@ -335,7 +421,18 @@ const CrearCargaStepper: React.FC<CrearCargaStepperProps> = ({
                     </Box>
                   )}
                 >
-                  {paso.titulo}
+                  <Box display="flex" alignItems="center" gap={1}>
+                    {paso.titulo}
+                    {pasoActivo === index && (
+                      <InfoTooltip
+                        title={paso.tooltip.title}
+                        sections={paso.tooltip.sections}
+                        placement="right"
+                        iconSize="small"
+                        contexto={`Formulario: Crear/Editar carga\nPaso: ${paso.titulo}`}
+                      />
+                    )}
+                  </Box>
                 </StepLabel>
                 <StepContent>
                   <Box sx={{ mb: 2 }}>

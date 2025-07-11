@@ -12,6 +12,7 @@ import CuilFormat from "../formatos/CuilFormat";
 import { useMemo } from 'react';
 import { useNotificacion } from "../../Notificaciones/NotificacionSnackbar";
 import MainButton from "../../botones/MainButtom";
+import EmpresaForm from '../empresas/EmpresaForm';
 
 const ChoferForm: React.FC<FormularioProps> = ({ 
     seleccionado = {}, 
@@ -24,6 +25,7 @@ const ChoferForm: React.FC<FormularioProps> = ({
     const { showNotificacion } = useNotificacion();
 
     const [openDialogDelete, setOpenDialogDelete] = useState(false);
+    const [openEmpresaDialog, setOpenEmpresaDialog] = useState(false);
 
     const [empresas, setEmpresas] = useState<any[]>([]);
     const [empresasSeleccionadas, setEmpresasSeleccionadas] = useState<any[]>([]); 
@@ -35,8 +37,9 @@ const ChoferForm: React.FC<FormularioProps> = ({
     const isMobile = useMediaQuery(tema.breakpoints.down("sm"));
 
     const roles = useMemo(() => [
-      { id: 1, nombre: "Camionero" },
-      { id: 2, nombre: "Encargado" },
+      { id: 1, nombre: "Encargado" },
+      { id: 2, nombre: "Chofer" },
+
     ], []);
     
     const [rolSeleccionado, setRolSeleccionado] = useState<{ id: number; nombre: string } | null>(
@@ -47,13 +50,22 @@ const ChoferForm: React.FC<FormularioProps> = ({
     const [loadingEmpresas, setLoadingEmpresas] = useState(false);
     const [loadingLocalidades, setLoadingLocalidades] = useState(false);
     
+    // Estilos para azul en focus
+    const azulStyles = {
+        '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
+            borderColor: theme.colores.azul,
+        },
+        '& .MuiInputLabel-root.Mui-focused': {
+            color: theme.colores.azul,
+        },
+    };
+
     const { data, errors, handleChange, validateAll } = useValidation(
         {
             cuil: null,
             numeroCel: "",
             nombre: "",
             apellido: "",
-            fechaNacimiento: "",
             empresas: [],
             urlLINTI: "",
             idLocalidad: "",
@@ -88,7 +100,6 @@ const ChoferForm: React.FC<FormularioProps> = ({
             },
             nombre: (value) => (!value ? "El nombre es obligatorio" : null),
             apellido: (value) => (!value ? "El apellido es obligatorio" : null),
-            fechaNacimiento: (value) => (!value ? "La fecha de nacimiento es obligatoria" : null),
             empresas: () => {
                 const empresasValidas = empresasSeleccionadas.length > 0 || (seleccionado?.empresas.length > 0 && empresasSeleccionadas.length > 0);
                 if (!empresasValidas) {
@@ -248,7 +259,6 @@ const ChoferForm: React.FC<FormularioProps> = ({
                 numeroCel: `${codigoSeleccionado}-${numeroCel}`.replace(/[^0-9]/g, ''),
                 nombre: data.nombre,
                 apellido: data.apellido,
-                fechaNacimiento: data.fechaNacimiento,
                 empresas: empresasSeleccionadas,
                 urlLINTI: data.urlLINTI,
                 idLocalidad: localidadObjeto?.id,
@@ -308,43 +318,34 @@ const ChoferForm: React.FC<FormularioProps> = ({
 
     return (
         <>
-            <TextField
-                margin="dense"
-                label="CUIL"
-                name="cuil"
-                variant="outlined"
-                slotProps={{
-                    input: {
-                        inputComponent: CuilFormat as any,
-                    },
-                }}
-                fullWidth
-                value={data.cuil}
-                onChange={handleChange("cuil")}
-                error={!!errors.cuil}
-                helperText={errors.cuil}
-                disabled={!!seleccionado?.cuil}
-            />
-
-            <Box
-                display="flex"
-                flexDirection="row"
-                gap={2}
-                alignContent={"center"}
-                alignItems={"center"}
-                marginTop={2}
-                marginBottom={1}
-            >
-                {/**/}
-                <Box width={"100px"}>
-                    <AutocompletarPais
-                        setCodigoSeleccionado={setCodigoSeleccionado}
-                        error={!!errors.numeroCel}
-                        defaultPhone={codigoSeleccionado}
-                    />
-                </Box>
-                <>-</>
-                <Stack width="400px" direction="row" spacing={2}>
+            <Stack spacing={2} sx={{ mt: 3 }}>
+                <TextField
+                    margin="dense"
+                    label="CUIL"
+                    name="cuil"
+                    variant="outlined"
+                    slotProps={{
+                        input: {
+                            inputComponent: CuilFormat as any,
+                        },
+                    }}
+                    fullWidth
+                    value={data.cuil ?? ""}
+                    onChange={handleChange("cuil")}
+                    error={!!errors.cuil}
+                    helperText={errors.cuil}
+                    disabled={!!seleccionado?.cuil}
+                    sx={azulStyles}
+                />
+                <Box display="flex" gap={2} width="100%" alignItems="center">
+                    <Box minWidth={120} maxWidth={160} flexShrink={0}>
+                        <AutocompletarPais
+                            setCodigoSeleccionado={setCodigoSeleccionado}
+                            error={!!errors.numeroCel}
+                            defaultPhone={codigoSeleccionado}
+                            fullWidth
+                        />
+                    </Box>
                     <TextField
                         margin="dense"
                         label="Número de Celular"
@@ -359,162 +360,226 @@ const ChoferForm: React.FC<FormularioProps> = ({
                         onChange={handleNumeroCelularChange}
                         error={!!errors.numeroCel}
                         helperText={errors.numeroCel}
+                        sx={azulStyles}
                     />
-                </Stack>
+                </Box>
+                <TextField
+                    margin="dense"
+                    label="Nombre"
+                    variant="outlined"
+                    fullWidth
+                    value={data.nombre ?? ""}
+                    onChange={handleChange("nombre")}
+                    error={!!errors.nombre}
+                    helperText={errors.nombre}
+                    sx={azulStyles}
+                />
+                <TextField
+                    margin="dense"
+                    label="Apellido"
+                    variant="outlined"
+                    fullWidth
+                    value={data.apellido ?? ""}
+                    onChange={handleChange("apellido")}
+                    error={!!errors.apellido}
+                    helperText={errors.apellido}
+                    sx={azulStyles}
+                />
+                <Autocomplete
+                    multiple
+                    limitTags={2}
+                    id="empresas-autocomplete"
+                    options={(() => {
+                        const base = empresas.filter(
+                            (empresa) =>
+                                empresa.roles &&
+                                empresa.roles.some(
+                                    (rol: { nombre?: string }) =>
+                                        rol.nombre &&
+                                        rol.nombre.toLowerCase().replace(/\s+/g, '') === 'empresatransportista'
+                                )
+                        );
+                        return [...base, { cuit: '__add__', nombreFantasia: '', razonSocial: '' }];
+                    })()}
+                    getOptionLabel={(option) =>
+                        option.cuit === '__add__'
+                            ? 'Agregar una empresa'
+                            : `${option.nombreFantasia} - ${option.cuit}`
+                    }
+                    value={empresas.filter((empresa) => empresasSeleccionadas.includes(empresa.cuit))}
+                    onChange={(_, newValue) => {
+                        // Si se selecciona la opción de agregar empresa, abrir el dialog
+                        if (newValue && newValue.length > 0 && newValue[newValue.length - 1]?.cuit === '__add__') {
+                            setOpenEmpresaDialog(true);
+                            // Remover la opción especial del array
+                            setEmpresasSeleccionadas(newValue.slice(0, -1).map((empresa) => empresa.cuit));
+                        } else {
+                            setEmpresasSeleccionadas(newValue.map((empresa) => empresa.cuit));
+                        }
+                    }}
+                    loading={loadingEmpresas}
+                    renderInput={(params) => (
+                        <TextField
+                            {...params}
+                            label="Empresas"
+                            placeholder="Selecciona empresas"
+                            error={!!errors.empresas}
+                            helperText={errors.empresas}
+                            InputProps={{
+                                ...params.InputProps,
+                                endAdornment: (
+                                    <>
+                                        {loadingEmpresas ? <CircularProgress size={20} /> : null}
+                                        {params.InputProps.endAdornment}
+                                    </>
+                                ),
+                            }}
+                            sx={azulStyles}
+                        />
+                    )}
+                    renderOption={(props, option) => {
+                        // Extraer key del objeto props
+                        const { key, ...rest } = props;
+                        if (option.cuit === '__add__') {
+                            return (
+                                <li
+                                    key={key}
+                                    {...rest}
+                                    style={{
+                                        display: 'flex',
+                                        justifyContent: 'center',
+                                        alignItems: 'center',
+                                        color: theme.colores.azul,
+                                        fontWeight: 600,
+                                        cursor: 'pointer',
+                                        padding: '10px 0',
+                                        borderTop: '1px solid #eee',
+                                        background: props['aria-selected'] ? theme.colores.grisClaro : 'white',
+                                        transition: 'background 0.2s',
+                                    }}
+                                >
+                                    + Agregar una empresa
+                                </li>
+                            );
+                        }
+                        return (
+                            <li key={key} {...rest}>
+                                {option.nombreFantasia} - {option.cuit}
+                            </li>
+                        );
+                    }}
+                />
+                <Dialog open={openEmpresaDialog} onClose={() => setOpenEmpresaDialog(false)} maxWidth="sm" fullWidth>
+                    <EmpresaForm
+                        seleccionado={{}}
+                        datos={empresas}
+                        setDatos={(nuevasEmpresas: any[]) => {
+                            setEmpresas(nuevasEmpresas);
+                            // Selecciona la última empresa agregada automáticamente
+                            if (nuevasEmpresas.length > 0) {
+                                const nueva = nuevasEmpresas[nuevasEmpresas.length - 1];
+                                setEmpresasSeleccionadas((prev: any[]) => [...prev, nueva.cuit]);
+                            }
+                        }}
+                        handleClose={() => setOpenEmpresaDialog(false)}
+                    />
+                </Dialog>
+                <TextField
+                    margin="dense"
+                    label="URL LINTI"
+                    variant="outlined"
+                    fullWidth
+                    value={data.urlLINTI ?? ""}
+                    onChange={handleChange("urlLINTI")}
+                    error={!!errors.urlLINTI}
+                    helperText={errors.urlLINTI}
+                    sx={azulStyles}
+                />
+                <Autocomplete
+                    disablePortal
+                    options={localidades}
+                    getOptionLabel={(option) => option.displayName}
+                    value={localidades.find((loc) => loc.displayName === localidadSeleccionada) || null}
+                    onChange={(_, newValue) => setlocalidadSeleccionada(newValue ? newValue.displayName : null)}
+                    loading={loadingLocalidades}
+                    renderInput={(params) => (
+                        <TextField
+                            {...params}
+                            label="Localidad"
+                            variant="outlined"
+                            error={!!errors.idLocalidad}
+                            helperText={errors.idLocalidad}
+                            InputProps={{
+                                ...params.InputProps,
+                                endAdornment: (
+                                    <>
+                                        {loadingLocalidades ? <CircularProgress size={20} /> : null}
+                                        {params.InputProps.endAdornment}
+                                    </>
+                                ),
+                            }}
+                            sx={azulStyles}
+                        />
+                    )}
+                />
+                <Autocomplete
+                    value={rolSeleccionado}
+                    onChange={(_, newValue) => setRolSeleccionado(newValue)}
+                    options={roles}
+                    getOptionLabel={(option) => option.nombre}
+                    isOptionEqualToValue={(option, value) => option.id === value?.id}
+                    renderInput={(params) => (
+                        <TextField 
+                            {...params} 
+                            label="Rol" 
+                            variant="outlined" 
+                            fullWidth 
+                            sx={azulStyles}
+                            error={!!errors.idRol}
+                            helperText={errors.idRol}
+                        />
+                    )}
+                />
+            </Stack>
+
+            <Box
+                sx={{
+                    display: "flex",
+                    flexDirection: isMobile ? "column" : "row",
+                    gap: 2,
+                    justifyContent: "flex-end",
+                    alignItems: "center",
+                    mt: 4,
+                    position: 'relative'
+                }}
+            >
+                <MainButton
+                    onClick={handleClose}
+                    text="Cancelar"
+                    backgroundColor="transparent"
+                    textColor={theme.colores.azul}
+                    width={isMobile ? '100%' : 'auto'}
+                    borderRadius="8px"
+                    hoverBackgroundColor="rgba(22, 54, 96, 0.1)"
+                    divWidth={isMobile ? '100%' : 'auto'}
+                />
+
+                <MainButton
+                    onClick={handleSubmit}
+                    text="Guardar"
+                    backgroundColor={theme.colores.azul}
+                    textColor="#fff"
+                    width={isMobile ? '100%' : 'auto'}
+                    borderRadius="8px"
+                    hoverBackgroundColor={theme.colores.azulOscuro}
+                    divWidth={isMobile ? '100%' : 'auto'}
+                />
+                {seleccionado && (
+                    <IconButton onClick={handleClickDelete}>
+                        <DeleteOutlineIcon sx={{ fontSize: 20, color: "#d68384" }} />
+                    </IconButton>
+                )}
             </Box>
-
-            <TextField
-                margin="dense"
-                label="Nombre"
-                variant="outlined"
-                fullWidth
-                value={data.nombre}
-                onChange={handleChange("nombre")}
-                error={!!errors.nombre}
-                helperText={errors.nombre}
-            />
-
-            <TextField
-                margin="dense"
-                label="Apellido"
-                variant="outlined"
-                fullWidth
-                value={data.apellido}
-                onChange={handleChange("apellido")}
-                error={!!errors.apellido}
-                helperText={errors.apellido}
-            />
-
-            <TextField
-                margin="dense"
-                label="Fecha de Nacimiento"
-                type="date"
-                fullWidth
-                InputLabelProps={{ shrink: true }}
-                value={data.fechaNacimiento}
-                onChange={handleChange("fechaNacimiento")}
-                error={!!errors.fechaNacimiento}
-                helperText={errors.fechaNacimiento}
-            />
-
-            <Autocomplete
-                multiple
-                limitTags={2}
-                id="empresas-autocomplete"
-                options={empresas}
-                getOptionLabel={(option) => option.nombreFantasia}
-                value={empresas.filter((empresa) => empresasSeleccionadas.includes(empresa.cuit))}
-                onChange={(_, newValue) => setEmpresasSeleccionadas(newValue.map((empresa) => empresa.cuit))}
-                loading={loadingEmpresas}
-                renderInput={(params) => (
-                    <TextField
-                        {...params}
-                        label="Empresas"
-                        placeholder="Selecciona empresas"
-                        error={!!errors.empresas}
-                        helperText={errors.empresas}
-                        InputProps={{
-                            ...params.InputProps,
-                            endAdornment: (
-                                <>
-                                    {loadingEmpresas ? <CircularProgress size={20} /> : null}
-                                    {params.InputProps.endAdornment}
-                                </>
-                            ),
-                        }}
-                    />
-                )}
-            />
-
-
-
-            <TextField
-                margin="dense"
-                label="URL LINTI"
-                variant="outlined"
-                fullWidth
-                value={data.urlLINTI}
-                onChange={handleChange("urlLINTI")}
-                error={!!errors.urlLINTI}
-                helperText={errors.urlLINTI}
-            />
-
-            <Autocomplete
-                disablePortal
-                options={localidades}
-                getOptionLabel={(option) => option.displayName}
-                value={localidades.find((loc) => loc.displayName === localidadSeleccionada) || null}
-                onChange={(_, newValue) => setlocalidadSeleccionada(newValue ? newValue.displayName : null)}
-                loading={loadingLocalidades}
-                renderInput={(params) => (
-                    <TextField
-                        {...params}
-                        label="Localidad"
-                        variant="outlined"
-                        error={!!errors.idLocalidad}
-                        helperText={errors.idLocalidad}
-                        InputProps={{
-                            ...params.InputProps,
-                            endAdornment: (
-                                <>
-                                    {loadingLocalidades ? <CircularProgress size={20} /> : null}
-                                    {params.InputProps.endAdornment}
-                                </>
-                            ),
-                        }}
-                    />
-                )}
-            />
-
-            <Autocomplete
-                value={rolSeleccionado}
-                onChange={(_, newValue) => setRolSeleccionado(newValue)}
-                options={roles}
-                getOptionLabel={(option) => option.nombre}
-                isOptionEqualToValue={(option, value) => option.id === value?.id}
-                renderInput={(params) => (
-                    <TextField {...params} label="Rol" variant="outlined" fullWidth />
-                )}
-            />
-
-<Box
-          sx={{
-            display: "flex",
-            flexDirection: isMobile ? "column" : "row",
-            gap: 2,
-            justifyContent: "flex-end",
-            alignItems: "center",
-            mt: 4,
-            position: 'relative'
-          }}
-        >
-            <MainButton
-              onClick={handleClose}
-              text="Cancelar"
-              backgroundColor="transparent"
-              textColor={theme.colores.azul}
-              width={isMobile ? '100%' : 'auto'}
-              borderRadius="8px"
-              hoverBackgroundColor="rgba(22, 54, 96, 0.1)"
-              divWidth={isMobile ? '100%' : 'auto'}
-            />
-
-            <MainButton
-              onClick={handleSubmit}
-              text="Guardar"
-              backgroundColor={theme.colores.azul}
-              textColor="#fff"
-              width={isMobile ? '100%' : 'auto'}
-              borderRadius="8px"
-              hoverBackgroundColor={theme.colores.azulOscuro}
-              divWidth={isMobile ? '100%' : 'auto'}
-            />
-          {seleccionado && (
-            <IconButton onClick={handleClickDelete}>
-              <DeleteOutlineIcon sx={{ fontSize: 20, color: "#d68384" }} />
-            </IconButton>
-          )}
-        </Box>
 
             <Dialog 
                 open={openDialogDelete} 

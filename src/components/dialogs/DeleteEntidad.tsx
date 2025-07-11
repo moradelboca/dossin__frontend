@@ -3,6 +3,7 @@ import ClearSharpIcon from "@mui/icons-material/ClearSharp";
 import { Box, Button, Typography } from "@mui/material";
 import { useContext } from "react";
 import { ContextoGeneral } from "../Contexto";
+import { useNotificacion } from "../../components/Notificaciones/NotificacionSnackbar";
 
 interface IDeleteEntidad {
     idEntidad: string | number;
@@ -16,6 +17,7 @@ interface IDeleteEntidad {
 export default function DeleteEntidad(props: IDeleteEntidad) {
     const { handleCloseDialog, idEntidad, endpointEntidad, handleClose, datos, setDatos, usarAuthURL } = props;
     const { authURL, backendURL, theme } = useContext(ContextoGeneral);
+    const { showNotificacion } = useNotificacion();
 
     const handleNoClick = () => {
         handleCloseDialog();
@@ -30,22 +32,38 @@ export default function DeleteEntidad(props: IDeleteEntidad) {
                 "ngrok-skip-browser-warning": "true",
             },
         })
-            .then((response) => response.json())
-            .then(() => {
-                if (datos && Array.isArray(datos)) {
-                    const newEntidades = datos.filter(
-                        (entidad: any) => Object.values(entidad)[0] !== idEntidad
-                    );
-                    setDatos(newEntidades);
+            .then(async (response) => {
+                let data;
+                try {
+                    data = await response.json();
+                } catch (e) {
+                    data = {};
+                }
+                if (response.ok) {
+                    if (datos && Array.isArray(datos)) {
+                        const newEntidades = datos.filter(
+                            (entidad: any) => Object.values(entidad)[0] !== idEntidad
+                        );
+                        setDatos(newEntidades);
+                    } else {
+                        console.error("Error: 'datos' no es un array válido.");
+                    }
+                    handleCloseDialog();
+                    handleClose();
                 } else {
-                    console.error("Error: 'datos' no es un array válido.");
+                    if (data && data.mensaje) {
+                        showNotificacion(data.mensaje, 'error');
+                    } else {
+                        showNotificacion('Error al borrar la entidad', 'error');
+                    }
+                    handleCloseDialog();
                 }
             })
             .catch((error) => {
+                showNotificacion('Error al borrar la entidad', 'error');
                 console.error("Error al borrar la entidad", error);
+                handleCloseDialog();
             });
-        handleCloseDialog();
-        handleClose();
     };
 
     return (
@@ -64,7 +82,23 @@ export default function DeleteEntidad(props: IDeleteEntidad) {
             }}
         >
             <Typography variant="h6" color="textPrimary" align="center">
-                ¿Está seguro de que quiere eliminar la entidad?
+                {(() => {
+                    switch (endpointEntidad) {
+                        case 'colaboradores':
+                            return '¿Está seguro de que quiere eliminar el colaborador?';
+                        case 'empresas':
+                        case 'empresa':
+                            return '¿Está seguro de que quiere eliminar la empresa?';
+                        case 'camiones':
+                        case 'camion':
+                            return '¿Está seguro de que quiere eliminar el camión?';
+                        case 'acoplados':
+                        case 'acoplado':
+                            return '¿Está seguro de que quiere eliminar el acoplado?';
+                        default:
+                            return '¿Está seguro de que quiere eliminar la entidad?';
+                    }
+                })()}
             </Typography>
             <ClearSharpIcon
                 onClick={handleCloseDialog}

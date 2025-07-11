@@ -15,6 +15,7 @@ interface CrearNuevoTurnoFormProps {
   fechaCupo?: string;
   tieneBitren?: boolean | null;
   acopladoExtraRequired?: boolean;
+  estadoTurno?: string;
 }
 
 const CrearNuevoTurnoForm: React.FC<CrearNuevoTurnoFormProps> = ({
@@ -24,6 +25,7 @@ const CrearNuevoTurnoForm: React.FC<CrearNuevoTurnoFormProps> = ({
   fechaCupo,
   tieneBitren,
   acopladoExtraRequired = false,
+  estadoTurno,
 }) => {
   const { backendURL, theme } = useContext(ContextoGeneral);
 
@@ -102,17 +104,25 @@ const CrearNuevoTurnoForm: React.FC<CrearNuevoTurnoFormProps> = ({
       </Typography>
 
       <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
-        <AutocompleteColaboradores
-          value={colaboradorSeleccionado}
-          onChange={setColaboradorSeleccionado}
-          error={!!errors.cuilColaborador}
-          helperText={errors.cuilColaborador}
-        />
+        {/* PRIMERO: EMPRESA TRANSPORTISTA */}
         <AutocompleteEmpresas
           value={empresaTransportistaSeleccionada}
           onChange={setEmpresaTransportistaSeleccionada}
           error={!!errors.cuitEmpresa}
           helperText={errors.cuitEmpresa}
+          labelText="Empresa transportista"
+          rolEmpresa="Empresa Transportista"
+        />
+        {/* SEGUNDO: COLABORADOR, deshabilitado si no hay empresa seleccionada y filtrado por empresa */}
+        <AutocompleteColaboradores
+          value={colaboradorSeleccionado}
+          onChange={setColaboradorSeleccionado}
+          error={!!errors.cuilColaborador}
+          helperText={(!estadoTurno || estadoTurno === 'Validado')
+            ? (empresaTransportistaSeleccionada ? errors.cuilColaborador : "Seleccione primero una empresa transportista")
+            : errors.cuilColaborador}
+          empresaSeleccionada={(!estadoTurno || estadoTurno === 'Validado') ? empresaTransportistaSeleccionada : undefined}
+          disabled={(!estadoTurno || estadoTurno === 'Validado') ? !empresaTransportistaSeleccionada : false}
         />
         <AutocompleteCamiones
           value={patenteCamionSeleccionada}

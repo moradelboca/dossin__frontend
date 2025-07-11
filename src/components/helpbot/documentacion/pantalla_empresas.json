@@ -1,0 +1,75 @@
+{
+  "descripcion": "La pantalla de Empresas te permite ver, buscar, agregar y editar todas las empresas registradas en el sistema. Es una tabla clara donde podés filtrar, exportar, personalizar columnas y gestionar los datos de cada empresa.",
+  "como_llegar": [
+    "Hacé clic en el ícono de 'Empresas' en la barra lateral izquierda.",
+    "Se abre la tabla con todas las empresas y las herramientas para gestionarlas."
+  ],
+  "elementos_principales": {
+    "Panel superior": [
+      "Título grande 'Empresas' arriba a la izquierda.",
+      "Buscador para filtrar empresas por nombre, CUIT, razón social, etc.",
+      "Botón '+ AGREGAR EMPRESA' arriba a la derecha para crear una nueva empresa.",
+      "Botón 'FILTROS' para aplicar filtros avanzados.",
+      "Botón 'EXPORTAR' para descargar la lista (por ejemplo, en Excel).",
+      "Botón 'COLUMNAS' para elegir qué columnas mostrar en la tabla."
+    ],
+    "Tabla de empresas": [
+      "Cada fila es una empresa y cada columna muestra un dato: CUIT, Razón Social, Nombre Fantasía, Localidad/Provincia, Número Celular, Roles, Editar.",
+      "Columna 'Editar' con ícono de lápiz para modificar los datos de la empresa.",
+      "Columna 'Roles' muestra los roles que cumple la empresa (ej: Remitente Comercial Productor, Transportista, etc.)."
+    ],
+    "Paginación": [
+      "Abajo a la derecha, podés elegir cuántas filas ver por página y navegar entre páginas si hay muchas empresas."
+    ]
+  },
+  "acciones_principales": [
+    {
+      "nombre": "Agregar empresa",
+      "descripcion": "Hacé clic en '+ AGREGAR EMPRESA', completá los datos obligatorios (nombre, CUIT, tipo, etc.) y guardá. Si el CUIT ya existe, el sistema te avisa y no deja guardar."
+    },
+    {
+      "nombre": "Editar empresa",
+      "descripcion": "En la columna 'Editar', hacé clic en el lápiz. Se abre el formulario con los datos ya cargados. Modificá lo que necesites y guardá los cambios."
+    },
+    {
+      "nombre": "Eliminar empresa",
+      "descripcion": "Si tu rol lo permite, podés eliminar una empresa desde el formulario de edición o desde la tabla (ícono de basurita). El sistema pide confirmación antes de borrar. Revisá dependencias antes de eliminar, ya que puede estar asociada a cargas, turnos u otros datos."
+    },
+    {
+      "nombre": "Buscar empresa",
+      "descripcion": "Usá el buscador para filtrar rápidamente por nombre, CUIT, razón social, etc. La tabla se actualiza al instante."
+    },
+    {
+      "nombre": "Filtrar y exportar",
+      "descripcion": "Aplicá filtros avanzados con el botón 'FILTROS' o exportá la lista con 'EXPORTAR'."
+    },
+    {
+      "nombre": "Personalizar columnas",
+      "descripcion": "Con el botón 'COLUMNAS' elegís qué datos ver en la tabla, según lo que te resulte más útil."
+    }
+  ],
+  "preguntas_frecuentes": [
+    {
+      "pregunta": "¿Cómo veo las empresas registradas?",
+      "respuesta": "Todas las empresas aparecen en la tabla. Usá el buscador o los filtros para encontrarlas más rápido."
+    },
+    {
+      "pregunta": "¿Cómo agrego una nueva empresa?",
+      "respuesta": "Hacé clic en '+ AGREGAR EMPRESA', completá el formulario y guardá."
+    },
+    {
+      "pregunta": "¿Cómo edito o elimino una empresa?",
+      "respuesta": "Hacé clic en el lápiz para editar o en el ícono de basurita para eliminar. El sistema pide confirmación antes de borrar."
+    },
+    {
+      "pregunta": "¿Por qué no puedo borrar una empresa?",
+      "respuesta": "Solo los roles con permiso pueden borrar empresas. Además, si la empresa está asociada a cargas u otros datos, primero revisá esas dependencias."
+    }
+  ],
+  "consejos_utiles": [
+    "Solo los roles con permiso pueden crear, editar o borrar empresas. Si no ves la opción, consultá la sección de permisos.",
+    "Si necesitás agregar un tipo de empresa que no aparece, pedile ayuda a un administrador.",
+    "Usá el buscador y los filtros para encontrar empresas rápido, sobre todo si tenés muchas.",
+    "Antes de eliminar una empresa, asegurate de que no esté asociada a cargas, turnos u otros datos importantes."
+  ]
+} 

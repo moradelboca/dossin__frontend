@@ -58,9 +58,9 @@ const TurnoForm: React.FC<TurnoFormProps> = (props) => {
       }}
     >
       {(!seleccionado || !seleccionado.id) ? (
-        <CrearNuevoTurnoForm {...props} tieneBitren={tieneBitren} acopladoExtraRequired={acopladoExtraRequired} />
+        <CrearNuevoTurnoForm {...props} tieneBitren={tieneBitren} acopladoExtraRequired={acopladoExtraRequired} estadoTurno={seleccionado?.estado?.nombre} />
       ) : (
-        <EditarTurnoForm {...props} tieneBitren={tieneBitren} acopladoExtraRequired={acopladoExtraRequired} />
+        <EditarTurnoForm {...props} tieneBitren={tieneBitren} acopladoExtraRequired={acopladoExtraRequired} estadoTurno={seleccionado?.estado?.nombre} />
       )}
     </Box>
   );
