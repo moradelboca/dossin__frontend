@@ -171,8 +171,10 @@ Si no hay suficiente información en los DOCUMENTOS para responder, devolvé:
               content: userMessageText
             }
           ],
+          reasoning: {},
           tools: [
             {
+
               type: "function",
               name: "respuesta_json",
               description: "Devuelve la respuesta estructurada para el helpbot.",

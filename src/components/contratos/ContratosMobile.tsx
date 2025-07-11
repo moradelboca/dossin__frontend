@@ -122,57 +122,75 @@ const ContratosMobile: React.FC<ContratosMobileProps> = ({
           Agregar contrato +
         </Button>
       </Box>
-      {contratos.map((contrato, idx) => (
-        <Box key={contrato.id || idx} mb={3}>
-          <CardMobile
-            item={contrato}
-            index={idx}
-            fields={contratoFields}
-            headerNames={contratoHeaderNames}
-            expandedCard={expandedContrato}
-            handleExpandClick={handleExpandContrato}
-            tituloField="titularCartaDePorte.razonSocial"
-            subtituloField="destinatario.razonSocial"
-            usarSinDesplegable={false}
-            childrenCollapse={
-              expandedContrato === idx && (
-                <Box display="flex" gap={2} mt={1}>
-                  <CustomButtom
-                    title="Editar contrato"
-                    onClick={() => handleOpenDialog(contrato)}
+      {contratos.length > 0 ? (
+        contratos.map((contrato, idx) => (
+          <Box key={contrato.id || idx} mb={3}>
+            <CardMobile
+              item={contrato}
+              index={idx}
+              fields={contratoFields}
+              headerNames={contratoHeaderNames}
+              expandedCard={expandedContrato}
+              handleExpandClick={handleExpandContrato}
+              tituloField="titularCartaDePorte.razonSocial"
+              subtituloField="destinatario.razonSocial"
+              usarSinDesplegable={false}
+              childrenCollapse={
+                expandedContrato === idx && (
+                  <Box display="flex" gap={2} mt={1}>
+                    <CustomButtom
+                      title="Editar contrato"
+                      onClick={() => handleOpenDialog(contrato)}
+                    />
+                    <CustomButtom
+                      title="Crear carga +"
+                      onClick={() => handleCrearCarga(contrato)}
+                    />
+                  </Box>
+                )
+              }
+            />
+            {/* Cargas asociadas */}
+            {expandedContrato === idx && contrato.cargas && contrato.cargas.length > 0 && (
+              <Box mt={1} ml={2}>
+                <Typography variant="subtitle1" color={theme.colores.azul} mb={1}>
+                  Cargas asociadas
+                </Typography>
+                {contrato.cargas.map((carga: any, cidx: number) => (
+                  <CardMobile
+                    key={carga.id || cidx}
+                    item={carga}
+                    index={cidx}
+                    fields={cargaFields}
+                    headerNames={cargaHeaderNames}
+                    expandedCard={expandedCarga}
+                    handleExpandClick={handleExpandCarga}
+                    tituloField="ubicacionCarga.nombre"
+                    subtituloField="ubicacionDescarga.nombre"
+                    usarSinDesplegable={false}
                   />
-                  <CustomButtom
-                    title="Crear carga +"
-                    onClick={() => handleCrearCarga(contrato)}
-                  />
-                </Box>
-              )
-            }
-          />
-          {/* Cargas asociadas */}
-          {expandedContrato === idx && contrato.cargas && contrato.cargas.length > 0 && (
-            <Box mt={1} ml={2}>
-              <Typography variant="subtitle1" color={theme.colores.azul} mb={1}>
-                Cargas asociadas
-              </Typography>
-              {contrato.cargas.map((carga: any, cidx: number) => (
-                <CardMobile
-                  key={carga.id || cidx}
-                  item={carga}
-                  index={cidx}
-                  fields={cargaFields}
-                  headerNames={cargaHeaderNames}
-                  expandedCard={expandedCarga}
-                  handleExpandClick={handleExpandCarga}
-                  tituloField="ubicacionCarga.nombre"
-                  subtituloField="ubicacionDescarga.nombre"
-                  usarSinDesplegable={false}
-                />
-              ))}
-            </Box>
-          )}
+                ))}
+              </Box>
+            )}
+          </Box>
+        ))
+      ) : (
+        <Box
+          display="flex"
+          flexDirection="column"
+          alignItems="center"
+          justifyContent="center"
+          height="50vh"
+          gap={2}
+        >
+          <Typography variant="h6" color="textSecondary">
+            No hay contratos disponibles
+          </Typography>
+          <Typography variant="body2" color="textSecondary" textAlign="center">
+            Hacé clic en "Agregar contrato +" para crear tu primer contrato
+          </Typography>
         </Box>
-      ))}
+      )}
       {/* Dialog para crear/editar contrato */}
       <Dialog open={open} onClose={handleClose} fullWidth maxWidth="md">
         <DialogTitle>{seleccionado ? "Editar Contrato" : "Crear Contrato"}</DialogTitle>

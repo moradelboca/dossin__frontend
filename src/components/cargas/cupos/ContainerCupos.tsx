@@ -33,7 +33,6 @@ export function ContainerCupos() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
   const { user } = useAuth();
-
   // Mover isMobile e isIngeniero antes de refreshCupos para evitar ReferenceError
   const isMobile = useMediaQuery("(max-width:768px)");
   const isIngeniero = user?.rol?.id === 3;
