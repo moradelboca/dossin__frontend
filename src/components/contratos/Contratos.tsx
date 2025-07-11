@@ -99,16 +99,6 @@ export default function Contratos() {
     );
   }
 
-  if (!contratosConCargas || contratosConCargas.length === 0) {
-    return (
-      <Box sx={{ backgroundColor: theme.colores.grisClaro, height: '100%', minHeight: 0, minWidth: 0, width: '100%', p: 2, overflowY: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <Typography variant="h6" color={theme.colores.azul} sx={{ opacity: 0.7 }}>
-          No hay contratos disponibles.
-        </Typography>
-      </Box>
-    );
-  }
-
   return (
     <Box sx={{ backgroundColor: theme.colores.grisClaro, height: '100%', minHeight: 0, minWidth: 0, width: '100%', p: 2, overflowY: 'auto' }}>
       <Box sx={{ display: "flex", flexDirection: "column", mb: 2 }}>
@@ -130,14 +120,14 @@ export default function Contratos() {
         </Box>
       </Box>
 
-      {contratosConCargas.length > 0 ? (
+      {contratosConCargas && contratosConCargas.length > 0 ? (
         contratosConCargas.map((contrato) => (
           <Box key={contrato.id} mb={3}>
-          <ContratoItem
-            contrato={contrato}
-            onEditContrato={handleOpenDialog}
-            refreshContratos={refreshContratos}
-          />
+            <ContratoItem
+              contrato={contrato}
+              onEditContrato={handleOpenDialog}
+              refreshContratos={refreshContratos}
+            />
           </Box>
         ))
       ) : (
