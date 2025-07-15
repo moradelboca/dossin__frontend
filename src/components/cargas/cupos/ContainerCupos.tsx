@@ -306,19 +306,8 @@ export function ContainerCupos() {
       const cuposPasado = await cargarCuposPasado();
       
       // 2. Determinar desde qué fecha cargar futuros
-      // Si los cupos del pasado incluyen hoy (fechaHasta extendida), empezar desde pasado mañana
-      const hoy = dayjs().format('YYYY-MM-DD');
-      const fechaHastaFiltros = filtros.fechaHasta || hoy;
-      const incluyeHoy = fechaHastaFiltros === hoy;
-      
-      let fechaDesdeFuturos;
-      if (incluyeHoy) {
-        // Si incluye hoy, empezar desde pasado mañana para evitar duplicados
-        fechaDesdeFuturos = sumarDias(new Date(), 2);
-      } else {
-        // Si no incluye hoy, empezar desde mañana
-        fechaDesdeFuturos = sumarDias(new Date(), 1);
-      }
+      // Siempre empezar desde hoy para los cupos futuros
+      const fechaDesdeFuturos = new Date();
       
       const { cupos: cuposFuturo, tieneMasDatos } = await cargarCuposFuturos(fechaDesdeFuturos);
       
@@ -433,7 +422,7 @@ export function ContainerCupos() {
     setSelectedTab(nuevoTab);
     
     // Resetear estados de lazy loading
-    setFechaDesdeFuturo(sumarDias(new Date(), 1));
+    setFechaDesdeFuturo(new Date());
     setHasMoreData(true);
     setDiasBuscadosFuturo(0);
   };
