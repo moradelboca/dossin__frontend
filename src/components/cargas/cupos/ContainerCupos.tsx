@@ -13,10 +13,14 @@ import {
   Checkbox,
   FormControlLabel,
   FormGroup,
+  IconButton,
+  Button,
 } from "@mui/material";
+import { DialogActions as MuiDialogActions } from "@mui/material";
 import { BotonIcon } from "../../botones/IconButton";
 import { AccessAlarmOutlined } from "@mui/icons-material";
 import ClearSharpIcon from "@mui/icons-material/ClearSharp";
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import { useParams } from "react-router-dom";
 import { ContextoGeneral } from "../../Contexto";
 import { CreadorCupos } from "../creadores/CreadorCupos";
@@ -26,6 +30,13 @@ import { CuposGridPorDiaContainer } from "./tabsCupos/CuposGridPorDiaContainer";
 import CuposMobile from "../../mobile/cupos/CuposMobile";
 import { useAuth } from "../../autenticacion/ContextoAuth";
 import InfoTooltip from '../../InfoTooltip';
+import dayjs, { Dayjs } from 'dayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
+import { PickersDay } from '@mui/x-date-pickers/PickersDay';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import MainButton from '../../botones/MainButtom';
 
 // Tipos para la implementación
 interface Cupo {
@@ -38,9 +49,27 @@ interface Cupo {
 
 interface FiltrosCupos {
   excluirPagados: boolean;
-  traerTodosDelPasado: boolean;
   mostrarVaciosDelPasado: boolean;
+  fechaDesde?: string;
+  fechaHasta?: string;
 }
+
+// Componente para customizar el color del día seleccionado
+const CustomDay = (props: any) => {
+  const { selected } = props;
+  const { theme } = useContext(ContextoGeneral);
+  return (
+    <PickersDay
+      {...props}
+      sx={selected ? {
+        backgroundColor: `${theme.colores.azul} !important`,
+        color: '#fff',
+        fontWeight: 'bold',
+        borderRadius: '50%',
+      } : {}}
+    />
+  );
+};
 
 export function ContainerCupos() {
   const { idCarga } = useParams();
@@ -62,11 +91,18 @@ export function ContainerCupos() {
   const [hasMoreData, setHasMoreData] = useState(true);
   const [diasBuscadosFuturo, setDiasBuscadosFuturo] = useState(0);
   
+  // Estados para el selector de fechas
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [calendarMode, setCalendarMode] = useState<'start' | 'end'>('start');
+  const [customStart, setCustomStart] = useState<Dayjs>(dayjs().subtract(7, 'day'));
+  const [customEnd, setCustomEnd] = useState<Dayjs>(dayjs());
+  
   // Filtros
   const [filtros, setFiltros] = useState<FiltrosCupos>({
     excluirPagados: true,
-    traerTodosDelPasado: false,
     mostrarVaciosDelPasado: false,
+    fechaDesde: dayjs().subtract(7, 'day').format('YYYY-MM-DD'),
+    fechaHasta: dayjs().format('YYYY-MM-DD'),
   });
 
   // Variables de detección
@@ -88,6 +124,12 @@ export function ContainerCupos() {
     const nuevaFecha = new Date(fecha);
     nuevaFecha.setDate(nuevaFecha.getDate() + dias);
     return nuevaFecha;
+  };
+
+  // Función para validar que el rango no exceda 2 meses
+  const validarRangoFechas = (start: Dayjs, end: Dayjs): boolean => {
+    const diffInMonths = end.diff(start, 'month', true);
+    return diffInMonths <= 2;
   };
 
   // Función para construir URL de fetch con filtros
@@ -145,18 +187,8 @@ export function ContainerCupos() {
 
   // Función para cargar cupos del pasado
   const cargarCuposPasado = async (): Promise<Cupo[]> => {
-    const hoy = new Date();
-    const fechaHasta = formatearFecha(hoy);
-    
-    let fechaDesde: string;
-    if (filtros.traerTodosDelPasado) {
-      // Si traer todos del pasado, usar una fecha muy antigua
-      fechaDesde = "2020-01-01";
-    } else {
-      // Por defecto, últimos 7 días
-      const fechaDesdeDate = sumarDias(hoy, -7);
-      fechaDesde = formatearFecha(fechaDesdeDate);
-    }
+    const fechaDesde = filtros.fechaDesde || dayjs().subtract(7, 'day').format('YYYY-MM-DD');
+    const fechaHasta = filtros.fechaHasta || dayjs().format('YYYY-MM-DD');
     
     const url = construirUrlCupos(fechaDesde, fechaHasta, filtros);
     
@@ -395,6 +427,21 @@ export function ContainerCupos() {
     }));
   };
 
+  // Handler para aplicar rango de fechas
+  const handleAplicarRangoFechas = () => {
+    if (!validarRangoFechas(customStart, customEnd)) {
+      alert('El rango de fechas no puede exceder 2 meses');
+      return;
+    }
+    
+    setFiltros(prev => ({
+      ...prev,
+      fechaDesde: customStart.format('YYYY-MM-DD'),
+      fechaHasta: customEnd.format('YYYY-MM-DD'),
+    }));
+    setShowDatePicker(false);
+  };
+
   // Handler para lazy loading (scroll)
   const handleScroll = useCallback(() => {
     if (selectedTab === "POR_DIA") return;
@@ -445,6 +492,8 @@ export function ContainerCupos() {
         theme={theme}
         fields={fields}
         headerNames={headerNames}
+        filtros={filtros}
+        setFiltros={setFiltros}
       />
     );
   }
@@ -522,12 +571,18 @@ export function ContainerCupos() {
 
         {/* Filtros */}
         {selectedTab !== "POR_DIA" && (
-          <FormGroup row sx={{ gap: 2 }}>
+          <FormGroup row sx={{ gap: 2, alignItems: 'center' }}>
             <FormControlLabel
               control={
                 <Checkbox
                   checked={filtros.excluirPagados}
                   onChange={() => handleFiltroChange('excluirPagados')}
+                  sx={{
+                    color: theme.colores.azul,
+                    '&.Mui-checked': {
+                      color: theme.colores.azul,
+                    },
+                  }}
                 />
               }
               label="Excluir cupos pagados"
@@ -535,21 +590,37 @@ export function ContainerCupos() {
             <FormControlLabel
               control={
                 <Checkbox
-                  checked={filtros.traerTodosDelPasado}
-                  onChange={() => handleFiltroChange('traerTodosDelPasado')}
-                />
-              }
-              label="Traer todos los cupos del pasado"
-            />
-            <FormControlLabel
-              control={
-                <Checkbox
                   checked={filtros.mostrarVaciosDelPasado}
                   onChange={() => handleFiltroChange('mostrarVaciosDelPasado')}
+                  sx={{
+                    color: theme.colores.azul,
+                    '&.Mui-checked': {
+                      color: theme.colores.azul,
+                    },
+                  }}
                 />
               }
               label="Mostrar cupos vacíos del pasado"
             />
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1, ml: 2 }}>
+              <Typography variant="body2" sx={{ color: theme.colores.texto }}>
+                Rango de fechas:
+              </Typography>
+              <Typography variant="body2" sx={{ fontWeight: 'bold', color: theme.colores.azul }}>
+                {filtros.fechaDesde} - {filtros.fechaHasta}
+              </Typography>
+              <IconButton 
+                size="small"
+                onClick={() => {
+                  setShowDatePicker(true);
+                  setCustomStart(dayjs(filtros.fechaDesde));
+                  setCustomEnd(dayjs(filtros.fechaHasta));
+                }}
+                sx={{ color: theme.colores.azul }}
+              >
+                <CalendarMonthIcon />
+              </IconButton>
+            </Box>
           </FormGroup>
         )}
       </Box>
@@ -722,6 +793,97 @@ export function ContainerCupos() {
             handleCloseDialog={handleCloseDialog}
           />
         </DialogContent>
+      </Dialog>
+
+      {/* Diálogo para selector de fechas */}
+      <Dialog open={showDatePicker} onClose={() => setShowDatePicker(false)}>
+        <DialogTitle>Seleccionar rango de fechas (máximo 2 meses)</DialogTitle>
+        <DialogContent>
+          <Box display="flex" gap={2} alignItems="center" mt={1} justifyContent="center">
+            <Box>
+              <Typography variant="body2">Desde</Typography>
+              <Button
+                variant={calendarMode === 'start' ? 'contained' : 'outlined'}
+                onClick={() => setCalendarMode('start')}
+                sx={{ mb: 1, minWidth: 120, color: calendarMode === 'start' ? '#fff' : theme.colores.azul, backgroundColor: calendarMode === 'start' ? theme.colores.azul : 'transparent', borderColor: theme.colores.azul }}
+              >
+                {customStart.format('DD/MM/YYYY')}
+              </Button>
+            </Box>
+            <Box>
+              <Typography variant="body2">Hasta</Typography>
+              <Button
+                variant={calendarMode === 'end' ? 'contained' : 'outlined'}
+                onClick={() => setCalendarMode('end')}
+                sx={{ mb: 1, minWidth: 120, color: calendarMode === 'end' ? '#fff' : theme.colores.azul, backgroundColor: calendarMode === 'end' ? theme.colores.azul : 'transparent', borderColor: theme.colores.azul }}
+              >
+                {customEnd.format('DD/MM/YYYY')}
+              </Button>
+            </Box>
+          </Box>
+          <ThemeProvider theme={createTheme({
+            palette: {
+              primary: {
+                main: theme.colores.azul,
+              },
+            },
+          })}>
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DateCalendar
+                value={calendarMode === 'start' ? customStart : customEnd}
+                minDate={calendarMode === 'end' ? customStart : undefined}
+                maxDate={calendarMode === 'start' ? customEnd : dayjs()}
+                onChange={(date) => {
+                  if (!date) return;
+                  if (calendarMode === 'start') {
+                    setCustomStart(date);
+                    if (date.isAfter(customEnd)) setCustomEnd(date);
+                  } else {
+                    setCustomEnd(date);
+                    if (date.isBefore(customStart)) setCustomStart(date);
+                  }
+                }}
+                slots={{
+                  day: (dayProps) => (
+                    <CustomDay
+                      {...dayProps}
+                      selected={
+                        (calendarMode === 'start' && dayProps.day.isSame(customStart, 'day')) ||
+                        (calendarMode === 'end' && dayProps.day.isSame(customEnd, 'day'))
+                      }
+                    />
+                  ),
+                }}
+              />
+            </LocalizationProvider>
+          </ThemeProvider>
+          {!validarRangoFechas(customStart, customEnd) && (
+            <Typography variant="body2" color="error" sx={{ mt: 1 }}>
+              El rango de fechas no puede exceder 2 meses
+            </Typography>
+          )}
+        </DialogContent>
+        <MuiDialogActions sx={{ justifyContent: 'center', gap: 2, px: 3, pb: 2 }}>
+          <MainButton
+            onClick={() => setShowDatePicker(false)}
+            text="Cancelar"
+            backgroundColor="transparent"
+            textColor={theme.colores.azul}
+            borderRadius="8px"
+            hoverBackgroundColor="rgba(22, 54, 96, 0.1)"
+            divWidth="auto"
+          />
+          <MainButton
+            onClick={handleAplicarRangoFechas}
+            text="Aplicar"
+            backgroundColor={theme.colores.azul}
+            textColor="#fff"
+            borderRadius="8px"
+            hoverBackgroundColor={theme.colores.azulOscuro}
+            divWidth="auto"
+            disabled={customStart.isAfter(customEnd) || !validarRangoFechas(customStart, customEnd)}
+          />
+        </MuiDialogActions>
       </Dialog>
     </Box>
   );
