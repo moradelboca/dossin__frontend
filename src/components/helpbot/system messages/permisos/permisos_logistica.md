@@ -4,7 +4,7 @@
 |--------------|-----|-------|--------|--------|------------------------------------|
 | Cargas       | ✔   | ✔     | ✔      | -      | No puede eliminar cargas           |
 | Cupos        | ✔   | ✔     | ✔      | ✔      | Puede corregir turnos con error    |
-| Turnos       | ✔   | ✔     | ✔      | ✔      | Solo puede operar sobre estados: Con errores, Validado. No puede cambiar estado libremente. |
+| Turnos       | ✔   | ✔     | ✔      | ✔      | Puede ver todos los turnos, pero solo puede editar turnos en estados: Con errores, Validado. No puede cambiar estado libremente. |
 | Usuarios     | -   | -     | -      | -      | No tiene acceso                    |
 | Colaboradores| ✔   | ✔     | ✔      | -      | No puede eliminar colaboradores    |
 | Empresas     | ✔   | ✔     | ✔      | -      | No puede eliminar empresas         |
@@ -17,5 +17,6 @@
 | Dashboard    | -   | -     | -      | -      | No tiene acceso                    |
 
 **Notas:**
-- Logística puede operar sobre turnos en estado "Con errores" y "Validado".
+- Logística puede ver todos los turnos sin importar su estado.
+- Solo puede editar turnos en estado "Con errores" y "Validado".
 - Puede corregir turnos con errores y crear/editar cupos y cargas, pero no eliminarlas.

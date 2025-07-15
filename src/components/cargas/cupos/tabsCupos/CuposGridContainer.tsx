@@ -30,6 +30,7 @@ import FilterListIcon from '@mui/icons-material/FilterList';
 import ViewColumnIcon from '@mui/icons-material/ViewColumn';
 import SaveAltIcon from '@mui/icons-material/SaveAlt';
 import { ContextoGeneral } from '../../../Contexto';
+import { useAuth } from '../../../autenticacion/ContextoAuth';
 import CancelIcon from '@mui/icons-material/Cancel';
 
 interface Turno {
@@ -68,6 +69,7 @@ const fields = [
   "colaborador.apellido",
   "colaborador.cuil",
   "empresa.cuit",
+  "empresa.razonSocial",
   "camion.patente",
   "acoplado.patente",
   "acopladoExtra.patente",
@@ -85,6 +87,7 @@ const headerNames = [
   "Apellido",
   "CUIL Chofer",
   "CUIT Empresa",
+  "Razon Social",
   "Patente Camión",
   "Patente Acoplado",
   "Patente Acoplado Extra",
@@ -105,13 +108,41 @@ export const CuposGridContainer: React.FC<CuposGridContainerProps & { estadoCarg
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedTurno, setSelectedTurno] = useState<any>(null);
   const { theme } = useContext(ContextoGeneral);
-  // Columnas seleccionadas para mostrar (por defecto las más relevantes)
-  const [selectedColumns, setSelectedColumns] = useState([
-    // "estado.nombre", // Estado NO seleccionado por defecto
+  const { user } = useAuth();
+  const rolId = user?.rol?.id;
+  
+  // Columnas específicas para logística (incluyendo estado pero no seleccionada por defecto)
+  const columnasLogistica = [
+    "colaborador.nombre",
+    "colaborador.apellido", 
+    "colaborador.cuil",
+    "empresa.cuit",
+    "empresa.razonSocial",
+    "camion.patente",
+    "acoplado.patente",
+    "acopladoExtra.patente",
+    "estado.nombre"
+  ];
+  
+  // Columnas por defecto para logística (sin estado)
+  const columnasLogisticaPorDefecto = [
+    "colaborador.nombre",
+    "colaborador.apellido", 
+    "colaborador.cuil",
+    "empresa.cuit",
+    "empresa.razonSocial",
+    "camion.patente",
+    "acoplado.patente",
+    "acopladoExtra.patente"
+  ];
+  
+  // Columnas por defecto para otros roles
+  const columnasPorDefecto = [
     "colaborador.nombre",
     "colaborador.apellido",
     "colaborador.cuil",
     "empresa.cuit",
+    "empresa.razonSocial",
     "camion.patente",
     "acoplado.patente",
     "acopladoExtra.patente",
@@ -122,7 +153,12 @@ export const CuposGridContainer: React.FC<CuposGridContainerProps & { estadoCarg
     "precioGrano",
     "factura",
     "numeroOrdenPago",
-  ]);
+  ];
+  
+  // Columnas seleccionadas para mostrar (por defecto las más relevantes)
+  const [selectedColumns, setSelectedColumns] = useState(
+    rolId === 4 ? columnasLogisticaPorDefecto : columnasPorDefecto
+  );
   const [anchorElColumns, setAnchorElColumns] = useState<null | HTMLElement>(null);
   const [openFilterDialog, setOpenFilterDialog] = useState(false);
   // Para exportar varias tablas
@@ -269,40 +305,47 @@ export const CuposGridContainer: React.FC<CuposGridContainerProps & { estadoCarg
       </Box>
       {/* Menú de columnas */}
       <Menu anchorEl={anchorElColumns} open={Boolean(anchorElColumns)} onClose={handleCloseColumns}>
-        {fields.map((field, idx) => (
-          <MenuItem key={field} onClick={() => handleToggleColumn(field)}
-            sx={{
-              color: theme.colores.azul,
-              borderRadius: '8px',
-              '&.Mui-selected, &:hover': {
-                backgroundColor: theme.colores.azul,
-                color: '#fff',
-              },
-            }}
-          >
-            <Checkbox
-              checked={selectedColumns.includes(field)}
+        {fields.map((field, idx) => {
+          // Si es logística, solo mostrar las columnas disponibles para ese rol
+          if (rolId === 4 && !columnasLogistica.includes(field)) {
+            return null;
+          }
+          
+          return (
+            <MenuItem key={field} onClick={() => handleToggleColumn(field)}
               sx={{
                 color: theme.colores.azul,
-                '&.Mui-checked': {
-                  color: theme.colores.azul,
-                },
-                '& .MuiSvgIcon-root': {
-                  borderColor: theme.colores.azul,
+                borderRadius: '8px',
+                '&.Mui-selected, &:hover': {
+                  backgroundColor: theme.colores.azul,
+                  color: '#fff',
                 },
               }}
-            />
-            <ListItemText primary={headerNames[idx]} />
-          </MenuItem>
-        ))}
+            >
+              <Checkbox
+                checked={selectedColumns.includes(field)}
+                sx={{
+                  color: theme.colores.azul,
+                  '&.Mui-checked': {
+                    color: theme.colores.azul,
+                  },
+                  '& .MuiSvgIcon-root': {
+                    borderColor: theme.colores.azul,
+                  },
+                }}
+              />
+              <ListItemText primary={headerNames[idx]} />
+            </MenuItem>
+          );
+        })}
       </Menu>
       {/* Diálogo de filtro */}
       <FilterDialog
         open={openFilterDialog}
         onClose={handleCloseFilter}
         onApplyFilter={handleApplyFilter}
-        columns={fields}
-        headerNames={headerNames}
+        columns={rolId === 4 ? columnasLogistica : fields}
+        headerNames={rolId === 4 ? columnasLogistica.map(f => headerNames[fields.indexOf(f)]) : headerNames}
         onUndoFilter={handleUndoFilter}
       />
       {/* Diálogo de exportar varias tablas */}
