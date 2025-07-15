@@ -188,7 +188,13 @@ export function ContainerCupos() {
   // Función para cargar cupos del pasado
   const cargarCuposPasado = async (): Promise<Cupo[]> => {
     const fechaDesde = filtros.fechaDesde || dayjs().subtract(7, 'day').format('YYYY-MM-DD');
-    const fechaHasta = filtros.fechaHasta || dayjs().format('YYYY-MM-DD');
+    let fechaHasta = filtros.fechaHasta || dayjs().format('YYYY-MM-DD');
+    
+    // Si la fecha hasta es hoy, extender hasta mañana para incluir turnos de hoy
+    const hoy = dayjs().format('YYYY-MM-DD');
+    if (fechaHasta === hoy) {
+      fechaHasta = dayjs().add(1, 'day').format('YYYY-MM-DD');
+    }
     
     const url = construirUrlCupos(fechaDesde, fechaHasta, filtros);
     
@@ -299,15 +305,28 @@ export function ContainerCupos() {
       // 1. Cargar cupos del pasado
       const cuposPasado = await cargarCuposPasado();
       
-      // 2. Cargar primer bloque de cupos futuros
-      const mañana = sumarDias(new Date(), 1);
-      const { cupos: cuposFuturo, tieneMasDatos } = await cargarCuposFuturos(mañana);
+      // 2. Determinar desde qué fecha cargar futuros
+      // Si los cupos del pasado incluyen hoy (fechaHasta extendida), empezar desde pasado mañana
+      const hoy = dayjs().format('YYYY-MM-DD');
+      const fechaHastaFiltros = filtros.fechaHasta || hoy;
+      const incluyeHoy = fechaHastaFiltros === hoy;
+      
+      let fechaDesdeFuturos;
+      if (incluyeHoy) {
+        // Si incluye hoy, empezar desde pasado mañana para evitar duplicados
+        fechaDesdeFuturos = sumarDias(new Date(), 2);
+      } else {
+        // Si no incluye hoy, empezar desde mañana
+        fechaDesdeFuturos = sumarDias(new Date(), 1);
+      }
+      
+      const { cupos: cuposFuturo, tieneMasDatos } = await cargarCuposFuturos(fechaDesdeFuturos);
       
       // Combinar cupos
       const todosLosCupos = [...cuposPasado, ...cuposFuturo];
       
       setCupos(todosLosCupos);
-      setFechaDesdeFuturo(sumarDias(mañana, selectedTab === "CARDS" ? BLOQUE_CARDS : BLOQUE_GRID));
+      setFechaDesdeFuturo(sumarDias(fechaDesdeFuturos, selectedTab === "CARDS" ? BLOQUE_CARDS : BLOQUE_GRID));
       setHasMoreData(tieneMasDatos);
       setDiasBuscadosFuturo(selectedTab === "CARDS" ? BLOQUE_CARDS : BLOQUE_GRID);
       setEstadoCarga("Cargado");
