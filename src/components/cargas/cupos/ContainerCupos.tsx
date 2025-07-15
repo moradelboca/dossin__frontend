@@ -95,14 +95,14 @@ export function ContainerCupos() {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [calendarMode, setCalendarMode] = useState<'start' | 'end'>('start');
   const [customStart, setCustomStart] = useState<Dayjs>(dayjs().subtract(7, 'day'));
-  const [customEnd, setCustomEnd] = useState<Dayjs>(dayjs());
+  const [customEnd, setCustomEnd] = useState<Dayjs>(dayjs().subtract(1, 'day'));
   
   // Filtros
   const [filtros, setFiltros] = useState<FiltrosCupos>({
     excluirPagados: true,
     mostrarVaciosDelPasado: false,
     fechaDesde: dayjs().subtract(7, 'day').format('YYYY-MM-DD'),
-    fechaHasta: dayjs().format('YYYY-MM-DD'),
+    fechaHasta: dayjs().subtract(1, 'day').format('YYYY-MM-DD'),
   });
 
   // Variables de detección
@@ -188,13 +188,7 @@ export function ContainerCupos() {
   // Función para cargar cupos del pasado
   const cargarCuposPasado = async (): Promise<Cupo[]> => {
     const fechaDesde = filtros.fechaDesde || dayjs().subtract(7, 'day').format('YYYY-MM-DD');
-    let fechaHasta = filtros.fechaHasta || dayjs().format('YYYY-MM-DD');
-    
-    // Si la fecha hasta es hoy, extender hasta mañana para incluir turnos de hoy
-    const hoy = dayjs().format('YYYY-MM-DD');
-    if (fechaHasta === hoy) {
-      fechaHasta = dayjs().add(1, 'day').format('YYYY-MM-DD');
-    }
+    const fechaHasta = filtros.fechaHasta || dayjs().subtract(1, 'day').format('YYYY-MM-DD');
     
     const url = construirUrlCupos(fechaDesde, fechaHasta, filtros);
     
@@ -840,7 +834,7 @@ export function ContainerCupos() {
               <DateCalendar
                 value={calendarMode === 'start' ? customStart : customEnd}
                 minDate={calendarMode === 'end' ? customStart : undefined}
-                maxDate={calendarMode === 'start' ? customEnd : dayjs()}
+                maxDate={calendarMode === 'start' ? customEnd : dayjs().subtract(1, 'day')}
                 onChange={(date) => {
                   if (!date) return;
                   if (calendarMode === 'start') {
