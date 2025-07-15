@@ -25,7 +25,7 @@
     "pantallas": {
       "Cargas": ["ver", "crear", "editar"],
       "Cupos": ["ver", "crear", "editar", "eliminar", "corregir turnos con error"],
-      "Turnos": ["ver", "crear", "editar", "eliminar", "operar sobre estados: Con errores, Validado"],
+      "Turnos": ["ver todos", "crear", "editar solo estados: Con errores, Validado", "eliminar", "operar sobre estados: Con errores, Validado"],
       "Usuarios": [],
       "Colaboradores": ["ver", "crear", "editar"],
       "Empresas": ["ver", "crear", "editar"],
@@ -38,7 +38,8 @@
       "Dashboard": []
     },
     "notas": [
-      "Logística puede operar sobre turnos en estado 'Con errores' y 'Validado'.",
+      "Logística puede ver todos los turnos sin importar su estado.",
+      "Solo puede editar turnos en estado 'Con errores' y 'Validado'.",
       "Puede corregir turnos con errores y crear/editar cupos y cargas, pero no eliminarlas.",
       "No puede eliminar cargas, colaboradores, empresas, camiones, ubicaciones ni inconvenientes.",
       "No tiene acceso a usuarios ni dashboard."

@@ -17,7 +17,7 @@ import { getExplicacionEstado } from './explicacionTurnos';
 import { useAllowed } from '../../hooks/auth/useAllowed';
 import EstadoTurnoForm from '../../forms/turnos/tabs/EstadoTurnoForm';
 import { useAuth } from '../../autenticacion/ContextoAuth';
-import { puedeVerEstado } from '../../../utils/turnoEstadoPermisos';
+import { puedeVerEstado, puedeEditarEstado } from '../../../utils/turnoEstadoPermisos';
 import InfoTooltip from '../../InfoTooltip';
 import NoteAltOutlinedIcon from '@mui/icons-material/NoteAltOutlined';
 import Popover from '@mui/material/Popover';
@@ -88,6 +88,10 @@ const CardMobile: React.FC<CardMobileProps> = ({
     if (ocultarBotonesAccion) return null;
     const estado = manejoTurnos.turnoLocal.estado?.nombre?.toLowerCase();
     if (estado === 'pagado') return null;
+    
+    // Verificar si el usuario puede editar este estado específico
+    const puedeEditar = manejoTurnos.turnoLocal.estado?.id && rolId ? puedeEditarEstado(manejoTurnos.turnoLocal.estado.id, rolId) : false;
+    
     const mainButton = (props: any) => (
       <Button
         variant="contained"
@@ -114,6 +118,36 @@ const CardMobile: React.FC<CardMobileProps> = ({
         console.error('No se puede abrir el diálogo, turno sin id:', item);
       }
     };
+    
+    // Si no puede editar, no mostrar botones de acción
+    if (!puedeEditar) {
+      return (
+        <Box sx={{ width: '100%', mt: 2, display: 'flex', flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'flex-start' }}>
+          <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
+            <Typography variant="body2" color="text.secondary" sx={{ fontStyle: 'italic' }}>
+              No tienes permisos para editar turnos en estado "{manejoTurnos.turnoLocal.estado?.nombre}"
+            </Typography>
+          </Box>
+          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', minWidth: 48 }}>
+            {/* Ícono de nota siempre disponible */}
+            <Tooltip title={manejoTurnos.turnoLocal.nota ? 'Ver/Editar nota' : 'Agregar nota'}>
+              <IconButton
+                sx={{ color: manejoTurnos.turnoLocal.nota ? theme.colores.azul : '#bdbdbd', mt: 1 }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setAnchorElNota(e.currentTarget);
+                  setNotaLocal(manejoTurnos.turnoLocal.nota || '');
+                }}
+                aria-label="nota turno"
+              >
+                <NoteAltOutlinedIcon fontSize="medium" />
+              </IconButton>
+            </Tooltip>
+          </Box>
+        </Box>
+      );
+    }
+    
     switch (estado) {
       case 'con errores':
         botones = <>{mainButton({ children: 'Corregir', onClick: () => safeOpenDialog('corregir') })}</>;

@@ -13,6 +13,16 @@ export const ESTADO_PERMISOS = [
 ];
 
 export function puedeVerEstado(estadoId: number, rolId: number): boolean {
+  // Logística (rolId: 4) puede ver todos los estados
+  if (rolId === 4) {
+    return true;
+  }
+  
+  const permiso = ESTADO_PERMISOS.find(e => e.id === estadoId);
+  return permiso ? permiso.roles.includes(rolId) : false;
+}
+
+export function puedeEditarEstado(estadoId: number, rolId: number): boolean {
   const permiso = ESTADO_PERMISOS.find(e => e.id === estadoId);
   return permiso ? permiso.roles.includes(rolId) : false;
 } 

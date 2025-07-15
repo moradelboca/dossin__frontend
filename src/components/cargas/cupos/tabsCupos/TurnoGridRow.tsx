@@ -10,7 +10,7 @@ import { getExplicacionEstado } from '../../../cards/mobile/explicacionTurnos';
 import { useAllowed } from '../../../hooks/auth/useAllowed';
 import EstadoTurnoForm from '../../../forms/turnos/tabs/EstadoTurnoForm';
 import { useAuth } from '../../../autenticacion/ContextoAuth';
-import { puedeVerEstado } from '../../../../utils/turnoEstadoPermisos';
+import { puedeVerEstado, puedeEditarEstado } from '../../../../utils/turnoEstadoPermisos';
 import Tooltip from '@mui/material/Tooltip';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
@@ -47,6 +47,10 @@ const TurnoGridRow: React.FC<TurnoGridRowProps> = ({ turno, cupo, refreshCupos, 
   const renderButtons = () => {
     const estado = manejoTurnos.turnoLocal.estado?.nombre?.toLowerCase();
     if (estado === 'pagado') return null;
+    
+    // Verificar si el usuario puede editar este estado específico
+    const puedeEditar = manejoTurnos.turnoLocal.estado?.id && rolId ? puedeEditarEstado(manejoTurnos.turnoLocal.estado.id, rolId) : false;
+    
     const mainButton = (props: any) => {
       const { key, ...rest } = props;
       return (
@@ -72,6 +76,29 @@ const TurnoGridRow: React.FC<TurnoGridRowProps> = ({ turno, cupo, refreshCupos, 
         />
       );
     };
+    
+    // Si no puede editar, no mostrar botones de acción
+    if (!puedeEditar) {
+      return (
+        <Box sx={{ display: 'flex', flexDirection: 'row', gap: 1, alignItems: 'center' }}>
+          <Typography variant="body2" color="text.secondary" sx={{ fontStyle: 'italic', fontSize: '0.75rem' }}>
+            Sin permisos para editar
+          </Typography>
+          {/* Ícono de nota siempre disponible */}
+          <Tooltip title={manejoTurnos.turnoLocal.nota ? 'Ver/Editar nota' : 'Agregar nota'}>
+            <IconButton
+              sx={{ color: manejoTurnos.turnoLocal.nota ? theme.colores.azul : '#bdbdbd' }}
+              onClick={e => manejoTurnos.handleOpenNota(e, manejoTurnos.turnoLocal.nota)}
+              aria-label="nota turno"
+              size="small"
+            >
+              <NoteAltOutlinedIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+        </Box>
+      );
+    }
+    
     let botones: React.ReactNode[] = [];
     const safeOpenDialog = (dialog: null | 'corregir' | 'autorizar' | 'tara' | 'cartaPorte' | 'cargarCarta' | 'pesaje' | 'pago' | 'datospago' | 'factura' | 'adelanto') => {
       if (turno && turno.id) {

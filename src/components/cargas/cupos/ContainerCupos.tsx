@@ -148,6 +148,11 @@ export function ContainerCupos() {
 
   // Función para hacer fetch de turnos para una fecha específica (solo para grid)
   const fetchTurnosParaFecha = async (fecha: string): Promise<{ turnos: any[], turnosConErrores: any[] }> => {
+    // Si es logística (rolId: 4), no hacer la llamada adicional
+    if (user?.rol?.id === 4) {
+      return { turnos: [], turnosConErrores: [] };
+    }
+    
     try {
       const url = `${backendURL}/cargas/${idCarga}/cupos/${fecha}/turnos`;
       const response = await fetch(url, {
@@ -185,6 +190,29 @@ export function ContainerCupos() {
     }
   };
 
+  // Función para normalizar los datos de cupos (especialmente para logística)
+  const normalizarCupos = (cuposData: any[]): Cupo[] => {
+    return cuposData.map((cupo: any) => ({
+      ...cupo,
+      turnos: Array.isArray(cupo.turnos)
+        ? cupo.turnos.map((turno: any) => ({
+            ...turno,
+            camion: typeof turno.camion === "string" ? { patente: turno.camion } : turno.camion,
+            acoplado: typeof turno.acoplado === "string" ? { patente: turno.acoplado } : turno.acoplado,
+            acopladoExtra: typeof turno.acopladoExtra === "string" ? { patente: turno.acopladoExtra } : turno.acopladoExtra,
+          }))
+        : [],
+      turnosConErrores: Array.isArray(cupo.turnosConErrores)
+        ? cupo.turnosConErrores.map((turno: any) => ({
+            ...turno,
+            camion: typeof turno.camion === "string" ? { patente: turno.camion } : turno.camion,
+            acoplado: typeof turno.acoplado === "string" ? { patente: turno.acoplado } : turno.acoplado,
+            acopladoExtra: typeof turno.acopladoExtra === "string" ? { patente: turno.acopladoExtra } : turno.acopladoExtra,
+          }))
+        : [],
+    }));
+  };
+
   // Función para cargar cupos del pasado
   const cargarCuposPasado = async (): Promise<Cupo[]> => {
     const fechaDesde = filtros.fechaDesde || dayjs().subtract(7, 'day').format('YYYY-MM-DD');
@@ -208,6 +236,12 @@ export function ContainerCupos() {
       const cuposFiltrados = cuposData.filter((cupo: any) =>
         filtros.mostrarVaciosDelPasado ? true : (cupo.turnos && cupo.turnos.length > 0)
       );
+      
+      // Si es logística (rolId: 4), usar directamente los datos de cupos sin llamadas adicionales
+      if (user?.rol?.id === 4) {
+        return normalizarCupos(cuposFiltrados);
+      }
+      
       // Si es modo grid, necesitamos los turnos
       if (selectedTab === "GRID") {
         const cuposConTurnos = [];
@@ -262,6 +296,11 @@ export function ContainerCupos() {
       // Verificar si hay datos
       if (!cuposData || cuposData.length === 0) {
         return { cupos: [], tieneMasDatos: true };
+      }
+      
+      // Si es logística (rolId: 4), usar directamente los datos de cupos sin llamadas adicionales
+      if (user?.rol?.id === 4) {
+        return { cupos: normalizarCupos(cuposData), tieneMasDatos: true };
       }
       
       // Si es modo grid, necesitamos los turnos

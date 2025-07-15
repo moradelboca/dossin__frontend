@@ -79,7 +79,7 @@ La gestión de cupos y turnos es fundamental para organizar la logística de cad
 - **Editar cupo:** En la tarjeta o tabla, hacé clic en "Ver más" o el lápiz.
 - **Eliminar cupo:** Ícono de basurita. El sistema pedirá confirmación.
 - **Crear turno:** En la tarjeta del cupo, botón "Crear turno".
-- **Gestionar turnos:** Según el estado, podés corregir, validar, autorizar, cargar tara, cargar peso bruto, cargar carta de porte, cargar factura, pagar, etc. Logística puede operar sobre turnos en estado "Con errores" y "Validado".
+- **Gestionar turnos:** Según el estado, podés corregir, validar, autorizar, cargar tara, cargar peso bruto, cargar carta de porte, cargar factura, pagar, etc. **Puedes ver todos los turnos, pero solo puedes editar turnos en estado "Con errores" y "Validado"**.
 - **Filtrar y exportar:** Usá los botones para aplicar filtros avanzados o exportar la lista.
 - **Personalizar columnas:** Elegí qué datos ver en la tabla.
 
@@ -330,7 +330,8 @@ Permite estimar tarifas y costos de transporte.
 # Permisos y advertencias
 
 - Logística puede ver, crear y editar en casi todas las pantallas, pero **no puede eliminar** cargas, colaboradores, empresas, camiones, ubicaciones, contratos ni inconvenientes.
-- Puede corregir turnos con error y operar sobre turnos en estado "Con errores" y "Validado".
+- **Puede ver todos los turnos sin importar su estado**, pero **solo puede editar turnos en estado "Con errores" y "Validado"**.
+- Puede corregir turnos con error y crear/editar cupos y cargas, pero no eliminarlas.
 - No tiene acceso a usuarios ni dashboard.
 - Si no ves una opción, revisá tus permisos.
 - No borres datos críticos sin revisar dependencias.
