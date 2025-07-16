@@ -50,6 +50,18 @@ export const inconvenientesPruebas: Inconveniente[] = [
     estado: { id: 2, nombre: "Activo" }
   },
   {
+    id: 5,
+    titulo: "Pantalla: /cargas/6/cupos",
+    descripcion: "El usuario reportó que se confundió con las patentes del camión. Necesita verificar y corregir la información.",
+    urgencia: { id: 2, nombre: "Media" },
+    fechaCreacion: "2025-01-15 14:30:00",
+    fechaResolucion: null,
+    tipoInconveniente: { id: 4, nombre: "Sistema" },
+    creadoPor: "usuario@ejemplo.com",
+    asignadoA: "fabriciosolisw@gmail.com",
+    estado: { id: 1, nombre: "Pendiente" }
+  },
+  {
     id: 10,
     titulo: "ssd",
     descripcion: "fsdf",

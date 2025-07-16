@@ -113,6 +113,13 @@ const InconvenienteForm: React.FC<FormularioProps> = ({
     }
   );
 
+  // Inicializar título desde 'seleccionado' si está presente
+  useEffect(() => {
+    if (seleccionado && seleccionado.titulo) {
+      setData((prev: any) => ({ ...prev, titulo: seleccionado.titulo }));
+    }
+  }, [seleccionado, setData]);
+
   // Sincronizar el campo descripcion de useValidation cuando cambia descripcion local
   useEffect(() => {
     setData((prev: any) => ({ ...prev, descripcion }));
@@ -168,6 +175,7 @@ const InconvenienteForm: React.FC<FormularioProps> = ({
           onChange={handleChange("titulo")}
           error={!!errors.titulo}
           helperText={errors.titulo}
+          disabled={!!(seleccionado && seleccionado.titulo)}
           sx={azulStyles}
         />
         <TextField

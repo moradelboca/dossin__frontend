@@ -18,6 +18,7 @@ import {
   Button,
   useMediaQuery,
   Dialog,
+  Link,
 } from "@mui/material";
 import { KeyboardArrowDown, KeyboardArrowUp } from "@mui/icons-material";
 import CreadorEntidad from "../dialogs/CreadorEntidad";
@@ -28,6 +29,7 @@ import { usuariosPruebas } from "./usuariosPruebas";
 import { useAuth } from "../autenticacion/ContextoAuth";
 import TurnoConErroresForm from '../forms/turnos/tabs/turnosConErrores/TurnoConErroresForm';
 import InfoTooltip from "../InfoTooltip";
+import { useNavigate } from "react-router-dom";
 
 // interface Usuario { ... } // Elimino o comento esta interfaz
 
@@ -108,6 +110,41 @@ const Row: React.FC<{
   const [loadingTurno, setLoadingTurno] = useState(false);
   const [turnoErrorMsg, setTurnoErrorMsg] = useState<string | null>(null);
   const { backendURL } = useContext(ContextoGeneral);
+  const navigate = useNavigate();
+
+  // Función para extraer la ruta de la pantalla del título
+  const extractPantallaPath = (titulo: string): string | null => {
+    const pantallaMatch = titulo.match(/Pantalla:\s*([^\s-]+)/);
+    return pantallaMatch ? pantallaMatch[1] : null;
+  };
+
+  // Función para renderizar el título como enlace si contiene información de pantalla
+  const renderTitulo = (titulo: string) => {
+    const pantallaPath = extractPantallaPath(titulo);
+    
+    if (pantallaPath) {
+      return (
+        <Link
+          component="button"
+          variant="body2"
+          onClick={() => navigate(pantallaPath)}
+          sx={{
+            color: theme.colores.azul,
+            textDecoration: 'underline',
+            cursor: 'pointer',
+            textAlign: 'left',
+            '&:hover': {
+              color: theme.colores.azulOscuro,
+            }
+          }}
+        >
+          {titulo}
+        </Link>
+      );
+    }
+    
+    return titulo;
+  };
 
   // Renderizar Avatar con imagen o inicial
   const renderAvatar = (email: string | undefined, imagen?: string | null) => (
@@ -151,7 +188,7 @@ const Row: React.FC<{
   return (
     <>
       <TableRow>
-        <TableCell>{row.titulo}</TableCell>
+        <TableCell>{renderTitulo(row.titulo)}</TableCell>
         <TableCell>
           <Chip
             label={row.tipoInconveniente.nombre}
