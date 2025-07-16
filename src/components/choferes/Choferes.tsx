@@ -6,8 +6,8 @@ export default function Choferes() {
   const fields = [
     "cuil",
     "nombre",
-    "numeroCel",
     "apellido",
+    "numeroCel",
     "urlLINTI",
     "localidad",
     "empresas",
@@ -16,8 +16,8 @@ export default function Choferes() {
   const headerNames = [
     "Cuil",
     "Nombre",
-    "Numero Celular",
     "Apellido",
+    "Numero Celular",
     "URL Linti",
     "Localidad",
     "Cuit Empresas",

@@ -68,8 +68,8 @@ const fields = [
   "colaborador.nombre",
   "colaborador.apellido",
   "colaborador.cuil",
-  "empresa.cuit",
   "empresa.razonSocial",
+  "empresa.cuit",
   "camion.patente",
   "acoplado.patente",
   "acopladoExtra.patente",
@@ -79,15 +79,17 @@ const fields = [
   "kgDescargados",
   "precioGrano",
   "factura",
-  "numeroOrdenPago"
+  "numeroOrdenPago",
+  "cartaDePorte.numeroCartaPorte",
+  "cartaDePorte.CTG"
 ];
 const headerNames = [
   "Estado",
   "Nombre",
   "Apellido",
   "CUIL Chofer",
-  "CUIT Empresa",
   "Razon Social",
+  "CUIT Empresa",
   "Patente Camión",
   "Patente Acoplado",
   "Patente Acoplado Extra",
@@ -97,7 +99,9 @@ const headerNames = [
   "Kg Descargados",
   "Precio Grano",
   "Factura",
-  "N° Orden Pago"
+  "N° Orden Pago",
+  "Carta de Porte",
+  "CTG"
 ];
 
 export const CuposGridContainer: React.FC<CuposGridContainerProps & { estadoCarga: string }> = ({
@@ -116,8 +120,8 @@ export const CuposGridContainer: React.FC<CuposGridContainerProps & { estadoCarg
     "colaborador.nombre",
     "colaborador.apellido", 
     "colaborador.cuil",
-    "empresa.cuit",
     "empresa.razonSocial",
+    "empresa.cuit",
     "camion.patente",
     "acoplado.patente",
     "acopladoExtra.patente",
@@ -129,8 +133,8 @@ export const CuposGridContainer: React.FC<CuposGridContainerProps & { estadoCarg
     "colaborador.nombre",
     "colaborador.apellido", 
     "colaborador.cuil",
-    "empresa.cuit",
     "empresa.razonSocial",
+    "empresa.cuit",
     "camion.patente",
     "acoplado.patente",
     "acopladoExtra.patente"
@@ -141,18 +145,14 @@ export const CuposGridContainer: React.FC<CuposGridContainerProps & { estadoCarg
     "colaborador.nombre",
     "colaborador.apellido",
     "colaborador.cuil",
-    "empresa.cuit",
     "empresa.razonSocial",
+    "empresa.cuit",
     "camion.patente",
     "acoplado.patente",
-    "acopladoExtra.patente",
-    "kgTara",
-    "kgBruto",
     "kgNeto",
     "kgDescargados",
-    "precioGrano",
     "factura",
-    "numeroOrdenPago",
+    "cartaDePorte.numeroCartaPorte",
   ];
   
   // Columnas seleccionadas para mostrar (por defecto las más relevantes)

@@ -74,15 +74,16 @@ const InfoTooltip: React.FC<InfoTooltipProps> = ({
       const res = await fetch(`${general?.authURL}/auth/usuarios`);
       const usuarios = await res.json();
       const asignadoA = usuarios.find((u: any) => u.email === ASIGNADO_EMAIL);
-      // Prellenar título con la información de la pantalla
+      // Prellenar título con solo la información de la pantalla
       let titulo = `Pantalla: ${location.pathname}`;
+      let descripcion = '';
       if (contexto) {
-        titulo += ` - ${contexto}`;
+        descripcion = contexto;
       }
       setFormData([
         {
           titulo,
-          descripcion: '',
+          descripcion,
           tipoInconveniente: '',
           urgencia: '',
           asignadoA: asignadoA || null,
@@ -93,13 +94,14 @@ const InfoTooltip: React.FC<InfoTooltipProps> = ({
     } catch (e) {
       // Si hay error igual abrir el form sin asignadoA
       let titulo = `Pantalla: ${location.pathname}`;
+      let descripcion = '';
       if (contexto) {
-        titulo += ` - ${contexto}`;
+        descripcion = contexto;
       }
       setFormData([
         {
           titulo,
-          descripcion: '',
+          descripcion,
           tipoInconveniente: '',
           urgencia: '',
           asignadoA: null,
