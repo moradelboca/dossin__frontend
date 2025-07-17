@@ -25,7 +25,6 @@ const CargasSection: React.FC<CargasSectionProps> = ({
   handleOpenDialog,
   handleDeleteCarga,
   handleDeleteCargaACrear,
-  handleDeleteCargaAActualizar,
 }) => {
   const fields = [
     "id",
@@ -124,10 +123,11 @@ const CargasSection: React.FC<CargasSectionProps> = ({
               handleExpandClick={handleExpandClick}
               tituloField="ubicacionCarga.nombre"
               subtituloField="id"
-              mostrarBotonEditar={false}
+              mostrarBotonEditar={true}
               textoSecondaryButton="Eliminar"
-              handleSecondButton={handleDeleteCargaAActualizar}
+              handleSecondButton={handleDeleteCarga}
               colorSecondaryButton="#d68384"
+              noEsTurno={true}
             />
           ))}
         </Box>
