@@ -135,6 +135,7 @@ const ContratosMobile: React.FC<ContratosMobileProps> = ({
               tituloField="titularCartaDePorte.razonSocial"
               subtituloField="destinatario.razonSocial"
               usarSinDesplegable={false}
+              noEsTurno={true}
               childrenCollapse={
                 expandedContrato === idx && (
                   <Box display="flex" gap={2} mt={1}>
@@ -168,6 +169,7 @@ const ContratosMobile: React.FC<ContratosMobileProps> = ({
                     tituloField="ubicacionCarga.nombre"
                     subtituloField="ubicacionDescarga.nombre"
                     usarSinDesplegable={false}
+                    noEsTurno={true}
                   />
                 ))}
               </Box>

@@ -43,6 +43,8 @@ interface CardMobileProps {
   cupo?: any; // Nuevo prop opcional
   childrenCollapse?: React.ReactNode; // Nuevo prop para contenido custom dentro del Collapse
   ocultarBotonesAccion?: boolean;
+  // Nueva prop para indicar si es una entidad que no es turno
+  noEsTurno?: boolean;
 }
 
 const CardMobile: React.FC<CardMobileProps> = ({
@@ -60,6 +62,7 @@ const CardMobile: React.FC<CardMobileProps> = ({
   refreshCupos,
   childrenCollapse,
   ocultarBotonesAccion = false,
+  noEsTurno = false,
 }) => {
   const { theme } = useContext(ContextoGeneral);
   const transformarCampo = useTransformarCampo();
@@ -72,10 +75,12 @@ const CardMobile: React.FC<CardMobileProps> = ({
   const [openCancelarDialog, setOpenCancelarDialog] = React.useState(false);
   const [anchorElNota, setAnchorElNota] = React.useState<null | HTMLElement>(null);
   const [notaLocal, setNotaLocal] = React.useState<string>("");
-  const [notaLoading, setNotaLoading] = React.useState(false);
+  const [notaLoading] = React.useState(false);
   const openNota = Boolean(anchorElNota);
   const handleCloseNota = () => setAnchorElNota(null);
-  if (rolId && estadoId && !puedeVerEstado(estadoId, rolId)) {
+  
+  // Si no es turno, no verificar permisos de estado
+  if (!noEsTurno && rolId && estadoId && !puedeVerEstado(estadoId, rolId)) {
     return null;
   }
 
@@ -83,9 +88,9 @@ const CardMobile: React.FC<CardMobileProps> = ({
   const filteredFields = fields.filter(f => f !== 'estado.nombre');
   const filteredHeaderNames = headerNames.filter((_, i) => fields[i] !== 'estado.nombre');
 
-  // Botones y diálogos ahora usan manejoTurnos
+  // Botones y diálogos ahora usan manejoTurnos solo si es turno
   const renderButtons = () => {
-    if (ocultarBotonesAccion) return null;
+    if (ocultarBotonesAccion || noEsTurno) return null;
     const estado = manejoTurnos.turnoLocal.estado?.nombre?.toLowerCase();
     if (estado === 'pagado') return null;
     
@@ -311,7 +316,7 @@ const CardMobile: React.FC<CardMobileProps> = ({
       }}
     >
       {/* Estado pill label como botón para admin */}
-      {manejoTurnos.turnoLocal.estado?.nombre && !ocultarBotonesAccion && (
+      {!noEsTurno && manejoTurnos.turnoLocal.estado?.nombre && !ocultarBotonesAccion && (
         <Box sx={{ position: 'absolute', top: 8, right: 8, display: 'flex', alignItems: 'center', gap: 1 }}>
           {isAdmin ? (
             <Box
@@ -375,7 +380,7 @@ const CardMobile: React.FC<CardMobileProps> = ({
         </Box>
       )}
       {/* Dialog para cambiar estado */}
-      {!ocultarBotonesAccion && (
+      {!noEsTurno && !ocultarBotonesAccion && (
         <Dialog open={openEstadoDialog} onClose={() => setOpenEstadoDialog(false)} maxWidth="xs" fullWidth>
           <EstadoTurnoForm
             turnoId={manejoTurnos.turnoLocal.id}
@@ -424,52 +429,47 @@ const CardMobile: React.FC<CardMobileProps> = ({
           <Box>
             <Typography variant="subtitle1" fontWeight="bold"
               sx={(() => {
-                // Título: chofer
-                let errorCampo = null;
-                if (manejoTurnos.turnoLocal.estado?.nombre?.toLowerCase() === 'con errores' && Array.isArray(manejoTurnos.turnoLocal.errores)) {
-                  errorCampo = manejoTurnos.turnoLocal.errores.find((err: any) => err.campo === 'cuilColaborador');
+                // Título: chofer (solo si es turno)
+                if (!noEsTurno) {
+                  let errorCampo = null;
+                  if (manejoTurnos.turnoLocal.estado?.nombre?.toLowerCase() === 'con errores' && Array.isArray(manejoTurnos.turnoLocal.errores)) {
+                    errorCampo = manejoTurnos.turnoLocal.errores.find((err: any) => err.campo === 'cuilColaborador');
+                  }
+                  return errorCampo ? { color: '#e57373', fontWeight: 700 } : {};
                 }
-                return errorCampo ? { color: '#e57373', fontWeight: 700 } : {};
+                return {};
               })()}
             >
-              {(() => {
-                let errorCampo = null;
-                if (manejoTurnos.turnoLocal.estado?.nombre?.toLowerCase() === 'con errores' && Array.isArray(manejoTurnos.turnoLocal.errores)) {
-                  errorCampo = manejoTurnos.turnoLocal.errores.find((err: any) => err.campo === 'cuilColaborador');
-                }
-                if (errorCampo) {
-                  const valor = manejoTurnos.turnoLocal['colaborador'];
-                  if (typeof valor === 'object' && valor !== null) {
-                    return valor.nombre || valor.cuil || JSON.stringify(valor);
-                  }
-                  return valor || 'Dato erróneo';
-                }
-                return transformarCampo(tituloField || fields[0], manejoTurnos.turnoLocal) || "Sin título";
-              })()}
+              {tituloField ? transformarCampo(tituloField, noEsTurno ? item : manejoTurnos.turnoLocal) : ""}
             </Typography>
             <Typography variant="body2" color="text.secondary"
               sx={(() => {
-                // Subtítulo: empresa
-                let errorCampo = null;
-                if (manejoTurnos.turnoLocal.estado?.nombre?.toLowerCase() === 'con errores' && Array.isArray(manejoTurnos.turnoLocal.errores)) {
-                  errorCampo = manejoTurnos.turnoLocal.errores.find((err: any) => err.campo === 'cuitEmpresa');
+                // Subtítulo: empresa (solo si es turno)
+                if (!noEsTurno) {
+                  let errorCampo = null;
+                  if (manejoTurnos.turnoLocal.estado?.nombre?.toLowerCase() === 'con errores' && Array.isArray(manejoTurnos.turnoLocal.errores)) {
+                    errorCampo = manejoTurnos.turnoLocal.errores.find((err: any) => err.campo === 'cuitEmpresa');
+                  }
+                  return errorCampo ? { color: '#e57373', fontWeight: 700 } : {};
                 }
-                return errorCampo ? { color: '#e57373', fontWeight: 700 } : {};
+                return {};
               })()}
             >
               {(() => {
-                let errorCampo = null;
-                if (manejoTurnos.turnoLocal.estado?.nombre?.toLowerCase() === 'con errores' && Array.isArray(manejoTurnos.turnoLocal.errores)) {
-                  errorCampo = manejoTurnos.turnoLocal.errores.find((err: any) => err.campo === 'cuitEmpresa');
-                }
-                if (errorCampo) {
-                  const valor = manejoTurnos.turnoLocal['empresa'];
-                  if (typeof valor === 'object' && valor !== null) {
-                    return valor.razonSocial || valor.cuit || JSON.stringify(valor);
+                if (!noEsTurno) {
+                  let errorCampo = null;
+                  if (manejoTurnos.turnoLocal.estado?.nombre?.toLowerCase() === 'con errores' && Array.isArray(manejoTurnos.turnoLocal.errores)) {
+                    errorCampo = manejoTurnos.turnoLocal.errores.find((err: any) => err.campo === 'cuitEmpresa');
                   }
-                  return valor || 'Dato erróneo';
+                  if (errorCampo) {
+                    const valor = manejoTurnos.turnoLocal['empresa'];
+                    if (typeof valor === 'object' && valor !== null) {
+                      return valor.razonSocial || valor.cuit || JSON.stringify(valor);
+                    }
+                    return valor || 'Dato erróneo';
+                  }
                 }
-                return subtituloField ? transformarCampo(subtituloField, manejoTurnos.turnoLocal) : "";
+                return subtituloField ? transformarCampo(subtituloField, noEsTurno ? item : manejoTurnos.turnoLocal) : "";
               })()}
             </Typography>
           </Box>
@@ -494,9 +494,9 @@ const CardMobile: React.FC<CardMobileProps> = ({
       >
         <Box sx={{ padding: 2, backgroundColor: "#ffffff" }}>
           {filteredFields.map((field, idx) => {
-            // Buscar si hay error para este campo
+            // Buscar si hay error para este campo (solo si es turno)
             let errorCampo = null;
-            if (manejoTurnos.turnoLocal.estado?.nombre?.toLowerCase() === 'con errores' && Array.isArray(manejoTurnos.turnoLocal.errores)) {
+            if (!noEsTurno && manejoTurnos.turnoLocal.estado?.nombre?.toLowerCase() === 'con errores' && Array.isArray(manejoTurnos.turnoLocal.errores)) {
               // Mapear los nombres de los campos de errores a los fields
               const fieldMap: Record<string, string> = {
                 cuilColaborador: 'colaborador',
@@ -535,7 +535,7 @@ const CardMobile: React.FC<CardMobileProps> = ({
                     ? (typeof valorOriginal === 'object' && valorOriginal !== null
                         ? valorOriginal.patente || valorOriginal.nombre || valorOriginal.cuil || valorOriginal.cuit || JSON.stringify(valorOriginal)
                         : valorOriginal || 'Dato erróneo')
-                    : transformarCampo(field, manejoTurnos.turnoLocal)}
+                    : transformarCampo(field, noEsTurno ? item : manejoTurnos.turnoLocal)}
                 </Typography>
               </Box>
             );
@@ -543,100 +543,64 @@ const CardMobile: React.FC<CardMobileProps> = ({
           {renderButtons()}
           {childrenCollapse}
         </Box>
-        {renderTurnosDialogs({ ...manejoTurnos, theme, cupo, refreshCupos, item })}
+        {!noEsTurno && renderTurnosDialogs({ ...manejoTurnos, theme, cupo, refreshCupos, item })}
       </Collapse>
       {/* Popover para nota */}
-      <Popover
-        open={openNota}
-        anchorEl={anchorElNota}
-        onClose={handleCloseNota}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-        PaperProps={{
-          sx: {
-            p: 2,
-            bgcolor: 'rgba(240,240,240,0.95)',
-            border: '1.5px solid #e0e0e0',
-            borderRadius: 2,
-            minWidth: 260,
-            maxWidth: 320,
-            boxShadow: 3,
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 2,
-          }
-        }}
-      >
-        <Typography variant="subtitle2" sx={{ color: theme.colores.azul, fontWeight: 600, mb: 1 }}>
-          Nota del turno
-        </Typography>
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-          <textarea
-            value={notaLocal}
-            onChange={e => setNotaLocal(e.target.value)}
-            rows={4}
-            style={{ width: '100%', borderRadius: 8, border: '1px solid #e0e0e0', padding: 8, background: '#fff', fontFamily: 'inherit', fontSize: 15, resize: 'vertical' }}
-            placeholder="Escribí una nota para este turno..."
-            disabled={notaLoading}
-          />
-          <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
-            {manejoTurnos.turnoLocal.nota && (
+      {!noEsTurno && (
+        <Popover
+          open={openNota}
+          anchorEl={anchorElNota}
+          onClose={handleCloseNota}
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+          transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+          PaperProps={{
+            sx: {
+              p: 2,
+              bgcolor: 'rgba(240,240,240,0.95)',
+              border: '1.5px solid #e0e0e0',
+              borderRadius: 2,
+              minWidth: 260,
+              maxWidth: 320,
+              boxShadow: 3,
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 2,
+            }
+          }}
+        >
+          <Typography variant="subtitle2" sx={{ color: theme.colores.azul, fontWeight: 600, mb: 1 }}>
+            Nota del turno
+          </Typography>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+            <textarea
+              value={notaLocal}
+              onChange={e => setNotaLocal(e.target.value)}
+              rows={4}
+              style={{ width: '100%', borderRadius: 8, border: '1px solid #e0e0e0', padding: 8, background: '#fff', fontFamily: 'inherit', fontSize: 15, resize: 'vertical' }}
+              placeholder="Escribí una nota para este turno..."
+              disabled={notaLoading}
+            />
+            <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
               <Button
                 size="small"
-                color="error"
-                disabled={notaLoading}
-                onClick={async () => {
-                  setNotaLoading(true);
-                  try {
-                    const response = await fetch(`${import.meta.env.VITE_BACKEND_URL || ''}/turnos/${manejoTurnos.turnoLocal.id}`, {
-                      method: 'PUT',
-                      headers: { 'Content-Type': 'application/json' },
-                      body: JSON.stringify({ nota: '' }),
-                    });
-                    if (!response.ok) throw new Error(await response.text());
-                    if (refreshCupos) refreshCupos();
-                    manejoTurnos.setTurnoLocal((prev: any) => ({ ...prev, nota: '' }));
-                    setNotaLocal('');
-                    setAnchorElNota(null);
-                  } catch (err) {
-                    // Manejar error
-                  } finally {
-                    setNotaLoading(false);
-                  }
-                }}
+                onClick={handleCloseNota}
+                sx={{ color: theme.colores.azul }}
               >
-                Borrar
+                Cancelar
               </Button>
-            )}
-            <Button
-              size="small"
-              variant="contained"
-              sx={{ backgroundColor: theme.colores.azul, color: '#fff', '&:hover': { backgroundColor: theme.colores.azulOscuro } }}
-              disabled={notaLoading}
-              onClick={async () => {
-                setNotaLoading(true);
-                try {
-                  const response = await fetch(`${import.meta.env.VITE_BACKEND_URL || ''}/turnos/${manejoTurnos.turnoLocal.id}`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ nota: notaLocal }),
-                  });
-                  if (!response.ok) throw new Error(await response.text());
-                  if (refreshCupos) refreshCupos();
-                  manejoTurnos.setTurnoLocal((prev: any) => ({ ...prev, nota: notaLocal }));
-                  setAnchorElNota(null);
-                } catch (err) {
-                  // Manejar error
-                } finally {
-                  setNotaLoading(false);
-                }
-              }}
-            >
-              Guardar
-            </Button>
+              <Button
+                size="small"
+                variant="contained"
+                onClick={() => manejoTurnos.handleGuardarNota(manejoTurnos.turnoLocal.id)}
+                disabled={notaLoading}
+                sx={{ backgroundColor: theme.colores.azul }}
+              >
+                {notaLoading ? 'Guardando...' : 'Guardar'}
+              </Button>
+            </Box>
           </Box>
-        </Box>
-      </Popover>
+        </Popover>
+      )}
     </Box>
   );
 };

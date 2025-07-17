@@ -74,6 +74,7 @@ export function MapaMain() {
 
     const [tipoUbicacionSeleccionado, setTipoUbicacionSeleccionado] = useState<string>("Todas");
     const [estadoCarga, setEstadoCarga] = useState(true);
+    const [tipoUbicacion, setTipoUbicacion] = useState<any[]>([]);
 
     const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
 const [showSearch, setShowSearch] = useState(false);
@@ -103,8 +104,28 @@ useEffect(() => {
                 console.error("Error al obtener las ubicaciones disponibles")
             );
     };
+
+    // Cargar tipos de ubicación desde la base de datos
+    const refreshTiposUbicacion = () => {
+        fetch(`${backendURL}/ubicaciones/tiposUbicaciones`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "ngrok-skip-browser-warning": "true",
+            },
+        })
+            .then((response) => response.json())
+            .then((tipos) => {
+                setTipoUbicacion(tipos);
+            })
+            .catch(() =>
+                console.error("Error al obtener los tipos de ubicación")
+            );
+    };
+
     useEffect(() => {
         refreshUbicaciones();
+        refreshTiposUbicacion();
     }, []);
 
     const handleMarkerClick = (ubicacion: any) => {
@@ -117,7 +138,20 @@ useEffect(() => {
     const handleClose = () => {
         setOpenDialog(false);
     };
-    const tipoUbicacionOptions = ["Todas", "Carga", "Descarga", "Balanza"];
+
+    // Crear opciones para el autocomplete incluyendo "Todas"
+    const tipoUbicacionOptions = [
+        { id: 0, nombre: "Todas" },
+        ...tipoUbicacion
+    ];
+
+    // Filtrar ubicaciones según el tipo seleccionado
+    const ubicacionesFiltradas = ubicaciones.filter(ubicacion => {
+        if (tipoUbicacionSeleccionado === "Todas") {
+            return true; // Mostrar todas las ubicaciones
+        }
+        return ubicacion.tipoUbicacion?.nombre === tipoUbicacionSeleccionado;
+    });
 
     // Estilos azul para focus
     const azulStyles = {
@@ -188,6 +222,11 @@ useEffect(() => {
 
         <Autocomplete
           options={tipoUbicacionOptions}
+          getOptionLabel={(option) => option.nombre}
+          value={tipoUbicacionOptions.find(tipo => tipo.nombre === tipoUbicacionSeleccionado) || tipoUbicacionOptions[0]}
+          onChange={(_e, value) =>
+            setTipoUbicacionSeleccionado(value?.nombre || 'Todas')
+          }
           renderInput={(params) => (
             <TextField {...params} label="Filtrar por tipo" sx={azulStyles} />
           )}
@@ -197,10 +236,6 @@ useEffect(() => {
             borderRadius: '6px',
             ...azulStyles,
           }}
-          onChange={(_e, value) =>
-            setTipoUbicacionSeleccionado(value || 'Todas')
-          }
-          defaultValue={tipoUbicacionOptions[0]}
         />
         {/* Botón Cerrar */}
         <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
@@ -262,6 +297,11 @@ useEffect(() => {
                         />
                         <Autocomplete
                             options={tipoUbicacionOptions}
+                            getOptionLabel={(option) => option.nombre}
+                            value={tipoUbicacionOptions.find(tipo => tipo.nombre === tipoUbicacionSeleccionado) || tipoUbicacionOptions[0]}
+                            onChange={(_event, value) => {
+                                setTipoUbicacionSeleccionado(value?.nombre || "Todas");
+                            }}
                             renderInput={(params) => (
                                 <TextField {...params} label="Tipo" sx={azulStyles} />
                             )}
@@ -271,10 +311,6 @@ useEffect(() => {
                                 borderRadius: "6px",
                                 ...azulStyles,
                             }}
-                            onChange={(_event, value) => {
-                                setTipoUbicacionSeleccionado(value || "Todas");
-                            }}
-                            defaultValue={tipoUbicacionOptions[0]}
                         />
                         <IconButton
                             sx={{
@@ -304,7 +340,7 @@ useEffect(() => {
                     </Box>
                 )}
             </Box>
-    
+
             {/* Mapa */}
             <MapContainer
                 center={[-33.099765, -64.3654802]}
@@ -316,7 +352,7 @@ useEffect(() => {
                     lat={ubicacionSeleccionada?.latitud}
                     lng={ubicacionSeleccionada?.longitud}
                 />
-    
+
                 <LayersControl position="topright">
                     <BaseLayer checked name="CartoDB Positron">
                         <TileLayer
@@ -331,8 +367,8 @@ useEffect(() => {
                     <BaseLayer name="OpenStreetMap">
                         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
                     </BaseLayer>
-    
-                    {ubicaciones.map((ubi, index) => (
+
+                    {ubicacionesFiltradas.map((ubi, index) => (
                         <Overlay
                             key={index}
                             checked
@@ -370,7 +406,7 @@ useEffect(() => {
                     ))}
                 </LayersControl>
             </MapContainer>
-    
+
             {/* Diálogo */}
             <Dialog open={openDialog} onClose={handleClose} maxWidth="xs" fullWidth>
                 <DialogTitle>Detalles del Punto</DialogTitle>
@@ -384,5 +420,5 @@ useEffect(() => {
             </Dialog>
         </Box>
     );
-    
+
 }

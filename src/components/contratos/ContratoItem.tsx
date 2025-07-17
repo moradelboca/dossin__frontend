@@ -63,6 +63,7 @@ interface ContratoItemProps {
                     tituloField="tituloCustom"
                     subtituloField="subtituloCustom"
                     usarSinDesplegable={true}
+                    noEsTurno={true}
                 />
             );
         });

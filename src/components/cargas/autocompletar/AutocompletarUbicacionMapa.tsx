@@ -38,7 +38,7 @@ export default function AutocompletarUbicacionMapa(props: AutocompletarProps) {
     };
 
     const ubicacionesFiltradas = ubicaciones.filter(
-        (ubicacion) => filtro === "Todas" || ubicacion.tipoUbicacion === filtro
+        (ubicacion) => filtro === "Todas" || ubicacion.tipoUbicacion?.nombre === filtro
     );
 
     const seleccionarUbicacion = (event: any, seleccionado: string | null) => {
