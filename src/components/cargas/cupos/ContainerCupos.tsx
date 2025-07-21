@@ -873,7 +873,7 @@ export function ContainerCupos() {
               <DateCalendar
                 value={calendarMode === 'start' ? customStart : customEnd}
                 minDate={calendarMode === 'end' ? customStart : undefined}
-                maxDate={calendarMode === 'start' ? customEnd : dayjs().subtract(1, 'day')}
+                maxDate={calendarMode === 'start' ? customEnd : (user?.rol?.id === 1 ? undefined : dayjs().subtract(1, 'day'))}
                 onChange={(date) => {
                   if (!date) return;
                   if (calendarMode === 'start') {
