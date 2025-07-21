@@ -3,6 +3,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { Box, IconButton, Button } from "@mui/material";
 import AddIcon from '@mui/icons-material/Add';
 import { ContextoGeneral } from "../Contexto";
+import { useAuth } from "../autenticacion/ContextoAuth";
 import DashboardCard from "../cards/Dashboard/DashboardCard";
 import DashboardGraficos from "./DashboardGraficos";
 import InconvenientesDialog from "../dialogs/dashboard/InconvenientesDialog";
@@ -83,6 +84,7 @@ const CustomDay = (props: any) => {
 
 const Dashboard: React.FC = () => {
   const { dashboardURL, theme } = useContext(ContextoGeneral);
+  const { user } = useAuth();
   const [co2Emitido, setCo2Emitido] = useState<number>(0);
   const [tarifaPromedio, setTarifaPromedio] = useState<string>("$0");
 
@@ -342,7 +344,7 @@ const Dashboard: React.FC = () => {
               <DateCalendar
                 value={calendarMode === 'start' ? customStart : customEnd}
                 minDate={calendarMode === 'end' ? customStart : undefined}
-                maxDate={calendarMode === 'start' ? customEnd : dayjs()}
+                maxDate={calendarMode === 'start' ? customEnd : (user?.rol?.id === 1 ? undefined : dayjs())}
                 onChange={(date) => {
                   if (!date) return;
                   if (calendarMode === 'start') {

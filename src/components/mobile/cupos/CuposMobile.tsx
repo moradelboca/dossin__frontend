@@ -28,6 +28,7 @@ import TurnoForm from "../../forms/turnos/TurnoForm";
 import TurnoConErroresForm from "../../forms/turnos/tabs/turnosConErrores/TurnoConErroresForm";
 import CardMobile from "../../cards/mobile/CardMobile";
 import { ContextoGeneral } from "../../Contexto";
+import { useAuth } from "../../autenticacion/ContextoAuth";
 import dayjs, { Dayjs } from 'dayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -98,6 +99,7 @@ export default function CuposMobile({
   setFiltros,
 }: CuposMobileProps) {
   const { theme: contextTheme } = useContext(ContextoGeneral);
+  const { user } = useAuth();
   
   const [expandedCard, setExpandedCard] = useState<number | null>(null);
   const [openDialogCupo, setOpenDialogCupo] = useState(false);
@@ -552,7 +554,7 @@ export default function CuposMobile({
               <DateCalendar
                 value={calendarMode === 'start' ? customStart : customEnd}
                 minDate={calendarMode === 'end' ? customStart : undefined}
-                maxDate={calendarMode === 'start' ? customEnd : dayjs()}
+                maxDate={calendarMode === 'start' ? customEnd : (user?.rol?.id === 1 ? undefined : dayjs())}
                 onChange={(date) => {
                   if (!date) return;
                   if (calendarMode === 'start') {

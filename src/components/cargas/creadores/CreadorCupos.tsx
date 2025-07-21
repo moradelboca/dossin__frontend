@@ -12,6 +12,7 @@ import Stack from "@mui/material/Stack";
 import TextField from "@mui/material/TextField";
 import { useState, useContext } from "react";
 import { ContextoGeneral } from "../../Contexto";
+import { useAuth } from "../../autenticacion/ContextoAuth";
 
 // Tema personalizado
 const tema = createTheme({
@@ -70,6 +71,7 @@ const cuposFromat = React.forwardRef<NumericFormatProps, CustomProps>(
 export function CreadorCupos(props: any) {
   const { idCarga, handleCloseDialog, refreshCupos } = props;
   const { backendURL } = useContext(ContextoGeneral);
+  const { user } = useAuth();
   const [selectedDates, setSelectedDates] = useState<Dayjs[]>([]);
   const [cupoSeleccionado, setCupoSeleccionado] = useState<number | null>(null);
   const [error, setError] = useState(false);
@@ -124,7 +126,13 @@ export function CreadorCupos(props: any) {
   };
 
   const handleDateChange = (date: Dayjs | null) => {
-    if (date && (date.isSame(dayjs(), "day") || date.isAfter(dayjs(), "day"))) {
+    // Los administradores (rol id 1) pueden seleccionar fechas pasadas
+    const isAdmin = user?.rol?.id === 1;
+    const isDateValid = isAdmin 
+      ? date // Los admins pueden seleccionar cualquier fecha
+      : date && (date.isSame(dayjs(), "day") || date.isAfter(dayjs(), "day")); // Otros usuarios solo fechas actuales o futuras
+    
+    if (isDateValid && date) {
       setSelectedDates((prev) => {
         const isSelected = prev.some((selectedDate) =>
           selectedDate.isSame(date, "day")
