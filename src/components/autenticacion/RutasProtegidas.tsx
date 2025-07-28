@@ -40,6 +40,7 @@ const RutasProtegidas = ({ children, allowedRoles }: ProtectedRouteProps) => {
       try {
         const response = await fetch(`${authURL}/auth/verify-token`, {
           method: "GET",
+          credentials: "include",
           headers: {
             "Authorization": `Bearer ${accessToken}`,
             "ngrok-skip-browser-warning": "true"
