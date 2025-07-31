@@ -72,8 +72,12 @@ function MainLayout({
           <Route
             path="/"
             element={
-              <RutasProtegidas allowedRoles={[1]}>
-                <Dashboard />
+              <RutasProtegidas>
+                {user?.rol?.id === 1 ? (
+                  <Dashboard />
+                ) : (
+                  <Navigate to="/cargas" replace />
+                )}
               </RutasProtegidas>
             }
           />

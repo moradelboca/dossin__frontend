@@ -122,7 +122,20 @@ export function useManejoTurnos({ item, cupo, refreshCupos }: any) {
       (async () => {
         try {
           const backendURL = import.meta.env.VITE_BACKEND_URL || '';
-          const turno = item;
+          
+          // Obtener datos completos del turno (incluyendo KG)
+          let turno = item;
+          if (item?.id) {
+            try {
+              const turnoRes = await fetch(`${backendURL}/turnos/${item.id}`);
+              if (turnoRes.ok) {
+                turno = await turnoRes.json();
+              }
+            } catch (err) {
+              // console.error(err);
+            }
+          }
+          
           let carga = null;
           if (cupo && cupo.carga) {
             const cargaRes = await fetch(`${backendURL}/cargas/${cupo.carga}`);
@@ -133,9 +146,18 @@ export function useManejoTurnos({ item, cupo, refreshCupos }: any) {
           }
           let contrato = null;
           if (carga && carga.id) {
-            const contratosRes = await fetch(`${backendURL}/contratos`, { headers: { 'ngrok-skip-browser-warning': 'true' } });
-            const contratos = await contratosRes.json();
-            contrato = contratos.find((contrato: any) => Array.isArray(contrato.cargas) && contrato.cargas.some((c: any) => c.id === carga.id));
+            try {
+              const contratosRes = await fetch(`${backendURL}/contratos`, { headers: { 'ngrok-skip-browser-warning': 'true' } });
+              const contratos = await contratosRes.json();
+              contrato = contratos.find((contrato: any) => {
+                const tieneCarga = Array.isArray(contrato.cargas) && contrato.cargas.some((c: any) => {
+                  return c.id === carga.id;
+                });
+                return tieneCarga;
+              });
+            } catch (err) {
+              // console.error(err);
+            }
           }          
           const turnoCompleto = turnoLocal.precios ? turnoLocal : null;
           setCartaPorteData({ turno, carga, contrato, cupo, turnoCompleto });
@@ -289,6 +311,7 @@ export function renderTurnosDialogs({
     case 'cartaPorte':
       // Detectar mobile
       const isMobile = window.innerWidth <= 600;
+      
       return (
         <Dialog open onClose={() => setOpenDialog(null)} fullWidth maxWidth="md">
           <DialogTitle>Carta de Porte</DialogTitle>
