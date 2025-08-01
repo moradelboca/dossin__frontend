@@ -25,10 +25,11 @@ import TurnoForm from "../../../forms/turnos/TurnoForm";
 import TurnoGridRow from './TurnoGridRow';
 import { TarjetaCupos } from '../TarjetaCupos';
 import FilterDialog from '../../../dialogs/tablas/FilterDialog';
-import { exportarCSV, exportarPDF } from '../../../../utils/exportUtils';
+import { exportarCSV, exportarPDF, exportarImagen } from '../../../../utils/exportUtils';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import ViewColumnIcon from '@mui/icons-material/ViewColumn';
 import SaveAltIcon from '@mui/icons-material/SaveAlt';
+import ImageIcon from '@mui/icons-material/Image';
 import { ContextoGeneral } from '../../../Contexto';
 import { useAuth } from '../../../autenticacion/ContextoAuth';
 import CancelIcon from '@mui/icons-material/Cancel';
@@ -228,15 +229,92 @@ export const CuposGridContainer: React.FC<CuposGridContainerProps & { estadoCarg
   const handleToggleCupo = (idx: number) => {
     setSelectedCupos(prev => prev.includes(idx) ? prev.filter(i => i !== idx) : [...prev, idx]);
   };
-  const handleExport = (formato: 'csv' | 'pdf') => {
+  const handleExport = async (formato: 'csv' | 'pdf' | 'imagen') => {
     // Sumar todos los turnos de los cupos seleccionados
     const turnosExport = selectedCupos.length > 0
       ? selectedCupos.flatMap(idx => cupos[idx]?.turnos || [])
       : cupos.flatMap(c => c.turnos);
     const exportFields = selectedColumns;
     const exportHeaders = exportFields.map(f => headerNames[fields.indexOf(f)]);
-    if (formato === 'csv') exportarCSV(exportHeaders, turnosExport, exportFields, 'turnos');
-    if (formato === 'pdf') exportarPDF(exportHeaders, turnosExport, exportFields, 'turnos');
+    
+    if (formato === 'csv') {
+      exportarCSV(exportHeaders, turnosExport, exportFields, 'turnos');
+    }
+    
+    if (formato === 'pdf') {
+      // Obtener datos de carga y contrato para el primer cupo
+      let cargoData: any = null;
+      let contractData: any = null;
+      
+      if (cupos.length > 0) {
+        const firstCupo = selectedCupos.length > 0 ? cupos[selectedCupos[0]] : cupos[0];
+        
+        try {
+          // Obtener datos de la carga
+          const backendURL = import.meta.env.VITE_BACKEND_URL || '';
+          const cargaResponse = await fetch(`${backendURL}/cargas/${firstCupo.carga}`);
+          if (cargaResponse.ok) {
+            cargoData = await cargaResponse.json();
+            
+            // Obtener datos del contrato relacionado
+            const contratosResponse = await fetch(`${backendURL}/contratos`, { 
+              headers: { 'ngrok-skip-browser-warning': 'true' } 
+            });
+            if (contratosResponse.ok) {
+              const contratos = await contratosResponse.json();
+              contractData = contratos.find((contrato: any) => {
+                const tieneCarga = Array.isArray(contrato.cargas) && contrato.cargas.some((c: any) => {
+                  return c.id === cargoData.id;
+                });
+                return tieneCarga;
+              });
+            }
+          }
+        } catch (error) {
+          console.error('Error fetching cargo and contract data:', error);
+        }
+      }
+      
+      exportarPDF(exportHeaders, turnosExport, exportFields, 'turnos', cargoData, contractData);
+    }
+
+    if (formato === 'imagen') {
+      // Obtener datos de carga y contrato para el primer cupo
+      let cargoData: any = null;
+      let contractData: any = null;
+      
+      if (cupos.length > 0) {
+        const firstCupo = selectedCupos.length > 0 ? cupos[selectedCupos[0]] : cupos[0];
+        
+        try {
+          // Obtener datos de la carga
+          const backendURL = import.meta.env.VITE_BACKEND_URL || '';
+          const cargaResponse = await fetch(`${backendURL}/cargas/${firstCupo.carga}`);
+          if (cargaResponse.ok) {
+            cargoData = await cargaResponse.json();
+            
+            // Obtener datos del contrato relacionado
+            const contratosResponse = await fetch(`${backendURL}/contratos`, { 
+              headers: { 'ngrok-skip-browser-warning': 'true' } 
+            });
+            if (contratosResponse.ok) {
+              const contratos = await contratosResponse.json();
+              contractData = contratos.find((contrato: any) => {
+                const tieneCarga = Array.isArray(contrato.cargas) && contrato.cargas.some((c: any) => {
+                  return c.id === cargoData.id;
+                });
+                return tieneCarga;
+              });
+            }
+          }
+        } catch (error) {
+          console.error('Error fetching cargo and contract data:', error);
+        }
+      }
+      
+      exportarImagen(exportHeaders, turnosExport, exportFields, 'turnos', cargoData, contractData);
+    }
+    
     handleCloseExport();
   };
 
@@ -364,7 +442,18 @@ export const CuposGridContainer: React.FC<CuposGridContainerProps & { estadoCarg
                   },
                 }}
               >
-                <Checkbox checked={selectedCupos.includes(idx)} sx={{ color: theme.colores.azul }} />
+                <Checkbox 
+                  checked={selectedCupos.includes(idx)} 
+                  sx={{ 
+                    color: theme.colores.azul,
+                    '&.Mui-checked': {
+                      color: theme.colores.azul,
+                    },
+                    '&.MuiCheckbox-root': {
+                      color: theme.colores.azul,
+                    }
+                  }} 
+                />
                 <ListItemText primary={`Fecha: ${cupo.fecha}`} />
               </MenuItem>
             ))}
@@ -402,6 +491,23 @@ export const CuposGridContainer: React.FC<CuposGridContainerProps & { estadoCarg
             }}
           >
             Exportar PDF
+          </Button>
+          <Button
+            onClick={() => handleExport('imagen')}
+            variant="contained"
+            startIcon={<ImageIcon />}
+            sx={{
+              backgroundColor: theme.colores.azul,
+              color: '#fff',
+              borderRadius: '8px',
+              textTransform: 'none',
+              fontWeight: 500,
+              '&:hover': {
+                backgroundColor: theme.colores.azulOscuro,
+              },
+            }}
+          >
+            Exportar Imagen
           </Button>
         </DialogActions>
       </Dialog>
