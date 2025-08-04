@@ -33,7 +33,7 @@ export const exportarCSV = (headerNames: string[], filteredDatos: any[], fields:
   document.body.removeChild(link);
 };
 
-export const exportarImagen = async (headerNames: string[], filteredDatos: any[], fields: string[], entidad: string, cargoData?: any, contractData?: any) => {
+export const exportarImagen = async (headerNames: string[], filteredDatos: any[], fields: string[], entidad: string, cargoData?: any) => {
   // Crear un elemento temporal para renderizar el contenido
   const tempDiv = document.createElement('div');
   tempDiv.style.position = 'absolute';
@@ -65,15 +65,11 @@ export const exportarImagen = async (headerNames: string[], filteredDatos: any[]
       <h1 style="font-size: 24px; margin-bottom: 20px; color: #163660;">Reporte de ${entidad}</h1>
   `;
 
-  // Información de la carga y contrato
-  if (cargoData || contractData) {
+  // Información de la carga
+  if (cargoData) {
     htmlContent += `
       <div style="margin-bottom: 20px;">
         <h2 style="font-size: 18px; margin-bottom: 10px; color: #163660; font-weight: bold;">Información de Carga y Contrato</h2>
-    `;
-
-    if (cargoData) {
-      htmlContent += `
         <div style="margin-bottom: 15px;">
           <p style="margin: 5px 0; font-size: 14px;"><strong>Ubicación de Carga:</strong> ${cargoData.ubicacionCarga?.nombre || 'N/A'} - ${cargoData.ubicacionCarga?.localidad?.provincia?.nombre || 'N/A'}</p>
           <p style="margin: 5px 0; font-size: 14px;"><strong>Ubicación de Descarga:</strong> ${cargoData.ubicacionDescarga?.nombre || 'N/A'} - ${cargoData.ubicacionDescarga?.localidad?.provincia?.nombre || 'N/A'}</p>
@@ -82,23 +78,8 @@ export const exportarImagen = async (headerNames: string[], filteredDatos: any[]
           <p style="margin: 5px 0; font-size: 14px;"><strong>Tipo Tarifa:</strong> ${cargoData.tipoTarifa?.nombre || 'N/A'}</p>
           <p style="margin: 5px 0; font-size: 14px;"><strong>Kilómetros:</strong> ${cargoData.cantidadKm || 'N/A'} km</p>
         </div>
-      `;
-    }
-
-    if (contractData) {
-      htmlContent += `
-        <div style="margin-bottom: 15px;">
-          <h3 style="font-size: 16px; margin-bottom: 8px; color: #163660; font-weight: bold;">Datos del Contrato:</h3>
-          <p style="margin: 5px 0; font-size: 14px;"><strong>Empresa:</strong> ${contractData.empresa?.razonSocial || 'N/A'}</p>
-          <p style="margin: 5px 0; font-size: 14px;"><strong>CUIT:</strong> ${contractData.empresa?.cuit || 'N/A'}</p>
-          <p style="margin: 5px 0; font-size: 14px;"><strong>Descripción:</strong> ${contractData.descripcion || 'N/A'}</p>
-          <p style="margin: 5px 0; font-size: 14px;"><strong>Fecha Inicio:</strong> ${contractData.fechaInicio || 'N/A'}</p>
-          <p style="margin: 5px 0; font-size: 14px;"><strong>Fecha Fin:</strong> ${contractData.fechaFin || 'N/A'}</p>
-        </div>
-      `;
-    }
-
-    htmlContent += `</div>`;
+      </div>
+    `;
   }
 
   // Tabla de datos
@@ -172,21 +153,19 @@ export const exportarImagen = async (headerNames: string[], filteredDatos: any[]
 };
 
 /**
- * Exporta datos a PDF con información adicional de carga y contrato
+ * Exporta datos a PDF con información adicional de carga
  * @param headerNames - Nombres de las columnas del encabezado
  * @param filteredDatos - Datos filtrados a exportar
  * @param fields - Campos de los datos
  * @param entidad - Nombre de la entidad
  * @param cargoData - Datos opcionales de la carga (para turnos)
- * @param contractData - Datos opcionales del contrato (para turnos)
  */
 export const exportarPDF = (
   headerNames: string[], 
   filteredDatos: any[], 
   fields: string[], 
   entidad: string,
-  cargoData?: any,
-  contractData?: any
+  cargoData?: any
 ) => {
   const doc = new jsPDF({ orientation: "landscape" });
 
@@ -197,8 +176,8 @@ export const exportarPDF = (
   doc.text(`Reporte de ${entidad}`, 14, currentY);
   currentY += 15;
 
-  // Información de la carga y contrato (si está disponible)
-  if (cargoData || contractData) {
+  // Información de la carga (si está disponible)
+  if (cargoData) {
     doc.setFontSize(12);
     doc.setFont("helvetica", 'bold');
     doc.text("Información de Carga y Contrato", 14, currentY);
@@ -207,51 +186,24 @@ export const exportarPDF = (
     doc.setFontSize(10);
     doc.setFont("helvetica", 'normal');
 
-    if (cargoData) {
-      // Datos de la carga
-      const cargoInfo = [
-        `Ubicación de Carga: ${cargoData.ubicacionCarga?.nombre || 'N/A'} - ${cargoData.ubicacionCarga?.localidad?.provincia?.nombre || 'N/A'}`,
-        `Ubicación de Descarga: ${cargoData.ubicacionDescarga?.nombre || 'N/A'} - ${cargoData.ubicacionDescarga?.localidad?.provincia?.nombre || 'N/A'}`,
-        `Cargamento: ${cargoData.cargamento?.nombre || 'N/A'}`,
-        `Tarifa: $${cargoData.tarifa || 'N/A'}`,
-        `Tipo Tarifa: ${cargoData.tipoTarifa?.nombre || 'N/A'}`,
-        `Kilómetros: ${cargoData.cantidadKm || 'N/A'} km`,
-      ];
+    // Datos de la carga
+    const cargoInfo = [
+      `Ubicación de Carga: ${cargoData.ubicacionCarga?.nombre || 'N/A'} - ${cargoData.ubicacionCarga?.localidad?.provincia?.nombre || 'N/A'}`,
+      `Ubicación de Descarga: ${cargoData.ubicacionDescarga?.nombre || 'N/A'} - ${cargoData.ubicacionDescarga?.localidad?.provincia?.nombre || 'N/A'}`,
+      `Cargamento: ${cargoData.cargamento?.nombre || 'N/A'}`,
+      `Tarifa: $${cargoData.tarifa || 'N/A'}`,
+      `Tipo Tarifa: ${cargoData.tipoTarifa?.nombre || 'N/A'}`,
+      `Kilómetros: ${cargoData.cantidadKm || 'N/A'} km`,
+    ];
 
-      cargoInfo.forEach((info) => {
-        if (currentY > 250) {
-          doc.addPage();
-          currentY = 20;
-        }
-        doc.text(info, 14, currentY);
-        currentY += 5;
-      });
-    }
-
-    if (contractData) {
+    cargoInfo.forEach((info) => {
+      if (currentY > 250) {
+        doc.addPage();
+        currentY = 20;
+      }
+      doc.text(info, 14, currentY);
       currentY += 5;
-      doc.setFont("helvetica", 'bold');
-      doc.text("Datos del Contrato:", 14, currentY);
-      currentY += 5;
-      doc.setFont("helvetica", 'normal');
-
-      const contractInfo = [
-        `Empresa: ${contractData.empresa?.razonSocial || 'N/A'}`,
-        `CUIT: ${contractData.empresa?.cuit || 'N/A'}`,
-        `Descripción: ${contractData.descripcion || 'N/A'}`,
-        `Fecha Inicio: ${contractData.fechaInicio || 'N/A'}`,
-        `Fecha Fin: ${contractData.fechaFin || 'N/A'}`,
-      ];
-
-      contractInfo.forEach((info) => {
-        if (currentY > 250) {
-          doc.addPage();
-          currentY = 20;
-        }
-        doc.text(info, 14, currentY);
-        currentY += 5;
-      });
-    }
+    });
 
     currentY += 10;
   }

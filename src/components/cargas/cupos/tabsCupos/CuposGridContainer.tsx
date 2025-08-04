@@ -241,10 +241,9 @@ export const CuposGridContainer: React.FC<CuposGridContainerProps & { estadoCarg
       exportarCSV(exportHeaders, turnosExport, exportFields, 'turnos');
     }
     
-    if (formato === 'pdf') {
-      // Obtener datos de carga y contrato para el primer cupo
+    if (formato === 'pdf' || formato === 'imagen') {
+      // Obtener datos de carga para el primer cupo
       let cargoData: any = null;
-      let contractData: any = null;
       
       if (cupos.length > 0) {
         const firstCupo = selectedCupos.length > 0 ? cupos[selectedCupos[0]] : cupos[0];
@@ -255,64 +254,17 @@ export const CuposGridContainer: React.FC<CuposGridContainerProps & { estadoCarg
           const cargaResponse = await fetch(`${backendURL}/cargas/${firstCupo.carga}`);
           if (cargaResponse.ok) {
             cargoData = await cargaResponse.json();
-            
-            // Obtener datos del contrato relacionado
-            const contratosResponse = await fetch(`${backendURL}/contratos`, { 
-              headers: { 'ngrok-skip-browser-warning': 'true' } 
-            });
-            if (contratosResponse.ok) {
-              const contratos = await contratosResponse.json();
-              contractData = contratos.find((contrato: any) => {
-                const tieneCarga = Array.isArray(contrato.cargas) && contrato.cargas.some((c: any) => {
-                  return c.id === cargoData.id;
-                });
-                return tieneCarga;
-              });
-            }
           }
         } catch (error) {
-          console.error('Error fetching cargo and contract data:', error);
+          console.error('Error fetching cargo data:', error);
         }
       }
       
-      exportarPDF(exportHeaders, turnosExport, exportFields, 'turnos', cargoData, contractData);
-    }
-
-    if (formato === 'imagen') {
-      // Obtener datos de carga y contrato para el primer cupo
-      let cargoData: any = null;
-      let contractData: any = null;
-      
-      if (cupos.length > 0) {
-        const firstCupo = selectedCupos.length > 0 ? cupos[selectedCupos[0]] : cupos[0];
-        
-        try {
-          // Obtener datos de la carga
-          const backendURL = import.meta.env.VITE_BACKEND_URL || '';
-          const cargaResponse = await fetch(`${backendURL}/cargas/${firstCupo.carga}`);
-          if (cargaResponse.ok) {
-            cargoData = await cargaResponse.json();
-            
-            // Obtener datos del contrato relacionado
-            const contratosResponse = await fetch(`${backendURL}/contratos`, { 
-              headers: { 'ngrok-skip-browser-warning': 'true' } 
-            });
-            if (contratosResponse.ok) {
-              const contratos = await contratosResponse.json();
-              contractData = contratos.find((contrato: any) => {
-                const tieneCarga = Array.isArray(contrato.cargas) && contrato.cargas.some((c: any) => {
-                  return c.id === cargoData.id;
-                });
-                return tieneCarga;
-              });
-            }
-          }
-        } catch (error) {
-          console.error('Error fetching cargo and contract data:', error);
-        }
+      if (formato === 'pdf') {
+        exportarPDF(exportHeaders, turnosExport, exportFields, 'turnos', cargoData);
+      } else {
+        exportarImagen(exportHeaders, turnosExport, exportFields, 'turnos', cargoData);
       }
-      
-      exportarImagen(exportHeaders, turnosExport, exportFields, 'turnos', cargoData, contractData);
     }
     
     handleCloseExport();
