@@ -22,6 +22,7 @@ import CancelIcon from "@mui/icons-material/Cancel";
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import FilterListIcon from '@mui/icons-material/FilterList';
+import AddIcon from '@mui/icons-material/Add';
 import { TarjetaCupos } from "../../cargas/cupos/TarjetaCupos";
 import { CreadorCupos } from "../../cargas/creadores/CreadorCupos";
 import TurnoForm from "../../forms/turnos/TurnoForm";
@@ -146,6 +147,10 @@ export default function CuposMobile({
 
   const handleCloseDialogCupo = () => {
     setOpenDialogCupo(false);
+  };
+
+  const handleOpenDialogCupo = () => {
+    setOpenDialogCupo(true);
   };
 
   const handleCloseDialogTurno = () => {
@@ -293,12 +298,22 @@ export default function CuposMobile({
         <Typography variant="h5" gutterBottom sx={{ mb: 0 }}>
           Cupos
         </Typography>
-        <IconButton
-          onClick={handleClick}
-          sx={{ color: contextTheme.colores.azul }}
-        >
-          <MoreVertIcon />
-        </IconButton>
+        <Box sx={{ display: 'flex', gap: 1 }}>
+          <IconButton
+            onClick={handleOpenDialogCupo}
+            sx={{ 
+              color: contextTheme.colores.azul,
+            }}
+          >
+            <AddIcon />
+          </IconButton>
+          <IconButton
+            onClick={handleClick}
+            sx={{ color: contextTheme.colores.azul }}
+          >
+            <MoreVertIcon />
+          </IconButton>
+        </Box>
       </Box>
 
       {/* Menú desplegable de filtros */}
