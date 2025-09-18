@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react";
-import { Box, TextField, useTheme, useMediaQuery } from "@mui/material";
+import { Box, TextField, Typography, useTheme, useMediaQuery } from "@mui/material";
 import { ContextoGeneral } from "../../../Contexto";
 import MainButton from "../../../botones/MainButtom";
 
@@ -7,6 +7,7 @@ interface PesajeFormProps {
   turnoId: number;
   initialData?: {
     kgDescargados?: number;
+    precioGrano?: number;
   };
   onSuccess: (updatedData: any) => void;
   onCancel: () => void;
@@ -22,6 +23,9 @@ const PesajeForm: React.FC<PesajeFormProps> = ({
   const [kgDescargados, setKgDescargados] = useState<number | string>(
     initialData?.kgDescargados ?? ""
   );
+  const [precioGrano, setPrecioGrano] = useState<number | string>(
+    initialData?.precioGrano ?? ""
+  );
   const [errors, setErrors] = useState<{ [key: string]: string | null }>({});
   const {theme} = useContext(ContextoGeneral);
 
@@ -34,6 +38,10 @@ const PesajeForm: React.FC<PesajeFormProps> = ({
       newErrors.kgDescargados =
         "Kilogramos descargados es obligatorio y debe ser un número";
     }
+    if (precioGrano === "" || isNaN(Number(precioGrano))) {
+      newErrors.precioGrano =
+        "Precio del grano es obligatorio y debe ser un número";
+    }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -45,6 +53,7 @@ const PesajeForm: React.FC<PesajeFormProps> = ({
     try {
       const payload = {
         kgDescargados: Number(kgDescargados),
+        precioGrano: Number(precioGrano),
       };
       const url = `${backendURL}/turnos/${turnoId}`;
       const response = await fetch(url, {
@@ -89,6 +98,28 @@ const PesajeForm: React.FC<PesajeFormProps> = ({
         inputProps={{ inputMode: 'numeric', pattern: '[0-9]*', min: 0, maxLength: 5 }}
         sx={{ ...azulStyles, mt: 2 }}
       />
+      <TextField
+        margin="dense"
+        label="Precio del Grano"
+        name="precioGrano"
+        variant="outlined"
+        fullWidth
+        value={precioGrano}
+        onChange={(e) => {
+          const value = e.target.value;
+          if (/^\d{0,7}(\.\d{0,2})?$/.test(value)) {
+            setPrecioGrano(value);
+          }
+        }}
+        error={!!errors.precioGrano}
+        helperText={errors.precioGrano}
+        inputProps={{ inputMode: 'decimal', pattern: '[0-9]*' }}
+        sx={azulStyles}
+      />
+      {/* ADVERTENCIA: precio por tonelada debajo y en gris */}
+      <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5, ml: 0.5 }}>
+        Ingrese el precio del grano por tonelada. El sistema lo convertirá automáticamente a precio por kg.
+      </Typography>
       <Box
         sx={{
           display: "flex",

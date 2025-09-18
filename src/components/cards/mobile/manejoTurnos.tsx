@@ -116,7 +116,7 @@ export function useManejoTurnos({ item, cupo, refreshCupos }: any) {
   };
 
   useEffect(() => {
-    if (openDialog === 'cartaPorte') {
+    if (openDialog === 'cartaPorte' || openDialog === 'cargarCarta') {
       setCartaPorteLoading(true);
       setCartaPorteError(null);
       (async () => {
@@ -392,6 +392,7 @@ export function renderTurnosDialogs({
             <CartaPorteForm
               turnoId={turnoLocal.id}
               initialData={turnoLocal.cartaDePorte}
+              cuitTitular={cartaPorteData?.contrato?.titularCartaDePorte?.cuit}
               onSuccess={async () => {
                 try {
                   const nextEstadoId = getNextEstadoId(turnoLocal.estado?.nombre);
@@ -418,7 +419,7 @@ export function renderTurnosDialogs({
           <DialogContent>
             <PesajeForm
               turnoId={turnoLocal.id}
-              initialData={{ kgDescargados: turnoLocal.kgDescargados }}
+              initialData={{ kgDescargados: turnoLocal.kgDescargados, precioGrano: turnoLocal.precioGrano }}
               onSuccess={async () => {
                 try {
                   const nextEstadoId = getNextEstadoId(turnoLocal.estado?.nombre);
@@ -537,7 +538,6 @@ export function renderTurnosDialogs({
             <FacturaForm
               cuitEmpresa={turnoFactura.empresa?.cuit}
               turnoId={turnoFactura.id}
-              precioGrano={turnoFactura.precioGrano}
               initialFactura={turnoFactura.factura}
               onSuccess={async (updatedFactura) => {
                 try {

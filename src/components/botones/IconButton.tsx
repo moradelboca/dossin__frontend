@@ -36,10 +36,11 @@ interface IconButtonWithLabelProps {
     icon?: ReactNode;
     onClick?: () => void;
     open?: boolean;
+    disabled?: boolean;
 }
 
 export function BotonIcon(props: IconButtonWithLabelProps) {
-    const { title, icon, onClick, open } = props;
+    const { title, icon, onClick, open, disabled } = props;
 
     return (
         <ThemeProvider theme={theme}>
@@ -48,6 +49,7 @@ export function BotonIcon(props: IconButtonWithLabelProps) {
                 color="primary"
                 startIcon={icon}
                 onClick={onClick}
+                disabled={disabled}
                 sx={{  ...(open && { display: "none" }) }}
             >
                 {title}

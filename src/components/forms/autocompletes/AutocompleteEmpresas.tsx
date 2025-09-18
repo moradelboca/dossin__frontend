@@ -21,6 +21,7 @@ export interface Empresa {
 interface AutocompleteEmpresasProps {
   value: string | null;
   onChange: (value: string | null) => void;
+  onChangeEmpresa?: (empresa: Empresa | null) => void; // Nueva prop para retornar objeto completo
   error?: boolean;
   helperText?: string | null;
   labelText?: string;
@@ -30,6 +31,7 @@ interface AutocompleteEmpresasProps {
 const AutocompleteEmpresas: React.FC<AutocompleteEmpresasProps> = ({
   value,
   onChange,
+  onChangeEmpresa,
   error = false,
   helperText = '',
   labelText = '',
@@ -99,7 +101,11 @@ const AutocompleteEmpresas: React.FC<AutocompleteEmpresasProps> = ({
               handleAgregarNuevo();
               return;
             }
-            onChange(newValue ? (newValue as Empresa).cuit : null);
+            const empresa = newValue as Empresa;
+            onChange(empresa ? empresa.cuit : null);
+            if (onChangeEmpresa) {
+              onChangeEmpresa(empresa || null);
+            }
           }}
           renderOption={(props, option) => {
             const { key, ...rest } = props;

@@ -139,6 +139,21 @@ export default function TablaTemplate({
           return value.map((carga: any) => `${carga.id}`).join(", ");
         }
         return "No especificado";
+      case "cartaDePorte":
+        if (Array.isArray(value) && value.length > 0) {
+          return value.map((carta: any) => `${carta.numeroCartaPorte}`).join(", ");
+        }
+        return "No especificado";
+      case "cartaDePorte.numeroCartaPorte":
+        if (Array.isArray(value) && value.length > 0) {
+          return value.map((carta: any) => `${carta.numeroCartaPorte}`).join(", ");
+        }
+        return "No especificado";
+      case "cartaDePorte.CTG":
+        if (Array.isArray(value) && value.length > 0) {
+          return value.map((carta: any) => `${carta.CTG}`).join(", ");
+        }
+        return "No especificado";
         case "activo":
           return typeof value === "boolean" 
             ? value ? "Activo" : "Inactivo" 

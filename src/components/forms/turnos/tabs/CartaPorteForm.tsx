@@ -23,6 +23,7 @@ interface CartaPorteFormProps {
     numeroCartaPorte?: number;
     CTG?: number;
   };
+  cuitTitular?: string;
   onSuccess: (updatedData: any) => void;
   onCancel: () => void;
 }
@@ -30,6 +31,7 @@ interface CartaPorteFormProps {
 const CartaPorteForm: React.FC<CartaPorteFormProps> = ({
   turnoId,
   initialData,
+  cuitTitular,
   onSuccess,
   onCancel,
 }) => {
@@ -97,6 +99,7 @@ const CartaPorteForm: React.FC<CartaPorteFormProps> = ({
       {
         numeroCartaPorte: Number(numeroCartaPorte),
         CTG: Number(ctg),
+        cuitTitular: cuitTitular,
       },
       isUpdate
     )

@@ -330,7 +330,6 @@ const EditarTurnoForm: React.FC<EditarTurnoFormProps> = ({
             cuitEmpresa={seleccionado.empresa?.cuit}
             turnoId={seleccionado.id}
             initialFactura={seleccionado.factura}
-            precioGrano={seleccionado.precioGrano}
             onSuccess={(updatedFactura) => {
               setDatos(
                 datos.map((turno: any) =>

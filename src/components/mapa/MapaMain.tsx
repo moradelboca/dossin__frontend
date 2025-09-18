@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState, useRef } from "react";
 import {
     Box,
     Dialog,
@@ -22,6 +22,9 @@ import { ContextoGeneral } from "../Contexto";
 import AutocompletarUbicacionMapa from "../cargas/autocompletar/AutocompletarUbicacionMapa";
 import { AddLocationAltOutlined, Search } from "@mui/icons-material";
 import { CreadorUbicacion } from "./CreadorUbicacion";
+import { LotesPanel } from "./agro";
+import { ProtectedComponent } from "../protectedComponent/ProtectedComponent";
+import { PlanificacionDialog } from "./agro/components/planificacion/PlanificacionDialog";
 import React from "react";
 import InfoTooltip from "../InfoTooltip";
 
@@ -65,12 +68,31 @@ function ZoomToLocation({
     return null;
 }
 
+// Hook personalizado para manejar la referencia del mapa
+function useMapRef() {
+    const [map, setMap] = useState<L.Map | null>(null);
+    const mapRef = useRef<L.Map | null>(null);
+
+    useEffect(() => {
+        if (mapRef.current) {
+            setMap(mapRef.current);
+        }
+    }, [mapRef.current]);
+
+    return { map, mapRef };
+}
+
 export function MapaMain() {
     const [openDialog, setOpenDialog] = useState(false);
+    const [showLotesPanel, setShowLotesPanel] = useState(false);
+    const [showPlanificacionDialog, setShowPlanificacionDialog] = useState(false);
+    const [loteSeleccionado, setLoteSeleccionado] = useState<any>(null);
     const { backendURL, theme } = useContext(ContextoGeneral);
     const [ubicaciones, setUbicaciones] = useState<any[]>([]);
     const [ubicacionSeleccionada, setUbicacionSeleccionada] =
         React.useState<any>(null);
+    const { map, mapRef } = useMapRef();
+    const [pinsVisible, setPinsVisible] = useState(true); // Estado para controlar la visibilidad de los pines
 
     const [tipoUbicacionSeleccionado, setTipoUbicacionSeleccionado] = useState<string>("Todas");
     const [estadoCarga, setEstadoCarga] = useState(true);
@@ -131,12 +153,43 @@ useEffect(() => {
     const handleMarkerClick = (ubicacion: any) => {
         if (ubicacion) {
             setUbicacionSeleccionada(ubicacion);
+            
+            // Solo mostrar el panel de lotes si la ubicación es de tipo Carga o Carga/Descarga
+            const esUbicacionCarga = ubicacion?.tipoUbicacion?.nombre === "Carga" || 
+                                     ubicacion?.tipoUbicacion?.nombre === "Carga/Descarga";
+            
+            if (esUbicacionCarga) {
+                setShowLotesPanel(true);
+            } else {
+                setShowLotesPanel(false);
+            }
         }
         setOpenDialog(true);
     };
 
+    const handleUbicacionSelect = (ubicacion: any) => {
+        setUbicacionSeleccionada(ubicacion);
+        
+        // Solo mostrar el panel de lotes si la ubicación es de tipo Carga o Carga/Descarga
+        const esUbicacionCarga = ubicacion?.tipoUbicacion?.nombre === "Carga" || 
+                                 ubicacion?.tipoUbicacion?.nombre === "Carga/Descarga";
+        
+        if (esUbicacionCarga) {
+            setShowLotesPanel(true);
+        } else {
+            setShowLotesPanel(false);
+        }
+        
+        setOpenDialog(false);
+    };
+
     const handleClose = () => {
         setOpenDialog(false);
+    };
+
+    // Función para controlar la visibilidad de los pines del mapa
+    const handleTogglePins = (show: boolean) => {
+        setPinsVisible(show);
     };
 
     // Crear opciones para el autocomplete incluyendo "Todas"
@@ -209,16 +262,16 @@ useEffect(() => {
       >
 
         {/* Autocompletar (mantiene fondo blanco para inputs) */}
-        <AutocompletarUbicacionMapa
-          ubicaciones={ubicaciones}
-          title="Seleccioná una ubicación"
-          filtro={tipoUbicacionSeleccionado}
-          estadoCarga={estadoCarga}
-          setUbicacionSeleccionada={setUbicacionSeleccionada}
-          ubicacionSeleccionada={ubicacionSeleccionada}
-          handleMarkerClick={handleMarkerClick}
-          sx={{ width: 200, backgroundColor: 'white', borderRadius: 1 }}
-        />
+                                <AutocompletarUbicacionMapa
+                            ubicaciones={ubicaciones}
+                            title="Seleccioná una ubicación"
+                            filtro={tipoUbicacionSeleccionado}
+                            estadoCarga={estadoCarga}
+                            setUbicacionSeleccionada={setUbicacionSeleccionada}
+                            ubicacionSeleccionada={ubicacionSeleccionada}
+                            handleMarkerClick={handleUbicacionSelect}
+                            sx={{ width: 200, backgroundColor: 'white', borderRadius: 1 }}
+                        />
 
         <Autocomplete
           options={tipoUbicacionOptions}
@@ -293,7 +346,7 @@ useEffect(() => {
                             estadoCarga={estadoCarga}
                             setUbicacionSeleccionada={setUbicacionSeleccionada}
                             ubicacionSeleccionada={ubicacionSeleccionada}
-                            handleMarkerClick={handleMarkerClick}
+                            handleMarkerClick={handleUbicacionSelect}
                         />
                         <Autocomplete
                             options={tipoUbicacionOptions}
@@ -347,6 +400,7 @@ useEffect(() => {
                 zoom={5}
                 scrollWheelZoom={false}
                 style={{ height: "100%", width: "100%" }}
+                ref={mapRef}
             >
                 <ZoomToLocation
                     lat={ubicacionSeleccionada?.latitud}
@@ -368,7 +422,7 @@ useEffect(() => {
                         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
                     </BaseLayer>
 
-                    {ubicacionesFiltradas.map((ubi, index) => (
+                    {pinsVisible && ubicacionesFiltradas.map((ubi, index) => (
                         <Overlay
                             key={index}
                             checked
@@ -406,6 +460,58 @@ useEffect(() => {
                     ))}
                 </LayersControl>
             </MapContainer>
+
+            {/* Panel de lotes */}
+            {showLotesPanel && (
+                <ProtectedComponent allowedRoles={[1]}>
+                    <LotesPanel
+                        ubicacion={ubicacionSeleccionada}
+                        map={map}
+                        onClose={() => {
+                            setShowLotesPanel(false);
+                            setPinsVisible(true); // Restaurar pines cuando se cierra el panel
+                        }}
+                        onTogglePins={handleTogglePins}
+                        onLoteClick={(lote: any) => {
+                            setLoteSeleccionado(lote);
+                            setShowPlanificacionDialog(true);
+                            setShowLotesPanel(false);
+                        }}
+                    />
+                </ProtectedComponent>
+            )}
+
+            {/* Dialog de planificación agrícola */}
+            {showPlanificacionDialog && loteSeleccionado && (
+                <PlanificacionDialog
+                    open={showPlanificacionDialog}
+                    onClose={() => {
+                        setShowPlanificacionDialog(false);
+                        setLoteSeleccionado(null);
+                        setShowLotesPanel(true); // Volver al panel de lotes
+                    }}
+                    planificacion={loteSeleccionado.planificacion || {
+                        campania: '2025/2026',
+                        superficie: loteSeleccionado.superficie || 0,
+                        estructura: [],
+                        extras: []
+                    }}
+                    lote={loteSeleccionado}
+                    ubicacion={ubicacionSeleccionada}
+                    onPlanificacionUpdated={(updatedPlan) => {
+                        // Actualizar el lote seleccionado con la nueva planificación
+                        setLoteSeleccionado((prev: any) => prev ? {
+                            ...prev,
+                            planificacion: updatedPlan
+                        } : null);
+                    }}
+                    onCampañaChange={(nuevaCampaña) => {
+                        // Manejar cambio de campaña - por ahora solo loguear
+                        console.log('Campaña cambiada a:', nuevaCampaña);
+                        // En el futuro aquí se podría cargar una nueva planificación
+                    }}
+                />
+            )}
 
             {/* Diálogo */}
             <Dialog open={openDialog} onClose={handleClose} maxWidth="xs" fullWidth>

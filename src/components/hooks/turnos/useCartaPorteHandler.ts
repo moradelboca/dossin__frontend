@@ -12,7 +12,7 @@ const useCartaPorteHandler = () => {
   // Función para crear o actualizar la Carta de Porte
   const handleCartaPorteSubmission = async (
     turnoId: string,
-    payload: { numeroCartaPorte: number; CTG: number },
+    payload: { numeroCartaPorte: number; CTG: number; cuitTitular?: string },
     isUpdate: boolean
   ) => {
     const method = isUpdate ? "PUT" : "POST";
@@ -26,6 +26,8 @@ const useCartaPorteHandler = () => {
       body: JSON.stringify({
         numeroCartaPorte: payload.numeroCartaPorte,
         CTG: payload.CTG,
+        cuitTitular: payload.cuitTitular,
+        idTurno: turnoId,
       }),
     });
     if (!cartaResponse.ok) {
@@ -33,13 +35,12 @@ const useCartaPorteHandler = () => {
     }
     const data = await cartaResponse.json();
 
-    // Actualizar el turno con numeroCartaDePorte, CTG y estado 8 (En Viaje)
+    // Actualizar el turno con idCartaDePorte y estado 8 (En Viaje)
     const turnoResponse = await fetch(`${backendURL}/turnos/${turnoId}`, {
       method: "PUT",
       headers,
       body: JSON.stringify({
-        numeroCartaDePorte: data.numeroCartaPorte,
-        CTG: data.CTG,
+        idCartaDePorte: data.id,
         idEstado: 8,
       }),
     });

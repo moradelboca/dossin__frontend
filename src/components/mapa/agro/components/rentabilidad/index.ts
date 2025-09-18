@@ -1,0 +1,2 @@
+export { RentabilidadPanel } from './RentabilidadPanel';
+

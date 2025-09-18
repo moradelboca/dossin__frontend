@@ -1,0 +1,1758 @@
+[
+  {
+    "cultivo": 1,
+    "nombre": "Soja de Primera",
+    "items": [
+      {
+        "id": "estructura-soja-1",
+        "nombre": "Estructura y Otros",
+        "tipo": "costo",
+        "fechaRelativa": 0,
+        "costo": 50,
+        "clasificacion": "estructura",
+        "clasificacion": "estructura"
+      },
+      {
+        "id": "alquiler-soja-1",
+        "nombre": "Alquiler de Tierra",
+        "tipo": "costo",
+        "fechaRelativa": 0,
+        "costo": 214
+      },
+      {
+        "id": "barbecho-soja-1",
+        "nombre": "Barbecho Químico",
+        "tipo": "labor",
+        "fechaRelativa": -45,
+        "duracion": 5,
+        "costo": 12,
+        "dependencias": []
+      },
+      {
+        "id": "glifosato-barbecho-soja-1",
+        "nombre": "Glifosato 62%",
+        "tipo": "insumo",
+        "fechaRelativa": -45,
+        "costo": 4.19,
+        "cantidad": 2.2,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "2-4-d-barbecho-soja-1",
+        "nombre": "2,4-D Etil Exil 89%",
+        "tipo": "insumo",
+        "fechaRelativa": -45,
+        "costo": 5.09,
+        "cantidad": 0.8,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "dicamba-barbecho-soja-1",
+        "nombre": "Dicamba",
+        "tipo": "insumo",
+        "fechaRelativa": -45,
+        "costo": 7.10,
+        "cantidad": 0.15,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "aceite-vegetal-barbecho-soja-1",
+        "nombre": "Aceite Vegetal",
+        "tipo": "insumo",
+        "fechaRelativa": -45,
+        "costo": 3.13,
+        "cantidad": 0.5,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "coadyuvante-barbecho-soja-1",
+        "nombre": "Coadyuvante",
+        "tipo": "insumo",
+        "fechaRelativa": -45,
+        "costo": 12.83,
+        "cantidad": 0.07,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "preemergente-soja-1",
+        "nombre": "Preemergente",
+        "tipo": "labor",
+        "fechaRelativa": -30,
+        "duracion": 3,
+        "costo": 5,
+        "dependencias": ["barbecho-soja-1"]
+      },
+      {
+        "id": "2-4-d-preemergente-soja-1",
+        "nombre": "2,4-D Etil Exil 89%",
+        "tipo": "insumo",
+        "fechaRelativa": -30,
+        "costo": 5.09,
+        "cantidad": 1.5,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "diclosaulam-preemergente-soja-1",
+        "nombre": "Diclosaulam",
+        "tipo": "insumo",
+        "fechaRelativa": -30,
+        "costo": 222.60,
+        "cantidad": 0.045,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "glifosato-preemergente-soja-1",
+        "nombre": "Glifosato 62%",
+        "tipo": "insumo",
+        "fechaRelativa": -30,
+        "costo": 4.19,
+        "cantidad": 2,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "saflufenacil-preemergente-soja-1",
+        "nombre": "Saflufenacil",
+        "tipo": "insumo",
+        "fechaRelativa": -30,
+        "costo": 78.80,
+        "cantidad": 0.035,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "sulfentrazone-preemergente-soja-1",
+        "nombre": "Sulfentrazone 50%",
+        "tipo": "insumo",
+        "fechaRelativa": -30,
+        "costo": 21.22,
+        "cantidad": 0.35,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "siembra-soja-1",
+        "nombre": "Siembra",
+        "tipo": "labor",
+        "fechaRelativa": -15,
+        "duracion": 8,
+        "costo": 42,
+        "dependencias": ["preemergente-soja-1"]
+      },
+      {
+        "id": "semilla-soja-1",
+        "nombre": "Semilla de Soja",
+        "tipo": "insumo",
+        "fechaRelativa": -15,
+        "costo": 0.45,
+        "cantidad": 50,
+        "unidad": "kg/ha"
+      },
+      {
+        "id": "inoculante-soja-1",
+        "nombre": "Inoculante",
+        "tipo": "insumo",
+        "fechaRelativa": -15,
+        "costo": 173.60,
+        "cantidad": 0.02,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "postemergente-soja-1",
+        "nombre": "Postemergente",
+        "tipo": "labor",
+        "fechaRelativa": 20,
+        "duracion": 4,
+        "costo": 5,
+        "dependencias": ["siembra-soja-1"]
+      },
+      {
+        "id": "2-4-d-postemergente-soja-1",
+        "nombre": "2,4-D Etil Exil 89%",
+        "tipo": "insumo",
+        "fechaRelativa": 20,
+        "costo": 5.09,
+        "cantidad": 1,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "cletodim-postemergente-soja-1",
+        "nombre": "Cletodim 24%",
+        "tipo": "insumo",
+        "fechaRelativa": 20,
+        "costo": 5.32,
+        "cantidad": 0.45,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "glifosato-postemergente-soja-1",
+        "nombre": "Glifosato 62%",
+        "tipo": "insumo",
+        "fechaRelativa": 20,
+        "costo": 4.19,
+        "cantidad": 2.5,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "s-metolacloro-postemergente-soja-1",
+        "nombre": "S-Metolacloro 96%",
+        "tipo": "insumo",
+        "fechaRelativa": 20,
+        "costo": 8.00,
+        "cantidad": 1.3,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "control-plagas-soja-1",
+        "nombre": "Control de Plagas",
+        "tipo": "labor",
+        "fechaRelativa": 60,
+        "duracion": 3,
+        "costo": 5,
+        "dependencias": ["postemergente-soja-1"]
+      },
+      {
+        "id": "clorantraniliprole-soja-1",
+        "nombre": "Clorantraniliprole + Lambdacialotrina",
+        "tipo": "insumo",
+        "fechaRelativa": 60,
+        "costo": 138.00,
+        "cantidad": 0.1,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "dimetoato-soja-1",
+        "nombre": "Dimetoato",
+        "tipo": "insumo",
+        "fechaRelativa": 60,
+        "costo": 11.10,
+        "cantidad": 1,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "tiametoxan-soja-1",
+        "nombre": "Tiametoxan + Lambdacialotrina",
+        "tipo": "insumo",
+        "fechaRelativa": 60,
+        "costo": 26.24,
+        "cantidad": 0.2,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "cosecha-soja-1",
+        "nombre": "Cosecha",
+        "tipo": "labor",
+        "fechaRelativa": 160,
+        "duracion": 10,
+        "costo": 55,
+        "dependencias": ["control-plagas-soja-1"]
+      }
+    ]
+  },
+  {
+    "cultivo": 2,
+    "nombre": "Soja de Segunda",
+    "items": [
+      {
+        "id": "estructura-soja-2",
+        "nombre": "Estructura y Otros",
+        "tipo": "costo",
+        "fechaRelativa": 0,
+        "costo": 50,
+        "clasificacion": "estructura"
+      },
+      {
+        "id": "alquiler-soja-2",
+        "nombre": "Alquiler de Tierra",
+        "tipo": "costo",
+        "fechaRelativa": 0,
+        "costo": 214
+      },
+      {
+        "id": "barbecho-soja-2",
+        "nombre": "Barbecho Químico",
+        "tipo": "labor",
+        "fechaRelativa": -25,
+        "duracion": 3,
+        "costo": 12,
+        "dependencias": []
+      },
+      {
+        "id": "glifosato-barbecho-soja-2",
+        "nombre": "Glifosato 62%",
+        "tipo": "insumo",
+        "fechaRelativa": -25,
+        "costo": 4.19,
+        "cantidad": 2.2,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "2-4-d-barbecho-soja-2",
+        "nombre": "2,4-D Etil Exil 89%",
+        "tipo": "insumo",
+        "fechaRelativa": -25,
+        "costo": 5.09,
+        "cantidad": 0.8,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "siembra-soja-2",
+        "nombre": "Siembra Directa",
+        "tipo": "labor",
+        "fechaRelativa": -5,
+        "duracion": 6,
+        "costo": 42,
+        "dependencias": ["barbecho-soja-2"]
+      },
+      {
+        "id": "semilla-soja-2",
+        "nombre": "Semilla de Soja",
+        "tipo": "insumo",
+        "fechaRelativa": -5,
+        "costo": 0.45,
+        "cantidad": 50,
+        "unidad": "kg/ha"
+      },
+      {
+        "id": "inoculante-soja-2",
+        "nombre": "Inoculante",
+        "tipo": "insumo",
+        "fechaRelativa": -5,
+        "costo": 173.60,
+        "cantidad": 0.02,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "fertilizante-fosforo-soja-2",
+        "nombre": "Fertilizante Fósforo",
+        "tipo": "insumo",
+        "fechaRelativa": -5,
+        "costo": 0.85,
+        "cantidad": 60,
+        "unidad": "kg/ha"
+      },
+      {
+        "id": "fertilizacion-soja-2",
+        "nombre": "Fertilización",
+        "tipo": "labor",
+        "fechaRelativa": 20,
+        "duracion": 2,
+        "costo": 12,
+        "dependencias": ["siembra-soja-2"]
+      },
+      {
+        "id": "urea-soja-2",
+        "nombre": "Urea",
+        "tipo": "insumo",
+        "fechaRelativa": 20,
+        "costo": 0.55,
+        "cantidad": 80,
+        "unidad": "kg/ha"
+      },
+      {
+        "id": "control-malezas-soja-2",
+        "nombre": "Control de Malezas",
+        "tipo": "labor",
+        "fechaRelativa": 35,
+        "duracion": 3,
+        "costo": 5,
+        "dependencias": ["fertilizacion-soja-2"]
+      },
+      {
+        "id": "glifosato-malezas-soja-2",
+        "nombre": "Glifosato 62%",
+        "tipo": "insumo",
+        "fechaRelativa": 35,
+        "costo": 4.19,
+        "cantidad": 1.5,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "imazetapir-soja-2",
+        "nombre": "Imazetapir",
+        "tipo": "insumo",
+        "fechaRelativa": 35,
+        "costo": 8.00,
+        "cantidad": 0.8,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "cosecha-soja-2",
+        "nombre": "Cosecha",
+        "tipo": "labor",
+        "fechaRelativa": 140,
+        "duracion": 8,
+        "costo": 55,
+        "dependencias": ["control-malezas-soja-2"]
+      }
+    ]
+  },
+  {
+    "cultivo": 3,
+    "nombre": "Maíz de Primera",
+    "items": [
+      {
+        "id": "estructura-maiz-1",
+        "nombre": "Estructura y Otros",
+        "tipo": "costo",
+        "fechaRelativa": 0,
+        "costo": 50,
+        "clasificacion": "estructura"
+      },
+      {
+        "id": "alquiler-maiz-1",
+        "nombre": "Alquiler de Tierra",
+        "tipo": "costo",
+        "fechaRelativa": 0,
+        "costo": 214
+      },
+      {
+        "id": "barbecho-maiz-1",
+        "nombre": "Barbecho Químico",
+        "tipo": "labor",
+        "fechaRelativa": -50,
+        "duracion": 5,
+        "costo": 12,
+        "dependencias": []
+      },
+      {
+        "id": "2-4-d-barbecho-maiz-1",
+        "nombre": "2,4-D Etil Exil 89%",
+        "tipo": "insumo",
+        "fechaRelativa": -50,
+        "costo": 5.09,
+        "cantidad": 1.5,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "aceite-mineral-barbecho-maiz-1",
+        "nombre": "Aceite Mineral",
+        "tipo": "insumo",
+        "fechaRelativa": -50,
+        "costo": 2.70,
+        "cantidad": 0.5,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "coadyuvante-barbecho-maiz-1",
+        "nombre": "Coadyuvante",
+        "tipo": "insumo",
+        "fechaRelativa": -50,
+        "costo": 12.83,
+        "cantidad": 0.07,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "glifosato-barbecho-maiz-1",
+        "nombre": "Glifosato 62%",
+        "tipo": "insumo",
+        "fechaRelativa": -50,
+        "costo": 4.19,
+        "cantidad": 2,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "preemergente-maiz-1",
+        "nombre": "Preemergente",
+        "tipo": "labor",
+        "fechaRelativa": -30,
+        "duracion": 3,
+        "costo": 5,
+        "dependencias": ["barbecho-maiz-1"]
+      },
+      {
+        "id": "dicamba-preemergente-maiz-1",
+        "nombre": "Dicamba",
+        "tipo": "insumo",
+        "fechaRelativa": -30,
+        "costo": 7.10,
+        "cantidad": 0.18,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "glifosato-preemergente-maiz-1",
+        "nombre": "Glifosato 62%",
+        "tipo": "insumo",
+        "fechaRelativa": -30,
+        "costo": 4.19,
+        "cantidad": 2,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "flumioxazin-preemergente-maiz-1",
+        "nombre": "Flumioxazin",
+        "tipo": "insumo",
+        "fechaRelativa": -30,
+        "costo": 40.92,
+        "cantidad": 0.15,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "paraquat-preemergente-maiz-1",
+        "nombre": "Paraquat",
+        "tipo": "insumo",
+        "fechaRelativa": -30,
+        "costo": 2.75,
+        "cantidad": 2,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "s-metolacloro-preemergente-maiz-1",
+        "nombre": "S-Metolacloro 96%",
+        "tipo": "insumo",
+        "fechaRelativa": -30,
+        "costo": 8.00,
+        "cantidad": 1,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "atrazina-preemergente-maiz-1",
+        "nombre": "Atrazina 90%",
+        "tipo": "insumo",
+        "fechaRelativa": -30,
+        "costo": 6.89,
+        "cantidad": 1,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "siembra-maiz-1",
+        "nombre": "Siembra CON Fertilización",
+        "tipo": "labor",
+        "fechaRelativa": -20,
+        "duracion": 6,
+        "costo": 45,
+        "dependencias": ["preemergente-maiz-1"]
+      },
+      {
+        "id": "semilla-maiz-1",
+        "nombre": "Semilla de Maíz",
+        "tipo": "insumo",
+        "fechaRelativa": -20,
+        "costo": 126.00,
+        "cantidad": 0.5,
+        "unidad": "kg/ha"
+      },
+      {
+        "id": "fertilizacion-maiz-1",
+        "nombre": "Fertilización Terrestre",
+        "tipo": "labor",
+        "fechaRelativa": 30,
+        "duracion": 4,
+        "costo": 12,
+        "dependencias": ["siembra-maiz-1"]
+      },
+      {
+        "id": "urea-maiz-1",
+        "nombre": "Urea Granulada",
+        "tipo": "insumo",
+        "fechaRelativa": 30,
+        "costo": 0.55,
+        "cantidad": 100,
+        "unidad": "kg/ha"
+      },
+      {
+        "id": "postemergente-maiz-1",
+        "nombre": "Postemergente",
+        "tipo": "labor",
+        "fechaRelativa": 45,
+        "duracion": 3,
+        "costo": 5,
+        "dependencias": ["fertilizacion-maiz-1"]
+      },
+      {
+        "id": "2-4-d-postemergente-maiz-1",
+        "nombre": "2,4-D Etil Exil 89%",
+        "tipo": "insumo",
+        "fechaRelativa": 45,
+        "costo": 5.09,
+        "cantidad": 0.8,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "s-metolacloro-postemergente-maiz-1",
+        "nombre": "S-Metolacloro 96%",
+        "tipo": "insumo",
+        "fechaRelativa": 45,
+        "costo": 8.00,
+        "cantidad": 1,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "aceite-vegetal-postemergente-maiz-1",
+        "nombre": "Aceite Vegetal",
+        "tipo": "insumo",
+        "fechaRelativa": 45,
+        "costo": 3.13,
+        "cantidad": 0.5,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "atrazina-postemergente-maiz-1",
+        "nombre": "Atrazina 90%",
+        "tipo": "insumo",
+        "fechaRelativa": 45,
+        "costo": 6.89,
+        "cantidad": 1,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "coadyuvante-postemergente-maiz-1",
+        "nombre": "Coadyuvante",
+        "tipo": "insumo",
+        "fechaRelativa": 45,
+        "costo": 12.83,
+        "cantidad": 0.07,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "glifosato-postemergente-maiz-1",
+        "nombre": "Glifosato 62%",
+        "tipo": "insumo",
+        "fechaRelativa": 45,
+        "costo": 4.19,
+        "cantidad": 2.5,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "cosecha-maiz-1",
+        "nombre": "Cosecha",
+        "tipo": "labor",
+        "fechaRelativa": 200,
+        "duracion": 12,
+        "costo": 55,
+        "dependencias": ["postemergente-maiz-1"]
+      }
+    ]
+  },
+  {
+    "cultivo": 4,
+    "nombre": "Maíz de Segunda",
+    "items": [
+      {
+        "id": "estructura-maiz-2",
+        "nombre": "Estructura y Otros",
+        "tipo": "costo",
+        "fechaRelativa": 0,
+        "costo": 50,
+        "clasificacion": "estructura"
+      },
+      {
+        "id": "alquiler-maiz-2",
+        "nombre": "Alquiler de Tierra",
+        "tipo": "costo",
+        "fechaRelativa": 0,
+        "costo": 214
+      },
+      {
+        "id": "barbecho-maiz-2",
+        "nombre": "Barbecho Químico",
+        "tipo": "labor",
+        "fechaRelativa": -30,
+        "duracion": 3,
+        "costo": 12,
+        "dependencias": []
+      },
+      {
+        "id": "2-4-d-barbecho-maiz-2",
+        "nombre": "2,4-D Etil Exil 89%",
+        "tipo": "insumo",
+        "fechaRelativa": -30,
+        "costo": 5.09,
+        "cantidad": 1.5,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "aceite-mineral-barbecho-maiz-2",
+        "nombre": "Aceite Mineral",
+        "tipo": "insumo",
+        "fechaRelativa": -30,
+        "costo": 2.70,
+        "cantidad": 0.5,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "coadyuvante-barbecho-maiz-2",
+        "nombre": "Coadyuvante",
+        "tipo": "insumo",
+        "fechaRelativa": -30,
+        "costo": 12.83,
+        "cantidad": 0.07,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "glifosato-barbecho-maiz-2",
+        "nombre": "Glifosato 62%",
+        "tipo": "insumo",
+        "fechaRelativa": -30,
+        "costo": 4.19,
+        "cantidad": 2,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "siembra-maiz-2",
+        "nombre": "Siembra Directa",
+        "tipo": "labor",
+        "fechaRelativa": -10,
+        "duracion": 5,
+        "costo": 45,
+        "dependencias": ["barbecho-maiz-2"]
+      },
+      {
+        "id": "semilla-maiz-2",
+        "nombre": "Semilla de Maíz",
+        "tipo": "insumo",
+        "fechaRelativa": -10,
+        "costo": 126.00,
+        "cantidad": 0.5,
+        "unidad": "kg/ha"
+      },
+      {
+        "id": "fertilizante-fosforo-maiz-2",
+        "nombre": "Fertilizante Fósforo",
+        "tipo": "insumo",
+        "fechaRelativa": -10,
+        "costo": 0.85,
+        "cantidad": 100,
+        "unidad": "kg/ha"
+      },
+      {
+        "id": "fertilizacion-maiz-2",
+        "nombre": "Fertilización",
+        "tipo": "labor",
+        "fechaRelativa": 25,
+        "duracion": 3,
+        "costo": 12,
+        "dependencias": ["siembra-maiz-2"]
+      },
+      {
+        "id": "urea-maiz-2",
+        "nombre": "Urea",
+        "tipo": "insumo",
+        "fechaRelativa": 25,
+        "costo": 0.55,
+        "cantidad": 150,
+        "unidad": "kg/ha"
+      },
+      {
+        "id": "control-malezas-maiz-2",
+        "nombre": "Control de Malezas",
+        "tipo": "labor",
+        "fechaRelativa": 40,
+        "duracion": 2,
+        "costo": 5,
+        "dependencias": ["fertilizacion-maiz-2"]
+      },
+      {
+        "id": "atrazina-malezas-maiz-2",
+        "nombre": "Atrazina 90%",
+        "tipo": "insumo",
+        "fechaRelativa": 40,
+        "costo": 6.89,
+        "cantidad": 2,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "mesotrione-malezas-maiz-2",
+        "nombre": "Mesotrione",
+        "tipo": "insumo",
+        "fechaRelativa": 40,
+        "costo": 40.92,
+        "cantidad": 0.15,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "cosecha-maiz-2",
+        "nombre": "Cosecha",
+        "tipo": "labor",
+        "fechaRelativa": 180,
+        "duracion": 10,
+        "costo": 55,
+        "dependencias": ["control-malezas-maiz-2"]
+      }
+    ]
+  },
+  {
+    "cultivo": 6,
+    "nombre": "Girasol de Primera",
+    "items": [
+      {
+        "id": "estructura-girasol-1",
+        "nombre": "Estructura y Otros",
+        "tipo": "costo",
+        "fechaRelativa": 0,
+        "costo": 50,
+        "clasificacion": "estructura"
+      },
+      {
+        "id": "alquiler-girasol-1",
+        "nombre": "Alquiler de Tierra",
+        "tipo": "costo",
+        "fechaRelativa": 0,
+        "costo": 214
+      },
+      {
+        "id": "barbecho-girasol-1",
+        "nombre": "Barbecho Químico",
+        "tipo": "labor",
+        "fechaRelativa": -35,
+        "duracion": 4,
+        "costo": 12,
+        "dependencias": []
+      },
+      {
+        "id": "2-4-d-barbecho-girasol-1",
+        "nombre": "2,4-D Etil Exil 89%",
+        "tipo": "insumo",
+        "fechaRelativa": -35,
+        "costo": 5.09,
+        "cantidad": 1,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "aceite-mineral-barbecho-girasol-1",
+        "nombre": "Aceite Mineral",
+        "tipo": "insumo",
+        "fechaRelativa": -35,
+        "costo": 2.70,
+        "cantidad": 0.5,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "coadyuvante-barbecho-girasol-1",
+        "nombre": "Coadyuvante",
+        "tipo": "insumo",
+        "fechaRelativa": -35,
+        "costo": 12.83,
+        "cantidad": 0.07,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "glifosato-barbecho-girasol-1",
+        "nombre": "Glifosato 62%",
+        "tipo": "insumo",
+        "fechaRelativa": -35,
+        "costo": 4.19,
+        "cantidad": 2,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "sulfato-amonio-barbecho-girasol-1",
+        "nombre": "Sulfato de Amonio Sólido",
+        "tipo": "insumo",
+        "fechaRelativa": -35,
+        "costo": 3.30,
+        "cantidad": 0.25,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "preemergente-girasol-1",
+        "nombre": "Preemergente",
+        "tipo": "labor",
+        "fechaRelativa": -25,
+        "duracion": 3,
+        "costo": 5,
+        "dependencias": ["barbecho-girasol-1"]
+      },
+      {
+        "id": "2-4-d-preemergente-girasol-1",
+        "nombre": "2,4-D Etil Exil 89%",
+        "tipo": "insumo",
+        "fechaRelativa": -25,
+        "costo": 5.09,
+        "cantidad": 1,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "aceite-mineral-preemergente-girasol-1",
+        "nombre": "Aceite Mineral",
+        "tipo": "insumo",
+        "fechaRelativa": -25,
+        "costo": 2.70,
+        "cantidad": 0.5,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "coadyuvante-preemergente-girasol-1",
+        "nombre": "Coadyuvante",
+        "tipo": "insumo",
+        "fechaRelativa": -25,
+        "costo": 12.83,
+        "cantidad": 0.07,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "glifosato-preemergente-girasol-1",
+        "nombre": "Glifosato 62%",
+        "tipo": "insumo",
+        "fechaRelativa": -25,
+        "costo": 4.19,
+        "cantidad": 2.5,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "saflufenacil-preemergente-girasol-1",
+        "nombre": "Saflufenacil",
+        "tipo": "insumo",
+        "fechaRelativa": -25,
+        "costo": 78.80,
+        "cantidad": 0.03,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "sulfato-amonio-preemergente-girasol-1",
+        "nombre": "Sulfato de Amonio Sólido",
+        "tipo": "insumo",
+        "fechaRelativa": -25,
+        "costo": 3.30,
+        "cantidad": 0.25,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "prometrina-preemergente-girasol-1",
+        "nombre": "Prometrina",
+        "tipo": "insumo",
+        "fechaRelativa": -25,
+        "costo": 8.80,
+        "cantidad": 1,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "sulfentrazone-preemergente-girasol-1",
+        "nombre": "Sulfentrazone 50%",
+        "tipo": "insumo",
+        "fechaRelativa": -25,
+        "costo": 21.22,
+        "cantidad": 0.25,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "siembra-girasol-1",
+        "nombre": "Siembra CON Fertilización",
+        "tipo": "labor",
+        "fechaRelativa": -10,
+        "duracion": 4,
+        "costo": 45,
+        "dependencias": ["preemergente-girasol-1"]
+      },
+      {
+        "id": "semilla-girasol-1",
+        "nombre": "Semilla Girasol",
+        "tipo": "insumo",
+        "fechaRelativa": -10,
+        "costo": 270.00,
+        "cantidad": 0.28,
+        "unidad": "kg/ha"
+      },
+      {
+        "id": "urea-girasol-1",
+        "nombre": "Urea Granulada",
+        "tipo": "insumo",
+        "fechaRelativa": -10,
+        "costo": 0.55,
+        "cantidad": 80,
+        "unidad": "kg/ha"
+      },
+      {
+        "id": "boro-girasol-1",
+        "nombre": "Boro",
+        "tipo": "insumo",
+        "fechaRelativa": -10,
+        "costo": 7.00,
+        "cantidad": 2,
+        "unidad": "kg/ha"
+      },
+      {
+        "id": "postemergente-girasol-1",
+        "nombre": "Postemergente",
+        "tipo": "labor",
+        "fechaRelativa": 35,
+        "duracion": 3,
+        "costo": 5,
+        "dependencias": ["siembra-girasol-1"]
+      },
+      {
+        "id": "aceite-vegetal-postemergente-girasol-1",
+        "nombre": "Aceite Vegetal",
+        "tipo": "insumo",
+        "fechaRelativa": 35,
+        "costo": 3.13,
+        "cantidad": 0.5,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "cletodim-postemergente-girasol-1",
+        "nombre": "Cletodim 24%",
+        "tipo": "insumo",
+        "fechaRelativa": 35,
+        "costo": 5.32,
+        "cantidad": 1,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "clorantraniliprole-postemergente-girasol-1",
+        "nombre": "Clorantraniliprole + Lambdacialotrina",
+        "tipo": "insumo",
+        "fechaRelativa": 35,
+        "costo": 138.00,
+        "cantidad": 0.11,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "coadyuvante-postemergente-girasol-1",
+        "nombre": "Coadyuvante",
+        "tipo": "insumo",
+        "fechaRelativa": 35,
+        "costo": 12.83,
+        "cantidad": 0.07,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "secante-girasol-1",
+        "nombre": "Secante",
+        "tipo": "labor",
+        "fechaRelativa": 110,
+        "duracion": 2,
+        "costo": 5,
+        "dependencias": ["postemergente-girasol-1"]
+      },
+      {
+        "id": "glifosato-secante-girasol-1",
+        "nombre": "Glifosato 62%",
+        "tipo": "insumo",
+        "fechaRelativa": 110,
+        "costo": 4.19,
+        "cantidad": 2,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "paraquat-secante-girasol-1",
+        "nombre": "Paraquat",
+        "tipo": "insumo",
+        "fechaRelativa": 110,
+        "costo": 2.75,
+        "cantidad": 1,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "cosecha-girasol-1",
+        "nombre": "Cosecha",
+        "tipo": "labor",
+        "fechaRelativa": 110,
+        "duracion": 6,
+        "costo": 45,
+        "dependencias": ["secante-girasol-1"]
+      }
+    ]
+  },
+  {
+    "cultivo": 7,
+    "nombre": "Girasol de Segunda",
+    "items": [
+      {
+        "id": "estructura-girasol-2",
+        "nombre": "Estructura y Otros",
+        "tipo": "costo",
+        "fechaRelativa": 0,
+        "costo": 50,
+        "clasificacion": "estructura"
+      },
+      {
+        "id": "alquiler-girasol-2",
+        "nombre": "Alquiler de Tierra",
+        "tipo": "costo",
+        "fechaRelativa": 0,
+        "costo": 214
+      },
+      {
+        "id": "barbecho-girasol-2",
+        "nombre": "Barbecho Químico",
+        "tipo": "labor",
+        "fechaRelativa": -20,
+        "duracion": 3,
+        "costo": 12,
+        "dependencias": []
+      },
+      {
+        "id": "2-4-d-barbecho-girasol-2",
+        "nombre": "2,4-D Etil Exil 89%",
+        "tipo": "insumo",
+        "fechaRelativa": -20,
+        "costo": 5.09,
+        "cantidad": 1,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "aceite-mineral-barbecho-girasol-2",
+        "nombre": "Aceite Mineral",
+        "tipo": "insumo",
+        "fechaRelativa": -20,
+        "costo": 2.70,
+        "cantidad": 0.5,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "coadyuvante-barbecho-girasol-2",
+        "nombre": "Coadyuvante",
+        "tipo": "insumo",
+        "fechaRelativa": -20,
+        "costo": 12.83,
+        "cantidad": 0.07,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "glifosato-barbecho-girasol-2",
+        "nombre": "Glifosato 62%",
+        "tipo": "insumo",
+        "fechaRelativa": -20,
+        "costo": 4.19,
+        "cantidad": 2,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "siembra-girasol-2",
+        "nombre": "Siembra Directa",
+        "tipo": "labor",
+        "fechaRelativa": -5,
+        "duracion": 3,
+        "costo": 45,
+        "dependencias": ["barbecho-girasol-2"]
+      },
+      {
+        "id": "semilla-girasol-2",
+        "nombre": "Semilla Girasol",
+        "tipo": "insumo",
+        "fechaRelativa": -5,
+        "costo": 270.00,
+        "cantidad": 0.28,
+        "unidad": "kg/ha"
+      },
+      {
+        "id": "fertilizante-fosforo-girasol-2",
+        "nombre": "Fertilizante Fósforo",
+        "tipo": "insumo",
+        "fechaRelativa": -5,
+        "costo": 0.85,
+        "cantidad": 60,
+        "unidad": "kg/ha"
+      },
+      {
+        "id": "fertilizacion-girasol-2",
+        "nombre": "Fertilización",
+        "tipo": "labor",
+        "fechaRelativa": 15,
+        "duracion": 2,
+        "costo": 12,
+        "dependencias": ["siembra-girasol-2"]
+      },
+      {
+        "id": "urea-girasol-2",
+        "nombre": "Urea",
+        "tipo": "insumo",
+        "fechaRelativa": 15,
+        "costo": 0.55,
+        "cantidad": 60,
+        "unidad": "kg/ha"
+      },
+      {
+        "id": "control-malezas-girasol-2",
+        "nombre": "Control de Malezas",
+        "tipo": "labor",
+        "fechaRelativa": 30,
+        "duracion": 2,
+        "costo": 5,
+        "dependencias": ["fertilizacion-girasol-2"]
+      },
+      {
+        "id": "imazamox-girasol-2",
+        "nombre": "Imazamox",
+        "tipo": "insumo",
+        "fechaRelativa": 30,
+        "costo": 40.92,
+        "cantidad": 0.04,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "sulfentrazone-girasol-2",
+        "nombre": "Sulfentrazone 50%",
+        "tipo": "insumo",
+        "fechaRelativa": 30,
+        "costo": 21.22,
+        "cantidad": 0.3,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "cosecha-girasol-2",
+        "nombre": "Cosecha",
+        "tipo": "labor",
+        "fechaRelativa": 100,
+        "duracion": 5,
+        "costo": 45,
+        "dependencias": ["control-malezas-girasol-2"]
+      }
+    ]
+  },
+  {
+    "cultivo": 5,
+    "nombre": "Trigo",
+    "items": [
+      {
+        "id": "estructura-trigo",
+        "nombre": "Estructura y Otros",
+        "tipo": "costo",
+        "fechaRelativa": 0,
+        "costo": 30,
+        "clasificacion": "estructura"
+      },
+      {
+        "id": "alquiler-trigo",
+        "nombre": "Alquiler de Tierra",
+        "tipo": "costo",
+        "fechaRelativa": 0,
+        "costo": 214
+      },
+      {
+        "id": "barbecho-trigo",
+        "nombre": "Barbecho Químico",
+        "tipo": "labor",
+        "fechaRelativa": -40,
+        "duracion": 4,
+        "costo": 12,
+        "dependencias": []
+      },
+      {
+        "id": "2-4-d-barbecho-trigo",
+        "nombre": "2,4-D Etil Exil 89%",
+        "tipo": "insumo",
+        "fechaRelativa": -40,
+        "costo": 5.09,
+        "cantidad": 0.7,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "dicamba-barbecho-trigo",
+        "nombre": "Dicamba",
+        "tipo": "insumo",
+        "fechaRelativa": -40,
+        "costo": 7.10,
+        "cantidad": 0.15,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "aceite-vegetal-barbecho-trigo",
+        "nombre": "Aceite Vegetal",
+        "tipo": "insumo",
+        "fechaRelativa": -40,
+        "costo": 3.13,
+        "cantidad": 0.5,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "coadyuvante-barbecho-trigo",
+        "nombre": "Coadyuvante",
+        "tipo": "insumo",
+        "fechaRelativa": -40,
+        "costo": 12.83,
+        "cantidad": 0.07,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "siembra-trigo",
+        "nombre": "Siembra De Grano Fino Sin Fertilización",
+        "tipo": "labor",
+        "fechaRelativa": -15,
+        "duracion": 5,
+        "costo": 45,
+        "dependencias": ["barbecho-trigo"]
+      },
+      {
+        "id": "semilla-trigo",
+        "nombre": "Semilla de Trigo",
+        "tipo": "insumo",
+        "fechaRelativa": -15,
+        "costo": 0.22,
+        "cantidad": 100,
+        "unidad": "kg/ha"
+      },
+      {
+        "id": "curasemilla-trigo",
+        "nombre": "Curasemilla Trigo",
+        "tipo": "insumo",
+        "fechaRelativa": -15,
+        "costo": 14.34,
+        "cantidad": 0.2,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "nutrimax-trigo",
+        "nombre": "Nutrimax N",
+        "tipo": "insumo",
+        "fechaRelativa": -15,
+        "costo": 3.50,
+        "cantidad": 2,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "postemergente-trigo",
+        "nombre": "Postemergente",
+        "tipo": "labor",
+        "fechaRelativa": 60,
+        "duracion": 3,
+        "costo": 5,
+        "dependencias": ["siembra-trigo"]
+      },
+      {
+        "id": "metsulfuron-trigo",
+        "nombre": "Metsulfuron",
+        "tipo": "insumo",
+        "fechaRelativa": 60,
+        "costo": 23.10,
+        "cantidad": 0.008,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "glifosato-trigo",
+        "nombre": "Glifosato 62%",
+        "tipo": "insumo",
+        "fechaRelativa": 60,
+        "costo": 4.19,
+        "cantidad": 2,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "postemergente2-trigo",
+        "nombre": "Postemergente 2",
+        "tipo": "labor",
+        "fechaRelativa": 75,
+        "duracion": 3,
+        "costo": 5,
+        "dependencias": ["postemergente-trigo"]
+      },
+      {
+        "id": "coadyuvante-postemergente2-trigo",
+        "nombre": "Coadyuvante",
+        "tipo": "insumo",
+        "fechaRelativa": 75,
+        "costo": 12.83,
+        "cantidad": 0.07,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "azoxistrobina-trigo",
+        "nombre": "Azoxistrobina + Cyproconazole",
+        "tipo": "insumo",
+        "fechaRelativa": 75,
+        "costo": 20.99,
+        "cantidad": 0.4,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "postemergente3-trigo",
+        "nombre": "Postemergente 3",
+        "tipo": "labor",
+        "fechaRelativa": 120,
+        "duracion": 2,
+        "costo": 5,
+        "dependencias": ["postemergente2-trigo"]
+      },
+      {
+        "id": "bifentrin-trigo",
+        "nombre": "Bifentrin",
+        "tipo": "insumo",
+        "fechaRelativa": 120,
+        "costo": 20.03,
+        "cantidad": 0.2,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "cosecha-trigo",
+        "nombre": "Cosecha Trigo",
+        "tipo": "labor",
+        "fechaRelativa": 240,
+        "duracion": 8,
+        "costo": 50,
+        "dependencias": ["postemergente3-trigo"]
+      }
+    ]
+  },
+  {
+    "cultivo": 8,
+    "nombre": "Centeno",
+    "items": [
+      {
+        "id": "estructura-centeno",
+        "nombre": "Estructura y Otros",
+        "tipo": "costo",
+        "fechaRelativa": 0,
+        "costo": 50,
+        "clasificacion": "estructura"
+      },
+      {
+        "id": "alquiler-centeno",
+        "nombre": "Alquiler de Tierra",
+        "tipo": "costo",
+        "fechaRelativa": 0,
+        "costo": 214
+      },
+      {
+        "id": "barbecho-centeno",
+        "nombre": "Barbecho Químico",
+        "tipo": "labor",
+        "fechaRelativa": -30,
+        "duracion": 3,
+        "costo": 12,
+        "dependencias": []
+      },
+      {
+        "id": "glifosato-barbecho-centeno",
+        "nombre": "Glifosato 62%",
+        "tipo": "insumo",
+        "fechaRelativa": -30,
+        "costo": 4.19,
+        "cantidad": 2,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "2-4-d-barbecho-centeno",
+        "nombre": "2,4-D Etil Exil 89%",
+        "tipo": "insumo",
+        "fechaRelativa": -30,
+        "costo": 5.09,
+        "cantidad": 0.5,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "preparacion-centeno",
+        "nombre": "Preparación de Suelo",
+        "tipo": "labor",
+        "fechaRelativa": -20,
+        "duracion": 4,
+        "costo": 30,
+        "dependencias": ["barbecho-centeno"]
+      },
+      {
+        "id": "siembra-centeno",
+        "nombre": "Siembra",
+        "tipo": "labor",
+        "fechaRelativa": -10,
+        "duracion": 4,
+        "costo": 45,
+        "dependencias": ["preparacion-centeno"]
+      },
+      {
+        "id": "semilla-centeno",
+        "nombre": "Semillas",
+        "tipo": "insumo",
+        "fechaRelativa": -10,
+        "costo": 0.22,
+        "cantidad": 100,
+        "unidad": "kg/ha"
+      },
+      {
+        "id": "fertilizante-fosforo-centeno",
+        "nombre": "Fertilizante Fósforo",
+        "tipo": "insumo",
+        "fechaRelativa": -10,
+        "costo": 0.85,
+        "cantidad": 80,
+        "unidad": "kg/ha"
+      },
+      {
+        "id": "fertilizacion-centeno",
+        "nombre": "Fertilización",
+        "tipo": "labor",
+        "fechaRelativa": 50,
+        "duracion": 2,
+        "costo": 12,
+        "dependencias": ["siembra-centeno"]
+      },
+      {
+        "id": "urea-centeno",
+        "nombre": "Urea",
+        "tipo": "insumo",
+        "fechaRelativa": 50,
+        "costo": 0.55,
+        "cantidad": 100,
+        "unidad": "kg/ha"
+      },
+      {
+        "id": "control-malezas-centeno",
+        "nombre": "Control de Malezas",
+        "tipo": "labor",
+        "fechaRelativa": 70,
+        "duracion": 2,
+        "costo": 5,
+        "dependencias": ["fertilizacion-centeno"]
+      },
+      {
+        "id": "2-4-d-malezas-centeno",
+        "nombre": "2,4-D Etil Exil 89%",
+        "tipo": "insumo",
+        "fechaRelativa": 70,
+        "costo": 5.09,
+        "cantidad": 0.8,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "metsulfuron-centeno",
+        "nombre": "Metsulfuron",
+        "tipo": "insumo",
+        "fechaRelativa": 70,
+        "costo": 23.10,
+        "cantidad": 4,
+        "unidad": "g/ha"
+      },
+      {
+        "id": "cosecha-centeno",
+        "nombre": "Cosecha",
+        "tipo": "labor",
+        "fechaRelativa": 220,
+        "duracion": 6,
+        "costo": 50,
+        "dependencias": ["control-malezas-centeno"]
+      }
+    ]
+  },
+  {
+    "cultivo": 9,
+    "nombre": "Sorgo",
+    "items": [
+      {
+        "id": "estructura-sorgo",
+        "nombre": "Estructura y Otros",
+        "tipo": "costo",
+        "fechaRelativa": 0,
+        "costo": 50,
+        "clasificacion": "estructura"
+      },
+      {
+        "id": "alquiler-sorgo",
+        "nombre": "Alquiler de Tierra",
+        "tipo": "costo",
+        "fechaRelativa": 0,
+        "costo": 214
+      },
+      {
+        "id": "barbecho-sorgo",
+        "nombre": "Barbecho Químico",
+        "tipo": "labor",
+        "fechaRelativa": -35,
+        "duracion": 4,
+        "costo": 12,
+        "dependencias": []
+      },
+      {
+        "id": "2-4-d-barbecho-sorgo",
+        "nombre": "2,4-D Etil Exil 89%",
+        "tipo": "insumo",
+        "fechaRelativa": -35,
+        "costo": 4.76,
+        "cantidad": 1.5,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "aceite-mineral-barbecho-sorgo",
+        "nombre": "Aceite Mineral",
+        "tipo": "insumo",
+        "fechaRelativa": -35,
+        "costo": 2.70,
+        "cantidad": 0.5,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "cletodim-barbecho-sorgo",
+        "nombre": "Cletodim 24%",
+        "tipo": "insumo",
+        "fechaRelativa": -35,
+        "costo": 5.52,
+        "cantidad": 1,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "coadyuvante-barbecho-sorgo",
+        "nombre": "Coadyuvante",
+        "tipo": "insumo",
+        "fechaRelativa": -35,
+        "costo": 19.31,
+        "cantidad": 0.14,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "flumioxazin-barbecho-sorgo",
+        "nombre": "Flumioxazin",
+        "tipo": "insumo",
+        "fechaRelativa": -35,
+        "costo": 40.92,
+        "cantidad": 0.15,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "glifosato-barbecho-sorgo",
+        "nombre": "Glifosato 62%",
+        "tipo": "insumo",
+        "fechaRelativa": -35,
+        "costo": 4.39,
+        "cantidad": 3,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "picloram-barbecho-sorgo",
+        "nombre": "Picloram 28%",
+        "tipo": "insumo",
+        "fechaRelativa": -35,
+        "costo": 5.30,
+        "cantidad": 0.14,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "sulfato-amonio-barbecho-sorgo",
+        "nombre": "Sulfato de Amonio Sólido",
+        "tipo": "insumo",
+        "fechaRelativa": -35,
+        "costo": 3.30,
+        "cantidad": 0.24,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "preemergente-sorgo",
+        "nombre": "Preemergente",
+        "tipo": "labor",
+        "fechaRelativa": -25,
+        "duracion": 3,
+        "costo": 5,
+        "dependencias": ["barbecho-sorgo"]
+      },
+      {
+        "id": "coadyuvante-preemergente-sorgo",
+        "nombre": "Coadyuvante",
+        "tipo": "insumo",
+        "fechaRelativa": -25,
+        "costo": 19.31,
+        "cantidad": 0.07,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "flumioxazin-preemergente-sorgo",
+        "nombre": "Flumioxazin",
+        "tipo": "insumo",
+        "fechaRelativa": -25,
+        "costo": 40.92,
+        "cantidad": 0.15,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "paraquat-preemergente-sorgo",
+        "nombre": "Paraquat",
+        "tipo": "insumo",
+        "fechaRelativa": -25,
+        "costo": 2.67,
+        "cantidad": 2,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "s-metolacloro-preemergente-sorgo",
+        "nombre": "S-Metolacloro 96%",
+        "tipo": "insumo",
+        "fechaRelativa": -25,
+        "costo": 7.37,
+        "cantidad": 1,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "atrazina-preemergente-sorgo",
+        "nombre": "Atrazina 90%",
+        "tipo": "insumo",
+        "fechaRelativa": -25,
+        "costo": 4.60,
+        "cantidad": 1,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "siembra-sorgo",
+        "nombre": "Siembra CON Fertilización",
+        "tipo": "labor",
+        "fechaRelativa": -10,
+        "duracion": 4,
+        "costo": 45,
+        "dependencias": ["preemergente-sorgo"]
+      },
+      {
+        "id": "semilla-sorgo",
+        "nombre": "Semilla sorgo granífero",
+        "tipo": "insumo",
+        "fechaRelativa": -10,
+        "costo": 181.72,
+        "cantidad": 0.3,
+        "unidad": "kg/ha"
+      },
+      {
+        "id": "postemergente-sorgo",
+        "nombre": "Postemergente",
+        "tipo": "labor",
+        "fechaRelativa": 40,
+        "duracion": 3,
+        "costo": 5,
+        "dependencias": ["siembra-sorgo"]
+      },
+      {
+        "id": "2-4-d-postemergente-sorgo",
+        "nombre": "2,4-D Etil Exil 89%",
+        "tipo": "insumo",
+        "fechaRelativa": 40,
+        "costo": 4.76,
+        "cantidad": 1,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "aceite-vegetal-postemergente-sorgo",
+        "nombre": "Aceite Vegetal",
+        "tipo": "insumo",
+        "fechaRelativa": 40,
+        "costo": 2.40,
+        "cantidad": 0.5,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "atrazina-postemergente-sorgo",
+        "nombre": "Atrazina 90%",
+        "tipo": "insumo",
+        "fechaRelativa": 40,
+        "costo": 4.60,
+        "cantidad": 1,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "coadyuvante-postemergente-sorgo",
+        "nombre": "Coadyuvante",
+        "tipo": "insumo",
+        "fechaRelativa": 40,
+        "costo": 19.31,
+        "cantidad": 0.07,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "clorantraniliprole-postemergente-sorgo",
+        "nombre": "Clorantraniliprole + Lambdacialotrina",
+        "tipo": "insumo",
+        "fechaRelativa": 40,
+        "costo": 104.58,
+        "cantidad": 0.1,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "glifosato-postemergente-sorgo",
+        "nombre": "Glifosato 62%",
+        "tipo": "insumo",
+        "fechaRelativa": 40,
+        "costo": 4.39,
+        "cantidad": 2.5,
+        "unidad": "l/ha"
+      },
+      {
+        "id": "cosecha-sorgo",
+        "nombre": "Cosecha",
+        "tipo": "labor",
+        "fechaRelativa": 150,
+        "duracion": 8,
+        "costo": 55,
+        "dependencias": ["postemergente-sorgo"]
+      }
+    ]
+  }
+]

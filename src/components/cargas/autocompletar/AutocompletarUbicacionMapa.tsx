@@ -47,11 +47,9 @@ export default function AutocompletarUbicacionMapa(props: AutocompletarProps) {
             if (typeof setUbicacionSeleccionada === 'function') {
                 setUbicacionSeleccionada(seleccionado);
             }
-            setTimeout(() => {
-                if (typeof handleMarkerClick === 'function') {
-                    handleMarkerClick();
-                }
-            }, 1000);
+            if (typeof handleMarkerClick === 'function') {
+                handleMarkerClick(seleccionado);
+            }
         }
     };
 

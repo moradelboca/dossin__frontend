@@ -1,0 +1,1733 @@
+{
+    "Productos": {
+        "Algodon": [
+            {
+                "nombre": "FIBRA ALGODON",
+                "codigo": 519
+            },
+            {
+                "nombre": "FIBRA BRUTA",
+                "codigo": 517
+            },
+            {
+                "nombre": "SEMILLA ALGODON",
+                "codigo": 518
+            },
+            {
+                "nombre": "SEMILLA ALGODON",
+                "codigo": 458
+            }
+        ],
+        "Granos": [
+            {
+                "nombre": "EXPELLER DE SOJA",
+                "codigo": 526
+            },
+            {
+                "nombre": "Maiz entero a granel expo",
+                "codigo": 417
+            },
+            {
+                "nombre": "Maiz PARTIDO",
+                "codigo": 336
+            },
+            {
+                "nombre": "Soja DESACTIVADA",
+                "codigo": 231
+            }
+        ],
+            "Granos puros": [
+                {
+                    "nombre": "Coriandro venta",
+                    "codigo": 39
+                },
+                {
+                    "nombre": "Grano Algodon",
+                    "codigo": 456
+                },
+                {
+                    "nombre": "Grano Centeno",
+                    "codigo": 406
+                },
+                {
+                    "nombre": "Grano Colza",
+                    "codigo": 448
+                },
+                {
+                    "nombre": "Grano Garbanzo",
+                    "codigo": 40
+                },
+                {
+                    "nombre": "Grano Garbanzo para exp cuenta y orden",
+                    "codigo": 210
+                },
+                {
+                    "nombre": "Grano Girasol alto oleico",
+                    "codigo": "GranoGirasol"
+                },
+                {
+                    "nombre": "Grano Girasol Confitero",
+                    "codigo": 208
+                },
+                {
+                    "nombre": "Grano Girasol Industria",
+                    "codigo": 352
+                },
+                {
+                    "nombre": "Grano Girasol Pajaro",
+                    "codigo": 338
+                },
+                {
+                    "nombre": "Grano Maíz",
+                    "codigo": "GrM"
+                },
+                {
+                    "nombre": "Grano Maíz para exp cta y orden",
+                    "codigo": 209
+                },
+                {
+                    "nombre": "Grano Poroto Mung",
+                    "codigo": 203
+                },
+                {
+                    "nombre": "Grano Soja",
+                    "codigo": "GSj"
+                },
+                {
+                    "nombre": "Grano Sorgo",
+                    "codigo": "GSorgo"
+                },
+                {
+                    "nombre": "Grano Trigo",
+                    "codigo": "GTrigo"
+                },
+                {
+                    "nombre": "SEMILLA CENTENO",
+                    "codigo": 546
+                }
+            ],
+            "Granos clasificados": [
+                {
+                    "nombre": "Coriandro clasificado",
+                    "codigo": 343
+                },
+                {
+                    "nombre": "Girasol Alto Oleico clasificado (Syngenta)",
+                    "codigo": 341
+                },
+                {
+                    "nombre": "Girasol Confitero clasificado (Rhino)",
+                    "codigo": 339
+                },
+                {
+                    "nombre": "Girasol Pajaro clasificado (Neon)",
+                    "codigo": 340
+                },
+                {
+                    "nombre": "Girasol Pajaro clasificado (Neon) Transp Int",
+                    "codigo": 355
+                },
+                {
+                    "nombre": "Grano Soja Organica",
+                    "codigo": 499
+                },
+                {
+                    "nombre": "Poroto Mung clasificado",
+                    "codigo": 342
+                }
+            ]
+        },
+        "Insumos": {
+            "Agroquimicos": [
+                {
+                    "nombre": "Fosfuro aluminio",
+                    "codigo": 513
+                }
+            ],
+            "Fertilizantes": [
+                {
+                    "nombre": "BORO FOLIAR",
+                    "codigo": 475
+                },
+                {
+                    "nombre": "Fertilizacion",
+                    "codigo": "FER"
+                },
+                {
+                    "nombre": "FERTILIZANTE NITROMIX NS 380",
+                    "codigo": "NITROMIX"
+                },
+                {
+                    "nombre": "DAP",
+                    "codigo": "FDA"
+                },
+                {
+                    "nombre": "FERTILIZANTE LIQUIDO",
+                    "codigo": 540
+                },
+                {
+                    "nombre": "FITOESTIMULANTE FOLIAR",
+                    "codigo": 490
+                },
+                {
+                    "nombre": "POLIFENOLES FOLIAR",
+                    "codigo": 488
+                },
+                {
+                    "nombre": "Sett x 20 lts stoller",
+                    "codigo": 493
+                },
+                {
+                    "nombre": "SOLMIX SM",
+                    "codigo": "SM"
+                },
+                {
+                    "nombre": "SPS",
+                    "codigo": 160
+                },
+                {
+                    "nombre": "SULFATO DE AMONIO LIQUIDO",
+                    "codigo": 252
+                },
+                {
+                    "nombre": "SULFATO DE AMONIO SOLIDO",
+                    "codigo": "SULFSH"
+                },
+                {
+                    "nombre": "UREA",
+                    "codigo": "UREA"
+                },
+                {
+                    "nombre": "MAP FM",
+                    "codigo": "MAP FM"
+                }
+            ],
+            "Semillas": {
+                "Algodón": [
+                    {
+                        "nombre": "DESLINTADO DE SEMILLA ALGODON",
+                        "codigo": 529
+                    },
+                    {
+                        "nombre": "SEMILLA ALGODON 1238 BG RR",
+                        "codigo": 457
+                    }
+                ],
+                "Centeno": [
+                    {
+                        "nombre": "Semilla De Centeno",
+                        "codigo": 211
+                    },
+                    {
+                        "nombre": "Semilla De Triticale",
+                        "codigo": 332
+                    }
+                ],
+                "Coriandro": [
+                    {
+                        "nombre": "Semilla De COLZA",
+                        "codigo": 447
+                    }
+                ],
+                "Garbanzo": [
+                    {
+                        "nombre": "Semilla De Garbanzo",
+                        "codigo": 27
+                    }
+                ],
+                "Girasol": [
+                    {
+                        "nombre": "ADV 5310 CL",
+                        "codigo": 420
+                    },
+                    {
+                        "nombre": "ADV 5407 CL",
+                        "codigo": 418
+                    },
+                    {
+                        "nombre": "ADV 5505 CL",
+                        "codigo": 419
+                    },
+                    {
+                        "nombre": "ADV CF 101",
+                        "codigo": 421
+                    },
+                    {
+                        "nombre": "GIRASOL ARGENSOL 20 MAX G2",
+                        "codigo": 407
+                    },
+                    {
+                        "nombre": "GIRASOL ARGENSOL 72 CL G2",
+                        "codigo": 408
+                    },
+                    {
+                        "nombre": "GIRASOL ARGENSOL 74 CL G2",
+                        "codigo": 409
+                    },
+                    {
+                        "nombre": "GIRASOL ARGENSOL 76 CL G2",
+                        "codigo": 410
+                    },
+                    {
+                        "nombre": "LG NEON",
+                        "codigo": 222
+                    },
+                    {
+                        "nombre": "NK DK4045",
+                        "codigo": 428
+                    },
+                    {
+                        "nombre": "NK DK4066",
+                        "codigo": 429
+                    },
+                    {
+                        "nombre": "NS RHINO",
+                        "codigo": 217
+                    },
+                    {
+                        "nombre": "NS X4334 CL",
+                        "codigo": 381
+                    },
+                    {
+                        "nombre": "SYN 3939 CL",
+                        "codigo": 437
+                    },
+                    {
+                        "nombre": "SYN 3970 CL",
+                        "codigo": 370
+                    },
+                    {
+                        "nombre": "SYN 3975 CL",
+                        "codigo": 516
+                    },
+                    {
+                        "nombre": "SYN 3975 CLHO",
+                        "codigo": 259
+                    },
+                    {
+                        "nombre": "SYN 4066",
+                        "codigo": 431
+                    }
+                ],
+                "Maiz": [
+                    {
+                        "nombre": "DK 72-10 RR",
+                        "codigo": 102
+                    },
+                    {
+                        "nombre": "DK 72-10 VT3P",
+                        "codigo": 99
+                    },
+                    {
+                        "nombre": "DK 72-20 VT3P",
+                        "codigo": 100
+                    },
+                    {
+                        "nombre": "DK 73-20 VT3P",
+                        "codigo": 101
+                    },
+                    {
+                        "nombre": "LT 720 VT3",
+                        "codigo": 563
+                    },
+                    {
+                        "nombre": "LT 721 VT3",
+                        "codigo": 564
+                    },
+                    {
+                        "nombre": "LT 722 VT3",
+                        "codigo": 524
+                    },
+                    {
+                        "nombre": "LT 723 VT3",
+                        "codigo": 565
+                    },
+                    {
+                        "nombre": "NK 1673 SAC5225 VIP3",
+                        "codigo": 479
+                    },
+                    {
+                        "nombre": "NK 800 TG PLUS CL",
+                        "codigo": 439
+                    },
+                    {
+                        "nombre": "NK 835 VIP3",
+                        "codigo": 473
+                    },
+                    {
+                        "nombre": "NK 840 VIP3",
+                        "codigo": 292
+                    },
+                    {
+                        "nombre": "NK 842 VIP3",
+                        "codigo": 432
+                    },
+                    {
+                        "nombre": "NK 855 VIP3",
+                        "codigo": 472
+                    },
+                    {
+                        "nombre": "NK 885 VIP3",
+                        "codigo": 383
+                    },
+                    {
+                        "nombre": "NK 890 VIP3",
+                        "codigo": 291
+                    },
+                    {
+                        "nombre": "P 0622 VYHR",
+                        "codigo": 441
+                    },
+                    {
+                        "nombre": "P 1804 PWU",
+                        "codigo": 361
+                    },
+                    {
+                        "nombre": "P 1815 VYHR",
+                        "codigo": "P1815VYRH"
+                    },
+                    {
+                        "nombre": "P 1833 VYHR",
+                        "codigo": "P1833VYHR"
+                    },
+                    {
+                        "nombre": "P2167 VYHR",
+                        "codigo": 372
+                    },
+                    {
+                        "nombre": "RFG22RR2",
+                        "codigo": 225
+                    },
+                    {
+                        "nombre": "SRM 566 VT3",
+                        "codigo": 530
+                    },
+                    {
+                        "nombre": "SYN 505 VIP3",
+                        "codigo": 368
+                    },
+                    {
+                        "nombre": "SYN 840",
+                        "codigo": 325
+                    },
+                    {
+                        "nombre": "SYN 989",
+                        "codigo": 468
+                    }
+                ],
+                "Poroto": [
+                    {
+                        "nombre": "Semilla De Poroto Mung",
+                        "codigo": 257
+                    }
+                ],
+                "Soja": [
+                    {
+                        "nombre": "CZ 4.97",
+                        "codigo": 134
+                    },
+                    {
+                        "nombre": "DM 50i17 IPRO STS",
+                        "codigo": 507
+                    },
+                    {
+                        "nombre": "DM 67i70 IPRO STS",
+                        "codigo": 508
+                    },
+                    {
+                        "nombre": "NS 5023 STS",
+                        "codigo": 534
+                    },
+                    {
+                        "nombre": "NS 5028 STS",
+                        "codigo": 542
+                    },
+                    {
+                        "nombre": "NS 6212 IPRO",
+                        "codigo": 509
+                    },
+                    {
+                        "nombre": "P4603SE",
+                        "codigo": 510
+                    },
+                    {
+                        "nombre": "P50A02E",
+                        "codigo": 511
+                    },
+                    {
+                        "nombre": "SEMILLA SOJA ORGANICA 4.4",
+                        "codigo": 467
+                    }
+                ],
+                "Sorgo": [
+                    {
+                        "nombre": "ADV 1250 IG",
+                        "codigo": 244
+                    },
+                    {
+                        "nombre": "ADV 1304",
+                        "codigo": 485
+                    },
+                    {
+                        "nombre": "ADV 1350 IG",
+                        "codigo": 243
+                    }
+                ],
+                "Trigo": [
+                    {
+                        "nombre": "TRIGO BAGUETTE 620",
+                        "codigo": 504
+                    },
+                    {
+                        "nombre": "TRIGO LAUREL",
+                        "codigo": 505
+                    }
+                ]
+            }
+        },
+        "Combustibles y Lubricantes": [
+            {
+                "nombre": "Gasoil",
+                "codigo": "GASOIL"
+            },
+            {
+                "nombre": "ITC - COMBUSTIBLE",
+                "codigo": 66
+            }
+        ],
+        "Maquinaria": [
+            {
+                "nombre": "Filtros (Consumo)",
+                "codigo": "FILTROS"
+            },
+            {
+                "nombre": "Maquinarias",
+                "codigo": 44
+            },
+            {
+                "nombre": "NICOSULFURON nicobeat",
+                "codigo": 547
+            }
+        ],
+        "Veterinarios": [
+            {
+                "nombre": "Insumos Vet (Stock)",
+                "codigo": "IVET"
+            },
+            {
+                "nombre": "Insumos Veterinarios (Consumo)",
+                "codigo": "IVETCD"
+            }
+        ],
+        "Varios": [
+            {
+                "nombre": "1002 ESTADIA EN PLAYA EXPORTACION -INGRESO DE CAMION",
+                "codigo": 553
+            },
+            {
+                "nombre": "Embolsado de granos IVA 121%",
+                "codigo": 218
+            },
+            {
+                "nombre": "Extraccion de bolsones IVA 10,5%",
+                "codigo": 70
+            },
+            {
+                "nombre": "Fletes",
+                "codigo": "FLE"
+            },
+            {
+                "nombre": "Fletes Granos",
+                "codigo": "FLEGR"
+            },
+            {
+                "nombre": "Gastos Generales iva 10.5",
+                "codigo": 95
+            },
+            {
+                "nombre": "INSUMOS VARIOS DE SIEMBRA",
+                "codigo": 67
+            },
+            {
+                "nombre": "Labor (Ha)",
+                "codigo": "LB"
+            },
+            {
+                "nombre": "Labor (Hs)",
+                "codigo": "LBBHOR"
+            },
+            {
+                "nombre": "Labor (mm)",
+                "codigo": 84
+            },
+            {
+                "nombre": "Procesado de Garbanzo",
+                "codigo": 197
+            },
+            {
+                "nombre": "Pulverizaciones",
+                "codigo": "PULV"
+            },
+            {
+                "nombre": "Recupero de Gastos de Exportacion",
+                "codigo": 364
+            },
+            {
+                "nombre": "Recupero de Gastos de Flete 10,5%",
+                "codigo": 86
+            },
+            {
+                "nombre": "Recupero de Gastos de Flete 21%",
+                "codigo": 157
+            },
+            {
+                "nombre": "Reparacion y repuestos",
+                "codigo": 57
+            },
+            {
+                "nombre": "Siembra",
+                "codigo": "SC"
+            },
+            {
+                "nombre": "2001 PESAJE EN BASCULA FISCAL",
+                "codigo": 554
+            },
+            {
+                "nombre": "2003 RAMPA / CALADO",
+                "codigo": 559
+            },
+            {
+                "nombre": "2010 PESAJE BRUTO-TARA-OPERARIO-MANT-EN SILOS",
+                "codigo": 555
+            },
+            {
+                "nombre": "2025 SERVICIO DE PUERTO-DIA HABIL-TARIFA PLANA",
+                "codigo": 556
+            },
+            {
+                "nombre": "44444 SERVICIOS CTG",
+                "codigo": 557
+            },
+            {
+                "nombre": "77777 USO DE RAMPA POR HORA",
+                "codigo": 558
+            },
+            {
+                "nombre": "Adoquines Intertrabado Unistone 8 mm espesor",
+                "codigo": 150
+            },
+            {
+                "nombre": "Agua Potable 21%",
+                "codigo": 46
+            },
+            {
+                "nombre": "Agua Potable 27%",
+                "codigo": 188
+            },
+            {
+                "nombre": "BIG BAG 800 KG",
+                "codigo": 385
+            },
+            {
+                "nombre": "BOLSA GRANO SECO 9 x 60 mts GRANAR",
+                "codigo": 22
+            },
+            {
+                "nombre": "BOLSA TT 65 x 105/63",
+                "codigo": 221
+            },
+            {
+                "nombre": "BOLSA TUBO DE POLIPROPILENO",
+                "codigo": 229
+            },
+            {
+                "nombre": "BOLSA TUBULAR DE 56,5 X 98 CM",
+                "codigo": 214
+            },
+            {
+                "nombre": "BOLSA TUBULAR DE 65 X 98 CM",
+                "codigo": 215
+            },
+            {
+                "nombre": "Comisión por Flete",
+                "codigo": 465
+            },
+            {
+                "nombre": "Coriandro venta IVA 10,5",
+                "codigo": 322
+            },
+            {
+                "nombre": "CVLP - Producto Modelo | IVACF",
+                "codigo": 464
+            },
+            {
+                "nombre": "Descuento Anticipo Financiero",
+                "codigo": 151
+            },
+            {
+                "nombre": "Desmote iva 21%",
+                "codigo": 525
+            },
+            {
+                "nombre": "Gasto de Aduana",
+                "codigo": 205
+            },
+            {
+                "nombre": "Gasto de Aduana 21% iva",
+                "codigo": 532
+            },
+            {
+                "nombre": "Gastos de honorarios Colza",
+                "codigo": 492
+            },
+            {
+                "nombre": "Gastos De Sellados Y Otros - IVA 21%",
+                "codigo": 152
+            },
+            {
+                "nombre": "GASTOS VARIOS",
+                "codigo": 33
+            },
+            {
+                "nombre": "MATERIALES DE CONSTRUCCION",
+                "codigo": 34
+            },
+            {
+                "nombre": "Rollos de Sorgo",
+                "codigo": 453
+            },
+            {
+                "nombre": "Servicios de asesoramiento",
+                "codigo": 255
+            },
+            {
+                "nombre": "SILOBOLSA 60 MTS",
+                "codigo": 36
+            },
+            {
+                "nombre": "SILOBOLSA 75 MTS",
+                "codigo": 37
+            },
+            {
+                "nombre": "UNIFORMES",
+                "codigo": 498
+            }
+        ],
+        "Herbicidas": [
+            {
+                "nombre": "2,4D ENLIST",
+                "codigo": 434
+            },
+            {
+                "nombre": "2,4D ETIL EXIL 97%",
+                "codigo": "2,4 D ET EX"
+            },
+            {
+                "nombre": "3003 VALOR HORA TAREAS ESPEC. X OPERARIO EXPO",
+                "codigo": 561
+            },
+            {
+                "nombre": "7002 RETIRO MUESTRA POR BULTO EXPO",
+                "codigo": 560
+            },
+            {
+                "nombre": "ATRAZINA 90%",
+                "codigo": "ATRAZ90"
+            },
+            {
+                "nombre": "BENAZOLIN",
+                "codigo": 149
+            },
+            {
+                "nombre": "CLETODIM 24%",
+                "codigo": "CLELA"
+            },
+            {
+                "nombre": "CLORIMURON 75%",
+                "codigo": "CLORIBIES"
+            },
+            {
+                "nombre": "CLOROMECUATO 75%",
+                "codigo": 496
+            },
+            {
+                "nombre": "Cosecha IVA 21%",
+                "codigo": 527
+            },
+            {
+                "nombre": "Desestresante FACYT",
+                "codigo": 470
+            },
+            {
+                "nombre": "DICAMBA",
+                "codigo": 80
+            },
+            {
+                "nombre": "DICLOSULAM IMAZSPI",
+                "codigo": "DICLOSULAM IMAZSPI"
+            },
+            {
+                "nombre": "DIFLUFENICAN",
+                "codigo": 240
+            },
+            {
+                "nombre": "DIQUAT",
+                "codigo": 481
+            },
+            {
+                "nombre": "ETEFON 48%",
+                "codigo": 502
+            },
+            {
+                "nombre": "FLUMETSULAM",
+                "codigo": "FLM"
+            },
+            {
+                "nombre": "FLUMIOXAZIN",
+                "codigo": 248
+            },
+            {
+                "nombre": "FLUROXIPIR 48%",
+                "codigo": 550
+            },
+            {
+                "nombre": "FOMESAFEN",
+                "codigo": "FOME"
+            },
+            {
+                "nombre": "GLIFOSATO 62%",
+                "codigo": 192
+            },
+            {
+                "nombre": "GLIFOSATO GRANULADO 66%",
+                "codigo": 267
+            },
+            {
+                "nombre": "GLUFOSINATO DE AMONIO 28%",
+                "codigo": 402
+            },
+            {
+                "nombre": "HALOXIFOP 54%",
+                "codigo": 281
+            },
+            {
+                "nombre": "IMAZAPIC",
+                "codigo": 377
+            },
+            {
+                "nombre": "IMAZAPIC + IMAZAPYR (mayoral)",
+                "codigo": 273
+            },
+            {
+                "nombre": "IMAZAPIC + IMAZAPYR (onduty)",
+                "codigo": 512
+            },
+            {
+                "nombre": "Imazapic 52, 5 g + imazapir 17,5 g",
+                "codigo": 463
+            },
+            {
+                "nombre": "IMAZAPIR",
+                "codigo": 376
+            },
+            {
+                "nombre": "IMAZAPIR (LIQUIDO)",
+                "codigo": 543
+            },
+            {
+                "nombre": "IMAZETAPIR",
+                "codigo": 239
+            },
+            {
+                "nombre": "Labor al 21 (Ha)",
+                "codigo": 566
+            },
+            {
+                "nombre": "MAI.ROS/JUL24",
+                "codigo": 514
+            },
+            {
+                "nombre": "Mejoras en Campo",
+                "codigo": 552
+            },
+            {
+                "nombre": "MEPIQUAT 5%",
+                "codigo": 487
+            },
+            {
+                "nombre": "METOLACLORO",
+                "codigo": 280
+            },
+            {
+                "nombre": "METRIBUZIN",
+                "codigo": "MET"
+            },
+            {
+                "nombre": "METSULFURON 60%",
+                "codigo": 81
+            },
+            {
+                "nombre": "NICOSULFURON",
+                "codigo": 294
+            },
+            {
+                "nombre": "NICOSULFURON 24%",
+                "codigo": 297
+            },
+            {
+                "nombre": "PARAQUAT",
+                "codigo": "PAR"
+            },
+            {
+                "nombre": "PICLORAM 24%",
+                "codigo": 442
+            },
+            {
+                "nombre": "PICLORAM 28%",
+                "codigo": "PICLO"
+            },
+            {
+                "nombre": "PIROXALSUFONE + SAFLUFENACIL",
+                "codigo": 506
+            },
+            {
+                "nombre": "PROMETRINA 50%",
+                "codigo": 47
+            },
+            {
+                "nombre": "PYROXASULFONE 48%",
+                "codigo": 412
+            },
+            {
+                "nombre": "S-METOLACLORO 96%",
+                "codigo": 260
+            },
+            {
+                "nombre": "SAFLUFENACIL",
+                "codigo": "HEAT"
+            },
+            {
+                "nombre": "SOJ.ROS/JUL24",
+                "codigo": 515
+            },
+            {
+                "nombre": "SULFENTRAZONE 50%",
+                "codigo": 246
+            },
+            {
+                "nombre": "TERBUTILAZINA 50%",
+                "codigo": 466
+            },
+            {
+                "nombre": "TIDIAZURON 12% + DIURON 6%",
+                "codigo": 501
+            },
+            {
+                "nombre": "TOLPYRALATE 40% (BRUCIA)",
+                "codigo": 541
+            },
+            {
+                "nombre": "TOPRAMEZONE",
+                "codigo": 107
+            },
+            {
+                "nombre": "TRIFLURALINA",
+                "codigo": 450
+            }
+        ],
+        "Coadyuvantes": [
+            {
+                "nombre": "ACEITE METILADO DE SOJA",
+                "codigo": 378
+            },
+            {
+                "nombre": "ACEITE MINERAL",
+                "codigo": 438
+            },
+            {
+                "nombre": "ACEITE VEGETAL",
+                "codigo": 89
+            },
+            {
+                "nombre": "COADYUVANTE SILICONADO",
+                "codigo": 125
+            },
+            {
+                "nombre": "CORRECTOR AGUA",
+                "codigo": 128
+            },
+            {
+                "nombre": "FULLTEC COADYUVANTE",
+                "codigo": 399
+            },
+            {
+                "nombre": "SACAROSA PROTECTOR ORGANICO",
+                "codigo": 528
+            }
+        ],
+        "Insecticidas": [
+            {
+                "nombre": "ABAMECTINA 1.8%",
+                "codigo": 440
+            },
+            {
+                "nombre": "ABAMECTINA 3.6%",
+                "codigo": 319
+            },
+            {
+                "nombre": "BIFENTRIN 10%",
+                "codigo": 124
+            },
+            {
+                "nombre": "BIFENTRIN 25%",
+                "codigo": 459
+            },
+            {
+                "nombre": "CLORANTRANILIPROLE + LAMBDACIALOTRINA",
+                "codigo": 395
+            },
+            {
+                "nombre": "CLORANTRANILIPROLE 20%",
+                "codigo": 318
+            },
+            {
+                "nombre": "CLORPIRIFOS 48%",
+                "codigo": 184
+            },
+            {
+                "nombre": "DIMETOATO 40%",
+                "codigo": "DM"
+            },
+            {
+                "nombre": "FIPRONIL 20%",
+                "codigo": "FIPCLAP"
+            },
+            {
+                "nombre": "FLUBENDIAMIDE 45%",
+                "codigo": 32
+            },
+            {
+                "nombre": "IMIDACLOPRID 60%",
+                "codigo": 53
+            },
+            {
+                "nombre": "LAMBDACIALOTRINA 25%",
+                "codigo": "Lambd 25"
+            },
+            {
+                "nombre": "LAMBDACIALOTRINA 5%",
+                "codigo": "Lambda 5"
+            },
+            {
+                "nombre": "TEFLUBENZURON 15 %",
+                "codigo": 404
+            },
+            {
+                "nombre": "TIAMETOXAN + LAMBDACIALOTRINA",
+                "codigo": 329
+            },
+            {
+                "nombre": "TIAMETOXAN 35%",
+                "codigo": 533
+            }
+        ],
+        "Fungicidas": [
+            {
+                "nombre": "AZOXISTROBINA + CYPROCONAZOLE",
+                "codigo": 88
+            },
+            {
+                "nombre": "Diferencia Precio de compra por lugar de origen IVA 21%",
+                "codigo": 567
+            },
+            {
+                "nombre": "TRIAZOL + ESTROBIRULINA",
+                "codigo": 548
+            }
+        ],
+        "Inoculantes": [
+            {
+                "nombre": "CURASEMILLA",
+                "codigo": 77
+            },
+            {
+                "nombre": "CURASEMILLA ALGODON",
+                "codigo": 520
+            },
+            {
+                "nombre": "CURASEMILLA TRIGO",
+                "codigo": 63
+            },
+            {
+                "nombre": "CURASEMILLA TRIGO BIO",
+                "codigo": 562
+            },
+            {
+                "nombre": "INOCULANTE ALGODON",
+                "codigo": 537
+            },
+            {
+                "nombre": "INOCULANTE ALGODON (TRICHODERMA)",
+                "codigo": 544
+            },
+            {
+                "nombre": "INOCULANTE ALGODON AZOLLUM",
+                "codigo": 538
+            },
+            {
+                "nombre": "INOCULANTE CORIANDRO",
+                "codigo": 29
+            },
+            {
+                "nombre": "INOCULANTE GARBANZO",
+                "codigo": 28
+            },
+            {
+                "nombre": "INOCULANTE SOJA",
+                "codigo": "INOCBIA"
+            },
+            {
+                "nombre": "SEMILLA ALGODON PARA FORRAJE",
+                "codigo": 531
+            },
+            {
+                "nombre": "SEMILLA de TRIGO",
+                "codigo": 535
+            }
+        ],
+        "Nut. Animal": [
+            {
+                "nombre": "Maiz Silo",
+                "codigo": "MAIZ SILO"
+            },
+            {
+                "nombre": "Nucleo",
+                "codigo": "NULCEO"
+            },
+            {
+                "nombre": "Pellet De Girasol",
+                "codigo": "PELLET DE GIRASOL"
+            },
+            {
+                "nombre": "Raciones De Alfalfa",
+                "codigo": "RA"
+            }
+        ],
+        "Bienes de Uso": [
+            {
+                "nombre": "Bien De Uso",
+                "codigo": "EJ - BU"
+            },
+            {
+                "nombre": "Bien De Uso 10.5",
+                "codigo": 161
+            },
+            {
+                "nombre": "Muebles y Utiles",
+                "codigo": 159
+            },
+            {
+                "nombre": "RODADOS",
+                "codigo": 335
+            },
+            {
+                "nombre": "Soportes de zarandas",
+                "codigo": 357
+            },
+            {
+                "nombre": "Ventilador Axial KET 550/2 P 5.5",
+                "codigo": 220
+            },
+            {
+                "nombre": "Zarandas RED 2,00 mm",
+                "codigo": 348
+            },
+            {
+                "nombre": "Zarandas RED 2,50 mm",
+                "codigo": 349
+            },
+            {
+                "nombre": "Zarandas RED 3,00 mm",
+                "codigo": 347
+            },
+            {
+                "nombre": "Zarandas RED 3,50 mm",
+                "codigo": 346
+            },
+            {
+                "nombre": "Zarandas RED 9,00 mm",
+                "codigo": 345
+            },
+            {
+                "nombre": "Zarandas TAJO 1,75 mm",
+                "codigo": 350
+            },
+            {
+                "nombre": "Zarandas TAJO 2,50 mm",
+                "codigo": 351
+            }
+        ],
+        "Servicios": {
+            "Administrativos": [
+                {
+                    "nombre": "Gastos De Telefonía e Internet 21%",
+                    "codigo": "TELEF"
+                },
+                {
+                    "nombre": "Gastos De Telefonía e Internet 27%",
+                    "codigo": "TELEF27"
+                },
+                {
+                    "nombre": "Gastos Entregador",
+                    "codigo": 97
+                },
+                {
+                    "nombre": "Gastos Generales",
+                    "codigo": "GTOSGRAL"
+                },
+                {
+                    "nombre": "Gastos Informatica",
+                    "codigo": 147
+                },
+                {
+                    "nombre": "GASTOS PUBLICIDAD 2.5%",
+                    "codigo": 446
+                },
+                {
+                    "nombre": "Gastos Zarandeo",
+                    "codigo": "ZARAN"
+                },
+                {
+                    "nombre": "Honorarios Contables",
+                    "codigo": "HONORARIOS CONTABLES"
+                },
+                {
+                    "nombre": "honorarios contables con iva 21",
+                    "codigo": 120
+                },
+                {
+                    "nombre": "Honorarios Generales",
+                    "codigo": "HON GRAL"
+                },
+                {
+                    "nombre": "Honorarios Ing. Agrónomo",
+                    "codigo": "HAT"
+                },
+                {
+                    "nombre": "honorarios legales",
+                    "codigo": 60
+                },
+                {
+                    "nombre": "honorarios legales iva 21%",
+                    "codigo": 93
+                },
+                {
+                    "nombre": "Honorarios Serv Diagnostico de Suelo",
+                    "codigo": 145
+                },
+                {
+                    "nombre": "Honorarios Veterinario",
+                    "codigo": "HV"
+                },
+                {
+                    "nombre": "Impuesto a los Debitos y Creditos Bancarios",
+                    "codigo": "IMP-DEB-CREDITO"
+                },
+                {
+                    "nombre": "INMUEBLE 05-04-040-029-00000-2",
+                    "codigo": 91
+                },
+                {
+                    "nombre": "INTER.ADEL.CC S/ACUERD",
+                    "codigo": 6
+                },
+                {
+                    "nombre": "INTERESES FINANCIACION",
+                    "codigo": 82
+                },
+                {
+                    "nombre": "INTERESES IVA 21%",
+                    "codigo": 45
+                },
+                {
+                    "nombre": "INTERESES SIN IVA",
+                    "codigo": 5
+                },
+                {
+                    "nombre": "INTERESES SOBRE SALDOS BANCARIOS",
+                    "codigo": 241
+                },
+                {
+                    "nombre": "Licencia SIMA",
+                    "codigo": 109
+                },
+                {
+                    "nombre": "Mesa de ayuda y soporte",
+                    "codigo": 87
+                },
+                {
+                    "nombre": "patentes y seguros",
+                    "codigo": 56
+                },
+                {
+                    "nombre": "PEAJE",
+                    "codigo": 98
+                },
+                {
+                    "nombre": "Percepcion Ganancia",
+                    "codigo": 444
+                },
+                {
+                    "nombre": "Percepcion IIBB  Bs As",
+                    "codigo": "PERBSAS"
+                },
+                {
+                    "nombre": "Percepcion IIBB C.A.B.A.",
+                    "codigo": 309
+                },
+                {
+                    "nombre": "Percepcion IIBB mendoza",
+                    "codigo": 61
+                },
+                {
+                    "nombre": "Percepcion IIBB San Luis",
+                    "codigo": 138
+                },
+                {
+                    "nombre": "Percepcion IIBB Santa Fe",
+                    "codigo": 308
+                },
+                {
+                    "nombre": "Percepcion IVA",
+                    "codigo": 16
+                },
+                {
+                    "nombre": "PREST",
+                    "codigo": 405
+                },
+                {
+                    "nombre": "Prestacion RRHH",
+                    "codigo": 396
+                },
+                {
+                    "nombre": "Prestacion RRHH a terceros",
+                    "codigo": 445
+                },
+                {
+                    "nombre": "Recargos Financieros IVA 10.5%",
+                    "codigo": 461
+                },
+                {
+                    "nombre": "Recargos Financieros IVA 21%",
+                    "codigo": 156
+                },
+                {
+                    "nombre": "Refacturacion",
+                    "codigo": 90
+                },
+                {
+                    "nombre": "Reparaciones Y Mantenimientos",
+                    "codigo": "REPAR"
+                },
+                {
+                    "nombre": "Retenciones IIBB Cba",
+                    "codigo": 476
+                },
+                {
+                    "nombre": "Seguimiento Satelital camiones",
+                    "codigo": 62
+                },
+                {
+                    "nombre": "SEGURO RODADO",
+                    "codigo": 83
+                },
+                {
+                    "nombre": "SEGUROS VARIOS",
+                    "codigo": 65
+                },
+                {
+                    "nombre": "SEGUROS VARIOS DOL",
+                    "codigo": 139
+                },
+                {
+                    "nombre": "Servicio de FOBBING",
+                    "codigo": 397
+                },
+                {
+                    "nombre": "Servicios de Balanza",
+                    "codigo": 43
+                },
+                {
+                    "nombre": "Servicios de Logistica",
+                    "codigo": 92
+                },
+                {
+                    "nombre": "TV 24",
+                    "codigo": 503
+                },
+                {
+                    "nombre": "TX 28",
+                    "codigo": 500
+                },
+                {
+                    "nombre": "Ventas Servicios",
+                    "codigo": "VENTSER"
+                },
+                {
+                    "nombre": "Viaticos y movilidad 10.5%",
+                    "codigo": 539
+                },
+                {
+                    "nombre": "Viaticos y movilidad 21%",
+                    "codigo": 41
+                },
+                {
+                    "nombre": "Yerba Mate",
+                    "codigo": 76
+                },
+                {
+                    "nombre": "Zarandas redondas 11 mm 1,5x2",
+                    "codigo": 356
+                },
+                {
+                    "nombre": "ABONO FINNEGANS / SINAGRO",
+                    "codigo": 59
+                },
+                {
+                    "nombre": "Abono Rojo Soft",
+                    "codigo": 68
+                },
+                {
+                    "nombre": "AL 30",
+                    "codigo": 494
+                },
+                {
+                    "nombre": "Alojamiento",
+                    "codigo": "ALOJ"
+                },
+                {
+                    "nombre": "ALQUILER GRANJA",
+                    "codigo": 137
+                },
+                {
+                    "nombre": "ALQUILERES PAGADOS",
+                    "codigo": 73
+                },
+                {
+                    "nombre": "ANTICIPO PROVEEDORES",
+                    "codigo": 484
+                },
+                {
+                    "nombre": "Arrendamiento",
+                    "codigo": "ARRCAMPO"
+                },
+                {
+                    "nombre": "Bonificaciones Comerciales De Granos",
+                    "codigo": "BONIFICACIONES COMERCIALES DE GRANOS"
+                },
+                {
+                    "nombre": "Bonificaciones Comerciales De Granos IVA 10,5%",
+                    "codigo": 521
+                },
+                {
+                    "nombre": "Bonificaciones Factor De Granos",
+                    "codigo": "BonComFact"
+                },
+                {
+                    "nombre": "Bonificaciones Factor De Granos 21%",
+                    "codigo": 416
+                },
+                {
+                    "nombre": "Bonificaciones y Castigos Comerciales IVA 21%",
+                    "codigo": 400
+                },
+                {
+                    "nombre": "Bonificaciones y castigos de granos IVA 0,00%",
+                    "codigo": 403
+                },
+                {
+                    "nombre": "Bonificaciones y castigos de granos IVA 10,5%",
+                    "codigo": 401
+                },
+                {
+                    "nombre": "Bonificaciones Y Devoluciones Bancarias",
+                    "codigo": "BONIFBANC"
+                },
+                {
+                    "nombre": "Canon Tecnologia Corn",
+                    "codigo": 199
+                },
+                {
+                    "nombre": "Canon Tecnologia Enlist",
+                    "codigo": 522
+                },
+                {
+                    "nombre": "Canon Tecnologia Intacta",
+                    "codigo": 55
+                },
+                {
+                    "nombre": "Canon Tecnologia Soybean",
+                    "codigo": 200
+                },
+                {
+                    "nombre": "Canon Tecnologia Sunflower",
+                    "codigo": 201
+                },
+                {
+                    "nombre": "CAPACITACION",
+                    "codigo": 413
+                },
+                {
+                    "nombre": "Castigos Comerciales De Granos",
+                    "codigo": "CASTIGOS COMERCIALES DE GRANOS"
+                },
+                {
+                    "nombre": "CAUCION COLOCADORA",
+                    "codigo": 495
+                },
+                {
+                    "nombre": "COM. EMISION EXTRACTO",
+                    "codigo": 11
+                },
+                {
+                    "nombre": "COM. MOVIMIENTOS",
+                    "codigo": 12
+                },
+                {
+                    "nombre": "COM. OPERACIONES ENTRE CASAS CHEQUE",
+                    "codigo": 15
+                },
+                {
+                    "nombre": "COMIS.ABONO BANCA EMPRESA",
+                    "codigo": 17
+                },
+                {
+                    "nombre": "COMIS.COMPENSACION ATEN C",
+                    "codigo": 18
+                },
+                {
+                    "nombre": "COMIS.COMPENSACION ATEN C",
+                    "codigo": 19
+                },
+                {
+                    "nombre": "COMISION CHEQUE CONSULTA",
+                    "codigo": 9
+                },
+                {
+                    "nombre": "COMISION CHQ PAG CLEARING",
+                    "codigo": 10
+                },
+                {
+                    "nombre": "COMISION RESERVA DE FONDOS",
+                    "codigo": 14
+                },
+                {
+                    "nombre": "COMISION TRANSF DATANET",
+                    "codigo": 8
+                },
+                {
+                    "nombre": "Comisiones Liq. Producto",
+                    "codigo": 129
+                },
+                {
+                    "nombre": "Comisiones Venta Granos - 10.5%",
+                    "codigo": "COMVG10.5"
+                },
+                {
+                    "nombre": "Comisiones Venta Granos - 21%",
+                    "codigo": "COMVG"
+                },
+                {
+                    "nombre": "Comisiones Venta Hacienda - 10.5%",
+                    "codigo": "CVH10.5"
+                },
+                {
+                    "nombre": "Comisiones Venta Hacienda- 21%",
+                    "codigo": "CVH21"
+                },
+                {
+                    "nombre": "Consumo Combustible",
+                    "codigo": "ConsumComb"
+                },
+                {
+                    "nombre": "CREDITO FISCAL IVA BASICO",
+                    "codigo": 489
+                },
+                {
+                    "nombre": "CUOTA PRESTAMO",
+                    "codigo": 274
+                },
+                {
+                    "nombre": "DBCR 25413 S/CR TASA GRAL",
+                    "codigo": 2
+                },
+                {
+                    "nombre": "DBCR 25413 S/DB TASA GRAL",
+                    "codigo": 1
+                },
+                {
+                    "nombre": "DEBITO FISCAL IVA BASICO",
+                    "codigo": 20
+                },
+                {
+                    "nombre": "DEV.IMP.DEB.LEY 25413-ALIC.GENERAL",
+                    "codigo": 4
+                },
+                {
+                    "nombre": "DGR SELLOS CORDOBA",
+                    "codigo": 3
+                },
+                {
+                    "nombre": "Diferencia De Cambio IVA 10.5%",
+                    "codigo": 122
+                },
+                {
+                    "nombre": "Diferencia De Cambio IVA 21%",
+                    "codigo": "DIFCAM"
+                },
+                {
+                    "nombre": "Diferencia Precio de compra por lugar de origen IVA 10.5%",
+                    "codigo": 35
+                },
+                {
+                    "nombre": "dopros",
+                    "codigo": 42
+                },
+                {
+                    "nombre": "Extraccion de bolsones IVA 21%",
+                    "codigo": 227
+                },
+                {
+                    "nombre": "FONDO COMUN DE INVERSION S&C",
+                    "codigo": 497
+                },
+                {
+                    "nombre": "GAS 10.5%",
+                    "codigo": 523
+                },
+                {
+                    "nombre": "GAS 21%",
+                    "codigo": 64
+                },
+                {
+                    "nombre": "Gastos acondicionamiento",
+                    "codigo": 415
+                },
+                {
+                    "nombre": "Gastos Analisis Productos",
+                    "codigo": "ANALISIS"
+                },
+                {
+                    "nombre": "Gastos Bancarios",
+                    "codigo": "GB"
+                },
+                {
+                    "nombre": "Gastos Bancarios Iva 10.5",
+                    "codigo": 21
+                },
+                {
+                    "nombre": "Gastos Bancarios S./ Iva",
+                    "codigo": "GBSI"
+                },
+                {
+                    "nombre": "Gastos De Energia IVA 21%",
+                    "codigo": 307
+                },
+                {
+                    "nombre": "Gastos De Energia IVA 27%",
+                    "codigo": "ENERGIA"
+                },
+                {
+                    "nombre": "Gastos De Ferreteria Y Materiales 10,5%",
+                    "codigo": 96
+                },
+                {
+                    "nombre": "Gastos De Ferreteria Y Materiales 21%",
+                    "codigo": "FERRET"
+                },
+                {
+                    "nombre": "Gastos De Libreria",
+                    "codigo": "GLIB"
+                },
+                {
+                    "nombre": "Gastos De Secado",
+                    "codigo": "SECADO"
+                },
+                {
+                    "nombre": "Gastos De Sellados Y Otros",
+                    "codigo": "SELLADOS"
+                },
+                {
+                    "nombre": "Gastos De Sellados Y Otros Iva 10.5",
+                    "codigo": 94
+                }
+            ],
+            "Productivos": [
+                {
+                    "nombre": "Alquiler Autoelevador IVA 10.5%",
+                    "codigo": 75
+                },
+                {
+                    "nombre": "Alquiler Autoelevador IVA 21%",
+                    "codigo": 302
+                },
+                {
+                    "nombre": "ALQUILER CHIMANGO",
+                    "codigo": 455
+                },
+                {
+                    "nombre": "Alquiler de pluma",
+                    "codigo": 74
+                },
+                {
+                    "nombre": "Analisis de suelo",
+                    "codigo": 85
+                },
+                {
+                    "nombre": "Arado de alambrado",
+                    "codigo": 71
+                },
+                {
+                    "nombre": "CARGA Y DESCARGA",
+                    "codigo": 146
+                },
+                {
+                    "nombre": "Cascara de girasol",
+                    "codigo": 454
+                },
+                {
+                    "nombre": "CERTIFICACION DE OBRA",
+                    "codigo": 48
+                },
+                {
+                    "nombre": "Clasificacion de semilla IVA 10.5%",
+                    "codigo": 121
+                },
+                {
+                    "nombre": "Clasificacion de semilla IVA 21%",
+                    "codigo": 170
+                },
+                {
+                    "nombre": "Cosecha",
+                    "codigo": "CH"
+                },
+                {
+                    "nombre": "Descarga de Bolsones Big Bag",
+                    "codigo": 72
+                },
+                {
+                    "nombre": "Elaboracion de Rollos de Sorgo",
+                    "codigo": 394
+                },
+                {
+                    "nombre": "Embolsado de granos IVA 10.5%",
+                    "codigo": 69
+                },
+                {
+                    "nombre": "Pasada de rolo picador",
+                    "codigo": 187
+                }
+            ]
+        }
+    }
+

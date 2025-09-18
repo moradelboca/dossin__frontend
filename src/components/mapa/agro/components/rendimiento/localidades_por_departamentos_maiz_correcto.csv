@@ -1,0 +1,2383 @@
+ID_Localidad,Provincia,Departamento,Localidad
+1,Buenos Aires,25 de Mayo,25 de Mayo
+2,Buenos Aires,Florentino Ameghino,3 de febrero
+3,Buenos Aires,Florentino Ameghino,A. Alsina
+4,Buenos Aires,Florentino Ameghino,A. Gonzáles Cháves
+5,Buenos Aires,Florentino Ameghino,Aguas Verdes
+6,Buenos Aires,Alberti,Alberti
+7,Buenos Aires,Arrecifes,Arrecifes
+8,Buenos Aires,Ayacucho,Ayacucho
+9,Buenos Aires,Azul,Azul
+10,Buenos Aires,Bahía Blanca,Bahía Blanca
+11,Buenos Aires,Balcarce,Balcarce
+12,Buenos Aires,Baradero,Baradero
+13,Buenos Aires,Benito Juárez,Benito Juárez
+14,Buenos Aires,Florentino Ameghino,Berisso
+15,Buenos Aires,Bolívar,Bolívar
+16,Buenos Aires,Bragado,Bragado
+17,Buenos Aires,Brandsen,Brandsen
+18,Buenos Aires,Campana,Campana
+19,Buenos Aires,Cañuelas,Cañuelas
+20,Buenos Aires,Florentino Ameghino,Capilla del Señor
+21,Buenos Aires,Capitán Sarmiento,Capitán Sarmiento
+22,Buenos Aires,Florentino Ameghino,Carapachay
+23,Buenos Aires,Florentino Ameghino,Carhue
+24,Buenos Aires,Florentino Ameghino,Cariló
+25,Buenos Aires,Carlos Casares,Carlos Casares
+26,Buenos Aires,Carlos Tejedor,Carlos Tejedor
+27,Buenos Aires,Carmen de Areco,Carmen de Areco
+28,Buenos Aires,Patagones,Carmen de Patagones
+29,Buenos Aires,Castelli,Castelli
+30,Buenos Aires,Chacabuco,Chacabuco
+31,Buenos Aires,Chascomús,Chascomús
+32,Buenos Aires,Chivilcoy,Chivilcoy
+33,Buenos Aires,Colón,Colón
+34,Buenos Aires,Coronel Dorrego,Coronel Dorrego
+35,Buenos Aires,Coronel Pringles,Coronel Pringles
+36,Buenos Aires,Florentino Ameghino,Coronel Rosales
+37,Buenos Aires,Florentino Ameghino,Coronel Suarez
+38,Buenos Aires,Azul,Costa Azul
+39,Buenos Aires,Florentino Ameghino,Costa Chica
+40,Buenos Aires,Florentino Ameghino,Costa del Este
+41,Buenos Aires,Florentino Ameghino,Costa Esmeralda
+42,Buenos Aires,Daireaux,Daireaux
+43,Buenos Aires,Florentino Ameghino,Darregueira
+44,Buenos Aires,Florentino Ameghino,Del Viso
+45,Buenos Aires,Dolores,Dolores
+46,Buenos Aires,Florentino Ameghino,Don Torcuato
+47,Buenos Aires,Florentino Ameghino,Ensenada
+48,Buenos Aires,Escobar,Escobar
+49,Buenos Aires,Exaltación de la Cruz,Exaltación de la Cruz
+50,Buenos Aires,Florentino Ameghino,Florentino Ameghino
+51,Buenos Aires,Florentino Ameghino,Garín
+52,Buenos Aires,Florentino Ameghino,Gral. Alvarado
+53,Buenos Aires,Florentino Ameghino,Gral. Alvear
+54,Buenos Aires,Florentino Ameghino,Gral. Arenales
+55,Buenos Aires,Florentino Ameghino,Gral. Belgrano
+56,Buenos Aires,Florentino Ameghino,Gral. Guido
+57,Buenos Aires,Florentino Ameghino,Gral. Lamadrid
+58,Buenos Aires,Florentino Ameghino,Gral. Las Heras
+59,Buenos Aires,Florentino Ameghino,Gral. Lavalle
+60,Buenos Aires,Florentino Ameghino,Gral. Madariaga
+61,Buenos Aires,Florentino Ameghino,Gral. Pacheco
+62,Buenos Aires,Florentino Ameghino,Gral. Paz
+63,Buenos Aires,Florentino Ameghino,Gral. Pinto
+64,Buenos Aires,Florentino Ameghino,Gral. Pueyrredón
+65,Buenos Aires,Florentino Ameghino,Gral. Rodríguez
+66,Buenos Aires,Monte,Gral. Viamonte
+67,Buenos Aires,Florentino Ameghino,Gral. Villegas
+68,Buenos Aires,Guaminí,Guaminí
+69,Buenos Aires,Florentino Ameghino,Guernica
+70,Buenos Aires,Hipólito Yrigoyen,Hipólito Yrigoyen
+71,Buenos Aires,Florentino Ameghino,Ing. Maschwitz
+72,Buenos Aires,Junín,Junín
+73,Buenos Aires,La Plata,La Plata
+74,Buenos Aires,Laprida,Laprida
+75,Buenos Aires,Las Flores,Las Flores
+76,Buenos Aires,Florentino Ameghino,Las Toninas
+77,Buenos Aires,Leandro N. Alem,Leandro N. Alem
+78,Buenos Aires,Lincoln,Lincoln
+79,Buenos Aires,Florentino Ameghino,Loberia
+80,Buenos Aires,Lobos,Lobos
+81,Buenos Aires,Florentino Ameghino,Los Cardales
+82,Buenos Aires,Florentino Ameghino,Los Toldos
+83,Buenos Aires,Florentino Ameghino,Lucila del Mar
+84,Buenos Aires,Luján,Luján
+85,Buenos Aires,Magdalena,Magdalena
+86,Buenos Aires,Maipú,Maipú
+87,Buenos Aires,Mar Chiquita,Mar Chiquita
+88,Buenos Aires,Florentino Ameghino,Mar de Ajó
+89,Buenos Aires,Florentino Ameghino,Mar de las Pampas
+90,Buenos Aires,Florentino Ameghino,Mar del Plata
+91,Buenos Aires,Florentino Ameghino,Mar del Tuyú
+92,Buenos Aires,Marcos Paz,Marcos Paz
+93,Buenos Aires,Mercedes,Mercedes
+94,Buenos Aires,Florentino Ameghino,Miramar
+95,Buenos Aires,Monte,Monte
+96,Buenos Aires,Monte,Monte Hermoso
+97,Buenos Aires,Florentino Ameghino,Munro
+98,Buenos Aires,Navarro,Navarro
+99,Buenos Aires,Necochea,Necochea
+100,Buenos Aires,Olavarría,Olavarría
+101,Buenos Aires,Florentino Ameghino,Partido de la Costa
+102,Buenos Aires,Pehuajó,Pehuajó
+103,Buenos Aires,Pellegrini,Pellegrini
+104,Buenos Aires,Pergamino,Pergamino
+105,Buenos Aires,Florentino Ameghino,Pigüé
+106,Buenos Aires,Pila,Pila
+107,Buenos Aires,Pilar,Pilar
+108,Buenos Aires,Florentino Ameghino,Pinamar
+109,Buenos Aires,Florentino Ameghino,Pinar del Sol
+110,Buenos Aires,Florentino Ameghino,Polvorines
+111,Buenos Aires,Florentino Ameghino,Pte. Perón
+112,Buenos Aires,Puán,Puán
+113,Buenos Aires,Punta Indio,Punta Indio
+114,Buenos Aires,Ramallo,Ramallo
+115,Buenos Aires,Rauch,Rauch
+116,Buenos Aires,Rivadavia,Rivadavia
+117,Buenos Aires,Rojas,Rojas
+118,Buenos Aires,Roque Pérez,Roque Pérez
+119,Buenos Aires,Saavedra,Saavedra
+120,Buenos Aires,Saladillo,Saladillo
+121,Buenos Aires,Salliqueló,Salliqueló
+122,Buenos Aires,Salto,Salto
+123,Buenos Aires,San Andrés de Giles,San Andrés de Giles
+124,Buenos Aires,San Antonio de Areco,San Antonio de Areco
+125,Buenos Aires,San Antonio de Areco,San Antonio de Padua
+126,Buenos Aires,San Antonio de Areco,San Bernardo
+127,Buenos Aires,San Cayetano,San Cayetano
+128,Buenos Aires,San Antonio de Areco,San Clemente del Tuyú
+129,Buenos Aires,San Nicolás,San Nicolás
+130,Buenos Aires,San Pedro,San Pedro
+131,Buenos Aires,San Vicente,San Vicente
+132,Buenos Aires,Florentino Ameghino,Santa Teresita
+133,Buenos Aires,Suipacha,Suipacha
+134,Buenos Aires,Tandil,Tandil
+135,Buenos Aires,Tapalqué,Tapalqué
+136,Buenos Aires,Tordillo,Tordillo
+137,Buenos Aires,Tornquist,Tornquist
+138,Buenos Aires,Trenque Lauquen,Trenque Lauquen
+139,Buenos Aires,Tres Lomas,Tres Lomas
+140,Buenos Aires,Villarino,Villa Gesell
+141,Buenos Aires,Villarino,Villarino
+142,Buenos Aires,Zárate,Zárate
+143,Buenos Aires (GBA),No encontrado,11 de Septiembre
+144,Buenos Aires (GBA),No encontrado,20 de Junio
+145,Buenos Aires (GBA),No encontrado,25 de Mayo
+146,Buenos Aires (GBA),No encontrado,Acassuso
+147,Buenos Aires (GBA),No encontrado,Adrogué
+148,Buenos Aires (GBA),No encontrado,Aldo Bonzi
+149,Buenos Aires (GBA),No encontrado,Área Reserva Cinturón Ecológico
+150,Buenos Aires (GBA),No encontrado,Avellaneda
+151,Buenos Aires (GBA),No encontrado,Banfield
+152,Buenos Aires (GBA),No encontrado,Barrio Parque
+153,Buenos Aires (GBA),No encontrado,Barrio Santa Teresita
+154,Buenos Aires (GBA),No encontrado,Beccar
+155,Buenos Aires (GBA),No encontrado,Bella Vista
+156,Buenos Aires (GBA),No encontrado,Berazategui
+157,Buenos Aires (GBA),No encontrado,Bernal Este
+158,Buenos Aires (GBA),No encontrado,Bernal Oeste
+159,Buenos Aires (GBA),No encontrado,Billinghurst
+160,Buenos Aires (GBA),No encontrado,Boulogne
+161,Buenos Aires (GBA),No encontrado,Burzaco
+162,Buenos Aires (GBA),No encontrado,Carapachay
+163,Buenos Aires (GBA),No encontrado,Caseros
+164,Buenos Aires (GBA),No encontrado,Castelar
+165,Buenos Aires (GBA),No encontrado,Churruca
+166,Buenos Aires (GBA),No encontrado,Ciudad Evita
+167,Buenos Aires (GBA),No encontrado,Ciudad Madero
+168,Buenos Aires (GBA),No encontrado,Ciudadela
+169,Buenos Aires (GBA),No encontrado,Claypole
+170,Buenos Aires (GBA),No encontrado,Crucecita
+171,Buenos Aires (GBA),No encontrado,Dock Sud
+172,Buenos Aires (GBA),No encontrado,Don Bosco
+173,Buenos Aires (GBA),No encontrado,Don Orione
+174,Buenos Aires (GBA),No encontrado,El Jagüel
+175,Buenos Aires (GBA),No encontrado,El Libertador
+176,Buenos Aires (GBA),No encontrado,El Palomar
+177,Buenos Aires (GBA),No encontrado,El Tala
+178,Buenos Aires (GBA),No encontrado,El Trébol
+179,Buenos Aires (GBA),No encontrado,Ezeiza
+180,Buenos Aires (GBA),No encontrado,Ezpeleta
+181,Buenos Aires (GBA),No encontrado,Florencio Varela
+182,Buenos Aires (GBA),No encontrado,Florida
+183,Buenos Aires (GBA),No encontrado,Francisco Álvarez
+184,Buenos Aires (GBA),No encontrado,Gerli
+185,Buenos Aires (GBA),No encontrado,Glew
+186,Buenos Aires (GBA),No encontrado,González Catán
+187,Buenos Aires (GBA),No encontrado,Gral. Lamadrid
+188,Buenos Aires (GBA),No encontrado,Grand Bourg
+189,Buenos Aires (GBA),No encontrado,Gregorio de Laferrere
+190,Buenos Aires (GBA),No encontrado,Guillermo Enrique Hudson
+191,Buenos Aires (GBA),No encontrado,Haedo
+192,Buenos Aires (GBA),No encontrado,Hurlingham
+193,Buenos Aires (GBA),No encontrado,Ing. Sourdeaux
+194,Buenos Aires (GBA),No encontrado,Isidro Casanova
+195,Buenos Aires (GBA),No encontrado,Ituzaingó
+196,Buenos Aires (GBA),No encontrado,José C. Paz
+197,Buenos Aires (GBA),No encontrado,José Ingenieros
+198,Buenos Aires (GBA),No encontrado,José Marmol
+199,Buenos Aires (GBA),No encontrado,La Lucila
+200,Buenos Aires (GBA),No encontrado,La Reja
+201,Buenos Aires (GBA),No encontrado,La Tablada
+202,Buenos Aires (GBA),No encontrado,Lanús
+203,Buenos Aires (GBA),No encontrado,Llavallol
+204,Buenos Aires (GBA),No encontrado,Loma Hermosa
+205,Buenos Aires (GBA),No encontrado,Lomas de Zamora
+206,Buenos Aires (GBA),No encontrado,Lomas del Millón
+207,Buenos Aires (GBA),No encontrado,Lomas del Mirador
+208,Buenos Aires (GBA),No encontrado,Longchamps
+209,Buenos Aires (GBA),No encontrado,Los Polvorines
+210,Buenos Aires (GBA),No encontrado,Luis Guillón
+211,Buenos Aires (GBA),No encontrado,Malvinas Argentinas
+212,Buenos Aires (GBA),No encontrado,Martín Coronado
+213,Buenos Aires (GBA),No encontrado,Martínez
+214,Buenos Aires (GBA),No encontrado,Merlo
+215,Buenos Aires (GBA),No encontrado,Ministro Rivadavia
+216,Buenos Aires (GBA),No encontrado,Monte Chingolo
+217,Buenos Aires (GBA),No encontrado,Monte Grande
+218,Buenos Aires (GBA),No encontrado,Moreno
+219,Buenos Aires (GBA),No encontrado,Morón
+220,Buenos Aires (GBA),No encontrado,Muñiz
+221,Buenos Aires (GBA),No encontrado,Olivos
+222,Buenos Aires (GBA),No encontrado,Pablo Nogués
+223,Buenos Aires (GBA),No encontrado,Pablo Podestá
+224,Buenos Aires (GBA),No encontrado,Paso del Rey
+225,Buenos Aires (GBA),No encontrado,Pereyra
+226,Buenos Aires (GBA),No encontrado,Piñeiro
+227,Buenos Aires (GBA),No encontrado,Plátanos
+228,Buenos Aires (GBA),No encontrado,Pontevedra
+229,Buenos Aires (GBA),No encontrado,Quilmes
+230,Buenos Aires (GBA),No encontrado,Rafael Calzada
+231,Buenos Aires (GBA),No encontrado,Rafael Castillo
+232,Buenos Aires (GBA),No encontrado,Ramos Mejía
+233,Buenos Aires (GBA),No encontrado,Ranelagh
+234,Buenos Aires (GBA),No encontrado,Remedios de Escalada
+235,Buenos Aires (GBA),No encontrado,Sáenz Peña
+236,Buenos Aires (GBA),No encontrado,San Antonio de Padua
+237,Buenos Aires (GBA),No encontrado,San Fernando
+238,Buenos Aires (GBA),No encontrado,San Francisco Solano
+239,Buenos Aires (GBA),No encontrado,San Isidro
+240,Buenos Aires (GBA),No encontrado,San José
+241,Buenos Aires (GBA),No encontrado,San Justo
+242,Buenos Aires (GBA),No encontrado,San Martín
+243,Buenos Aires (GBA),No encontrado,San Miguel
+244,Buenos Aires (GBA),No encontrado,Santos Lugares
+245,Buenos Aires (GBA),No encontrado,Sarandí
+246,Buenos Aires (GBA),No encontrado,Sourigues
+247,Buenos Aires (GBA),No encontrado,Tapiales
+248,Buenos Aires (GBA),No encontrado,Temperley
+249,Buenos Aires (GBA),No encontrado,Tigre
+250,Buenos Aires (GBA),No encontrado,Tortuguitas
+251,Buenos Aires (GBA),No encontrado,Tristán Suárez
+252,Buenos Aires (GBA),No encontrado,Trujui
+253,Buenos Aires (GBA),No encontrado,Turdera
+254,Buenos Aires (GBA),No encontrado,Valentín Alsina
+255,Buenos Aires (GBA),No encontrado,Vicente López
+256,Buenos Aires (GBA),No encontrado,Villa Adelina
+257,Buenos Aires (GBA),No encontrado,Villa Ballester
+258,Buenos Aires (GBA),No encontrado,Villa Bosch
+259,Buenos Aires (GBA),No encontrado,Villa Caraza
+260,Buenos Aires (GBA),No encontrado,Villa Celina
+261,Buenos Aires (GBA),No encontrado,Villa Centenario
+262,Buenos Aires (GBA),No encontrado,Villa de Mayo
+263,Buenos Aires (GBA),No encontrado,Villa Diamante
+264,Buenos Aires (GBA),No encontrado,Villa Domínico
+265,Buenos Aires (GBA),No encontrado,Villa España
+266,Buenos Aires (GBA),No encontrado,Villa Fiorito
+267,Buenos Aires (GBA),No encontrado,Villa Guillermina
+268,Buenos Aires (GBA),No encontrado,Villa Insuperable
+269,Buenos Aires (GBA),No encontrado,Villa José León Suárez
+270,Buenos Aires (GBA),No encontrado,Villa La Florida
+271,Buenos Aires (GBA),No encontrado,Villa Luzuriaga
+272,Buenos Aires (GBA),No encontrado,Villa Martelli
+273,Buenos Aires (GBA),No encontrado,Villa Obrera
+274,Buenos Aires (GBA),No encontrado,Villa Progreso
+275,Buenos Aires (GBA),No encontrado,Villa Raffo
+276,Buenos Aires (GBA),No encontrado,Villa Sarmiento
+277,Buenos Aires (GBA),No encontrado,Villa Tesei
+278,Buenos Aires (GBA),No encontrado,Villa Udaondo
+279,Buenos Aires (GBA),No encontrado,Virrey del Pino
+280,Buenos Aires (GBA),No encontrado,Wilde
+281,Buenos Aires (GBA),No encontrado,William Morris
+282,Ciudad Autónoma de Buenos Aires,No encontrado,Agronomía
+283,Ciudad Autónoma de Buenos Aires,No encontrado,Almagro
+284,Ciudad Autónoma de Buenos Aires,No encontrado,Balvanera
+285,Ciudad Autónoma de Buenos Aires,No encontrado,Barracas
+286,Ciudad Autónoma de Buenos Aires,No encontrado,Belgrano
+287,Ciudad Autónoma de Buenos Aires,No encontrado,Boca
+288,Ciudad Autónoma de Buenos Aires,No encontrado,Boedo
+289,Ciudad Autónoma de Buenos Aires,No encontrado,Caballito
+290,Ciudad Autónoma de Buenos Aires,No encontrado,Chacarita
+291,Ciudad Autónoma de Buenos Aires,No encontrado,Coghlan
+292,Ciudad Autónoma de Buenos Aires,No encontrado,Colegiales
+293,Ciudad Autónoma de Buenos Aires,No encontrado,Constitución
+294,Ciudad Autónoma de Buenos Aires,No encontrado,Flores
+295,Ciudad Autónoma de Buenos Aires,No encontrado,Floresta
+296,Ciudad Autónoma de Buenos Aires,No encontrado,La Paternal
+297,Ciudad Autónoma de Buenos Aires,No encontrado,Liniers
+298,Ciudad Autónoma de Buenos Aires,No encontrado,Mataderos
+299,Ciudad Autónoma de Buenos Aires,No encontrado,Monserrat
+300,Ciudad Autónoma de Buenos Aires,No encontrado,Monte Castro
+301,Ciudad Autónoma de Buenos Aires,No encontrado,Nueva Pompeya
+302,Ciudad Autónoma de Buenos Aires,No encontrado,Núñez
+303,Ciudad Autónoma de Buenos Aires,No encontrado,Palermo
+304,Ciudad Autónoma de Buenos Aires,No encontrado,Parque Avellaneda
+305,Ciudad Autónoma de Buenos Aires,No encontrado,Parque Chacabuco
+306,Ciudad Autónoma de Buenos Aires,No encontrado,Parque Chas
+307,Ciudad Autónoma de Buenos Aires,No encontrado,Parque Patricios
+308,Ciudad Autónoma de Buenos Aires,No encontrado,Puerto Madero
+309,Ciudad Autónoma de Buenos Aires,No encontrado,Recoleta
+310,Ciudad Autónoma de Buenos Aires,No encontrado,Retiro
+311,Ciudad Autónoma de Buenos Aires,No encontrado,Saavedra
+312,Ciudad Autónoma de Buenos Aires,No encontrado,San Cristóbal
+313,Ciudad Autónoma de Buenos Aires,No encontrado,San Nicolás
+314,Ciudad Autónoma de Buenos Aires,No encontrado,San Telmo
+315,Ciudad Autónoma de Buenos Aires,No encontrado,Vélez Sársfield
+316,Ciudad Autónoma de Buenos Aires,No encontrado,Versalles
+317,Ciudad Autónoma de Buenos Aires,No encontrado,Villa Crespo
+318,Ciudad Autónoma de Buenos Aires,No encontrado,Villa del Parque
+319,Ciudad Autónoma de Buenos Aires,No encontrado,Villa Devoto
+320,Ciudad Autónoma de Buenos Aires,No encontrado,Villa Gral. Mitre
+321,Ciudad Autónoma de Buenos Aires,No encontrado,Villa Lugano
+322,Ciudad Autónoma de Buenos Aires,No encontrado,Villa Luro
+323,Ciudad Autónoma de Buenos Aires,No encontrado,Villa Ortúzar
+324,Ciudad Autónoma de Buenos Aires,No encontrado,Villa Pueyrredón
+325,Ciudad Autónoma de Buenos Aires,No encontrado,Villa Real
+326,Ciudad Autónoma de Buenos Aires,No encontrado,Villa Riachuelo
+327,Ciudad Autónoma de Buenos Aires,No encontrado,Villa Santa Rita
+328,Ciudad Autónoma de Buenos Aires,No encontrado,Villa Soldati
+329,Ciudad Autónoma de Buenos Aires,No encontrado,Villa Urquiza
+330,Catamarca,Santa Rosa,Aconquija
+331,Catamarca,Ancasti,Ancasti
+332,Catamarca,Andalgalá,Andalgalá
+333,Catamarca,Santa Rosa,Antofagasta
+334,Catamarca,Belén,Belén
+335,Catamarca,Capayán,Capayán
+336,Catamarca,Capital,Capital
+337,Catamarca,Santa Rosa,4
+338,Catamarca,Santa Rosa,Corral Quemado
+339,Catamarca,El Alto,El Alto
+340,Catamarca,Santa Rosa,El Rodeo
+341,Catamarca,Santa Rosa,F.Mamerto Esquiú
+342,Catamarca,Santa Rosa,Fiambalá
+343,Catamarca,Santa Rosa,Hualfín
+344,Catamarca,Santa Rosa,Huillapima
+345,Catamarca,Santa Rosa,Icaño
+346,Catamarca,Santa Rosa,La Puerta
+347,Catamarca,Santa Rosa,Las Juntas
+348,Catamarca,Santa Rosa,Londres
+349,Catamarca,Santa Rosa,Los Altos
+350,Catamarca,Santa Rosa,Los Varela
+351,Catamarca,Santa Rosa,Mutquín
+352,Catamarca,Paclín,Paclín
+353,Catamarca,Santa Rosa,Poman
+354,Catamarca,Santa Rosa,Pozo de La Piedra
+355,Catamarca,Santa Rosa,Puerta de Corral
+356,Catamarca,Santa Rosa,Puerta San José
+357,Catamarca,Santa Rosa,Recreo
+358,Catamarca,Santa Rosa,S.F.V de 4
+359,Catamarca,Santa Rosa,San Fernando
+360,Catamarca,Santa Rosa,San Fernando del Valle
+361,Catamarca,Santa Rosa,San José
+362,Catamarca,Santa María,Santa María
+363,Catamarca,Santa Rosa,Santa Rosa
+364,Catamarca,Santa Rosa,Saujil
+365,Catamarca,Santa Rosa,Tapso
+366,Catamarca,Tinogasta,Tinogasta
+367,Catamarca,Valle Viejo,Valle Viejo
+368,Catamarca,Santa Rosa,Villa Vil
+369,Chaco,2 de Abril,Aviá Teraí
+370,Chaco,2 de Abril,Barranqueras
+371,Chaco,2 de Abril,Basail
+372,Chaco,2 de Abril,Campo Largo
+373,Chaco,2 de Abril,Capital
+374,Chaco,2 de Abril,Capitán Solari
+375,Chaco,2 de Abril,Charadai
+376,Chaco,2 de Abril,Charata
+377,Chaco,2 de Abril,Chorotis
+378,Chaco,2 de Abril,Ciervo Petiso
+379,Chaco,2 de Abril,Cnel. Du Graty
+380,Chaco,2 de Abril,Col. Benítez
+381,Chaco,2 de Abril,Col. Elisa
+382,Chaco,2 de Abril,Col. Popular
+383,Chaco,2 de Abril,Colonias Unidas
+384,Chaco,2 de Abril,Concepción
+385,Chaco,2 de Abril,Corzuela
+386,Chaco,2 de Abril,Cote Lai
+387,Chaco,2 de Abril,El Sauzalito
+388,Chaco,2 de Abril,Enrique Urien
+389,Chaco,Mayor Luis J. Fontana,Fontana
+390,Chaco,2 de Abril,Fte. Esperanza
+391,Chaco,2 de Abril,Gancedo
+392,Chaco,2 de Abril,Gral. Capdevila
+393,Chaco,2 de Abril,Gral. Pinero
+394,Chaco,San Lorenzo,Gral. San Martín
+395,Chaco,2 de Abril,Gral. Vedia
+396,Chaco,2 de Abril,Hermoso Campo
+397,Chaco,2 de Abril,I. del Cerrito
+398,Chaco,2 de Abril,J.J. Castelli
+399,Chaco,2 de Abril,La Clotilde
+400,Chaco,2 de Abril,La Eduvigis
+401,Chaco,2 de Abril,La Escondida
+402,Chaco,2 de Abril,La Leonesa
+403,Chaco,2 de Abril,La Tigra
+404,Chaco,2 de Abril,La Verde
+405,Chaco,2 de Abril,Laguna Blanca
+406,Chaco,2 de Abril,Laguna Limpia
+407,Chaco,2 de Abril,Lapachito
+408,Chaco,2 de Abril,Las Breñas
+409,Chaco,2 de Abril,Las Garcitas
+410,Chaco,2 de Abril,Las Palmas
+411,Chaco,2 de Abril,Los Frentones
+412,Chaco,2 de Abril,Machagai
+413,Chaco,2 de Abril,Makallé
+414,Chaco,2 de Abril,Margarita Belén
+415,Chaco,2 de Abril,Miraflores
+416,Chaco,2 de Abril,Misión N. Pompeya
+417,Chaco,2 de Abril,Napenay
+418,Chaco,2 de Abril,Pampa Almirón
+419,Chaco,2 de Abril,Pampa del Indio
+420,Chaco,2 de Abril,Pampa del Infierno
+421,Chaco,2 de Abril,Pdcia. de La Plaza
+422,Chaco,2 de Abril,Pdcia. Roca
+423,Chaco,2 de Abril,Pdcia. Roque Sáenz Peña
+424,Chaco,Bermejo,Pto. Bermejo
+425,Chaco,2 de Abril,Pto. Eva Perón
+426,Chaco,2 de Abril,Puero Tirol
+427,Chaco,2 de Abril,Puerto Vilelas
+428,Chaco,Quitilipi,Quitilipi
+429,Chaco,Resistencia,Resistencia
+430,Chaco,2 de Abril,Sáenz Peña
+431,Chaco,2 de Abril,Samuhú
+432,Chaco,San Lorenzo,San Bernardo
+433,Chaco,Fray Justo Santa María de Oro,Santa Sylvina
+434,Chaco,2 de Abril,Taco Pozo
+435,Chaco,2 de Abril,Tres Isletas
+436,Chaco,2 de Abril,Villa Ángela
+437,Chaco,2 de Abril,Villa Berthet
+438,Chaco,2 de Abril,Villa R. Bermejito
+439,Chubut,Gaiman,Aldea Apeleg
+440,Chubut,Gaiman,Aldea Beleiro
+441,Chubut,Gaiman,Aldea Epulef
+442,Chubut,Gaiman,Alto Río Sengerr
+443,Chubut,Gaiman,Buen Pasto
+444,Chubut,Gaiman,Camarones
+445,Chubut,Gaiman,Carrenleufú
+446,Chubut,Gaiman,Cholila
+447,Chubut,Gaiman,Co. Centinela
+448,Chubut,Gaiman,Colan Conhué
+449,Chubut,Gaiman,Comodoro Rivadavia
+450,Chubut,Gaiman,Corcovado
+451,Chubut,Cushamen,Cushamen
+452,Chubut,Gaiman,Dique F. Ameghino
+453,Chubut,Gaiman,Dolavón
+454,Chubut,Gaiman,Dr. R. Rojas
+455,Chubut,Gaiman,El Hoyo
+456,Chubut,Gaiman,El Maitén
+457,Chubut,Gaiman,Epuyén
+458,Chubut,Gaiman,Esquel
+459,Chubut,Gaiman,Facundo
+460,Chubut,Gaiman,Gaimán
+461,Chubut,Gaiman,Gan Gan
+462,Chubut,Gaiman,Gastre
+463,Chubut,Gaiman,Gdor. Costa
+464,Chubut,Gaiman,Gualjaina
+465,Chubut,Gaiman,J. de San Martín
+466,Chubut,Gaiman,Lago Blanco
+467,Chubut,Gaiman,Lago Puelo
+468,Chubut,Gaiman,Lagunita Salada
+469,Chubut,Gaiman,Las Plumas
+470,Chubut,Gaiman,Los Altares
+471,Chubut,Gaiman,Paso de los Indios
+472,Chubut,Gaiman,Paso del Sapo
+473,Chubut,Gaiman,Pto. Madryn
+474,Chubut,Gaiman,Pto. Pirámides
+475,Chubut,Gaiman,Rada Tilly
+476,Chubut,Rawson,Rawson
+477,Chubut,Gaiman,Río Mayo
+478,Chubut,Gaiman,Río Pico
+479,Chubut,Gaiman,Sarmiento
+480,Chubut,Gaiman,Tecka
+481,Chubut,Gaiman,Telsen
+482,Chubut,Gaiman,Trelew
+483,Chubut,Gaiman,Trevelin
+484,Chubut,Gaiman,Veintiocho de Julio
+485,Córdoba,Marcos Juárez,Achiras
+486,Córdoba,Marcos Juárez,Adelia Maria
+487,Córdoba,Marcos Juárez,Agua de Oro
+488,Córdoba,Marcos Juárez,Alcira Gigena
+489,Córdoba,Santa María,Aldea Santa Maria
+490,Córdoba,Juárez Celman,Alejandro Roca
+491,Córdoba,Marcos Juárez,Alejo Ledesma
+492,Córdoba,Marcos Juárez,Alicia
+493,Córdoba,Tercero Arriba,Almafuerte
+494,Córdoba,Marcos Juárez,Alpa Corral
+495,Córdoba,Santa María,Alta Gracia
+496,Córdoba,Marcos Juárez,Alto Alegre
+497,Córdoba,Marcos Juárez,Alto de Los Quebrachos
+498,Córdoba,Marcos Juárez,Altos de Chipion
+499,Córdoba,Marcos Juárez,Amboy
+500,Córdoba,Marcos Juárez,Ambul
+501,Córdoba,Marcos Juárez,Ana Zumaran
+502,Córdoba,Santa María,Anisacate
+503,Córdoba,Marcos Juárez,Arguello
+504,Córdoba,Marcos Juárez,Arias
+505,Córdoba,San Justo,Arroyito
+506,Córdoba,Marcos Juárez,Arroyo Algodon
+507,Córdoba,General San Martín,Arroyo Cabral
+508,Córdoba,Marcos Juárez,Arroyo Los Patos
+509,Córdoba,Marcos Juárez,Assunta
+510,Córdoba,Marcos Juárez,Atahona
+511,Córdoba,Marcos Juárez,Ausonia
+512,Córdoba,Ischilín,Avellaneda
+513,Córdoba,Marcos Juárez,Ballesteros
+514,Córdoba,Marcos Juárez,Ballesteros Sud
+515,Córdoba,San Justo,Balnearia
+516,Córdoba,Marcos Juárez,Bañado de Soto
+517,Córdoba,Unión,Bell Ville
+518,Córdoba,Marcos Juárez,Bengolea
+519,Córdoba,Marcos Juárez,Benjamin Gould
+520,Córdoba,Marcos Juárez,Berrotaran
+521,Córdoba,Marcos Juárez,Bialet Masse
+522,Córdoba,Marcos Juárez,Bouwer
+523,Córdoba,San Justo,Brinkmann
+524,Córdoba,Marcos Juárez,Buchardo
+525,Córdoba,Marcos Juárez,Bulnes
+526,Córdoba,Marcos Juárez,Cabalango
+527,Córdoba,Calamuchita,Calamuchita
+528,Córdoba,Marcos Juárez,Calchin
+529,Córdoba,Marcos Juárez,Calchin Oeste
+530,Córdoba,Marcos Juárez,Calmayo
+531,Córdoba,Marcos Juárez,Camilo Aldao
+532,Córdoba,Sobremonte,Caminiaga
+533,Córdoba,Totoral,Cañada de Luque
+534,Córdoba,Marcos Juárez,Cañada de Machado
+535,Córdoba,Marcos Juárez,Cañada de Rio Pinto
+536,Córdoba,Marcos Juárez,Cañada del Sauce
+537,Córdoba,Unión,Canals
+538,Córdoba,Marcos Juárez,Candelaria Sud
+539,Córdoba,Marcos Juárez,Capilla de Remedios
+540,Córdoba,Marcos Juárez,Capilla de Siton
+541,Córdoba,Marcos Juárez,Capilla del Carmen
+542,Córdoba,Punilla,Capilla del Monte
+543,Córdoba,Capital,Capital
+544,Córdoba,Marcos Juárez,Capitan Gral B. O´Higgins
+545,Córdoba,Juárez Celman,Carnerillo
+546,Córdoba,Marcos Juárez,Carrilobo
+547,Córdoba,Marcos Juárez,Casa Grande
+548,Córdoba,Marcos Juárez,Cavanagh
+549,Córdoba,Marcos Juárez,Cerro Colorado
+550,Córdoba,Marcos Juárez,Chaján
+551,Córdoba,Marcos Juárez,Chalacea
+552,Córdoba,Marcos Juárez,Chañar Viejo
+553,Córdoba,Marcos Juárez,Chancaní
+554,Córdoba,Marcos Juárez,Charbonier
+555,Córdoba,Marcos Juárez,Charras
+556,Córdoba,Marcos Juárez,Chazón
+557,Córdoba,Marcos Juárez,Chilibroste
+558,Córdoba,Marcos Juárez,Chucul
+559,Córdoba,Marcos Juárez,Chuña
+560,Córdoba,Sobremonte,Chuña Huasi
+561,Córdoba,Marcos Juárez,Churqui Cañada
+562,Córdoba,Marcos Juárez,Cienaga Del Coro
+563,Córdoba,Marcos Juárez,Cintra
+564,Córdoba,Marcos Juárez,Col. Almada
+565,Córdoba,Marcos Juárez,Col. Anita
+566,Córdoba,Marcos Juárez,Col. Barge
+567,Córdoba,Marcos Juárez,Col. Bismark
+568,Córdoba,Marcos Juárez,Col. Bremen
+569,Córdoba,Marcos Juárez,Col. Caroya
+570,Córdoba,Marcos Juárez,Col. Italiana
+571,Córdoba,Marcos Juárez,Col. Iturraspe
+572,Córdoba,Marcos Juárez,Col. Las Cuatro Esquinas
+573,Córdoba,Marcos Juárez,Col. Las Pichanas
+574,Córdoba,Marcos Juárez,Col. Marina
+575,Córdoba,Marcos Juárez,Col. Prosperidad
+576,Córdoba,General San Martín,Col. San Bartolome
+577,Córdoba,General San Martín,Col. San Pedro
+578,Córdoba,Marcos Juárez,Col. Tirolesa
+579,Córdoba,Marcos Juárez,Col. Vicente Aguero
+580,Córdoba,Marcos Juárez,Col. Videla
+581,Córdoba,Marcos Juárez,Col. Vignaud
+582,Córdoba,Marcos Juárez,Col. Waltelina
+583,Córdoba,Marcos Juárez,Colazo
+584,Córdoba,Marcos Juárez,Comechingones
+585,Córdoba,Marcos Juárez,Conlara
+586,Córdoba,Ischilín,Copacabana
+587,Córdoba,Marcos Juárez,7
+588,Córdoba,Marcos Juárez,Coronel Baigorria
+589,Córdoba,Marcos Juárez,Coronel Moldes
+590,Córdoba,Marcos Juárez,Corral de Bustos
+591,Córdoba,Marcos Juárez,Corralito
+592,Córdoba,Punilla,Cosquín
+593,Córdoba,Marcos Juárez,Costa Sacate
+594,Córdoba,Marcos Juárez,Cruz Alta
+595,Córdoba,Marcos Juárez,Cruz de Caña
+596,Córdoba,Cruz del Eje,Cruz del Eje
+597,Córdoba,Marcos Juárez,Cuesta Blanca
+598,Córdoba,Marcos Juárez,Dean Funes
+599,Córdoba,General Roca,Del Campillo
+600,Córdoba,Santa María,Despeñaderos
+601,Córdoba,San Justo,Devoto
+602,Córdoba,Marcos Juárez,Diego de Rojas
+603,Córdoba,Marcos Juárez,Dique Chico
+604,Córdoba,Marcos Juárez,El Arañado
+605,Córdoba,Cruz del Eje,El Brete
+606,Córdoba,Marcos Juárez,El Chacho
+607,Córdoba,Marcos Juárez,El Crispín
+608,Córdoba,Marcos Juárez,El Fortín
+609,Córdoba,Marcos Juárez,El Manzano
+610,Córdoba,Marcos Juárez,El Rastreador
+611,Córdoba,Marcos Juárez,El Rodeo
+612,Córdoba,Marcos Juárez,El Tío
+613,Córdoba,Marcos Juárez,Elena
+614,Córdoba,Calamuchita,Embalse
+615,Córdoba,Marcos Juárez,Esquina
+616,Córdoba,Marcos Juárez,Estación Gral. Paz
+617,Córdoba,Juárez Celman,Estación Juárez Celman
+618,Córdoba,Marcos Juárez,Estancia de Guadalupe
+619,Córdoba,Marcos Juárez,Estancia Vieja
+620,Córdoba,General San Martín,Etruria
+621,Córdoba,Marcos Juárez,Eufrasio Loza
+622,Córdoba,Marcos Juárez,Falda del Carmen
+623,Córdoba,San Justo,Freyre
+624,Córdoba,Marcos Juárez,Gral. Baldissera
+625,Córdoba,Marcos Juárez,Gral. Cabrera
+626,Córdoba,Marcos Juárez,Gral. Deheza
+627,Córdoba,Marcos Juárez,Gral. Fotheringham
+628,Córdoba,Marcos Juárez,Gral. Levalle
+629,Córdoba,Marcos Juárez,Gral. Roca
+630,Córdoba,Marcos Juárez,Guanaco Muerto
+631,Córdoba,Minas,Guasapampa
+632,Córdoba,Marcos Juárez,Guatimozin
+633,Córdoba,Marcos Juárez,Gutenberg
+634,Córdoba,Tercero Arriba,Hernando
+635,Córdoba,Marcos Juárez,Huanchillas
+636,Córdoba,Marcos Juárez,Huerta Grande
+637,Córdoba,Marcos Juárez,Huinca Renanco
+638,Córdoba,Marcos Juárez,Idiazabal
+639,Córdoba,Marcos Juárez,Impira
+640,Córdoba,Marcos Juárez,Inriville
+641,Córdoba,Marcos Juárez,Isla Verde
+642,Córdoba,General Roca,Italó
+643,Córdoba,Tercero Arriba,James Craik
+644,Córdoba,Colón,Jesús María
+645,Córdoba,Marcos Juárez,Jovita
+646,Córdoba,Unión,Justiniano Posse
+647,Córdoba,Marcos Juárez,Km 658
+648,Córdoba,Marcos Juárez,L. V. Mansilla
+649,Córdoba,Marcos Juárez,La Batea
+650,Córdoba,Marcos Juárez,La Calera
+651,Córdoba,Juárez Celman,La Carlota
+652,Córdoba,Marcos Juárez,La Carolina
+653,Córdoba,Marcos Juárez,La Cautiva
+654,Córdoba,Marcos Juárez,La Cesira
+655,Córdoba,Calamuchita,La Cruz
+656,Córdoba,Marcos Juárez,La Cumbre
+657,Córdoba,Marcos Juárez,La Cumbrecita
+658,Córdoba,Punilla,La Falda
+659,Córdoba,Marcos Juárez,La Francia
+660,Córdoba,Marcos Juárez,La Granja
+661,Córdoba,Marcos Juárez,La Higuera
+662,Córdoba,Marcos Juárez,La Laguna
+663,Córdoba,Marcos Juárez,La Paisanita
+664,Córdoba,Marcos Juárez,La Palestina
+665,Córdoba,Marcos Juárez,12
+666,Córdoba,Marcos Juárez,La Paquita
+667,Córdoba,Marcos Juárez,La Para
+668,Córdoba,San Javier,La Paz
+669,Córdoba,Marcos Juárez,La Playa
+670,Córdoba,General San Martín,La Playosa
+671,Córdoba,Marcos Juárez,La Población
+672,Córdoba,Marcos Juárez,La Posta
+673,Córdoba,Río Primero,La Puerta
+674,Córdoba,Marcos Juárez,La Quinta
+675,Córdoba,Marcos Juárez,La Rancherita
+676,Córdoba,Río Seco,La Rinconada
+677,Córdoba,Marcos Juárez,La Serranita
+678,Córdoba,Marcos Juárez,La Tordilla
+679,Córdoba,Unión,Laborde
+680,Córdoba,Presidente Roque Sáenz Peña,Laboulaye
+681,Córdoba,Marcos Juárez,Laguna Larga
+682,Córdoba,Marcos Juárez,Las Acequias
+683,Córdoba,Marcos Juárez,Las Albahacas
+684,Córdoba,Tulumba,Las Arrias
+685,Córdoba,Marcos Juárez,Las Bajadas
+686,Córdoba,Marcos Juárez,Las Caleras
+687,Córdoba,Marcos Juárez,Las Calles
+688,Córdoba,Marcos Juárez,Las Cañadas
+689,Córdoba,Marcos Juárez,Las Gramillas
+690,Córdoba,Marcos Juárez,Las Higueras
+691,Córdoba,Marcos Juárez,Las Isletillas
+692,Córdoba,Marcos Juárez,Las Junturas
+693,Córdoba,Pocho,Las Palmas
+694,Córdoba,Totoral,Las Peñas
+695,Córdoba,Marcos Juárez,Las Peñas Sud
+696,Córdoba,Marcos Juárez,Las Perdices
+697,Córdoba,Cruz del Eje,Las Playas
+698,Córdoba,Marcos Juárez,Las Rabonas
+699,Córdoba,Marcos Juárez,Las Saladas
+700,Córdoba,San Alberto,Las Tapias
+701,Córdoba,Marcos Juárez,Las Varas
+702,Córdoba,Marcos Juárez,Las Varillas
+703,Córdoba,Marcos Juárez,Las Vertientes
+704,Córdoba,Marcos Juárez,Leguizamón
+705,Córdoba,Marcos Juárez,Leones
+706,Córdoba,Marcos Juárez,Los Cedros
+707,Córdoba,Marcos Juárez,Los Cerrillos
+708,Córdoba,Marcos Juárez,Los Chañaritos (C.E)
+709,Córdoba,Marcos Juárez,Los Chanaritos (R.S)
+710,Córdoba,Juárez Celman,Los Cisnes
+711,Córdoba,Marcos Juárez,Los Cocos
+712,Córdoba,Calamuchita,Los Cóndores
+713,Córdoba,San Javier,Los Hornillos
+714,Córdoba,Marcos Juárez,Los Hoyos
+715,Córdoba,Marcos Juárez,Los Mistoles
+716,Córdoba,Marcos Juárez,Los Molinos
+717,Córdoba,Marcos Juárez,Los Pozos
+718,Córdoba,Marcos Juárez,Los Reartes
+719,Córdoba,Marcos Juárez,Los Surgentes
+720,Córdoba,Marcos Juárez,Los Talares
+721,Córdoba,Marcos Juárez,Los Zorros
+722,Córdoba,Santa María,Lozada
+723,Córdoba,General San Martín,Luca
+724,Córdoba,Río Segundo,Luque
+725,Córdoba,San Javier,Luyaba
+726,Córdoba,Santa María,Malagueño
+727,Córdoba,Marcos Juárez,Malena
+728,Córdoba,Marcos Juárez,Malvinas Argentinas
+729,Córdoba,Marcos Juárez,Manfredi
+730,Córdoba,Marcos Juárez,Maquinista Gallini
+731,Córdoba,Marcos Juárez,Marcos Juárez
+732,Córdoba,Marcos Juárez,Marull
+733,Córdoba,Marcos Juárez,Matorrales
+734,Córdoba,General Roca,Mattaldi
+735,Córdoba,Marcos Juárez,Mayu Sumaj
+736,Córdoba,Marcos Juárez,Media Naranja
+737,Córdoba,Presidente Roque Sáenz Peña,Melo
+738,Córdoba,Marcos Juárez,Mendiolaza
+739,Córdoba,Marcos Juárez,Mi Granja
+740,Córdoba,San Alberto,Mina Clavero
+741,Córdoba,Marcos Juárez,Miramar
+742,Córdoba,Unión,Morrison
+743,Córdoba,San Justo,Morteros
+744,Córdoba,Marcos Juárez,Mte. Buey
+745,Córdoba,Marcos Juárez,Mte. Cristo
+746,Córdoba,Marcos Juárez,Mte. De Los Gauchos
+747,Córdoba,Marcos Juárez,Mte. Leña
+748,Córdoba,Marcos Juárez,Mte. Maíz
+749,Córdoba,Marcos Juárez,Mte. Ralo
+750,Córdoba,Marcos Juárez,Nicolás Bruzone
+751,Córdoba,Unión,Noetinger
+752,Córdoba,San Alberto,Nono
+753,Córdoba,Marcos Juárez,Nueva 7
+754,Córdoba,Río Primero,Obispo Trejo
+755,Córdoba,Marcos Juárez,Olaeta
+756,Córdoba,Tercero Arriba,Oliva
+757,Córdoba,General San Martín,Olivares San Nicolás
+758,Córdoba,Marcos Juárez,Onagolty
+759,Córdoba,Río Segundo,Oncativo
+760,Córdoba,Marcos Juárez,Ordoñez
+761,Córdoba,Marcos Juárez,Pacheco De Melo
+762,Córdoba,Marcos Juárez,Pampayasta N.
+763,Córdoba,Marcos Juárez,Pampayasta S.
+764,Córdoba,Marcos Juárez,Panaholma
+765,Córdoba,Marcos Juárez,Pascanas
+766,Córdoba,Marcos Juárez,Pasco
+767,Córdoba,Marcos Juárez,Paso del Durazno
+768,Córdoba,Cruz del Eje,Paso Viejo
+769,Córdoba,Río Segundo,Pilar
+770,Córdoba,Marcos Juárez,Pincén
+771,Córdoba,Marcos Juárez,Piquillín
+772,Córdoba,Marcos Juárez,Plaza de Mercedes
+773,Córdoba,Marcos Juárez,Plaza Luxardo
+774,Córdoba,Marcos Juárez,Porteña
+775,Córdoba,Marcos Juárez,Potrero de Garay
+776,Córdoba,Río Segundo,Pozo del Molle
+777,Córdoba,Marcos Juárez,Pozo Nuevo
+778,Córdoba,Marcos Juárez,Pueblo Italiano
+779,Córdoba,Marcos Juárez,Puesto de Castro
+780,Córdoba,Marcos Juárez,Punta del Agua
+781,Córdoba,Marcos Juárez,Quebracho Herrado
+782,Córdoba,Ischilín,Quilino
+783,Córdoba,Marcos Juárez,Rafael García
+784,Córdoba,Marcos Juárez,Ranqueles
+785,Córdoba,Río Seco,Rayo Cortado
+786,Córdoba,Marcos Juárez,Reducción
+787,Córdoba,Marcos Juárez,Rincón
+788,Córdoba,Río Segundo,Río Bamba
+789,Córdoba,Río Segundo,Río Ceballos
+790,Córdoba,Río Cuarto,Río Cuarto
+791,Córdoba,Río Segundo,Río de Los Sauces
+792,Córdoba,Río Primero,Río Primero
+793,Córdoba,Río Segundo,Río Segundo
+794,Córdoba,Tercero Arriba,Río Tercero
+795,Córdoba,Presidente Roque Sáenz Peña,Rosales
+796,Córdoba,Tulumba,Rosario del Saladillo
+797,Córdoba,Marcos Juárez,Sacanta
+798,Córdoba,Marcos Juárez,Sagrada Familia
+799,Córdoba,Marcos Juárez,Saira
+800,Córdoba,Marcos Juárez,Saladillo
+801,Córdoba,Marcos Juárez,Saldán
+802,Córdoba,Pocho,Salsacate
+803,Córdoba,Marcos Juárez,Salsipuedes
+804,Córdoba,Marcos Juárez,Sampacho
+805,Córdoba,Calamuchita,San Agustín
+806,Córdoba,General San Martín,San Antonio de Arredondo
+807,Córdoba,General San Martín,San Antonio de Litín
+808,Córdoba,General San Martín,San Basilio
+809,Córdoba,Minas,San Carlos Minas
+810,Córdoba,General San Martín,San Clemente
+811,Córdoba,General San Martín,San Esteban
+812,Córdoba,San Justo,San Francisco
+813,Córdoba,General San Martín,San Ignacio
+814,Córdoba,San Javier,San Javier
+815,Córdoba,General San Martín,San Jerónimo
+816,Córdoba,General San Martín,San Joaquín
+817,Córdoba,General San Martín,San José de La Dormida
+818,Córdoba,General San Martín,San José de Las Salinas
+819,Córdoba,General San Martín,San Lorenzo
+820,Córdoba,Cruz del Eje,San Marcos Sierras
+821,Córdoba,General San Martín,San Marcos Sud
+822,Córdoba,San Alberto,San Pedro
+823,Córdoba,General San Martín,San Pedro N.
+824,Córdoba,General San Martín,San Roque
+825,Córdoba,General San Martín,San Vicente
+826,Córdoba,Santa María,Santa Catalina
+827,Córdoba,Río Seco,Santa Elena
+828,Córdoba,Santa María,Santa Eufemia
+829,Córdoba,Santa María,Santa Maria
+830,Córdoba,Totoral,Sarmiento
+831,Córdoba,Marcos Juárez,Saturnino M.Laspiur
+832,Córdoba,Marcos Juárez,Sauce Arriba
+833,Córdoba,Marcos Juárez,Sebastián Elcano
+834,Córdoba,Marcos Juárez,Seeber
+835,Córdoba,Marcos Juárez,Segunda Usina
+836,Córdoba,Presidente Roque Sáenz Peña,Serrano
+837,Córdoba,Cruz del Eje,Serrezuela
+838,Córdoba,Marcos Juárez,Sgo. Temple
+839,Córdoba,Marcos Juárez,Silvio Pellico
+840,Córdoba,Marcos Juárez,Simbolar
+841,Córdoba,Marcos Juárez,Sinsacate
+842,Córdoba,Calamuchita,Sta. Rosa de Calamuchita
+843,Córdoba,Río Primero,Sta. Rosa de Río Primero
+844,Córdoba,Marcos Juárez,Suco
+845,Córdoba,Pocho,Tala Cañada
+846,Córdoba,Marcos Juárez,Tala Huasi
+847,Córdoba,Minas,Talaini
+848,Córdoba,Marcos Juárez,Tancacha
+849,Córdoba,Punilla,Tanti
+850,Córdoba,Marcos Juárez,Ticino
+851,Córdoba,Marcos Juárez,Tinoco
+852,Córdoba,General San Martín,Tío Pujio
+853,Córdoba,Marcos Juárez,Toledo
+854,Córdoba,Marcos Juárez,Toro Pujio
+855,Córdoba,Marcos Juárez,Tosno
+856,Córdoba,Marcos Juárez,Tosquita
+857,Córdoba,Marcos Juárez,Tránsito
+858,Córdoba,Marcos Juárez,Tuclame
+859,Córdoba,Marcos Juárez,Tutti
+860,Córdoba,Juárez Celman,Ucacha
+861,Córdoba,Marcos Juárez,Unquillo
+862,Córdoba,Marcos Juárez,Valle de Anisacate
+863,Córdoba,Punilla,Valle Hermoso
+864,Córdoba,Marcos Juárez,Vélez Sarfield
+865,Córdoba,Marcos Juárez,Viamonte
+866,Córdoba,Marcos Juárez,Vicuña Mackenna
+867,Córdoba,Marcos Juárez,Villa Allende
+868,Córdoba,Marcos Juárez,Villa Amancay
+869,Córdoba,Marcos Juárez,Villa Ascasubi
+870,Córdoba,Marcos Juárez,Villa Candelaria N.
+871,Córdoba,Punilla,Villa Carlos Paz
+872,Córdoba,Marcos Juárez,Villa Cerro Azul
+873,Córdoba,Marcos Juárez,Villa Ciudad de América
+874,Córdoba,Marcos Juárez,Villa Ciudad Pque Los Reartes
+875,Córdoba,Marcos Juárez,Villa Concepción del Tío
+876,Córdoba,Marcos Juárez,Villa Cura Brochero
+877,Córdoba,Marcos Juárez,Villa de Las Rosas
+878,Córdoba,Marcos Juárez,Villa de María
+879,Córdoba,Pocho,Villa de Pocho
+880,Córdoba,Cruz del Eje,Villa de Soto
+881,Córdoba,Calamuchita,Villa del Dique
+882,Córdoba,Marcos Juárez,Villa del Prado
+883,Córdoba,Río Segundo,Villa del Rosario
+884,Córdoba,Totoral,Villa del Totoral
+885,Córdoba,San Alberto,Villa Dolores
+886,Córdoba,Marcos Juárez,Villa El Chancay
+887,Córdoba,Marcos Juárez,Villa Elisa
+888,Córdoba,Marcos Juárez,Villa Flor Serrana
+889,Córdoba,Marcos Juárez,Villa Fontana
+890,Córdoba,Punilla,Villa Giardino
+891,Córdoba,Marcos Juárez,Villa Gral. Belgrano
+892,Córdoba,Marcos Juárez,Villa Gutierrez
+893,Córdoba,General Roca,Villa Huidobro
+894,Córdoba,Marcos Juárez,Villa La Bolsa
+895,Córdoba,Marcos Juárez,Villa Los Aromos
+896,Córdoba,Marcos Juárez,Villa Los Patos
+897,Córdoba,General San Martín,Villa María
+898,Córdoba,General San Martín,Villa Nueva
+899,Córdoba,Santa María,Villa Pque. Santa Ana
+900,Córdoba,Marcos Juárez,Villa Pque. Siquiman
+901,Córdoba,Marcos Juárez,Villa Quillinzo
+902,Córdoba,Marcos Juárez,Villa Rossi
+903,Córdoba,Calamuchita,Villa Rumipal
+904,Córdoba,General San Martín,Villa San Esteban
+905,Córdoba,General San Martín,Villa San Isidro
+906,Córdoba,Marcos Juárez,Villa 21
+907,Córdoba,Marcos Juárez,Villa Sarmiento (G.R)
+908,Córdoba,Marcos Juárez,Villa Sarmiento (S.A)
+909,Córdoba,Tulumba,Villa Tulumba
+910,Córdoba,General Roca,Villa Valeria
+911,Córdoba,Marcos Juárez,Villa Yacanto
+912,Córdoba,Marcos Juárez,Washington
+913,Córdoba,Marcos Juárez,Wenceslao Escalante
+914,Córdoba,Marcos Juárez,Ycho Cruz Sierras
+915,Corrientes,General Alvear,Alvear
+916,Corrientes,Bella Vista,Bella Vista
+917,Corrientes,Berón de Astrada,Berón de Astrada
+918,Corrientes,sin definir,Bonpland
+919,Corrientes,sin definir,Caá Cati
+920,Corrientes,Capital,Capital
+921,Corrientes,sin definir,Chavarría
+922,Corrientes,sin definir,Col. C. Pellegrini
+923,Corrientes,sin definir,Col. Libertad
+924,Corrientes,sin definir,Col. Liebig
+925,Corrientes,sin definir,Col. Sta Rosa
+926,Corrientes,Concepción,Concepción
+927,Corrientes,sin definir,Cruz de Los Milagros
+928,Corrientes,sin definir,Curuzú-Cuatiá
+929,Corrientes,Empedrado,Empedrado
+930,Corrientes,Esquina,Esquina
+931,Corrientes,sin definir,Estación Torrent
+932,Corrientes,sin definir,Felipe Yofré
+933,Corrientes,sin definir,Garruchos
+934,Corrientes,sin definir,Gdor. Agrónomo
+935,Corrientes,sin definir,Gdor. Martínez
+936,Corrientes,Goya,Goya
+937,Corrientes,sin definir,Guaviravi
+938,Corrientes,sin definir,Herlitzka
+939,Corrientes,sin definir,Ita-Ibate
+940,Corrientes,Itatí,Itatí
+941,Corrientes,Ituzaingó,Ituzaingó
+942,Corrientes,sin definir,José Rafael Gómez
+943,Corrientes,sin definir,Juan Pujol
+944,Corrientes,sin definir,La Cruz
+945,Corrientes,Lavalle,Lavalle
+946,Corrientes,sin definir,Lomas de Vallejos
+947,Corrientes,sin definir,Loreto
+948,Corrientes,sin definir,Mariano I. Loza
+949,Corrientes,Mburucuyá,Mburucuyá
+950,Corrientes,Mercedes,Mercedes
+951,Corrientes,sin definir,Mocoretá
+952,Corrientes,sin definir,Mte. Caseros
+953,Corrientes,sin definir,Nueve de Julio
+954,Corrientes,sin definir,Palmar Grande
+955,Corrientes,sin definir,Parada Pucheta
+956,Corrientes,sin definir,Paso de La Patria
+957,Corrientes,Paso de los Libres,Paso de Los Libres
+958,Corrientes,sin definir,Pedro R. Fernandez
+959,Corrientes,sin definir,Perugorría
+960,Corrientes,sin definir,Pueblo Libertador
+961,Corrientes,sin definir,Ramada Paso
+962,Corrientes,sin definir,Riachuelo
+963,Corrientes,Saladas,Saladas
+964,Corrientes,San Martín,San Antonio
+965,Corrientes,San Martín,San Carlos
+966,Corrientes,San Cosme,San Cosme
+967,Corrientes,San Martín,San Lorenzo
+968,Corrientes,sin definir,20 del Palmar
+969,Corrientes,San Miguel,San Miguel
+970,Corrientes,San Roque,San Roque
+971,Corrientes,sin definir,Santa Ana
+972,Corrientes,sin definir,Santa Lucía
+973,Corrientes,Santo Tomé,Santo Tomé
+974,Corrientes,Sauce,Sauce
+975,Corrientes,sin definir,Tabay
+976,Corrientes,sin definir,Tapebicuá
+977,Corrientes,sin definir,Tatacua
+978,Corrientes,sin definir,Virasoro
+979,Corrientes,sin definir,Yapeyú
+980,Corrientes,sin definir,Yataití Calle
+981,Entre Ríos,San Salvador,Alarcón
+982,Entre Ríos,San Salvador,Alcaraz
+983,Entre Ríos,San Salvador,Alcaraz N.
+984,Entre Ríos,San Salvador,Alcaraz S.
+985,Entre Ríos,San Salvador,Aldea Asunción
+986,Entre Ríos,San Salvador,Aldea Brasilera
+987,Entre Ríos,San Salvador,Aldea Elgenfeld
+988,Entre Ríos,San Salvador,Aldea Grapschental
+989,Entre Ríos,San Salvador,Aldea Ma. Luisa
+990,Entre Ríos,San Salvador,Aldea Protestante
+991,Entre Ríos,San Salvador,Aldea Salto
+992,Entre Ríos,San Salvador,Aldea San Antonio (G)
+993,Entre Ríos,San Salvador,Aldea San Antonio (P)
+994,Entre Ríos,San Salvador,Aldea 19
+995,Entre Ríos,San Salvador,Aldea San Miguel
+996,Entre Ríos,San Salvador,Aldea San Rafael
+997,Entre Ríos,San Salvador,Aldea Spatzenkutter
+998,Entre Ríos,San Salvador,Aldea Sta. María
+999,Entre Ríos,San Salvador,Aldea Sta. Rosa
+1000,Entre Ríos,San Salvador,Aldea Valle María
+1001,Entre Ríos,San Salvador,Altamirano Sur
+1002,Entre Ríos,San Salvador,Antelo
+1003,Entre Ríos,San Salvador,Antonio Tomás
+1004,Entre Ríos,San Salvador,Aranguren
+1005,Entre Ríos,San Salvador,Arroyo Barú
+1006,Entre Ríos,San Salvador,Arroyo Burgos
+1007,Entre Ríos,San Salvador,Arroyo Clé
+1008,Entre Ríos,San Salvador,Arroyo Corralito
+1009,Entre Ríos,San Salvador,Arroyo del Medio
+1010,Entre Ríos,San Salvador,Arroyo Maturrango
+1011,Entre Ríos,San Salvador,Arroyo Palo Seco
+1012,Entre Ríos,San Salvador,Banderas
+1013,Entre Ríos,San Salvador,Basavilbaso
+1014,Entre Ríos,San Salvador,Betbeder
+1015,Entre Ríos,San Salvador,Bovril
+1016,Entre Ríos,San Salvador,Caseros
+1017,Entre Ríos,San Salvador,Ceibas
+1018,Entre Ríos,San Salvador,Cerrito
+1019,Entre Ríos,San Salvador,Chajarí
+1020,Entre Ríos,San Salvador,Chilcas
+1021,Entre Ríos,San Salvador,Clodomiro Ledesma
+1022,Entre Ríos,San Salvador,Col. Alemana
+1023,Entre Ríos,San Salvador,Col. Avellaneda
+1024,Entre Ríos,San Salvador,Col. Avigdor
+1025,Entre Ríos,San Salvador,Col. Ayuí
+1026,Entre Ríos,San Salvador,Col. Baylina
+1027,Entre Ríos,San Salvador,Col. Carrasco
+1028,Entre Ríos,San Salvador,Col. Celina
+1029,Entre Ríos,San Salvador,Col. Cerrito
+1030,Entre Ríos,San Salvador,Col. Crespo
+1031,Entre Ríos,San Salvador,Col. Elia
+1032,Entre Ríos,San Salvador,Col. Ensayo
+1033,Entre Ríos,San Salvador,Col. Gral. Roca
+1034,Entre Ríos,San Salvador,Col. La Argentina
+1035,Entre Ríos,San Salvador,Col. Merou
+1036,Entre Ríos,San Salvador,Col. Oficial Nª3
+1037,Entre Ríos,San Salvador,Col. Oficial Nº13
+1038,Entre Ríos,San Salvador,Col. Oficial Nº14
+1039,Entre Ríos,San Salvador,Col. Oficial Nº5
+1040,Entre Ríos,San Salvador,Col. Reffino
+1041,Entre Ríos,San Salvador,Col. Tunas
+1042,Entre Ríos,San Salvador,Col. Viraró
+1043,Entre Ríos,Colón,Colón
+1044,Entre Ríos,Uruguay,Concepción del Uruguay
+1045,Entre Ríos,Concordia,Concordia
+1046,Entre Ríos,San Salvador,Conscripto Bernardi
+1047,Entre Ríos,San Salvador,Costa Grande
+1048,Entre Ríos,San Salvador,Costa San Antonio
+1049,Entre Ríos,Uruguay,Costa Uruguay N.
+1050,Entre Ríos,Uruguay,Costa Uruguay S.
+1051,Entre Ríos,San Salvador,Crespo
+1052,Entre Ríos,San Salvador,Crucecitas 3ª
+1053,Entre Ríos,San Salvador,Crucecitas 7ª
+1054,Entre Ríos,San Salvador,Crucecitas 8ª
+1055,Entre Ríos,San Salvador,Cuchilla Redonda
+1056,Entre Ríos,San Salvador,Curtiembre
+1057,Entre Ríos,Diamante,Diamante
+1058,Entre Ríos,San Salvador,Distrito 6º
+1059,Entre Ríos,San Salvador,Distrito Chañar
+1060,Entre Ríos,San Salvador,Distrito Chiqueros
+1061,Entre Ríos,San Salvador,Distrito Cuarto
+1062,Entre Ríos,San Salvador,Distrito Diego López
+1063,Entre Ríos,San Salvador,Distrito Pajonal
+1064,Entre Ríos,San Salvador,Distrito Sauce
+1065,Entre Ríos,Tala,Distrito Tala
+1066,Entre Ríos,San Salvador,Distrito Talitas
+1067,Entre Ríos,San Salvador,Don Cristóbal 1ª Sección
+1068,Entre Ríos,San Salvador,Don Cristóbal 2ª Sección
+1069,Entre Ríos,San Salvador,Durazno
+1070,Entre Ríos,San Salvador,El Cimarrón
+1071,Entre Ríos,San Salvador,El Gramillal
+1072,Entre Ríos,San Salvador,El Palenque
+1073,Entre Ríos,San Salvador,El Pingo
+1074,Entre Ríos,San Salvador,El Quebracho
+1075,Entre Ríos,San Salvador,El Redomón
+1076,Entre Ríos,San Salvador,El Solar
+1077,Entre Ríos,San Salvador,Enrique Carbo
+1078,Entre Ríos,San Salvador,9
+1079,Entre Ríos,San Salvador,Espinillo N.
+1080,Entre Ríos,San Salvador,Estación Campos
+1081,Entre Ríos,San Salvador,Estación Escriña
+1082,Entre Ríos,San Salvador,Estación Lazo
+1083,Entre Ríos,San Salvador,Estación Raíces
+1084,Entre Ríos,San Salvador,Estación Yerúa
+1085,Entre Ríos,San Salvador,Estancia Grande
+1086,Entre Ríos,San Salvador,Estancia Líbaros
+1087,Entre Ríos,San Salvador,Estancia Racedo
+1088,Entre Ríos,San Salvador,Estancia Solá
+1089,Entre Ríos,San Salvador,Estancia Yuquerí
+1090,Entre Ríos,San Salvador,Estaquitas
+1091,Entre Ríos,San Salvador,Faustino M. Parera
+1092,Entre Ríos,San Salvador,Febre
+1093,Entre Ríos,Federación,Federación
+1094,Entre Ríos,Federal,Federal
+1095,Entre Ríos,San Salvador,Gdor. Echagüe
+1096,Entre Ríos,San Salvador,Gdor. Mansilla
+1097,Entre Ríos,San Salvador,Gilbert
+1098,Entre Ríos,San Salvador,González Calderón
+1099,Entre Ríos,San Salvador,Gral. Almada
+1100,Entre Ríos,San Salvador,Gral. Alvear
+1101,Entre Ríos,San Salvador,Gral. Campos
+1102,Entre Ríos,San Salvador,Gral. Galarza
+1103,Entre Ríos,San Salvador,Gral. Ramírez
+1104,Entre Ríos,Gualeguay,Gualeguay
+1105,Entre Ríos,Gualeguaychú,Gualeguaychú
+1106,Entre Ríos,Gualeguay,Gualeguaycito
+1107,Entre Ríos,San Salvador,Guardamonte
+1108,Entre Ríos,San Salvador,Hambis
+1109,Entre Ríos,San Salvador,Hasenkamp
+1110,Entre Ríos,San Salvador,Hernandarias
+1111,Entre Ríos,San Salvador,Hernández
+1112,Entre Ríos,San Salvador,Herrera
+1113,Entre Ríos,San Salvador,Hinojal
+1114,Entre Ríos,San Salvador,Hocker
+1115,Entre Ríos,San Salvador,Ing. Sajaroff
+1116,Entre Ríos,San Salvador,Irazusta
+1117,Entre Ríos,San Salvador,Isletas
+1118,Entre Ríos,San Salvador,J.J De Urquiza
+1119,Entre Ríos,San Salvador,Jubileo
+1120,Entre Ríos,San Salvador,La Clarita
+1121,Entre Ríos,San Salvador,La Criolla
+1122,Entre Ríos,San Salvador,La Esmeralda
+1123,Entre Ríos,San Salvador,La Florida
+1124,Entre Ríos,San Salvador,La Fraternidad
+1125,Entre Ríos,San Salvador,La Hierra
+1126,Entre Ríos,San Salvador,La Ollita
+1127,Entre Ríos,La Paz,La Paz
+1128,Entre Ríos,San Salvador,La Picada
+1129,Entre Ríos,San Salvador,La Providencia
+1130,Entre Ríos,San Salvador,La Verbena
+1131,Entre Ríos,San Salvador,Laguna Benítez
+1132,Entre Ríos,San Salvador,Larroque
+1133,Entre Ríos,San Salvador,Las Cuevas
+1134,Entre Ríos,San Salvador,Las Garzas
+1135,Entre Ríos,San Salvador,Las Guachas
+1136,Entre Ríos,San Salvador,Las Mercedes
+1137,Entre Ríos,San Salvador,Las Moscas
+1138,Entre Ríos,San Salvador,Las Mulitas
+1139,Entre Ríos,San Salvador,Las Toscas
+1140,Entre Ríos,San Salvador,Laurencena
+1141,Entre Ríos,San Salvador,Libertador San Martín
+1142,Entre Ríos,San Salvador,Loma Limpia
+1143,Entre Ríos,San Salvador,Los Ceibos
+1144,Entre Ríos,San Salvador,Los Charruas
+1145,Entre Ríos,San Salvador,Los Conquistadores
+1146,Entre Ríos,San Salvador,Lucas González
+1147,Entre Ríos,San Salvador,Lucas N.
+1148,Entre Ríos,San Salvador,Lucas S. 1ª
+1149,Entre Ríos,San Salvador,Lucas S. 2ª
+1150,Entre Ríos,San Salvador,Maciá
+1151,Entre Ríos,San Salvador,María Grande
+1152,Entre Ríos,San Salvador,María Grande 2ª
+1153,Entre Ríos,San Salvador,Médanos
+1154,Entre Ríos,San Salvador,Mojones N.
+1155,Entre Ríos,San Salvador,Mojones S.
+1156,Entre Ríos,San Salvador,Molino Doll
+1157,Entre Ríos,San Salvador,Monte Redondo
+1158,Entre Ríos,San Salvador,Montoya
+1159,Entre Ríos,San Salvador,Mulas Grandes
+1160,Entre Ríos,San Salvador,Ñancay
+1161,Entre Ríos,Nogoyá,Nogoyá
+1162,Entre Ríos,San Salvador,Nueva Escocia
+1163,Entre Ríos,San Salvador,Nueva Vizcaya
+1164,Entre Ríos,San Salvador,Ombú
+1165,Entre Ríos,San Salvador,Oro Verde
+1166,Entre Ríos,Paraná,Paraná
+1167,Entre Ríos,San Salvador,Pasaje Guayaquil
+1168,Entre Ríos,San Salvador,Pasaje Las Tunas
+1169,Entre Ríos,San Salvador,Paso de La Arena
+1170,Entre Ríos,San Salvador,Paso de La Laguna
+1171,Entre Ríos,San Salvador,Paso de Las Piedras
+1172,Entre Ríos,San Salvador,Paso Duarte
+1173,Entre Ríos,San Salvador,Pastor Britos
+1174,Entre Ríos,San Salvador,Pedernal
+1175,Entre Ríos,San Salvador,Perdices
+1176,Entre Ríos,San Salvador,Picada Berón
+1177,Entre Ríos,San Salvador,Piedras Blancas
+1178,Entre Ríos,San Salvador,Primer Distrito Cuchilla
+1179,Entre Ríos,San Salvador,Primero de Mayo
+1180,Entre Ríos,San Salvador,Pronunciamiento
+1181,Entre Ríos,San Salvador,Pto. Algarrobo
+1182,Entre Ríos,San Salvador,Pto. Ibicuy
+1183,Entre Ríos,San Salvador,Pueblo Brugo
+1184,Entre Ríos,San Salvador,Pueblo Cazes
+1185,Entre Ríos,San Salvador,Pueblo Gral. Belgrano
+1186,Entre Ríos,San Salvador,Pueblo Liebig
+1187,Entre Ríos,San Salvador,Puerto Yeruá
+1188,Entre Ríos,San Salvador,Punta del Monte
+1189,Entre Ríos,San Salvador,Quebracho
+1190,Entre Ríos,San Salvador,Quinto Distrito
+1191,Entre Ríos,San Salvador,Raices Oeste
+1192,Entre Ríos,Nogoyá,Rincón de Nogoyá
+1193,Entre Ríos,San Salvador,Rincón del Cinto
+1194,Entre Ríos,San Salvador,Rincón del Doll
+1195,Entre Ríos,San Salvador,Rincón del Gato
+1196,Entre Ríos,San Salvador,Rocamora
+1197,Entre Ríos,Tala,Rosario del Tala
+1198,Entre Ríos,San Salvador,San Benito
+1199,Entre Ríos,San Salvador,San Cipriano
+1200,Entre Ríos,San Salvador,San Ernesto
+1201,Entre Ríos,San Salvador,San Gustavo
+1202,Entre Ríos,San Salvador,San Jaime
+1203,Entre Ríos,San Salvador,San José
+1204,Entre Ríos,Feliciano,San José de Feliciano
+1205,Entre Ríos,San Salvador,San Justo
+1206,Entre Ríos,San Salvador,San Marcial
+1207,Entre Ríos,San Salvador,San Pedro
+1208,Entre Ríos,San Salvador,San Ramírez
+1209,Entre Ríos,San Salvador,San Ramón
+1210,Entre Ríos,San Salvador,San Roque
+1211,Entre Ríos,San Salvador,San Salvador
+1212,Entre Ríos,San Salvador,San Víctor
+1213,Entre Ríos,San Salvador,Santa Ana
+1214,Entre Ríos,San Salvador,Santa Anita
+1215,Entre Ríos,San Salvador,Santa Elena
+1216,Entre Ríos,San Salvador,Santa Lucía
+1217,Entre Ríos,San Salvador,Santa Luisa
+1218,Entre Ríos,San Salvador,Sauce de Luna
+1219,Entre Ríos,San Salvador,Sauce Montrull
+1220,Entre Ríos,San Salvador,Sauce Pinto
+1221,Entre Ríos,San Salvador,Sauce Sur
+1222,Entre Ríos,San Salvador,Seguí
+1223,Entre Ríos,San Salvador,Sir Leonard
+1224,Entre Ríos,San Salvador,Sosa
+1225,Entre Ríos,San Salvador,Tabossi
+1226,Entre Ríos,San Salvador,Tezanos Pinto
+1227,Entre Ríos,San Salvador,Ubajay
+1228,Entre Ríos,San Salvador,Urdinarrain
+1229,Entre Ríos,San Salvador,Veinte de Septiembre
+1230,Entre Ríos,San Salvador,Viale
+1231,Entre Ríos,Victoria,Victoria
+1232,Entre Ríos,Villaguay,Villa Clara
+1233,Entre Ríos,Villaguay,Villa del Rosario
+1234,Entre Ríos,Villaguay,Villa Domínguez
+1235,Entre Ríos,Villaguay,Villa Elisa
+1236,Entre Ríos,Villaguay,Villa Fontana
+1237,Entre Ríos,Villaguay,Villa Gdor. Etchevehere
+1238,Entre Ríos,Villaguay,Villa Mantero
+1239,Entre Ríos,Villaguay,Villa Paranacito
+1240,Entre Ríos,Villaguay,Villa Urquiza
+1241,Entre Ríos,Villaguay,Villaguay
+1242,Entre Ríos,San Salvador,Walter Moss
+1243,Entre Ríos,San Salvador,Yacaré
+1244,Entre Ríos,San Salvador,Yeso Oeste
+1245,Formosa,sin definir,Buena Vista
+1246,Formosa,sin definir,Clorinda
+1247,Formosa,sin definir,Col. Pastoril
+1248,Formosa,sin definir,Cte. Fontana
+1249,Formosa,sin definir,El Colorado
+1250,Formosa,sin definir,El Espinillo
+1251,Formosa,sin definir,Estanislao Del Campo
+1252,Formosa,sin definir,10
+1253,Formosa,sin definir,Fortín Lugones
+1254,Formosa,sin definir,Gral. Lucio V. Mansilla
+1255,Formosa,sin definir,Gral. Manuel Belgrano
+1256,Formosa,sin definir,Gral. Mosconi
+1257,Formosa,sin definir,Gran Guardia
+1258,Formosa,sin definir,Herradura
+1259,Formosa,sin definir,Ibarreta
+1260,Formosa,sin definir,Ing. Juárez
+1261,Formosa,sin definir,Laguna Blanca
+1262,Formosa,sin definir,Laguna Naick Neck
+1263,Formosa,sin definir,Laguna Yema
+1264,Formosa,sin definir,Las Lomitas
+1265,Formosa,sin definir,Los Chiriguanos
+1266,Formosa,sin definir,Mayor V. Villafañe
+1267,Formosa,sin definir,Misión San Fco.
+1268,Formosa,sin definir,Palo Santo
+1269,Formosa,Pirané,Pirané
+1270,Formosa,sin definir,Pozo del Maza
+1271,Formosa,sin definir,Riacho He-He
+1272,Formosa,sin definir,San Hilario
+1273,Formosa,sin definir,San Martín II
+1274,Formosa,sin definir,Siete Palmas
+1275,Formosa,sin definir,Subteniente Perín
+1276,Formosa,sin definir,Tres Lagunas
+1277,Formosa,sin definir,Villa Dos Trece
+1278,Formosa,sin definir,Villa Escolar
+1279,Formosa,sin definir,Villa Gral. Güemes
+1280,Jujuy,Palpalá,Abdon Castro Tolay
+1281,Jujuy,Palpalá,Abra Pampa
+1282,Jujuy,Palpalá,Abralaite
+1283,Jujuy,Palpalá,Aguas Calientes
+1284,Jujuy,Palpalá,Arrayanal
+1285,Jujuy,Palpalá,Barrios
+1286,Jujuy,Palpalá,Caimancito
+1287,Jujuy,Palpalá,Calilegua
+1288,Jujuy,Palpalá,Cangrejillos
+1289,Jujuy,Palpalá,Caspala
+1290,Jujuy,Palpalá,Catuá
+1291,Jujuy,Palpalá,Cieneguillas
+1292,Jujuy,Palpalá,Coranzulli
+1293,Jujuy,Palpalá,Cusi-Cusi
+1294,Jujuy,Palpalá,El Aguilar
+1295,Jujuy,El Carmen,El Carmen
+1296,Jujuy,Palpalá,El Cóndor
+1297,Jujuy,Palpalá,El Fuerte
+1298,Jujuy,Palpalá,El Piquete
+1299,Jujuy,Palpalá,El Talar
+1300,Jujuy,Palpalá,Fraile Pintado
+1301,Jujuy,Palpalá,Hipólito Yrigoyen
+1302,Jujuy,Palpalá,Huacalera
+1303,Jujuy,Humahuaca,Humahuaca
+1304,Jujuy,Palpalá,La Esperanza
+1305,Jujuy,Palpalá,La Mendieta
+1306,Jujuy,Palpalá,La Quiaca
+1307,Jujuy,Ledesma,Ledesma
+1308,Jujuy,San Pedro,Libertador Gral. San Martin
+1309,Jujuy,Palpalá,Maimara
+1310,Jujuy,Palpalá,Mina Pirquitas
+1311,Jujuy,Palpalá,Monterrico
+1312,Jujuy,Palpalá,Palma Sola
+1313,Jujuy,Palpalá,Palpalá
+1314,Jujuy,Palpalá,Pampa Blanca
+1315,Jujuy,Palpalá,Pampichuela
+1316,Jujuy,Palpalá,Perico
+1317,Jujuy,Palpalá,Puesto del Marqués
+1318,Jujuy,Palpalá,Puesto Viejo
+1319,Jujuy,Palpalá,Pumahuasi
+1320,Jujuy,Palpalá,Purmamarca
+1321,Jujuy,Palpalá,Rinconada
+1322,Jujuy,Palpalá,Rodeitos
+1323,Jujuy,Palpalá,Rosario de Río Grande
+1324,Jujuy,San Antonio,San Antonio
+1325,Jujuy,San Pedro,San Francisco
+1326,Jujuy,San Pedro,San Pedro
+1327,Jujuy,San Pedro,San Rafael
+1328,Jujuy,San Pedro,San Salvador
+1329,Jujuy,Santa Bárbara,Santa Ana
+1330,Jujuy,Santa Catalina,Santa Catalina
+1331,Jujuy,Santa Bárbara,Santa Clara
+1332,Jujuy,Palpalá,Susques
+1333,Jujuy,Tilcara,Tilcara
+1334,Jujuy,Palpalá,Tres Cruces
+1335,Jujuy,Tumbaya,Tumbaya
+1336,Jujuy,Valle Grande,Valle Grande
+1337,Jujuy,Palpalá,Vinalito
+1338,Jujuy,Palpalá,Volcán
+1339,Jujuy,Palpalá,Yala
+1340,Jujuy,Yaví,Yaví
+1341,Jujuy,Palpalá,Yuto
+1342,La Pampa,Chapaleufú,Abramo
+1343,La Pampa,Chapaleufú,Adolfo Van Praet
+1344,La Pampa,Chapaleufú,Agustoni
+1345,La Pampa,Chapaleufú,Algarrobo del Aguila
+1346,La Pampa,Chapaleufú,Alpachiri
+1347,La Pampa,Chapaleufú,Alta Italia
+1348,La Pampa,Chapaleufú,Anguil
+1349,La Pampa,Chapaleufú,Arata
+1350,La Pampa,Chapaleufú,Ataliva Roca
+1351,La Pampa,Chapaleufú,Bernardo Larroude
+1352,La Pampa,Chapaleufú,Bernasconi
+1353,La Pampa,Chapaleufú,Caleufú
+1354,La Pampa,Chapaleufú,Carro Quemado
+1355,La Pampa,Catriló,Catriló
+1356,La Pampa,Chapaleufú,Ceballos
+1357,La Pampa,Chapaleufú,Chacharramendi
+1358,La Pampa,Chapaleufú,Col. Barón
+1359,La Pampa,Chapaleufú,Col. Santa María
+1360,La Pampa,Conhelo,Conhelo
+1361,La Pampa,Chapaleufú,Coronel Hilario Lagos
+1362,La Pampa,Chapaleufú,Cuchillo-Có
+1363,La Pampa,Chapaleufú,Doblas
+1364,La Pampa,Chapaleufú,Dorila
+1365,La Pampa,Chapaleufú,Eduardo Castex
+1366,La Pampa,Chapaleufú,Embajador Martini
+1367,La Pampa,Chapaleufú,Falucho
+1368,La Pampa,Chapaleufú,Gral. Acha
+1369,La Pampa,Chapaleufú,Gral. Manuel Campos
+1370,La Pampa,Chapaleufú,Gral. Pico
+1371,La Pampa,Guatraché,Guatraché
+1372,La Pampa,Chapaleufú,Ing. Luiggi
+1373,La Pampa,Chapaleufú,Intendente Alvear
+1374,La Pampa,Chapaleufú,Jacinto Arauz
+1375,La Pampa,Chapaleufú,La Adela
+1376,La Pampa,Chapaleufú,La Humada
+1377,La Pampa,Chapaleufú,La Maruja
+1378,La Pampa,Chapaleufú,12
+1379,La Pampa,Chapaleufú,La Reforma
+1380,La Pampa,Chapaleufú,Limay Mahuida
+1381,La Pampa,Chapaleufú,Lonquimay
+1382,La Pampa,Chapaleufú,Loventuel
+1383,La Pampa,Chapaleufú,Luan Toro
+1384,La Pampa,Chapaleufú,Macachín
+1385,La Pampa,Chapaleufú,Maisonnave
+1386,La Pampa,Chapaleufú,Mauricio Mayer
+1387,La Pampa,Chapaleufú,Metileo
+1388,La Pampa,Chapaleufú,Miguel Cané
+1389,La Pampa,Chapaleufú,Miguel Riglos
+1390,La Pampa,Chapaleufú,Monte Nievas
+1391,La Pampa,Chapaleufú,Parera
+1392,La Pampa,Chapaleufú,Perú
+1393,La Pampa,Chapaleufú,Pichi-Huinca
+1394,La Pampa,Chapaleufú,Puelches
+1395,La Pampa,Puelén,Puelén
+1396,La Pampa,Chapaleufú,Quehue
+1397,La Pampa,Quemú Quemú,Quemú Quemú
+1398,La Pampa,Chapaleufú,Quetrequén
+1399,La Pampa,Rancul,Rancul
+1400,La Pampa,Realicó,Realicó
+1401,La Pampa,Chapaleufú,Relmo
+1402,La Pampa,Chapaleufú,Rolón
+1403,La Pampa,Chapaleufú,Rucanelo
+1404,La Pampa,Chapaleufú,Sarah
+1405,La Pampa,Chapaleufú,Speluzzi
+1406,La Pampa,Chapaleufú,Sta. Isabel
+1407,La Pampa,Chapaleufú,Sta. Rosa
+1408,La Pampa,Chapaleufú,Sta. Teresa
+1409,La Pampa,Chapaleufú,Telén
+1410,La Pampa,Toay,Toay
+1411,La Pampa,Chapaleufú,Tomas M. de Anchorena
+1412,La Pampa,Trenel,Trenel
+1413,La Pampa,Chapaleufú,Unanue
+1414,La Pampa,Chapaleufú,Uriburu
+1415,La Pampa,Chapaleufú,Veinticinco de Mayo
+1416,La Pampa,Chapaleufú,Vertiz
+1417,La Pampa,Chapaleufú,Victorica
+1418,La Pampa,Chapaleufú,Villa Mirasol
+1419,La Pampa,Chapaleufú,Winifreda
+1420,La Rioja,Arauco,Arauco
+1421,La Rioja,Capital,Capital
+1422,La Rioja,Castro Barros,Castro Barros
+1423,La Rioja,Arauco,Chamical
+1424,La Rioja,Chilecito,Chilecito
+1425,La Rioja,Arauco,Coronel F. Varela
+1426,La Rioja,Famatina,Famatina
+1427,La Rioja,Arauco,Gral. A.V.Peñaloza
+1428,La Rioja,Arauco,Gral. Belgrano
+1429,La Rioja,Arauco,Gral. J.F. Quiroga
+1430,La Rioja,Arauco,Gral. Lamadrid
+1431,La Rioja,Arauco,Gral. Ocampo
+1432,La Rioja,San Blas de Los Sauces,Gral. San Martín
+1433,La Rioja,Independencia,Independencia
+1434,La Rioja,Rosario Vera Peñaloza,Rosario Penaloza
+1435,La Rioja,San Blas de Los Sauces,San Blas de Los Sauces
+1436,La Rioja,Sanagasta,Sanagasta
+1437,La Rioja,Arauco,Vinchina
+1438,Mendoza,Santa Rosa,Capital
+1439,Mendoza,Santa Rosa,Chacras de Coria
+1440,Mendoza,Santa Rosa,Dorrego
+1441,Mendoza,Santa Rosa,Gllen
+1442,Mendoza,Godoy Cruz,Godoy Cruz
+1443,Mendoza,Santa Rosa,Gral. Alvear
+1444,Mendoza,Guaymallén,Guaymallén
+1445,Mendoza,Junín,Junín
+1446,Mendoza,La Paz,La Paz
+1447,Mendoza,Las Heras,Las Heras
+1448,Mendoza,Lavalle,Lavalle
+1449,Mendoza,Luján de Cuyo,Luján
+1450,Mendoza,Luján de Cuyo,Luján De Cuyo
+1451,Mendoza,Maipú,Maipú
+1452,Mendoza,Malargüe,Malargüe
+1453,Mendoza,Rivadavia,Rivadavia
+1454,Mendoza,San Carlos,San Carlos
+1455,Mendoza,San Martín,San Martín
+1456,Mendoza,San Rafael,San Rafael
+1457,Mendoza,Santa Rosa,Sta. Rosa
+1458,Mendoza,Tunuyán,Tunuyán
+1459,Mendoza,Tupungato,Tupungato
+1460,Mendoza,Santa Rosa,Villa Nueva
+1461,Misiones,General Manuel Belgrano,Alba Posse
+1462,Misiones,General Manuel Belgrano,Almafuerte
+1463,Misiones,Apóstoles,Apóstoles
+1464,Misiones,General Manuel Belgrano,Aristóbulo Del Valle
+1465,Misiones,General Manuel Belgrano,Arroyo Del Medio
+1466,Misiones,General Manuel Belgrano,Azara
+1467,Misiones,General Manuel Belgrano,Bdo. De Irigoyen
+1468,Misiones,General Manuel Belgrano,Bonpland
+1469,Misiones,General Manuel Belgrano,Caá Yari
+1470,Misiones,General Manuel Belgrano,Campo Grande
+1471,Misiones,General Manuel Belgrano,Campo Ramón
+1472,Misiones,General Manuel Belgrano,Campo Viera
+1473,Misiones,Candelaria,Candelaria
+1474,Misiones,General Manuel Belgrano,Capioví
+1475,Misiones,General Manuel Belgrano,Caraguatay
+1476,Misiones,General Manuel Belgrano,Cdte. Guacurarí
+1477,Misiones,General Manuel Belgrano,Cerro Azul
+1478,Misiones,General Manuel Belgrano,Cerro Corá
+1479,Misiones,General Manuel Belgrano,Col. Alberdi
+1480,Misiones,General Manuel Belgrano,Col. Aurora
+1481,Misiones,General Manuel Belgrano,Col. Delicia
+1482,Misiones,General Manuel Belgrano,Col. Polana
+1483,Misiones,General Manuel Belgrano,Col. Victoria
+1484,Misiones,General Manuel Belgrano,Col. Wanda
+1485,Misiones,Concepción,Concepción De La Sierra
+1486,Misiones,General Manuel Belgrano,Corpus
+1487,Misiones,General Manuel Belgrano,Dos Arroyos
+1488,Misiones,General Manuel Belgrano,Dos de Mayo
+1489,Misiones,General Manuel Belgrano,El Alcázar
+1490,Misiones,El Dorado,El Dorado
+1491,Misiones,General Manuel Belgrano,El Soberbio
+1492,Misiones,General Manuel Belgrano,Esperanza
+1493,Misiones,General Manuel Belgrano,F. Ameghino
+1494,Misiones,General Manuel Belgrano,Fachinal
+1495,Misiones,General Manuel Belgrano,Garuhapé
+1496,Misiones,General Manuel Belgrano,Garupá
+1497,Misiones,General Manuel Belgrano,Gdor. López
+1498,Misiones,General Manuel Belgrano,Gdor. Roca
+1499,Misiones,General Manuel Belgrano,Gral. Alvear
+1500,Misiones,General Manuel Belgrano,Gral. Urquiza
+1501,Misiones,Guaraní,Guaraní
+1502,Misiones,General Manuel Belgrano,H. Yrigoyen
+1503,Misiones,Iguazú,Iguazú
+1504,Misiones,General Manuel Belgrano,Itacaruaré
+1505,Misiones,General Manuel Belgrano,Jardín América
+1506,Misiones,Leandro N. Alem,Leandro N. Alem
+1507,Misiones,Libertador General San Martín,Libertad
+1508,Misiones,General Manuel Belgrano,Loreto
+1509,Misiones,General Manuel Belgrano,Los Helechos
+1510,Misiones,General Manuel Belgrano,Mártires
+1511,Misiones,General Manuel Belgrano,15
+1512,Misiones,General Manuel Belgrano,Mojón Grande
+1513,Misiones,Montecarlo,Montecarlo
+1514,Misiones,General Manuel Belgrano,Nueve de Julio
+1515,Misiones,Oberá,Oberá
+1516,Misiones,General Manuel Belgrano,Olegario V. Andrade
+1517,Misiones,General Manuel Belgrano,Panambí
+1518,Misiones,Posadas,Posadas
+1519,Misiones,General Manuel Belgrano,Profundidad
+1520,Misiones,Iguazú,Pto. Iguazú
+1521,Misiones,General Manuel Belgrano,Pto. Leoni
+1522,Misiones,General Manuel Belgrano,Pto. Piray
+1523,Misiones,General Manuel Belgrano,Pto. Rico
+1524,Misiones,General Manuel Belgrano,Ruiz de Montoya
+1525,Misiones,San Pedro,San Antonio
+1526,Misiones,San Ignacio,San Ignacio
+1527,Misiones,San Javier,San Javier
+1528,Misiones,San Pedro,San José
+1529,Misiones,Libertador General San Martín,San Martín
+1530,Misiones,San Pedro,San Pedro
+1531,Misiones,San Pedro,San Vicente
+1532,Misiones,General Manuel Belgrano,Santiago De Liniers
+1533,Misiones,General Manuel Belgrano,Santo Pipo
+1534,Misiones,General Manuel Belgrano,Sta. Ana
+1535,Misiones,General Manuel Belgrano,Sta. María
+1536,Misiones,General Manuel Belgrano,Tres Capones
+1537,Misiones,General Manuel Belgrano,Veinticinco de Mayo
+1538,Misiones,General Manuel Belgrano,Wanda
+1539,Neuquén,Aluminé,Aguada San Roque
+1540,Neuquén,Aluminé,Aluminé
+1541,Neuquén,Aluminé,Andacollo
+1542,Neuquén,Añelo,Añelo
+1543,Neuquén,Aluminé,Bajada del Agrio
+1544,Neuquén,Aluminé,Barrancas
+1545,Neuquén,Aluminé,Buta Ranquil
+1546,Neuquén,Aluminé,Capital
+1547,Neuquén,Aluminé,Caviahué
+1548,Neuquén,Aluminé,Centenario
+1549,Neuquén,Aluminé,Chorriaca
+1550,Neuquén,Chos Malal,Chos Malal
+1551,Neuquén,Aluminé,Cipolletti
+1552,Neuquén,Aluminé,Covunco Abajo
+1553,Neuquén,Aluminé,Coyuco Cochico
+1554,Neuquén,Aluminé,Cutral Có
+1555,Neuquén,Aluminé,El Cholar
+1556,Neuquén,Aluminé,El Huecú
+1557,Neuquén,Aluminé,El Sauce
+1558,Neuquén,Aluminé,Guañacos
+1559,Neuquén,Aluminé,Huinganco
+1560,Neuquén,Aluminé,Las Coloradas
+1561,Neuquén,Aluminé,Las Lajas
+1562,Neuquén,Aluminé,Las Ovejas
+1563,Neuquén,Loncopué,Loncopué
+1564,Neuquén,Aluminé,Los Catutos
+1565,Neuquén,Aluminé,Los Chihuidos
+1566,Neuquén,Aluminé,Los Miches
+1567,Neuquén,Aluminé,Manzano Amargo
+1568,Neuquén,Aluminé,16
+1569,Neuquén,Aluminé,Octavio Pico
+1570,Neuquén,Aluminé,Paso Aguerre
+1571,Neuquén,Picún Leufú,Picún Leufú
+1572,Neuquén,Aluminé,Piedra del Aguila
+1573,Neuquén,Aluminé,Pilo Lil
+1574,Neuquén,Aluminé,Plaza Huincul
+1575,Neuquén,Aluminé,Plottier
+1576,Neuquén,Aluminé,Quili Malal
+1577,Neuquén,Aluminé,Ramón Castro
+1578,Neuquén,Aluminé,Rincón de Los Sauces
+1579,Neuquén,Aluminé,San Martín de Los Andes
+1580,Neuquén,Aluminé,San Patricio del Chañar
+1581,Neuquén,Aluminé,Santo Tomás
+1582,Neuquén,Aluminé,Sauzal Bonito
+1583,Neuquén,Aluminé,Senillosa
+1584,Neuquén,Aluminé,Taquimilán
+1585,Neuquén,Aluminé,Tricao Malal
+1586,Neuquén,Aluminé,Varvarco
+1587,Neuquén,Aluminé,Villa Curí Leuvu
+1588,Neuquén,Aluminé,Villa del Nahueve
+1589,Neuquén,Aluminé,Villa del Puente Picún Leuvú
+1590,Neuquén,Aluminé,Villa El Chocón
+1591,Neuquén,Aluminé,Villa La Angostura
+1592,Neuquén,Aluminé,Villa Pehuenia
+1593,Neuquén,Aluminé,Villa Traful
+1594,Neuquén,Aluminé,Vista Alegre
+1595,Neuquén,Zapala,Zapala
+1596,Río Negro,Conesa,Aguada Cecilio
+1597,Río Negro,Conesa,Aguada de Guerra
+1598,Río Negro,Conesa,Allén
+1599,Río Negro,Conesa,Arroyo de La Ventana
+1600,Río Negro,Conesa,Arroyo Los Berros
+1601,Río Negro,Bariloche,Bariloche
+1602,Río Negro,Conesa,Calte. Cordero
+1603,Río Negro,Conesa,Campo Grande
+1604,Río Negro,Conesa,Catriel
+1605,Río Negro,Conesa,Cerro Policía
+1606,Río Negro,Conesa,Cervantes
+1607,Río Negro,Conesa,Chelforo
+1608,Río Negro,Conesa,Chimpay
+1609,Río Negro,Conesa,Chinchinales
+1610,Río Negro,Conesa,Chipauquil
+1611,Río Negro,Conesa,Choele Choel
+1612,Río Negro,Conesa,Cinco Saltos
+1613,Río Negro,Conesa,Cipolletti
+1614,Río Negro,Conesa,Clemente Onelli
+1615,Río Negro,Conesa,Colán Conhue
+1616,Río Negro,Conesa,Comallo
+1617,Río Negro,Conesa,Comicó
+1618,Río Negro,Conesa,Cona Niyeu
+1619,Río Negro,Conesa,Coronel Belisle
+1620,Río Negro,Conesa,Cubanea
+1621,Río Negro,Conesa,Darwin
+1622,Río Negro,Conesa,Dina Huapi
+1623,Río Negro,Conesa,El Bolsón
+1624,Río Negro,Conesa,El Caín
+1625,Río Negro,Conesa,El Manso
+1626,Río Negro,Conesa,Gral. Conesa
+1627,Río Negro,Conesa,Gral. Enrique Godoy
+1628,Río Negro,Conesa,Gral. Fernandez Oro
+1629,Río Negro,Conesa,Gral. Roca
+1630,Río Negro,Conesa,Guardia Mitre
+1631,Río Negro,Conesa,Ing. Huergo
+1632,Río Negro,Conesa,Ing. Jacobacci
+1633,Río Negro,Conesa,Laguna Blanca
+1634,Río Negro,Conesa,Lamarque
+1635,Río Negro,Conesa,Las Grutas
+1636,Río Negro,Conesa,Los Menucos
+1637,Río Negro,Conesa,Luis Beltrán
+1638,Río Negro,Conesa,Mainqué
+1639,Río Negro,Conesa,Mamuel Choique
+1640,Río Negro,Conesa,Maquinchao
+1641,Río Negro,Conesa,Mencué
+1642,Río Negro,Conesa,Mtro. Ramos Mexia
+1643,Río Negro,Conesa,Nahuel Niyeu
+1644,Río Negro,Conesa,Naupa Huen
+1645,Río Negro,Conesa,Ñorquinco
+1646,Río Negro,Conesa,Ojos de Agua
+1647,Río Negro,Conesa,Paso de Agua
+1648,Río Negro,Conesa,Paso Flores
+1649,Río Negro,Conesa,Peñas Blancas
+1650,Río Negro,Pichi Mahuida,Pichi Mahuida
+1651,Río Negro,Pilcaniyeu,Pilcaniyeu
+1652,Río Negro,Conesa,Pomona
+1653,Río Negro,Conesa,Prahuaniyeu
+1654,Río Negro,Conesa,Rincón Treneta
+1655,Río Negro,Conesa,Río Chico
+1656,Río Negro,Conesa,Río Colorado
+1657,Río Negro,General Roca,Roca
+1658,Río Negro,Conesa,San Antonio Oeste
+1659,Río Negro,Conesa,San Javier
+1660,Río Negro,Conesa,Sierra Colorada
+1661,Río Negro,Conesa,Sierra Grande
+1662,Río Negro,Conesa,Sierra Pailemán
+1663,Río Negro,Valcheta,Valcheta
+1664,Río Negro,Conesa,Valle Azul
+1665,Río Negro,Conesa,Viedma
+1666,Río Negro,Conesa,Villa Llanquín
+1667,Río Negro,Conesa,Villa Mascardi
+1668,Río Negro,Conesa,Villa Regina
+1669,Río Negro,Conesa,Yaminué
+1670,Salta,General José de San Martín,A. Saravia
+1671,Salta,General José de San Martín,Aguaray
+1672,Salta,General José de San Martín,Angastaco
+1673,Salta,General José de San Martín,Animaná
+1674,Salta,Cachi,Cachi
+1675,Salta,Cafayate,Cafayate
+1676,Salta,General José de San Martín,Campo Quijano
+1677,Salta,Campo santo,Campo Santo
+1678,Salta,Capital,Capital
+1679,Salta,Cerrillos,Cerrillos
+1680,Salta,Chicoana,Chicoana
+1681,Salta,General José de San Martín,Col. Sta. Rosa
+1682,Salta,General José de San Martín,Coronel Moldes
+1683,Salta,General José de San Martín,El Bordo
+1684,Salta,General José de San Martín,El Carril
+1685,Salta,General José de San Martín,El Galpón
+1686,Salta,General José de San Martín,El Jardín
+1687,Salta,General José de San Martín,El Potrero
+1688,Salta,General José de San Martín,El Quebrachal
+1689,Salta,General José de San Martín,El Tala
+1690,Salta,General José de San Martín,Embarcación
+1691,Salta,General José de San Martín,Gral. Ballivian
+1692,Salta,General José de San Martín,Gral. Güemes
+1693,Salta,General José de San Martín,Gral. Mosconi
+1694,Salta,General José de San Martín,Gral. Pizarro
+1695,Salta,Guachipas,Guachipas
+1696,Salta,General José de San Martín,Hipólito Yrigoyen
+1697,Salta,General José de San Martín,Iruyá
+1698,Salta,General José de San Martín,Isla De Cañas
+1699,Salta,General José de San Martín,J. V. Gonzalez
+1700,Salta,La Caldera,La Caldera
+1701,Salta,La Candelaria,La Candelaria
+1702,Salta,General José de San Martín,La Merced
+1703,Salta,La Poma,La Poma
+1704,Salta,La Viña,La Viña
+1705,Salta,General José de San Martín,Las Lajitas
+1706,Salta,General José de San Martín,Los Toldos
+1707,Salta,Metán,Metán
+1708,Salta,Molinos,Molinos
+1709,Salta,General José de San Martín,Nazareno
+1710,Salta,Orán,Orán
+1711,Salta,General José de San Martín,Payogasta
+1712,Salta,General José de San Martín,Pichanal
+1713,Salta,General José de San Martín,Prof. S. Mazza
+1714,Salta,General José de San Martín,Río Piedras
+1715,Salta,Rivadavia,Rivadavia Banda Norte
+1716,Salta,Rivadavia,Rivadavia Banda Sur
+1717,Salta,Rosario de la Frontera,Rosario de La Frontera
+1718,Salta,Rosario de Lerma,Rosario de Lerma
+1719,Salta,General José de San Martín,Saclantás
+1720,Salta,General José de San Martín,18
+1721,Salta,General José de San Martín,San Antonio
+1722,Salta,San Carlos,San Carlos
+1723,Salta,Metán,San José De Metán
+1724,Salta,General José de San Martín,San Ramón
+1725,Salta,Anta,Santa Victoria E.
+1726,Salta,Anta,Santa Victoria O.
+1727,Salta,General José de San Martín,Tartagal
+1728,Salta,General José de San Martín,Tolar Grande
+1729,Salta,General José de San Martín,Urundel
+1730,Salta,General José de San Martín,Vaqueros
+1731,Salta,General José de San Martín,Villa San Lorenzo
+1732,San Juan,Albardón,Albardón
+1733,San Juan,Angaco,Angaco
+1734,San Juan,Calingasta,Calingasta
+1735,San Juan,Capital,Capital
+1736,San Juan,Caucete,Caucete
+1737,San Juan,Chimbas,Chimbas
+1738,San Juan,Iglesia,Iglesia
+1739,San Juan,Jáchal,Jachal
+1740,San Juan,Jáchal,Nueve de Julio
+1741,San Juan,Pocito,Pocito
+1742,San Juan,Rawson,Rawson
+1743,San Juan,Rivadavia,Rivadavia
+1744,San Juan,Jáchal,19
+1745,San Juan,San Martín,San Martín
+1746,San Juan,Santa Lucía,Santa Lucía
+1747,San Juan,Sarmiento,Sarmiento
+1748,San Juan,Ullum,Ullum
+1749,San Juan,Valle Fértil,Valle Fértil
+1750,San Juan,Jáchal,Veinticinco de Mayo
+1751,San Juan,Zonda,Zonda
+1752,San Luis,Ayacucho,Alto Pelado
+1753,San Luis,Ayacucho,Alto Pencoso
+1754,San Luis,Ayacucho,Anchorena
+1755,San Luis,Ayacucho,Arizona
+1756,San Luis,Ayacucho,Bagual
+1757,San Luis,Ayacucho,Balde
+1758,San Luis,Ayacucho,Batavia
+1759,San Luis,Ayacucho,Beazley
+1760,San Luis,Ayacucho,Buena Esperanza
+1761,San Luis,Ayacucho,Candelaria
+1762,San Luis,Capital,Capital
+1763,San Luis,Ayacucho,Carolina
+1764,San Luis,Ayacucho,Carpintería
+1765,San Luis,Ayacucho,Concarán
+1766,San Luis,Ayacucho,Cortaderas
+1767,San Luis,Ayacucho,El Morro
+1768,San Luis,Ayacucho,El Trapiche
+1769,San Luis,Ayacucho,El Volcán
+1770,San Luis,Ayacucho,Fortín El Patria
+1771,San Luis,Ayacucho,Fortuna
+1772,San Luis,Ayacucho,Fraga
+1773,San Luis,Ayacucho,Juan Jorba
+1774,San Luis,Ayacucho,Juan Llerena
+1775,San Luis,Ayacucho,Juana Koslay
+1776,San Luis,Ayacucho,Justo Daract
+1777,San Luis,Ayacucho,La Calera
+1778,San Luis,Ayacucho,La Florida
+1779,San Luis,Ayacucho,La Punilla
+1780,San Luis,Ayacucho,La Toma
+1781,San Luis,Ayacucho,Lafinur
+1782,San Luis,Ayacucho,Las Aguadas
+1783,San Luis,Ayacucho,Las Chacras
+1784,San Luis,Ayacucho,Las Lagunas
+1785,San Luis,Ayacucho,Las Vertientes
+1786,San Luis,Ayacucho,Lavaisse
+1787,San Luis,Ayacucho,Leandro N. Alem
+1788,San Luis,Ayacucho,Los Molles
+1789,San Luis,Ayacucho,Luján
+1790,San Luis,Ayacucho,Mercedes
+1791,San Luis,Ayacucho,Merlo
+1792,San Luis,Ayacucho,Naschel
+1793,San Luis,Ayacucho,Navia
+1794,San Luis,Ayacucho,Nogolí
+1795,San Luis,Ayacucho,Nueva Galia
+1796,San Luis,Ayacucho,Papagayos
+1797,San Luis,Ayacucho,Paso Grande
+1798,San Luis,Ayacucho,Potrero de Los Funes
+1799,San Luis,Ayacucho,Quines
+1800,San Luis,Ayacucho,Renca
+1801,San Luis,Ayacucho,Saladillo
+1802,San Luis,Libertador General San Martín,San Francisco
+1803,San Luis,Libertador General San Martín,San Gerónimo
+1804,San Luis,Libertador General San Martín,San Martín
+1805,San Luis,Libertador General San Martín,San Pablo
+1806,San Luis,Ayacucho,Santa Rosa de Conlara
+1807,San Luis,Ayacucho,Talita
+1808,San Luis,Ayacucho,Tilisarao
+1809,San Luis,Ayacucho,Unión
+1810,San Luis,Ayacucho,Villa de La Quebrada
+1811,San Luis,Ayacucho,Villa de Praga
+1812,San Luis,Ayacucho,Villa del Carmen
+1813,San Luis,Ayacucho,Villa Gral. Roca
+1814,San Luis,Ayacucho,Villa Larca
+1815,San Luis,Ayacucho,Villa Mercedes
+1816,San Luis,Ayacucho,Zanjitas
+1817,Santa Cruz,No encontrado,Calafate
+1818,Santa Cruz,No encontrado,Caleta Olivia
+1819,Santa Cruz,No encontrado,Cañadón Seco
+1820,Santa Cruz,No encontrado,Comandante Piedrabuena
+1821,Santa Cruz,No encontrado,El Calafate
+1822,Santa Cruz,No encontrado,El Chaltén
+1823,Santa Cruz,No encontrado,Gdor. Gregores
+1824,Santa Cruz,No encontrado,Hipólito Yrigoyen
+1825,Santa Cruz,No encontrado,Jaramillo
+1826,Santa Cruz,No encontrado,Koluel Kaike
+1827,Santa Cruz,No encontrado,Las Heras
+1828,Santa Cruz,No encontrado,Los Antiguos
+1829,Santa Cruz,No encontrado,Perito Moreno
+1830,Santa Cruz,No encontrado,Pico Truncado
+1831,Santa Cruz,No encontrado,Pto. Deseado
+1832,Santa Cruz,No encontrado,Pto. San Julián
+1833,Santa Cruz,No encontrado,Pto. 21
+1834,Santa Cruz,No encontrado,Río Cuarto
+1835,Santa Cruz,No encontrado,Río Gallegos
+1836,Santa Cruz,No encontrado,Río Turbio
+1837,Santa Cruz,No encontrado,Tres Lagos
+1838,Santa Cruz,No encontrado,Veintiocho De Noviembre
+1839,Santa Fe,Castellanos,Aarón Castellanos
+1840,Santa Fe,Villa Constitución,Acebal
+1841,Santa Fe,Villa Constitución,Aguará Grande
+1842,Santa Fe,Villa Constitución,Albarellos
+1843,Santa Fe,Villa Constitución,Alcorta
+1844,Santa Fe,Villa Constitución,Aldao
+1845,Santa Fe,Villa Constitución,Alejandra
+1846,Santa Fe,Villa Constitución,Álvarez
+1847,Santa Fe,Villa Constitución,Ambrosetti
+1848,Santa Fe,Villa Constitución,Amenábar
+1849,Santa Fe,Villa Constitución,Angélica
+1850,Santa Fe,Villa Constitución,Angeloni
+1851,Santa Fe,Villa Constitución,Arequito
+1852,Santa Fe,Villa Constitución,Arminda
+1853,Santa Fe,Villa Constitución,Armstrong
+1854,Santa Fe,Villa Constitución,Arocena
+1855,Santa Fe,Villa Constitución,Arroyo Aguiar
+1856,Santa Fe,Villa Constitución,Arroyo Ceibal
+1857,Santa Fe,Villa Constitución,Arroyo Leyes
+1858,Santa Fe,Villa Constitución,Arroyo Seco
+1859,Santa Fe,Villa Constitución,Arrufó
+1860,Santa Fe,Villa Constitución,Arteaga
+1861,Santa Fe,Villa Constitución,Ataliva
+1862,Santa Fe,Villa Constitución,Aurelia
+1863,Santa Fe,Villa Constitución,Avellaneda
+1864,Santa Fe,Villa Constitución,Barrancas
+1865,Santa Fe,Villa Constitución,Bauer Y Sigel
+1866,Santa Fe,Villa Constitución,Bella Italia
+1867,Santa Fe,Villa Constitución,Berabevú
+1868,Santa Fe,Villa Constitución,Berna
+1869,Santa Fe,Villa Constitución,Bernardo de Irigoyen
+1870,Santa Fe,Villa Constitución,Bigand
+1871,Santa Fe,Villa Constitución,Bombal
+1872,Santa Fe,Villa Constitución,Bouquet
+1873,Santa Fe,Villa Constitución,Bustinza
+1874,Santa Fe,Villa Constitución,Cabal
+1875,Santa Fe,Villa Constitución,Cacique Ariacaiquin
+1876,Santa Fe,Villa Constitución,Cafferata
+1877,Santa Fe,Villa Constitución,Calchaquí
+1878,Santa Fe,Villa Constitución,Campo Andino
+1879,Santa Fe,Villa Constitución,Campo Piaggio
+1880,Santa Fe,Villa Constitución,Cañada de Gómez
+1881,Santa Fe,Villa Constitución,Cañada del Ucle
+1882,Santa Fe,Villa Constitución,Cañada Rica
+1883,Santa Fe,Villa Constitución,Cañada Rosquín
+1884,Santa Fe,Villa Constitución,Candioti
+1885,Santa Fe,Capital,Capital
+1886,Santa Fe,Villa Constitución,Capitán Bermúdez
+1887,Santa Fe,Villa Constitución,Capivara
+1888,Santa Fe,Villa Constitución,Carcarañá
+1889,Santa Fe,Villa Constitución,Carlos Pellegrini
+1890,Santa Fe,Villa Constitución,Carmen
+1891,Santa Fe,Villa Constitución,Carmen Del Sauce
+1892,Santa Fe,Villa Constitución,Carreras
+1893,Santa Fe,Villa Constitución,Carrizales
+1894,Santa Fe,Villa Constitución,Casalegno
+1895,Santa Fe,Villa Constitución,Casas
+1896,Santa Fe,Villa Constitución,Casilda
+1897,Santa Fe,Villa Constitución,Castelar
+1898,Santa Fe,Castellanos,Castellanos
+1899,Santa Fe,Villa Constitución,Cayastá
+1900,Santa Fe,Villa Constitución,Cayastacito
+1901,Santa Fe,Villa Constitución,Centeno
+1902,Santa Fe,Villa Constitución,Cepeda
+1903,Santa Fe,Villa Constitución,Ceres
+1904,Santa Fe,Villa Constitución,Chabás
+1905,Santa Fe,Villa Constitución,Chañar Ladeado
+1906,Santa Fe,Villa Constitución,Chapuy
+1907,Santa Fe,Villa Constitución,Chovet
+1908,Santa Fe,Villa Constitución,Christophersen
+1909,Santa Fe,Villa Constitución,Classon
+1910,Santa Fe,Villa Constitución,Cnel. Arnold
+1911,Santa Fe,Villa Constitución,Cnel. Bogado
+1912,Santa Fe,Villa Constitución,Cnel. Dominguez
+1913,Santa Fe,Villa Constitución,Cnel. Fraga
+1914,Santa Fe,Villa Constitución,Col. Aldao
+1915,Santa Fe,Villa Constitución,Col. Ana
+1916,Santa Fe,Belgrano,Col. Belgrano
+1917,Santa Fe,Villa Constitución,Col. Bicha
+1918,Santa Fe,Villa Constitución,Col. Bigand
+1919,Santa Fe,Villa Constitución,Col. Bossi
+1920,Santa Fe,Villa Constitución,Col. Cavour
+1921,Santa Fe,Villa Constitución,Col. Cello
+1922,Santa Fe,Villa Constitución,Col. Dolores
+1923,Santa Fe,Villa Constitución,Col. Dos Rosas
+1924,Santa Fe,Villa Constitución,Col. Durán
+1925,Santa Fe,Villa Constitución,Col. Iturraspe
+1926,Santa Fe,Villa Constitución,Col. Margarita
+1927,Santa Fe,Villa Constitución,Col. Mascias
+1928,Santa Fe,Villa Constitución,Col. Raquel
+1929,Santa Fe,Villa Constitución,Col. Rosa
+1930,Santa Fe,San Lorenzo,Col. San José
+1931,Santa Fe,Villa Constitución,Constanza
+1932,Santa Fe,Villa Constitución,Coronda
+1933,Santa Fe,Villa Constitución,Correa
+1934,Santa Fe,Villa Constitución,Crispi
+1935,Santa Fe,Villa Constitución,Cululú
+1936,Santa Fe,Villa Constitución,Curupayti
+1937,Santa Fe,Villa Constitución,Desvio Arijón
+1938,Santa Fe,Villa Constitución,Diaz
+1939,Santa Fe,Villa Constitución,Diego de Alvear
+1940,Santa Fe,Villa Constitución,Egusquiza
+1941,Santa Fe,Villa Constitución,El Arazá
+1942,Santa Fe,Villa Constitución,El Rabón
+1943,Santa Fe,Villa Constitución,El Sombrerito
+1944,Santa Fe,Villa Constitución,El Trébol
+1945,Santa Fe,Villa Constitución,Elisa
+1946,Santa Fe,Villa Constitución,Elortondo
+1947,Santa Fe,Villa Constitución,Emilia
+1948,Santa Fe,San Lorenzo,Empalme San Carlos
+1949,Santa Fe,Villa Constitución,Empalme Villa Constitucion
+1950,Santa Fe,Villa Constitución,Esmeralda
+1951,Santa Fe,Villa Constitución,Esperanza
+1952,Santa Fe,Villa Constitución,Estación Alvear
+1953,Santa Fe,Villa Constitución,Estacion Clucellas
+1954,Santa Fe,Villa Constitución,Esteban Rams
+1955,Santa Fe,Villa Constitución,Esther
+1956,Santa Fe,Villa Constitución,Esustolia
+1957,Santa Fe,Villa Constitución,Eusebia
+1958,Santa Fe,Villa Constitución,Felicia
+1959,Santa Fe,Villa Constitución,Fidela
+1960,Santa Fe,Villa Constitución,Fighiera
+1961,Santa Fe,Villa Constitución,Firmat
+1962,Santa Fe,Villa Constitución,Florencia
+1963,Santa Fe,Villa Constitución,Fortín Olmos
+1964,Santa Fe,Villa Constitución,Franck
+1965,Santa Fe,Villa Constitución,Fray Luis Beltrán
+1966,Santa Fe,Villa Constitución,Frontera
+1967,Santa Fe,Villa Constitución,Fuentes
+1968,Santa Fe,Villa Constitución,Funes
+1969,Santa Fe,Villa Constitución,Gaboto
+1970,Santa Fe,Villa Constitución,Galisteo
+1971,Santa Fe,Villa Constitución,Gálvez
+1972,Santa Fe,Villa Constitución,Garabalto
+1973,Santa Fe,Villa Constitución,Garibaldi
+1974,Santa Fe,Villa Constitución,Gato Colorado
+1975,Santa Fe,Villa Constitución,Gdor. Crespo
+1976,Santa Fe,Villa Constitución,Gessler
+1977,Santa Fe,Villa Constitución,Godoy
+1978,Santa Fe,Villa Constitución,Golondrina
+1979,Santa Fe,Villa Constitución,Gral. Gelly
+1980,Santa Fe,Villa Constitución,Gral. Lagos
+1981,Santa Fe,Villa Constitución,Granadero Baigorria
+1982,Santa Fe,Villa Constitución,Gregoria Perez De Denis
+1983,Santa Fe,Villa Constitución,Grutly
+1984,Santa Fe,Villa Constitución,Guadalupe N.
+1985,Santa Fe,Villa Constitución,Gödeken
+1986,Santa Fe,Villa Constitución,Helvecia
+1987,Santa Fe,Villa Constitución,Hersilia
+1988,Santa Fe,Villa Constitución,Hipatía
+1989,Santa Fe,Villa Constitución,Huanqueros
+1990,Santa Fe,Villa Constitución,Hugentobler
+1991,Santa Fe,Villa Constitución,Hughes
+1992,Santa Fe,Villa Constitución,Humberto 1º
+1993,Santa Fe,Villa Constitución,Humboldt
+1994,Santa Fe,Villa Constitución,Ibarlucea
+1995,Santa Fe,Villa Constitución,Ing. Chanourdie
+1996,Santa Fe,Villa Constitución,Intiyaco
+1997,Santa Fe,Villa Constitución,Ituzaingó
+1998,Santa Fe,Villa Constitución,Jacinto L. Aráuz
+1999,Santa Fe,Villa Constitución,Josefina
+2000,Santa Fe,Villa Constitución,Juan B. Molina
+2001,Santa Fe,Garay,Juan de Garay
+2002,Santa Fe,Villa Constitución,Juncal
+2003,Santa Fe,Villa Constitución,La Brava
+2004,Santa Fe,Villa Constitución,La Cabral
+2005,Santa Fe,Villa Constitución,La Camila
+2006,Santa Fe,Villa Constitución,La Chispa
+2007,Santa Fe,Villa Constitución,La Clara
+2008,Santa Fe,Villa Constitución,La Criolla
+2009,Santa Fe,Villa Constitución,La Gallareta
+2010,Santa Fe,Villa Constitución,La Lucila
+2011,Santa Fe,Villa Constitución,La Pelada
+2012,Santa Fe,Villa Constitución,La Penca
+2013,Santa Fe,Villa Constitución,La Rubia
+2014,Santa Fe,Villa Constitución,La Sarita
+2015,Santa Fe,Villa Constitución,La Vanguardia
+2016,Santa Fe,Villa Constitución,Labordeboy
+2017,Santa Fe,Villa Constitución,Laguna Paiva
+2018,Santa Fe,Villa Constitución,Landeta
+2019,Santa Fe,Villa Constitución,Lanteri
+2020,Santa Fe,Villa Constitución,Larrechea
+2021,Santa Fe,Villa Constitución,Las Avispas
+2022,Santa Fe,Villa Constitución,Las Bandurrias
+2023,Santa Fe,Villa Constitución,Las Garzas
+2024,Santa Fe,Villa Constitución,Las Palmeras
+2025,Santa Fe,Villa Constitución,Las Parejas
+2026,Santa Fe,Villa Constitución,Las Petacas
+2027,Santa Fe,Villa Constitución,Las Rosas
+2028,Santa Fe,Villa Constitución,Las Toscas
+2029,Santa Fe,Villa Constitución,Las Tunas
+2030,Santa Fe,Villa Constitución,Lazzarino
+2031,Santa Fe,Villa Constitución,Lehmann
+2032,Santa Fe,Villa Constitución,Llambi Campbell
+2033,Santa Fe,Villa Constitución,Logroño
+2034,Santa Fe,Villa Constitución,Loma Alta
+2035,Santa Fe,General López,López
+2036,Santa Fe,Villa Constitución,Los Amores
+2037,Santa Fe,Villa Constitución,Los Cardos
+2038,Santa Fe,Villa Constitución,Los Laureles
+2039,Santa Fe,Villa Constitución,Los Molinos
+2040,Santa Fe,Villa Constitución,Los Quirquinchos
+2041,Santa Fe,Villa Constitución,Lucio V. Lopez
+2042,Santa Fe,Villa Constitución,Luis Palacios
+2043,Santa Fe,Villa Constitución,Ma. Juana
+2044,Santa Fe,Villa Constitución,Ma. Luisa
+2045,Santa Fe,Villa Constitución,Ma. Susana
+2046,Santa Fe,Villa Constitución,Ma. Teresa
+2047,Santa Fe,Villa Constitución,Maciel
+2048,Santa Fe,Villa Constitución,Maggiolo
+2049,Santa Fe,Villa Constitución,Malabrigo
+2050,Santa Fe,Villa Constitución,Marcelino Escalada
+2051,Santa Fe,Villa Constitución,Margarita
+2052,Santa Fe,Villa Constitución,Matilde
+2053,Santa Fe,Villa Constitución,Mauá
+2054,Santa Fe,Villa Constitución,Máximo Paz
+2055,Santa Fe,Villa Constitución,Melincué
+2056,Santa Fe,Villa Constitución,Miguel Torres
+2057,Santa Fe,Villa Constitución,Moisés Ville
+2058,Santa Fe,Villa Constitución,Monigotes
+2059,Santa Fe,Villa Constitución,Monje
+2060,Santa Fe,Villa Constitución,Monte Obscuridad
+2061,Santa Fe,Vera,Monte Vera
+2062,Santa Fe,Villa Constitución,Montefiore
+2063,Santa Fe,Villa Constitución,Montes de Oca
+2064,Santa Fe,Villa Constitución,Murphy
+2065,Santa Fe,Villa Constitución,Ñanducita
+2066,Santa Fe,Villa Constitución,Naré
+2067,Santa Fe,Villa Constitución,Nelson
+2068,Santa Fe,Villa Constitución,Nicanor E. Molinas
+2069,Santa Fe,Villa Constitución,Nuevo Torino
+2070,Santa Fe,Villa Constitución,Oliveros
+2071,Santa Fe,Villa Constitución,Palacios
+2072,Santa Fe,Villa Constitución,Pavón
+2073,Santa Fe,Villa Constitución,Pavón Arriba
+2074,Santa Fe,Villa Constitución,Pedro Gómez Cello
+2075,Santa Fe,Villa Constitución,Pérez
+2076,Santa Fe,Villa Constitución,Peyrano
+2077,Santa Fe,Villa Constitución,Piamonte
+2078,Santa Fe,Villa Constitución,Pilar
+2079,Santa Fe,Villa Constitución,Piñero
+2080,Santa Fe,Villa Constitución,Plaza Clucellas
+2081,Santa Fe,Villa Constitución,Portugalete
+2082,Santa Fe,Villa Constitución,Pozo Borrado
+2083,Santa Fe,Villa Constitución,Progreso
+2084,Santa Fe,Villa Constitución,Providencia
+2085,Santa Fe,Villa Constitución,Pte. Roca
+2086,Santa Fe,Villa Constitución,Pueblo Andino
+2087,Santa Fe,Villa Constitución,Pueblo Esther
+2088,Santa Fe,San Martín,Pueblo Gral. San Martín
+2089,Santa Fe,Villa Constitución,Pueblo Irigoyen
+2090,Santa Fe,Villa Constitución,Pueblo Marini
+2091,Santa Fe,Villa Constitución,Pueblo Muñoz
+2092,Santa Fe,Villa Constitución,Pueblo Uranga
+2093,Santa Fe,Villa Constitución,Pujato
+2094,Santa Fe,Villa Constitución,Pujato N.
+2095,Santa Fe,Villa Constitución,Rafaela
+2096,Santa Fe,Villa Constitución,Ramayón
+2097,Santa Fe,Villa Constitución,Ramona
+2098,Santa Fe,Villa Constitución,Reconquista
+2099,Santa Fe,Villa Constitución,Recreo
+2100,Santa Fe,Villa Constitución,Ricardone
+2101,Santa Fe,Villa Constitución,Rivadavia
+2102,Santa Fe,Villa Constitución,Roldán
+2103,Santa Fe,Villa Constitución,Romang
+2104,Santa Fe,Rosario,Rosario
+2105,Santa Fe,Villa Constitución,Rueda
+2106,Santa Fe,Villa Constitución,Rufino
+2107,Santa Fe,Villa Constitución,Sa Pereira
+2108,Santa Fe,Villa Constitución,Saguier
+2109,Santa Fe,Villa Constitución,Saladero M. Cabal
+2110,Santa Fe,Villa Constitución,Salto Grande
+2111,Santa Fe,San Lorenzo,San Agustín
+2112,Santa Fe,San Lorenzo,San Antonio de Obligado
+2113,Santa Fe,San Lorenzo,San Bernardo (N.J.)
+2114,Santa Fe,San Lorenzo,San Bernardo (S.J.)
+2115,Santa Fe,San Lorenzo,San Carlos Centro
+2116,Santa Fe,San Lorenzo,San Carlos N.
+2117,Santa Fe,San Lorenzo,San Carlos S.
+2118,Santa Fe,San Cristóbal,San Cristóbal
+2119,Santa Fe,San Lorenzo,San Eduardo
+2120,Santa Fe,San Lorenzo,San Eugenio
+2121,Santa Fe,San Lorenzo,San Fabián
+2122,Santa Fe,San Lorenzo,San Fco. de Santa Fé
+2123,Santa Fe,San Lorenzo,San Genaro
+2124,Santa Fe,San Lorenzo,San Genaro N.
+2125,Santa Fe,San Lorenzo,San Gregorio
+2126,Santa Fe,San Lorenzo,San Guillermo
+2127,Santa Fe,San Javier,San Javier
+2128,Santa Fe,San Jerónimo,San Jerónimo del Sauce
+2129,Santa Fe,San Jerónimo,San Jerónimo N.
+2130,Santa Fe,San Jerónimo,San Jerónimo S.
+2131,Santa Fe,San Lorenzo,San Jorge
+2132,Santa Fe,San Lorenzo,San José de La Esquina
+2133,Santa Fe,San Lorenzo,San José del Rincón
+2134,Santa Fe,San Justo,San Justo
+2135,Santa Fe,San Lorenzo,San Lorenzo
+2136,Santa Fe,San Lorenzo,San Mariano
+2137,Santa Fe,San Martín,San Martín de Las Escobas
+2138,Santa Fe,San Martín,San Martín N.
+2139,Santa Fe,San Lorenzo,San Vicente
+2140,Santa Fe,Villa Constitución,Sancti Spititu
+2141,Santa Fe,Villa Constitución,Sanford
+2142,Santa Fe,Villa Constitución,Santo Domingo
+2143,Santa Fe,Villa Constitución,Santo Tomé
+2144,Santa Fe,Villa Constitución,Santurce
+2145,Santa Fe,Villa Constitución,Sargento Cabral
+2146,Santa Fe,Villa Constitución,Sarmiento
+2147,Santa Fe,Villa Constitución,Sastre
+2148,Santa Fe,Villa Constitución,Sauce Viejo
+2149,Santa Fe,Villa Constitución,Serodino
+2150,Santa Fe,Villa Constitución,Silva
+2151,Santa Fe,Villa Constitución,Soldini
+2152,Santa Fe,Villa Constitución,Soledad
+2153,Santa Fe,Villa Constitución,Soutomayor
+2154,Santa Fe,Villa Constitución,Sta. Clara de Buena Vista
+2155,Santa Fe,Villa Constitución,Sta. Clara de Saguier
+2156,Santa Fe,Villa Constitución,Sta. Isabel
+2157,Santa Fe,Villa Constitución,Sta. Margarita
+2158,Santa Fe,Villa Constitución,Sta. Maria Centro
+2159,Santa Fe,Villa Constitución,Sta. María N.
+2160,Santa Fe,Villa Constitución,Sta. Rosa
+2161,Santa Fe,Villa Constitución,Sta. Teresa
+2162,Santa Fe,Villa Constitución,Suardi
+2163,Santa Fe,Villa Constitución,Sunchales
+2164,Santa Fe,Villa Constitución,Susana
+2165,Santa Fe,Villa Constitución,Tacuarendí
+2166,Santa Fe,Villa Constitución,Tacural
+2167,Santa Fe,Villa Constitución,Tartagal
+2168,Santa Fe,Villa Constitución,Teodelina
+2169,Santa Fe,Villa Constitución,Theobald
+2170,Santa Fe,Villa Constitución,Timbúes
+2171,Santa Fe,Villa Constitución,Toba
+2172,Santa Fe,Villa Constitución,Tortugas
+2173,Santa Fe,Villa Constitución,Tostado
+2174,Santa Fe,Villa Constitución,Totoras
+2175,Santa Fe,Villa Constitución,Traill
+2176,Santa Fe,Villa Constitución,Venado Tuerto
+2177,Santa Fe,Vera,Vera
+2178,Santa Fe,Vera,Vera y Pintado
+2179,Santa Fe,Villa Constitución,Videla
+2180,Santa Fe,Villa Constitución,Vila
+2181,Santa Fe,Villa Constitución,Villa Amelia
+2182,Santa Fe,Villa Constitución,Villa Ana
+2183,Santa Fe,Villa Constitución,Villa Cañas
+2184,Santa Fe,Villa Constitución,Villa Constitución
+2185,Santa Fe,Villa Constitución,Villa Eloísa
+2186,Santa Fe,Villa Constitución,Villa Gdor. Gálvez
+2187,Santa Fe,Villa Constitución,Villa Guillermina
+2188,Santa Fe,Villa Constitución,Villa Minetti
+2189,Santa Fe,Villa Constitución,Villa Mugueta
+2190,Santa Fe,Villa Constitución,Villa Ocampo
+2191,Santa Fe,San Lorenzo,Villa San José
+2192,Santa Fe,Villa Constitución,Villa Saralegui
+2193,Santa Fe,Villa Constitución,Villa Trinidad
+2194,Santa Fe,Villa Constitución,Villada
+2195,Santa Fe,Villa Constitución,Virginia
+2196,Santa Fe,Villa Constitución,Wheelwright
+2197,Santa Fe,Villa Constitución,Zavalla
+2198,Santa Fe,Villa Constitución,Zenón Pereira
+2199,Santiago del Estero,Banda,Añatuya
+2200,Santiago del Estero,Banda,Árraga
+2201,Santiago del Estero,Banda,Bandera
+2202,Santiago del Estero,Banda,Bandera Bajada
+2203,Santiago del Estero,Banda,Beltrán
+2204,Santiago del Estero,Banda,Brea Pozo
+2205,Santiago del Estero,Banda,Campo Gallo
+2206,Santiago del Estero,Capital,Capital
+2207,Santiago del Estero,Banda,Chilca Juliana
+2208,Santiago del Estero,Choya,Choya
+2209,Santiago del Estero,Banda,Clodomira
+2210,Santiago del Estero,Banda,Col. Alpina
+2211,Santiago del Estero,Banda,Col. Dora
+2212,Santiago del Estero,Robles,Col. El Simbolar Robles
+2213,Santiago del Estero,Banda,El Bobadal
+2214,Santiago del Estero,Banda,El Charco
+2215,Santiago del Estero,Banda,El Mojón
+2216,Santiago del Estero,Atamisqui,Estación Atamisqui
+2217,Santiago del Estero,Banda,Estación Simbolar
+2218,Santiago del Estero,Banda,Fernández
+2219,Santiago del Estero,Banda,Fortín Inca
+2220,Santiago del Estero,Banda,Frías
+2221,Santiago del Estero,Banda,Garza
+2222,Santiago del Estero,Banda,Gramilla
+2223,Santiago del Estero,Banda,Guardia Escolta
+2224,Santiago del Estero,Banda,Herrera
+2225,Santiago del Estero,Banda,Icaño
+2226,Santiago del Estero,Banda,Ing. Forres
+2227,Santiago del Estero,La Banda,La Banda
+2228,Santiago del Estero,Banda,La Cañada
+2229,Santiago del Estero,Banda,Laprida
+2230,Santiago del Estero,Banda,Lavalle
+2231,Santiago del Estero,Loreto,Loreto
+2232,Santiago del Estero,Banda,Los Juríes
+2233,Santiago del Estero,Banda,Los Núñez
+2234,Santiago del Estero,Banda,Los Pirpintos
+2235,Santiago del Estero,Banda,Los Quiroga
+2236,Santiago del Estero,Banda,Los Telares
+2237,Santiago del Estero,Banda,Lugones
+2238,Santiago del Estero,Banda,Malbrán
+2239,Santiago del Estero,Banda,Matara
+2240,Santiago del Estero,Banda,Medellín
+2241,Santiago del Estero,Banda,Monte Quemado
+2242,Santiago del Estero,Banda,Nueva Esperanza
+2243,Santiago del Estero,Banda,Nueva Francia
+2244,Santiago del Estero,Banda,Palo Negro
+2245,Santiago del Estero,Banda,Pampa de Los Guanacos
+2246,Santiago del Estero,Banda,Pinto
+2247,Santiago del Estero,Banda,Pozo Hondo
+2248,Santiago del Estero,Banda,Quimilí
+2249,Santiago del Estero,Banda,Real Sayana
+2250,Santiago del Estero,Banda,Sachayoj
+2251,Santiago del Estero,Guasayán,San Pedro de Guasayán
+2252,Santiago del Estero,Banda,Selva
+2253,Santiago del Estero,Banda,Sol de Julio
+2254,Santiago del Estero,Banda,Sumampa
+2255,Santiago del Estero,Banda,Suncho Corral
+2256,Santiago del Estero,General Taboada,Taboada
+2257,Santiago del Estero,Banda,Tapso
+2258,Santiago del Estero,Banda,Termas de Rio Hondo
+2259,Santiago del Estero,Banda,Tintina
+2260,Santiago del Estero,Banda,Tomas Young
+2261,Santiago del Estero,Banda,Vilelas
+2262,Santiago del Estero,Atamisqui,Villa Atamisqui
+2263,Santiago del Estero,Banda,Villa La Punta
+2264,Santiago del Estero,Ojo de Agua,Villa Ojo de Agua
+2265,Santiago del Estero,Río Hondo,Villa Río Hondo
+2266,Santiago del Estero,Salavina,Villa Salavina
+2267,Santiago del Estero,Banda,Villa Unión
+2268,Santiago del Estero,Banda,Vilmer
+2269,Santiago del Estero,Banda,Weisburd
+2270,Tierra del Fuego,No encontrado,Río Grande
+2271,Tierra del Fuego,No encontrado,Tolhuin
+2272,Tierra del Fuego,No encontrado,Ushuaia
+2273,Tucumán,La Cocha,Acheral
+2274,Tucumán,La Cocha,Agua Dulce
+2275,Tucumán,La Cocha,Aguilares
+2276,Tucumán,La Cocha,Alderetes
+2277,Tucumán,La Cocha,Alpachiri
+2278,Tucumán,La Cocha,Alto Verde
+2279,Tucumán,La Cocha,Amaicha del Valle
+2280,Tucumán,La Cocha,Amberes
+2281,Tucumán,La Cocha,Ancajuli
+2282,Tucumán,La Cocha,Arcadia
+2283,Tucumán,La Cocha,Atahona
+2284,Tucumán,Río Chico,Banda del Río Sali
+2285,Tucumán,La Cocha,Bella Vista
+2286,Tucumán,La Cocha,Buena Vista
+2287,Tucumán,Burruyacú,Burruyacú
+2288,Tucumán,La Cocha,Capitán Cáceres
+2289,Tucumán,La Cocha,Cevil Redondo
+2290,Tucumán,La Cocha,Choromoro
+2291,Tucumán,La Cocha,Ciudacita
+2292,Tucumán,La Cocha,Colalao del Valle
+2293,Tucumán,La Cocha,Colombres
+2294,Tucumán,La Cocha,Concepción
+2295,Tucumán,La Cocha,Delfín Gallo
+2296,Tucumán,La Cocha,El Bracho
+2297,Tucumán,La Cocha,El Cadillal
+2298,Tucumán,La Cocha,El Cercado
+2299,Tucumán,La Cocha,El Chañar
+2300,Tucumán,La Cocha,El Manantial
+2301,Tucumán,La Cocha,El Mojón
+2302,Tucumán,La Cocha,El Mollar
+2303,Tucumán,La Cocha,El Naranjito
+2304,Tucumán,La Cocha,El Naranjo
+2305,Tucumán,La Cocha,El Polear
+2306,Tucumán,La Cocha,El Puestito
+2307,Tucumán,La Cocha,El Sacrificio
+2308,Tucumán,La Cocha,El Timbó
+2309,Tucumán,La Cocha,Escaba
+2310,Tucumán,La Cocha,Esquina
+2311,Tucumán,La Cocha,Estación Aráoz
+2312,Tucumán,Famaillá,Famaillá
+2313,Tucumán,La Cocha,Gastone
+2314,Tucumán,La Cocha,Gdor. Garmendia
+2315,Tucumán,La Cocha,Gdor. Piedrabuena
+2316,Tucumán,Graneros,Graneros
+2317,Tucumán,La Cocha,Huasa Pampa
+2318,Tucumán,La Cocha,J. B. Alberdi
+2319,Tucumán,La Cocha,La Cocha
+2320,Tucumán,La Cocha,La Esperanza
+2321,Tucumán,La Cocha,La Florida
+2322,Tucumán,La Cocha,La Ramada
+2323,Tucumán,La Cocha,La Trinidad
+2324,Tucumán,La Cocha,Lamadrid
+2325,Tucumán,La Cocha,Las Cejas
+2326,Tucumán,La Cocha,Las Talas
+2327,Tucumán,La Cocha,Las Talitas
+2328,Tucumán,La Cocha,Los Bulacio
+2329,Tucumán,La Cocha,Los Gómez
+2330,Tucumán,La Cocha,Los Nogales
+2331,Tucumán,La Cocha,Los Pereyra
+2332,Tucumán,La Cocha,Los Pérez
+2333,Tucumán,La Cocha,Los Puestos
+2334,Tucumán,La Cocha,Los Ralos
+2335,Tucumán,La Cocha,Los Sarmientos
+2336,Tucumán,La Cocha,Los Sosa
+2337,Tucumán,La Cocha,Lules
+2338,Tucumán,La Cocha,M. García Fernández
+2339,Tucumán,La Cocha,Manuela Pedraza
+2340,Tucumán,La Cocha,Medinas
+2341,Tucumán,La Cocha,Monte Bello
+2342,Tucumán,La Cocha,Monteagudo
+2343,Tucumán,Monteros,Monteros
+2344,Tucumán,La Cocha,Padre Monti
+2345,Tucumán,La Cocha,Pampa Mayo
+2346,Tucumán,La Cocha,Quilmes
+2347,Tucumán,La Cocha,Raco
+2348,Tucumán,La Cocha,Ranchillos
+2349,Tucumán,Río Chico,Río Chico
+2350,Tucumán,Río Chico,Río Colorado
+2351,Tucumán,Río Chico,Río Seco
+2352,Tucumán,La Cocha,Rumi Punco
+2353,Tucumán,La Cocha,San Andrés
+2354,Tucumán,La Cocha,San Felipe
+2355,Tucumán,La Cocha,San Ignacio
+2356,Tucumán,La Cocha,San Javier
+2357,Tucumán,La Cocha,San José
+2358,Tucumán,La Cocha,San Miguel de 25
+2359,Tucumán,La Cocha,San Pedro
+2360,Tucumán,La Cocha,San Pedro de Colalao
+2361,Tucumán,Leales,Santa Rosa de Leales
+2362,Tucumán,La Cocha,Sgto. Moya
+2363,Tucumán,La Cocha,Siete de Abril
+2364,Tucumán,Simoca,Simoca
+2365,Tucumán,La Cocha,Soldado Maldonado
+2366,Tucumán,La Cocha,Sta. Ana
+2367,Tucumán,La Cocha,Sta. Cruz
+2368,Tucumán,La Cocha,Sta. Lucía
+2369,Tucumán,La Cocha,Taco Ralo
+2370,Tucumán,Tafí del Valle,Tafí del Valle
+2371,Tucumán,Tafí Viejo,Tafí Viejo
+2372,Tucumán,La Cocha,Tapia
+2373,Tucumán,La Cocha,Teniente Berdina
+2374,Tucumán,Trancas,Trancas
+2375,Tucumán,La Cocha,Villa Belgrano
+2376,Tucumán,La Cocha,Villa Benjamín Araoz
+2377,Tucumán,La Cocha,Villa Chiligasta
+2378,Tucumán,Leales,Villa de Leales
+2379,Tucumán,La Cocha,Villa Quinteros
+2380,Tucumán,La Cocha,Yánima
+2381,Tucumán,La Cocha,Yerba Buena
+2382,Tucumán,La Cocha,Yerba Buena (S)

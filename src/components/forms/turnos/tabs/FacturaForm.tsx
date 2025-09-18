@@ -12,7 +12,6 @@ import {
   Typography,
   useMediaQuery,
   useTheme,
-  InputAdornment,
 } from '@mui/material';
 import React, { useContext, useEffect, useState } from 'react';
 import { ContextoGeneral } from '../../../Contexto';
@@ -43,7 +42,6 @@ interface FacturaFormProps {
   initialFactura?: Factura | null;
   onSuccess: (updatedData: any) => void;
   onCancel: () => void;
-  precioGrano?: number;
 }
 
 const FacturaForm: React.FC<FacturaFormProps> = ({
@@ -52,7 +50,6 @@ const FacturaForm: React.FC<FacturaFormProps> = ({
   initialFactura,
   onSuccess,
   onCancel,
-  precioGrano,
 }) => {
   const { backendURL } = useContext(ContextoGeneral);
   const isUpdateMode = Boolean(initialFactura);
@@ -75,13 +72,11 @@ const FacturaForm: React.FC<FacturaFormProps> = ({
         tipoFactura: initialFactura?.tipoFactura || null,
         puntoDeVenta: initialFactura?.puntoDeVenta || '',
         nroFactura: initialFactura?.nroFactura || '',
-        precioGrano: precioGrano !== undefined && precioGrano !== null ? (Number(precioGrano) * 1000) : '',
       }
     : {
         tipoFactura: null as TipoFactura | null,
         puntoDeVenta: '',
         nroFactura: '',
-        precioGrano: precioGrano !== undefined && precioGrano !== null ? (Number(precioGrano) * 1000) : ''
       };
 
   // Reglas de validación.
@@ -98,8 +93,6 @@ const FacturaForm: React.FC<FacturaFormProps> = ({
           if (value.length !== 8) return 'El número de factura debe tener 8 dígitos';
           return null;
         },
-        precioGrano: (value: string | number) =>
-          value ? null : 'El precio del grano es obligatorio',
       };
 
   const { data, errors, validateAll, setData } = useValidation(initialData, rules);
@@ -130,10 +123,9 @@ const FacturaForm: React.FC<FacturaFormProps> = ({
         tipoFactura: initialFactura.tipoFactura || null,
         puntoDeVenta: initialFactura.puntoDeVenta || '',
         nroFactura: initialFactura.nroFactura || '',
-        precioGrano: precioGrano !== undefined && precioGrano !== null ? (Number(precioGrano) * 1000) : '',
       });
     }
-  }, [initialFactura, isUpdateMode, setData, precioGrano]);
+  }, [initialFactura, isUpdateMode, setData]);
 
   // En modo creación se calcula el total con IVA a partir de totalSinIva e ivaSeleccionado.
 
@@ -216,17 +208,7 @@ const FacturaForm: React.FC<FacturaFormProps> = ({
       const puntoDeVenta = data.puntoDeVenta;
       const tipoFacturaId = data.tipoFactura?.id;
       const cuitEmisor = cuitEmpresa;
-      // Convertir a precio por kg antes de enviar
-      const precioGrano = data.precioGrano ? (Number(data.precioGrano) / 1000) : 0;
       setPendingSubmit(true);
-
-      // First, update the Turno with precioGrano
-      const turnoResponse = await fetch(`${backendURL}/turnos/${turnoId}`, {
-        method: 'PUT',
-        headers,
-        body: JSON.stringify({ precioGrano: Number(precioGrano) }),
-      });
-      if (!turnoResponse.ok) throw new Error('Error al actualizar el precio del grano');
 
       // Then proceed with factura creation/association
       const response = await fetch(`${backendURL}/facturas`, {
@@ -362,51 +344,6 @@ const FacturaForm: React.FC<FacturaFormProps> = ({
           inputProps={{ maxLength: 8, inputMode: 'numeric', pattern: '[0-9]*' }}
         />
       </Stack>
-      <TextField
-        label="Precio Grano"
-        type="number"
-        value={data.precioGrano}
-        onChange={(e) => {
-          let value = e.target.value.replace(/[^0-9.]/g, '');
-          // Evitar que arranque con 0 salvo que sea '0.'
-          if (value.startsWith('0') && value.length > 1 && value[1] !== '.') {
-            value = value.replace(/^0+/, '');
-          }
-          // Limit to 7 digits before decimal point
-          const parts = value.split('.');
-          if (parts[0].length > 7) {
-            parts[0] = parts[0].slice(0, 7);
-          }
-          const newValue = parts.join('.');
-          setData((prev: any) => ({ ...prev, precioGrano: newValue }));
-        }}
-        error={!!errors.precioGrano}
-        helperText={errors.precioGrano}
-        fullWidth
-        sx={{
-          '& .MuiOutlinedInput-root': {
-            '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-              borderColor: theme.colores.azul,
-            },
-          },
-          '& .MuiInputLabel-root.Mui-focused': {
-            color: theme.colores.azul,
-          },
-        }}
-        inputProps={{ 
-          step: "0.01",
-          min: "0",
-          max: "999999",
-          inputMode: 'decimal'
-        }}
-        InputProps={{
-          startAdornment: <InputAdornment position="start">$</InputAdornment>,
-        }}
-      />
-      {/* ADVERTENCIA: precio por tonelada debajo y en gris */}
-      <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5, ml: 0.5 }}>
-        Ingrese el precio del grano por tonelada. El sistema lo convertirá automáticamente a precio por kg.
-      </Typography>
       <Box
         sx={{
           display: "flex",
