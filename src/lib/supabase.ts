@@ -4,9 +4,13 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 const supabasePubKey = import.meta.env.VITE_SUPABASE_PUB_KEY;
+console.log('=== PRUEBA DE CONEXIÓN SUPABASE ===');
+console.log('URL de Supabase:', supabaseUrl);
+console.log('Clave anónima:', supabaseAnonKey ? '✅ Configurada' : '❌ No configurada');
 
 // Cliente principal para archivos KMZ (usando anon key)
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+console.log('Cliente Supabase:', supabase ? '✅ Creado' : '❌ No creado');
 
 // Cliente para el módulo agro (usando public key)
 export const supabaseAgro = createClient(supabaseUrl, supabasePubKey);
@@ -17,11 +21,6 @@ export const KMZ_BUCKET_NAME = 'kmz-files';
 // Función para probar la conexión a Supabase
 export async function testSupabaseConnection(): Promise<boolean> {
     try {
-        console.log('=== PRUEBA DE CONEXIÓN SUPABASE ===');
-        console.log('URL de Supabase:', supabaseUrl);
-        console.log('Clave anónima:', supabaseAnonKey ? '✅ Configurada' : '❌ No configurada');
-        console.log('Cliente Supabase:', supabase ? '✅ Creado' : '❌ No creado');
-        
         // Verificar que las variables estén configuradas
         if (!supabaseUrl || supabaseUrl === 'https://your-project.supabase.co') {
             console.error('❌ VITE_SUPABASE_URL no está configurado correctamente');
