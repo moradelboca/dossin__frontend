@@ -38,6 +38,13 @@ jobs:
             VITE_DASHBOARD_URL=${{ secrets.VITE_DASHBOARD_URL }}
             VITE_STAGE=${{ secrets.VITE_STAGE }}
             VITE_OPENAI_API_KEY=${{ secrets.VITE_OPENAI_API_KEY }}
+            VITE_SUPABASE_URL=${{ secrets.VITE_SUPABASE_URL }}
+            VITE_SUPABASE_ANON_KEY=${{ secrets.VITE_SUPABASE_ANON_KEY }}
+            VITE_SUPABASE_PUB_KEY=${{ secrets.VITE_SUPABASE_PUB_KEY }}
+            VITE_OPENROUTE_API_KEY=${{ secrets.VITE_OPENROUTE_API_KEY }}
+            VITE_FINNEGANS_CLIENT_ID=${{ secrets.VITE_FINNEGANS_CLIENT_ID }}
+            VITE_FINNEGANS_CLIENT_SECRET=${{ secrets.VITE_FINNEGANS_CLIENT_SECRET }}
+            
             
       - name: Log out from GitHub Container Registry
         run: docker logout ghcr.io
