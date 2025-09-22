@@ -15,6 +15,14 @@ export interface OrdenTrabajo {
     activo?: boolean;
     situacion?: string;
     fechaCreacion?: string;
+    // Campos adicionales de Finnegans
+    laboreo?: string;
+    codigo?: string;
+    establecimiento?: string;
+    laboreoId?: number;
+    transaccionId?: number;
+    // Datos completos de Finnegans
+    datos?: any;
 }
 
 export interface OrdenesTrabajoPanelProps {
