@@ -94,6 +94,20 @@ const useTransformarCampo = () => {
           }
         }
         return "Sin factura";
+      case "cartaDePorte.numeroCartaPorte":
+        // Acceder al array cartaDePorte y extraer numeroCartaPorte
+        const cartaDePorteArray = item.cartaDePorte;
+        if (Array.isArray(cartaDePorteArray) && cartaDePorteArray.length > 0) {
+          return cartaDePorteArray.map((carta: any) => `${carta.numeroCartaPorte}`).join(", ");
+        }
+        return "No especificado";
+      case "cartaDePorte.CTG":
+        // Acceder al array cartaDePorte y extraer CTG
+        const cartaDePorteArrayCTG = item.cartaDePorte;
+        if (Array.isArray(cartaDePorteArrayCTG) && cartaDePorteArrayCTG.length > 0) {
+          return cartaDePorteArrayCTG.map((carta: any) => `${carta.CTG}`).join(", ");
+        }
+        return "No especificado";
       default:
         return value || "No especificado";
     }

@@ -6,4 +6,6 @@ export * from './useCampañas';
 export * from './useUbicaciones';
 export * from './useAnalisisMargen';
 export * from './useCalculoDistancia';
+export * from './useSyncControl';
+export * from './useSyncOrdenesTrabajo';
 
