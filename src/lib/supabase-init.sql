@@ -32,18 +32,18 @@ CREATE TABLE IF NOT EXISTS "PlaneacionLote" (
     "created_at" TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     "updated_at" TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     PRIMARY KEY ("campania", "idLote"),
-    FOREIGN KEY ("cultivo") REFERENCES "EstructuraFechasCultivo"("cultivo") ON DELETE RESTRICT
+    FOREIGN KEY ("cultivo") REFERENCES "EstructuraFechasCultivo"("cultivo") ON DELETE RESTRICT,
+    FOREIGN KEY ("ordenTrabajo_id") REFERENCES "OrdenTrabajo"("transaccionId") ON DELETE CASCADE
 );
 
 -- Tabla para órdenes de trabajo
 CREATE TABLE IF NOT EXISTS "OrdenTrabajo" (
-    "id" SERIAL PRIMARY KEY,
+    "transaccionId" INTEGER PRIMARY KEY,
     "establecimiento" VARCHAR(255),
     "estado" VARCHAR(100),
     "fecha" DATE,
     "laboreo" VARCHAR(255),
     "laboreoId" INTEGER,
-    "transaccionId" INTEGER,
     "datos" JSONB,
     "created_at" TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     "updated_at" TIMESTAMP WITH TIME ZONE DEFAULT NOW()
@@ -60,7 +60,7 @@ CREATE TABLE IF NOT EXISTS "PlaneacionLoteOrdenTrabajo" (
         REFERENCES "PlaneacionLote"("campania", "idLote") 
         ON DELETE CASCADE,
     FOREIGN KEY ("ordenTrabajo_id") 
-        REFERENCES "OrdenTrabajo"("id") 
+        REFERENCES "OrdenTrabajo"("transaccionId") 
         ON DELETE CASCADE,
     UNIQUE("planeacionLote_campania", "planeacionLote_idLote", "ordenTrabajo_id")
 );
@@ -78,11 +78,11 @@ CREATE INDEX IF NOT EXISTS idx_planeacion_lote_lluvias ON "PlaneacionLote" USING
 CREATE INDEX IF NOT EXISTS idx_planeacion_lote_orden_trabajo ON "PlaneacionLote"("ordenTrabajo_id");
 
 -- Índices para OrdenTrabajo
-CREATE INDEX IF NOT EXISTS idx_orden_trabajo_transaccion_id ON "OrdenTrabajo"("transaccionId");
 CREATE INDEX IF NOT EXISTS idx_orden_trabajo_laboreo_id ON "OrdenTrabajo"("laboreoId");
 CREATE INDEX IF NOT EXISTS idx_orden_trabajo_estado ON "OrdenTrabajo"("estado");
 CREATE INDEX IF NOT EXISTS idx_orden_trabajo_fecha ON "OrdenTrabajo"("fecha");
 CREATE INDEX IF NOT EXISTS idx_orden_trabajo_datos ON "OrdenTrabajo" USING GIN("datos");
+CREATE INDEX IF NOT EXISTS idx_orden_trabajo_establecimiento ON "OrdenTrabajo"("establecimiento");
 
 -- Índices para tabla de relación
 CREATE INDEX IF NOT EXISTS idx_planeacion_orden_campania_lote ON "PlaneacionLoteOrdenTrabajo"("planeacionLote_campania", "planeacionLote_idLote");
@@ -140,4 +140,46 @@ BEGIN
     RAISE NOTICE '🏗️ Clasificación "estructura" separada de "tierra" para mejor organización';
     RAISE NOTICE '📈 Índices GIN creados para optimizar consultas en campos JSONB';
     RAISE NOTICE '🔄 Triggers automáticos para actualización de timestamps';
+    RAISE NOTICE '📋 Tabla OrdenTrabajo con transaccionId como PK para sincronización';
+    RAISE NOTICE '🔄 Sistema de sincronización con control de estado';
 END $$;
+
+-- =====================================================
+-- TABLA DE CONTROL DE SINCRONIZACIÓN
+-- =====================================================
+
+CREATE TABLE IF NOT EXISTS "SyncControl" (
+    "id" SERIAL PRIMARY KEY,
+    "entidad" VARCHAR(100) NOT NULL UNIQUE,
+    "ultima_sincronizacion" TIMESTAMP WITH TIME ZONE,
+    "ultima_fecha_consulta" TIMESTAMP WITH TIME ZONE, -- Para consultas incrementales
+    "total_registros" INTEGER DEFAULT 0,
+    "estado" VARCHAR(50) DEFAULT 'idle',
+    "error_message" TEXT,
+    "configuracion" JSONB DEFAULT '{}',
+    "created_at" TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    "updated_at" TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Índices para SyncControl
+CREATE INDEX IF NOT EXISTS idx_sync_control_entidad ON "SyncControl"("entidad");
+CREATE INDEX IF NOT EXISTS idx_sync_control_ultima_sync ON "SyncControl"("ultima_sincronizacion");
+
+-- Trigger para actualizar updated_at
+CREATE OR REPLACE FUNCTION update_sync_control_updated_at()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = NOW();
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS update_sync_control_updated_at ON "SyncControl";
+CREATE TRIGGER update_sync_control_updated_at 
+    BEFORE UPDATE ON "SyncControl"
+    FOR EACH ROW EXECUTE FUNCTION update_sync_control_updated_at();
+
+-- Insertar configuración inicial para órdenes de trabajo
+INSERT INTO "SyncControl" ("entidad", "configuracion") 
+VALUES ('ordenes_trabajo', '{"maxAgeDays": 7, "historicalYears": 2, "incrementalSync": true}')
+ON CONFLICT ("entidad") DO NOTHING;
