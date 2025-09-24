@@ -30,7 +30,6 @@ import {
     History,
     CheckCircle,
     Error,
-    Upload,
 } from '@mui/icons-material';
 import { ContextoGeneral } from '../../../../Contexto';
 import { finnegansApi } from '../finnegans/finnegansApi';
@@ -258,70 +257,6 @@ export function OrdenesTrabajoPanel({ ubicacion }: OrdenesTrabajoPanelProps) {
         });
     };
 
-    const subirTodasLasOrdenes = async () => {
-        if (ordenes.length === 0) {
-            setError('No hay órdenes para subir');
-            return;
-        }
-
-        setLoading(true);
-        setError(null);
-
-        try {
-            const token = await finnegansApi.getAccessToken();
-            let exitosas = 0;
-            let errores = 0;
-
-            for (const orden of ordenes) {
-                try {
-                    // Preparar datos para Finnegans
-                    const datosFinnegans = {
-                        TRANSACCIONID: orden.transaccionId || orden.id,
-                        ESTABLECIMIENTO: orden.establecimiento || establecimientoFiltro,
-                        ESTADO: orden.estado === 'completada' ? 'Ejecutada' : 
-                               orden.estado === 'en_progreso' ? 'En ejecucion' : 'Pendiente',
-                        FECHA: orden.fechaVencimiento ? 
-                               new Date(orden.fechaVencimiento).toLocaleDateString('es-AR') : 
-                               new Date().toLocaleDateString('es-AR'),
-                        LABOREO: orden.titulo || orden.laboreo || 'Sin título',
-                        LABOREOID: orden.laboreoId || null,
-                        DESCRIPCION: orden.descripcion || '',
-                        ASIGNADO_A: orden.asignadoA || '',
-                        PRIORIDAD: orden.prioridad || 'media'
-                    };
-
-                    // Subir a Finnegans (asumiendo que hay un endpoint POST)
-                    const response = await fetch('https://api.finneg.com/api/ordenes-trabajo', {
-                        method: 'POST',
-                        headers: {
-                            'Authorization': `Bearer ${token}`,
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify(datosFinnegans)
-                    });
-
-                    if (response.ok) {
-                        exitosas++;
-                    } else {
-                        errores++;
-                        console.error(`Error subiendo orden ${orden.id}:`, response.status);
-                    }
-                } catch (err) {
-                    errores++;
-                    console.error(`Error subiendo orden ${orden.id}:`, err);
-                }
-            }
-
-            setError(null);
-            alert(`Subida completada: ${exitosas} exitosas, ${errores} errores`);
-        } catch (err) {
-            console.error('Error en subida masiva:', err);
-            setError((err as Error)?.message || 'Error subiendo órdenes');
-        } finally {
-            setLoading(false);
-        }
-    };
-
 
     const getPrioridadColor = (prioridad: string) => {
         switch (prioridad) {
@@ -460,24 +395,6 @@ export function OrdenesTrabajoPanel({ ubicacion }: OrdenesTrabajoPanelProps) {
                             }}
                         >
                             Carga Histórica
-                        </Button>
-                    </Tooltip>
-                    
-                    <Tooltip title="Subir todas las órdenes locales a Finnegans">
-                        <Button
-                            variant="contained"
-                            startIcon={<Upload />}
-                            onClick={subirTodasLasOrdenes}
-                            disabled={loading || isSyncing || ordenes.length === 0}
-                            sx={{
-                                backgroundColor: '#2e7d32',
-                                '&:hover': {
-                                    backgroundColor: '#2e7d32',
-                                    opacity: 0.9
-                                }
-                            }}
-                        >
-                            Subir a Finnegans
                         </Button>
                     </Tooltip>
                 </Box>

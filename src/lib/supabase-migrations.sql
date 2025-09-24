@@ -27,3 +27,5 @@ SET "estado" = 'idle',
     "updated_at" = NOW()
 WHERE "entidad" = 'ordenes_trabajo';
 
+
+
