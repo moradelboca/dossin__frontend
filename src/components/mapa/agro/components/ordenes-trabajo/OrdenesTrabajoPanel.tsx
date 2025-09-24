@@ -22,12 +22,10 @@ import {
     Tooltip,
 } from '@mui/material';
 import {
-    Assignment,
     Add,
     Edit,
     Delete,
     Person,
-    Refresh,
     CloudSync,
     History,
     CheckCircle,
@@ -37,7 +35,6 @@ import { ContextoGeneral } from '../../../../Contexto';
 import { finnegansApi } from '../finnegans/finnegansApi';
 import { OrdenTrabajo } from './types';
 import { useSyncOrdenesTrabajo } from '../../hooks/useSyncOrdenesTrabajo';
-import { supabaseAgro } from '../../../../../lib/supabase';
 
 interface OrdenesTrabajoPanelProps {
     ubicacion?: any;
@@ -131,7 +128,6 @@ export function OrdenesTrabajoPanel({ ubicacion }: OrdenesTrabajoPanelProps) {
     const { 
         syncOrdenesTrabajo, 
         fetchDatosHistoricosCompletos,
-        probarDiferentesEnfoquesAPI,
         isSyncing, 
         syncControl, 
         getOrdenesFromSupabase 
@@ -261,135 +257,6 @@ export function OrdenesTrabajoPanel({ ubicacion }: OrdenesTrabajoPanelProps) {
         });
     };
 
-    // Función para transformar datos de Finnegans (copiada del hook)
-    const transformFinnegansData = (finnegansData: any[]): OrdenTrabajo[] => {
-        return finnegansData.map((item, index) => {
-            const transaccionId = item.TRANSACCIONID || item.transaccionId || item.codigo || item.id;
-            
-            // Convertir fecha de formato DD-MM-YYYY a formato ISO
-            const convertirFecha = (fecha: string) => {
-                if (!fecha) return null;
-                // Si ya es formato ISO, devolverlo
-                if (fecha.includes('T') || fecha.includes('-') && fecha.length === 10) {
-                    return fecha;
-                }
-                // Si es formato DD-MM-YYYY, convertir a YYYY-MM-DD
-                if (fecha.includes('-') && fecha.length === 10) {
-                    const [dia, mes, año] = fecha.split('-');
-                    return `${año}-${mes.padStart(2, '0')}-${dia.padStart(2, '0')}`;
-                }
-                return fecha;
-            };
-            
-            return {
-                id: transaccionId?.toString() || `finnegans-${index}`,
-                titulo: item.LABOREO || item.laboreo || item.titulo || item.nombre || `Orden ${transaccionId || index}`,
-                descripcion: item.descripcion || item.detalle || '',
-                prioridad: item.prioridad || 'media',
-                estado: mapFinnegansEstado(item.ESTADO || item.estado || item.situacion),
-                asignadoA: item.asignadoA || item.responsable,
-                fechaVencimiento: convertirFecha(item.FECHA || item.fecha || item.fechaVencimiento || item.fechaFin) || undefined,
-                ubicacionId: item.ESTABLECIMIENTO || item.establecimiento || item.ubicacionId,
-                creadoPor: 'Finnegans API',
-                creadoEn: item.fechaCreacion || new Date().toISOString(),
-                actualizadoEn: new Date().toISOString(),
-                codigoFinnegans: item.codigo || item.id,
-                activo: item.activo !== false,
-                situacion: item.situacion || item.ESTADO || item.estado,
-                laboreo: item.LABOREO || item.laboreo,
-                codigo: item.codigo,
-                establecimiento: item.ESTABLECIMIENTO || item.establecimiento,
-                laboreoId: item.LABOREOID || item.laboreoId,
-                transaccionId: transaccionId,
-                datos: item // Guardar datos originales
-            };
-        });
-    };
-
-    // Función para mapear estados de Finnegans
-    const mapFinnegansEstado = (estadoFinnegans: string): 'pendiente' | 'en_progreso' | 'completada' => {
-        const estado = estadoFinnegans?.toLowerCase() || '';
-        
-        if (estado.includes('complet') || estado.includes('finaliz') || estado.includes('termin')) {
-            return 'completada';
-        }
-        
-        if (estado.includes('progreso') || estado.includes('ejecut') || estado.includes('trabaj')) {
-            return 'en_progreso';
-        }
-        
-        return 'pendiente';
-    };
-
-    // Función para guardar datos de Finnegans directamente
-    const saveFinnegansDataDirectly = async (finnegansData: any[]): Promise<void> => {
-        try {
-            if (finnegansData.length === 0) {
-                console.warn('No hay datos de Finnegans para guardar');
-                return;
-            }
-
-            // Filtrar datos que tengan TRANSACCIONID válido
-            const datosValidos = finnegansData.filter(item => item.TRANSACCIONID || item.transaccionId);
-            
-            if (datosValidos.length === 0) {
-                console.warn('No hay datos con TRANSACCIONID válido para guardar');
-                return;
-            }
-
-            // Eliminar duplicados basado en transaccionId (mantener el último)
-            const datosUnicos = datosValidos.reduce((acc, item) => {
-                const transaccionId = item.TRANSACCIONID || item.transaccionId;
-                acc[transaccionId] = item; // Esto sobrescribe duplicados, manteniendo el último
-                return acc;
-            }, {} as Record<string, any>);
-
-            const datosSinDuplicados = Object.values(datosUnicos);
-            
-            console.log(`📊 Datos originales: ${datosValidos.length}, Sin duplicados: ${datosSinDuplicados.length}`);
-
-            // Insertar/actualizar datos en lotes usando UPSERT
-            const batchSize = 100;
-            for (let i = 0; i < datosSinDuplicados.length; i += batchSize) {
-                const batch = datosSinDuplicados.slice(i, i + batchSize);
-                
-                const datosParaUpsert = batch.map((item: any) => ({
-                    // Usar TRANSACCIONID como PK
-                    transaccionId: item.TRANSACCIONID || item.transaccionId,
-                    // Campos exactos de Finnegans
-                    establecimiento: item.ESTABLECIMIENTO || '',
-                    estado: item.ESTADO || '',
-                    fecha: item.FECHA ? new Date(item.FECHA) : null,
-                    laboreo: item.LABOREO || '',
-                    laboreoId: item.LABOREOID || null,
-                    // Guardar todos los datos originales en JSONB
-                    datos: item // Guardar el objeto completo tal como llega
-                }));
-
-                if (i === 0) { // Solo mostrar el primer lote
-                    console.log('💾 GUARDANDO DATOS DIRECTOS DE FINNEGANS:', datosParaUpsert[0]);
-                }
-
-                // Usar UPSERT (INSERT ... ON CONFLICT ... DO UPDATE)
-                const { error } = await supabaseAgro
-                    .from('OrdenTrabajo')
-                    .upsert(datosParaUpsert, {
-                        onConflict: 'transaccionId',
-                        ignoreDuplicates: false
-                    });
-
-                if (error) {
-                    console.error('❌ Error upserting datos de Finnegans:', error);
-                    throw error;
-                }
-                
-                console.log(`✅ Lote ${Math.floor(i/batchSize) + 1} de datos de Finnegans guardado correctamente`);
-            }
-        } catch (error) {
-            console.error('Error guardando datos de Finnegans:', error);
-            throw error;
-        }
-    };
 
     const getPrioridadColor = (prioridad: string) => {
         switch (prioridad) {
@@ -417,38 +284,6 @@ export function OrdenesTrabajoPanel({ ubicacion }: OrdenesTrabajoPanelProps) {
                 flexDirection: 'column'
             }}
         >
-            {/* Header */}
-            <Box sx={{ p: 2, borderBottom: 1, borderColor: 'divider' }}>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-                    <Typography variant="h6" sx={{ color: theme.colores.azul, display: 'flex', alignItems: 'center' }}>
-                        <Assignment sx={{ mr: 1 }} />
-                        Órdenes de Trabajo
-                    </Typography>
-                    <IconButton 
-                        size="small" 
-                        onClick={() => cargarOrdenes(false)}
-                        disabled={loading || isSyncing}
-                        title="Sincronizar con Finnegans"
-                        sx={{ color: theme.colores.azul }}
-                    >
-                        <Refresh />
-                    </IconButton>
-                </Box>
-                
-                {ubicacion && (
-                    <Typography variant="body2" color="text.secondary">
-                        {ubicacion.nombre}
-                    </Typography>
-                )}
-                
-                {establecimientoFiltro && (
-                    <Box sx={{ mt: 1, p: 1, bgcolor: 'info.light', borderRadius: 1, border: 1, borderColor: 'info.main' }}>
-                        <Typography variant="caption" sx={{ color: 'info.dark', fontWeight: 500 }}>
-                            🔍 Mostrando órdenes de trabajo de: <strong>{establecimientoFiltro}</strong>
-                        </Typography>
-                    </Box>
-                )}
-            </Box>
 
             {/* Contenido */}
             <Box sx={{ flex: 1, overflow: 'auto', p: 1 }}>
@@ -509,19 +344,7 @@ export function OrdenesTrabajoPanel({ ubicacion }: OrdenesTrabajoPanelProps) {
                         Nueva Orden
                     </Button>
                     
-                    <Tooltip title="Cargar datos locales">
-                        <Button
-                            variant="outlined"
-                            startIcon={<Refresh />}
-                            onClick={cargarOrdenesLocales}
-                            disabled={loading || isSyncing}
-                            size="small"
-                        >
-                            Cargar Locales
-                        </Button>
-                    </Tooltip>
-                    
-                    <Tooltip title="Sincronizar con Finnegans (automático cada 7 días)">
+                    <Tooltip title="Sincronizar con Finnegans">
                         <Button
                             variant="outlined"
                             startIcon={<CloudSync />}
@@ -540,25 +363,7 @@ export function OrdenesTrabajoPanel({ ubicacion }: OrdenesTrabajoPanelProps) {
                         </Button>
                     </Tooltip>
                     
-                    <Tooltip title="Forzar actualización completa (carga histórica)">
-                        <Button
-                            variant="contained"
-                            startIcon={<History />}
-                            onClick={() => cargarOrdenes(true)}
-                            disabled={loading || isSyncing}
-                            sx={{
-                                backgroundColor: theme.colores.azul,
-                                '&:hover': {
-                                    backgroundColor: theme.colores.azul,
-                                    opacity: 0.9
-                                }
-                            }}
-                        >
-                            Carga Histórica
-                        </Button>
-                    </Tooltip>
-                    
-                    <Tooltip title="Carga histórica COMPLETA sin filtros (obtener TODAS las órdenes)">
+                    <Tooltip title="Cargar datos históricos completos">
                         <Button
                             variant="contained"
                             startIcon={<History />}
@@ -566,17 +371,16 @@ export function OrdenesTrabajoPanel({ ubicacion }: OrdenesTrabajoPanelProps) {
                                 setLoading(true);
                                 setError(null);
                                 try {
-                                    console.log('🔄 Iniciando carga histórica COMPLETA...');
                                     const result = await fetchDatosHistoricosCompletos();
                                     if (result.success) {
                                         setOrdenes(result.data || []);
                                         setError(null);
                                     } else {
-                                        setError(result.message || 'Error en carga histórica completa');
+                                        setError(result.message || 'Error en carga histórica');
                                     }
                                 } catch (err) {
-                                    console.error('Error en carga histórica completa:', err);
-                                    setError((err as Error)?.message || 'Error en carga histórica completa');
+                                    console.error('Error en carga histórica:', err);
+                                    setError((err as Error)?.message || 'Error en carga histórica');
                                 } finally {
                                     setLoading(false);
                                 }
@@ -590,54 +394,9 @@ export function OrdenesTrabajoPanel({ ubicacion }: OrdenesTrabajoPanelProps) {
                                 }
                             }}
                         >
-                            Carga COMPLETA
+                            Carga Histórica
                         </Button>
                     </Tooltip>
-                    
-                    <Tooltip title="Probar diferentes enfoques de la API para obtener más datos">
-                        <Button
-                            variant="contained"
-                            startIcon={<History />}
-                            onClick={async () => {
-                                setLoading(true);
-                                setError(null);
-                                try {
-                                    console.log('🧪 Probando diferentes enfoques de la API...');
-                                    const finnegansData = await probarDiferentesEnfoquesAPI();
-                                    
-                                    if (finnegansData.length > 0) {
-                                        // Guardar datos obtenidos
-                                        await saveFinnegansDataDirectly(finnegansData);
-                                        
-                                        // Transformar y mostrar
-                                        const transformedOrdenes = transformFinnegansData(finnegansData);
-                                        setOrdenes(transformedOrdenes);
-                                        setError(null);
-                                        
-                                        console.log(`✅ Prueba completada: ${finnegansData.length} órdenes obtenidas`);
-                                    } else {
-                                        setError('No se obtuvieron datos con ningún enfoque');
-                                    }
-                                } catch (err) {
-                                    console.error('Error en prueba de enfoques:', err);
-                                    setError((err as Error)?.message || 'Error en prueba de enfoques');
-                                } finally {
-                                    setLoading(false);
-                                }
-                            }}
-                            disabled={loading || isSyncing}
-                            sx={{
-                                backgroundColor: '#9c27b0',
-                                '&:hover': {
-                                    backgroundColor: '#9c27b0',
-                                    opacity: 0.9
-                                }
-                            }}
-                        >
-                            Probar API
-                        </Button>
-                    </Tooltip>
-                    
                 </Box>
 
                 {/* Indicador de estado de sincronización */}
@@ -707,7 +466,7 @@ export function OrdenesTrabajoPanel({ ubicacion }: OrdenesTrabajoPanelProps) {
                                             {orden.transaccionId && (
                                                 <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 0.5 }}>
                                                     ID: {orden.transaccionId}
-                                                </Typography>
+                                        </Typography>
                                             )}
                                         </Box>
                                         <Box sx={{ display: 'flex', gap: 0.5 }}>
@@ -858,7 +617,7 @@ export function OrdenesTrabajoPanel({ ubicacion }: OrdenesTrabajoPanelProps) {
                                                 <Box sx={{ mt: 1 }}>
                                                     <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 0.5 }}>
                                                         🔍 Datos completos de Finnegans:
-                                                    </Typography>
+                                    </Typography>
                                                     <Box sx={{ 
                                                         p: 1, 
                                                         bgcolor: 'grey.100', 
