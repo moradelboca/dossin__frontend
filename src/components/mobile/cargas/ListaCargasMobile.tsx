@@ -30,7 +30,8 @@ const ListaCargasMobile: React.FC<ListaCargasMobileProps> = ({
         .toLowerCase()
         .includes(busqueda.toLowerCase());
     })
-    .filter((carga) => carga.id !== cargaSeleccionada?.id);
+    .filter((carga) => carga.id !== cargaSeleccionada?.id)
+    .sort((a, b) => b.id - a.id); // Sort by ID in descending order (highest to lowest)
 
   return (
     <Box sx={{ backgroundColor: theme.colores.azul, height: '100vh', minHeight: 0, display: 'flex', flexDirection: 'column', borderRadius: '8px' }}>

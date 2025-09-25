@@ -11,7 +11,9 @@ import {
 import ContratoForm from "../forms/contratos/ContratoForm";
 import { ContratoItem } from "./ContratoItem";
 import useContratosConCargas from "../hooks/contratos/useContratosConCargas";
+import useEmpresas from "../hooks/contratos/useEmpresas";
 import ContratosMobile from "./ContratosMobile";
+import ContratoBuscador from "./ContratoBuscador";
 import CircularProgress from "@mui/material/CircularProgress";
 
 const DialogContrato = ({
@@ -45,8 +47,10 @@ export default function Contratos() {
 
   const { contratosConCargas, refreshContratos } =
     useContratosConCargas(backendURL);
+  const { empresas } = useEmpresas(backendURL);
   const [open, setOpen] = useState(false);
   const [seleccionado, setSeleccionado] = useState<any>(null);
+  const [contratosFiltrados, setContratosFiltrados] = useState<any[]>([]);
 
   const isMobile = useMediaQuery("(max-width:768px)");
 
@@ -63,6 +67,46 @@ export default function Contratos() {
   useEffect(() => {
     refreshContratos();
   }, []);
+
+  // Inicializar contratos filtrados cuando se cargan los contratos
+  useEffect(() => {
+    setContratosFiltrados(contratosConCargas);
+  }, [contratosConCargas]);
+
+  const handleFilterChange = (filterType: string, filterValue: any) => {
+    let filtered = contratosConCargas;
+    
+    switch(filterType) {
+      case 'id':
+        filtered = contratosConCargas.filter(c => 
+          c.id.toString().includes(filterValue)
+        );
+        break;
+      case 'titular':
+        filtered = contratosConCargas.filter(c => 
+          c.titularCartaDePorte?.razonSocial?.toLowerCase().includes(filterValue.toLowerCase())
+        );
+        break;
+      case 'destinatario':
+        filtered = contratosConCargas.filter(c => 
+          c.destinatario?.razonSocial?.toLowerCase().includes(filterValue.toLowerCase())
+        );
+        break;
+      case 'empresa':
+        filtered = contratosConCargas.filter(c => 
+          c.titularCartaDePorte?.id === filterValue || c.destinatario?.id === filterValue
+        );
+        break;
+      case 'sin-filtro':
+      default:
+        filtered = contratosConCargas;
+        break;
+    }
+    
+    // Mantener el orden descendente por ID
+    const sortedFiltered = [...filtered].sort((a, b) => b.id - a.id);
+    setContratosFiltrados(sortedFiltered);
+  };
 
   const handleOpenDialog = (item: any) => {
     setSeleccionado(item);
@@ -114,14 +158,26 @@ export default function Contratos() {
           Contratos
         </Typography>
         <Box
-          sx={{ display: "flex", justifyContent: "flex-end", mt: 1, mr: 3 }}
+          sx={{ 
+            display: "flex", 
+            justifyContent: "space-between", 
+            alignItems: "center",
+            mt: 1, 
+            mr: 3,
+            gap: 2
+          }}
         >
+          {/* Buscador y filtros */}
+          <ContratoBuscador
+            onFilterChange={handleFilterChange}
+            empresas={empresas}
+          />
           <Button sx={{ color: theme.colores.azul }} onClick={() => { setSeleccionado(null); setOpen(true); }}>Agregar contrato +</Button>
         </Box>
       </Box>
 
-      {contratosConCargas && contratosConCargas.length > 0 ? (
-        contratosConCargas.map((contrato) => (
+      {contratosFiltrados && contratosFiltrados.length > 0 ? (
+        contratosFiltrados.map((contrato) => (
           <Box key={contrato.id} mb={3}>
             <ContratoItem
               contrato={contrato}
@@ -140,10 +196,10 @@ export default function Contratos() {
           gap={2}
         >
           <Typography variant="h6" color="textSecondary">
-            No hay contratos disponibles
+            {contratosConCargas.length > 0 ? "No se encontraron resultados" : "No hay contratos disponibles"}
           </Typography>
           <Typography variant="body2" color="textSecondary" textAlign="center">
-            Hacé clic en "Agregar contrato +" para crear tu primer contrato
+            {contratosConCargas.length > 0 ? "Intenta con otros filtros de búsqueda" : "Hacé clic en \"Agregar contrato +\" para crear tu primer contrato"}
           </Typography>
         </Box>
       )}

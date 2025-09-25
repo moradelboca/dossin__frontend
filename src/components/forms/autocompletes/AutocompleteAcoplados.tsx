@@ -63,7 +63,7 @@ const AutocompleteAcoplados: React.FC<AutocompleteAcopladosProps> = ({
     }
   }, [value, acoplados, tituloOpcional]);
 
-  const opciones = [...acoplados, '__add__'];
+  const opciones = ['__add__', ...acoplados];
 
   return (
     <>
@@ -103,6 +103,12 @@ const AutocompleteAcoplados: React.FC<AutocompleteAcopladosProps> = ({
             '& .MuiAutocomplete-option': { fontWeight: 400 },
             '& .Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: theme.colores.azul },
             '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: theme.colores.azul },
+          }}
+          ListboxProps={{
+            style: {
+              maxHeight: '200px',
+              overflow: 'auto'
+            }
           }}
           renderInput={(params) => (
             <TextField

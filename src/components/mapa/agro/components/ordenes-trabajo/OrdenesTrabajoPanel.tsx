@@ -26,15 +26,13 @@ import {
     Edit,
     Delete,
     Person,
-    CloudSync,
-    History,
-    CheckCircle,
-    Error,
+    CloudUpload,
 } from '@mui/icons-material';
 import { ContextoGeneral } from '../../../../Contexto';
-import { finnegansApi } from '../finnegans/finnegansApi';
+import { supabaseAgro } from '../../../../../lib/supabase';
 import { OrdenTrabajo } from './types';
-import { useSyncOrdenesTrabajo } from '../../hooks/useSyncOrdenesTrabajo';
+import { useCsvUpload } from '../../hooks/useCsvUpload';
+import { CsvUploadDialog } from './CsvUploadDialog';
 
 interface OrdenesTrabajoPanelProps {
     ubicacion?: any;
@@ -50,6 +48,7 @@ export function OrdenesTrabajoPanel({ ubicacion }: OrdenesTrabajoPanelProps) {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [dialogOpen, setDialogOpen] = useState(false);
+    const [csvUploadOpen, setCsvUploadOpen] = useState(false);
     const [editingOrden, setEditingOrden] = useState<OrdenTrabajo | null>(null);
     const [formData, setFormData] = useState({
         titulo: '',
@@ -60,78 +59,10 @@ export function OrdenesTrabajoPanel({ ubicacion }: OrdenesTrabajoPanelProps) {
         fechaVencimiento: '',
     });
     
-    // Estados para el buscador de facturas
-    const [codigoFactura, setCodigoFactura] = useState('');
-    const [buscandoFactura, setBuscandoFactura] = useState(false);
     const [ordenesExpandidas, setOrdenesExpandidas] = useState<Set<string>>(new Set());
 
-    const buscarFactura = async () => {
-        if (!codigoFactura.trim()) {
-            setError('Por favor ingresa un código de factura');
-            return;
-        }
-
-        setBuscandoFactura(true);
-        setError(null);
-        
-        try {
-            console.log('🔍 Buscando factura con código:', codigoFactura);
-            
-            // Obtener token
-            const token = await finnegansApi.getAccessToken();
-            console.log('🔑 Token obtenido para búsqueda de factura:', token);
-            
-            // Construir URL según el endpoint proporcionado
-            const url = `https://api.finneg.com/api/facturaCompra/${codigoFactura}?ACCESS_TOKEN=${token}`;
-            
-            console.log('🌐 URL de búsqueda de factura:', url);
-            
-            const response = await fetch(url, {
-                method: 'GET',
-                headers: {
-                    'Accept': 'application/json',
-                },
-            });
-            
-            if (response.ok) {
-                const facturaData = await response.json();
-                console.log('✅ Factura encontrada - Datos completos:', facturaData);
-                console.log('📊 Estructura de la factura:', JSON.stringify(facturaData, null, 2));
-                
-                // Log detallado de todos los campos
-                if (facturaData) {
-                    console.log('🔍 Análisis detallado de la factura:');
-                    Object.keys(facturaData).forEach(key => {
-                        console.log(`  - ${key}:`, facturaData[key]);
-                    });
-                }
-                
-                // Mostrar mensaje de éxito
-                setError(null);
-                alert(`Factura encontrada! Revisa la consola para ver todos los datos. Código: ${codigoFactura}`);
-                
-            } else {
-                const errorText = await response.text();
-                console.error('❌ Error buscando factura:', response.status, response.statusText);
-                console.error('❌ Detalles del error:', errorText);
-                setError(`Error ${response.status}: No se encontró la factura con código ${codigoFactura}`);
-            }
-        } catch (err) {
-            console.error('❌ Error en la búsqueda de factura:', err);
-            setError((err as Error)?.message || 'Error desconocido al buscar factura');
-        } finally {
-            setBuscandoFactura(false);
-        }
-    };
-
-    // Hook de sincronización
-    const { 
-        syncOrdenesTrabajo, 
-        fetchDatosHistoricosCompletos,
-        isSyncing, 
-        syncControl, 
-        getOrdenesFromSupabase 
-    } = useSyncOrdenesTrabajo(establecimientoFiltro);
+    // Hook para carga de CSV
+    const { uploadCsvFile, isUploading } = useCsvUpload();
 
     // Cargar órdenes al montar el componente
     useEffect(() => {
@@ -159,27 +90,73 @@ export function OrdenesTrabajoPanel({ ubicacion }: OrdenesTrabajoPanelProps) {
         }
     };
 
-
-    const cargarOrdenes = async (forceRefresh = false) => {
-        setLoading(true);
-        setError(null);
+    const getOrdenesFromSupabase = async (): Promise<OrdenTrabajo[]> => {
         try {
-            console.log('🔄 Iniciando sincronización de órdenes de trabajo...');
             
-            const result = await syncOrdenesTrabajo(forceRefresh);
-            
-            if (result.success) {
-                setOrdenes(result.data || []);
-                setError(null);
-            } else {
-                setError(result.message || 'Error en sincronización');
+            let query = supabaseAgro
+                .from('OrdenTrabajo')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            // Aplicar filtro por establecimiento si se proporciona
+            if (establecimientoFiltro) {
+                query = query.ilike('establecimiento', `%${establecimientoFiltro}%`);
+                console.log(`🔍 Consultando Supabase con filtro de establecimiento: "${establecimientoFiltro}"`);
             }
-        } catch (err) {
-            console.error('Error en sincronización:', err);
-            setError((err as Error)?.message || 'Error en sincronización');
-        } finally {
-            setLoading(false);
+
+            const { data, error } = await query;
+
+            if (error) {
+                console.error('❌ Error en consulta a Supabase:', error);
+                throw error;
+            }
+
+            const ordenesTransformadas = data?.map((item: any) => {
+                return {
+                    id: item.transaccionId?.toString() || 'sin-id',
+                    titulo: item.datos?.titulo || item.laboreo || 'Sin título',
+                    descripcion: item.datos?.descripcion || '',
+                    prioridad: item.datos?.prioridad || 'media',
+                    estado: item.estado as 'pendiente' | 'en_progreso' | 'completada',
+                    asignadoA: item.datos?.asignadoA,
+                    fechaVencimiento: item.fecha 
+                        ? new Date(item.fecha).toISOString() 
+                        : item.datos?.fechaEjecucion 
+                            ? new Date(item.datos.fechaEjecucion).toISOString()
+                            : undefined,
+                    ubicacionId: item.establecimiento,
+                    creadoPor: item.datos?.creadoPor || 'Sistema',
+                    creadoEn: item.created_at,
+                    actualizadoEn: item.updated_at,
+                    codigoFinnegans: undefined,
+                    activo: item.datos?.activo !== false,
+                    situacion: item.datos?.situacion,
+                    // Campos adicionales
+                    laboreo: item.laboreo || item.datos?.laboreo,
+                    codigo: item.datos?.codigo || item.datos?.numeroInterno,
+                    establecimiento: item.establecimiento || item.datos?.establecimiento,
+                    laboreoId: item.laboreoId || item.datos?.laboreoId,
+                    transaccionId: item.transaccionId || item.datos?.transaccionId,
+                    datos: item.datos // Guardar datos originales
+                };
+            }) || [];
+
+            return ordenesTransformadas;
+        } catch (error) {
+            console.error('Error getting orders from Supabase:', error);
+            return [];
         }
+    };
+
+    const handleCsvUpload = async (file: File) => {
+        const result = await uploadCsvFile(file);
+        
+        if (result.success) {
+            // Recargar las órdenes después de una carga exitosa
+            await cargarOrdenesLocales();
+        }
+        
+        return result;
     };
 
     const handleCrearOrden = () => {
@@ -287,46 +264,6 @@ export function OrdenesTrabajoPanel({ ubicacion }: OrdenesTrabajoPanelProps) {
 
             {/* Contenido */}
             <Box sx={{ flex: 1, overflow: 'auto', p: 1 }}>
-                {/* Buscador de Facturas */}
-                <Box sx={{ mb: 2, p: 2, border: 1, borderColor: 'divider', borderRadius: 1, backgroundColor: 'background.paper' }}>
-                    <Typography variant="subtitle2" sx={{ mb: 1, color: theme.colores.azul }}>
-                        🔍 Buscar Factura
-                    </Typography>
-                    <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
-                        <TextField
-                            label="Código de Factura"
-                            value={codigoFactura}
-                            onChange={(e) => setCodigoFactura(e.target.value)}
-                            size="small"
-                            sx={{ flex: 1 }}
-                            placeholder="Ingresa el código de la factura"
-                            onKeyPress={(e) => {
-                                if (e.key === 'Enter') {
-                                    buscarFactura();
-                                }
-                            }}
-                        />
-                        <Button
-                            variant="contained"
-                            onClick={buscarFactura}
-                            disabled={buscandoFactura || !codigoFactura.trim()}
-                            sx={{
-                                backgroundColor: theme.colores.azul,
-                                minWidth: 80,
-                                '&:hover': {
-                                    backgroundColor: theme.colores.azul,
-                                    opacity: 0.9
-                                }
-                            }}
-                        >
-                            {buscandoFactura ? (
-                                <CircularProgress size={16} color="inherit" />
-                            ) : (
-                                'OK'
-                            )}
-                        </Button>
-                    </Box>
-                </Box>
 
                 <Box sx={{ mb: 2, display: 'flex', gap: 1 }}>
                     <Button
@@ -344,12 +281,12 @@ export function OrdenesTrabajoPanel({ ubicacion }: OrdenesTrabajoPanelProps) {
                         Nueva Orden
                     </Button>
                     
-                    <Tooltip title="Sincronizar con Finnegans">
+                    <Tooltip title="Cargar órdenes desde archivo CSV">
                         <Button
                             variant="outlined"
-                            startIcon={<CloudSync />}
-                            onClick={() => cargarOrdenes(false)}
-                            disabled={loading || isSyncing}
+                            startIcon={<CloudUpload />}
+                            onClick={() => setCsvUploadOpen(true)}
+                            disabled={loading || isUploading}
                             sx={{
                                 borderColor: theme.colores.azul,
                                 color: theme.colores.azul,
@@ -359,74 +296,11 @@ export function OrdenesTrabajoPanel({ ubicacion }: OrdenesTrabajoPanelProps) {
                                 }
                             }}
                         >
-                            {isSyncing ? 'Sincronizando...' : 'Sincronizar'}
-                        </Button>
-                    </Tooltip>
-                    
-                    <Tooltip title="Cargar datos históricos completos">
-                        <Button
-                            variant="contained"
-                            startIcon={<History />}
-                            onClick={async () => {
-                                setLoading(true);
-                                setError(null);
-                                try {
-                                    const result = await fetchDatosHistoricosCompletos();
-                                    if (result.success) {
-                                        setOrdenes(result.data || []);
-                                        setError(null);
-                                    } else {
-                                        setError(result.message || 'Error en carga histórica');
-                                    }
-                                } catch (err) {
-                                    console.error('Error en carga histórica:', err);
-                                    setError((err as Error)?.message || 'Error en carga histórica');
-                                } finally {
-                                    setLoading(false);
-                                }
-                            }}
-                            disabled={loading || isSyncing}
-                            sx={{
-                                backgroundColor: '#d32f2f',
-                                '&:hover': {
-                                    backgroundColor: '#d32f2f',
-                                    opacity: 0.9
-                                }
-                            }}
-                        >
-                            Carga Histórica
+                            {isUploading ? 'Cargando...' : 'Cargar CSV'}
                         </Button>
                     </Tooltip>
                 </Box>
 
-                {/* Indicador de estado de sincronización */}
-                {syncControl && (
-                    <Box sx={{ mb: 2, p: 2, bgcolor: 'grey.50', borderRadius: 1 }}>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-                            {syncControl.estado === 'syncing' && <CircularProgress size={16} />}
-                            {syncControl.estado === 'idle' && <CheckCircle color="success" fontSize="small" />}
-                            {syncControl.estado === 'error' && <Error color="error" fontSize="small" />}
-                            
-                            <Typography variant="body2" color="text.secondary">
-                                {syncControl.estado === 'syncing' && 'Sincronizando...'}
-                                {syncControl.estado === 'idle' && 'Sincronizado'}
-                                {syncControl.estado === 'error' && 'Error en sincronización'}
-                            </Typography>
-                        </Box>
-                        
-                        {syncControl.ultima_sincronizacion && (
-                            <Typography variant="caption" color="text.secondary">
-                                Última sincronización: {new Date(syncControl.ultima_sincronizacion).toLocaleString()}
-                            </Typography>
-                        )}
-                        
-                        {syncControl.total_registros > 0 && (
-                            <Typography variant="caption" color="text.secondary" sx={{ ml: 2 }}>
-                                {syncControl.total_registros} órdenes sincronizadas
-                            </Typography>
-                        )}
-                    </Box>
-                )}
 
                 {error && (
                     <Alert severity="error" sx={{ mb: 2 }}>
@@ -445,7 +319,7 @@ export function OrdenesTrabajoPanel({ ubicacion }: OrdenesTrabajoPanelProps) {
                             No hay órdenes de trabajo disponibles
                         </Typography>
                         <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-                            Haz clic en "Sincronizar" para obtener las órdenes desde Finnegans
+                            Haz clic en "Cargar CSV" para subir un archivo con las órdenes de trabajo
                         </Typography>
                     </Box>
                 ) : (
@@ -504,13 +378,13 @@ export function OrdenesTrabajoPanel({ ubicacion }: OrdenesTrabajoPanelProps) {
                                         {(orden.fechaVencimiento || (orden as any).datos?.FECHA) && (
                                             <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
                                                 📅 Fecha: {(() => {
-                                                    const fecha = orden.fechaVencimiento || (orden as any).datos?.FECHA;
+                                                    const fecha = orden.fechaVencimiento || (orden as any).datos?.fechaEjecucion;
                                                     
                                                     if (!fecha) return 'Sin fecha';
                                                     
-                                                    // Si es formato DD-MM-YYYY, convertir a Date
+                                                    // Si es formato YYYY-MM-DD (ISO), convertir a Date
                                                     if (fecha.includes('-') && fecha.length === 10 && !fecha.includes('T')) {
-                                                        const [dia, mes, año] = fecha.split('-');
+                                                        const [año, mes, dia] = fecha.split('-');
                                                         
                                                         // Crear fecha usando el constructor Date(año, mes-1, dia)
                                                         const fechaDate = new Date(parseInt(año), parseInt(mes) - 1, parseInt(dia));
@@ -559,11 +433,17 @@ export function OrdenesTrabajoPanel({ ubicacion }: OrdenesTrabajoPanelProps) {
                                                             const fecha = orden.fechaVencimiento;
                                                             if (!fecha) return 'Sin fecha';
                                                             
-                                                            // Si es formato DD-MM-YYYY, convertir a Date
+                                                            // Si es formato YYYY-MM-DD (ISO), usar directamente
                                                             if (fecha.includes('-') && fecha.length === 10 && !fecha.includes('T')) {
-                                                                const [dia, mes, año] = fecha.split('-');
-                                                                const fechaConvertida = new Date(`${año}-${mes.padStart(2, '0')}-${dia.padStart(2, '0')}`);
-                                                                return fechaConvertida.toLocaleDateString('es-AR');
+                                                                try {
+                                                                    const fechaDate = new Date(fecha);
+                                                                    if (isNaN(fechaDate.getTime())) {
+                                                                        return fecha;
+                                                                    }
+                                                                    return fechaDate.toLocaleDateString('es-AR');
+                                                                } catch {
+                                                                    return fecha;
+                                                                }
                                                             }
                                                             
                                                             // Si es formato ISO, usar directamente
@@ -616,7 +496,7 @@ export function OrdenesTrabajoPanel({ ubicacion }: OrdenesTrabajoPanelProps) {
                                             {(orden as any).datos && (
                                                 <Box sx={{ mt: 1 }}>
                                                     <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 0.5 }}>
-                                                        🔍 Datos completos de Finnegans:
+                                                        🔍 Datos completos del CSV:
                                     </Typography>
                                                     <Box sx={{ 
                                                         p: 1, 
@@ -659,14 +539,6 @@ export function OrdenesTrabajoPanel({ ubicacion }: OrdenesTrabajoPanelProps) {
                                                 size="small" 
                                                 variant="outlined"
                                                 color="info"
-                                            />
-                                        )}
-                                        {orden.codigoFinnegans && (
-                                            <Chip 
-                                                label={`Finnegans: ${orden.codigoFinnegans}`} 
-                                                size="small" 
-                                                variant="outlined"
-                                                color="primary"
                                             />
                                         )}
                                         {orden.asignadoA && (
@@ -766,6 +638,13 @@ export function OrdenesTrabajoPanel({ ubicacion }: OrdenesTrabajoPanelProps) {
                     </Button>
                 </DialogActions>
             </Dialog>
+
+            {/* Dialog para carga de CSV */}
+            <CsvUploadDialog
+                open={csvUploadOpen}
+                onClose={() => setCsvUploadOpen(false)}
+                onUpload={handleCsvUpload}
+            />
         </Box>
     );
 }

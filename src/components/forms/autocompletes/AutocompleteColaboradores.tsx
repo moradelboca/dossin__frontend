@@ -72,7 +72,7 @@ const AutocompleteColaboradores: React.FC<AutocompleteColaboradoresProps> = ({
   const handleAgregarNuevo = () => setOpenDialog(true);
   const handleCloseDialog = () => setOpenDialog(false);
 
-  const opciones = disabled ? [] : [...colaboradoresFiltrados, '__add__'];
+  const opciones = disabled ? [] : ['__add__', ...colaboradoresFiltrados];
 
   return (
     <>
@@ -114,6 +114,12 @@ const AutocompleteColaboradores: React.FC<AutocompleteColaboradoresProps> = ({
             '& .MuiAutocomplete-option': { fontWeight: 400 },
             '& .Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: theme.colores.azul },
             '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: theme.colores.azul },
+          }}
+          ListboxProps={{
+            style: {
+              maxHeight: '200px',
+              overflow: 'auto'
+            }
           }}
           renderInput={(params) => (
             <TextField

@@ -32,7 +32,9 @@ const useContratosConCargas = (backendURL: string) => {
           })
         );
   
-        setContratosConCargas(contratosActualizados);
+        // Sort contracts by ID in descending order (highest to lowest)
+        const contratosOrdenados = contratosActualizados.sort((a, b) => b.id - a.id);
+        setContratosConCargas(contratosOrdenados);
       } catch (error) {
         console.error("Error fetching contratos:", error);
       }
