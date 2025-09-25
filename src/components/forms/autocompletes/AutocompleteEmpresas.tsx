@@ -82,7 +82,7 @@ const AutocompleteEmpresas: React.FC<AutocompleteEmpresasProps> = ({
   const handleAgregarNuevo = () => setOpenDialog(true);
   const handleCloseDialog = () => setOpenDialog(false);
 
-  const opciones = [...empresas, '__add__'];
+  const opciones = ['__add__', ...empresas];
 
   return (
     <>
@@ -126,6 +126,12 @@ const AutocompleteEmpresas: React.FC<AutocompleteEmpresasProps> = ({
             '& .MuiAutocomplete-option': { fontWeight: 400 },
             '& .Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: theme.colores.azul },
             '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: theme.colores.azul },
+          }}
+          ListboxProps={{
+            style: {
+              maxHeight: '200px',
+              overflow: 'auto'
+            }
           }}
           renderInput={(params) => (
             <TextField

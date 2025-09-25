@@ -51,7 +51,7 @@ const AutocompleteCamiones: React.FC<AutocompleteCamionesProps> = ({
   const handleAgregarNuevo = () => setOpenDialog(true);
   const handleCloseDialog = () => setOpenDialog(false);
 
-  const opciones = [...camiones, '__add__'];
+  const opciones = ['__add__', ...camiones];
 
   return (
     <>
@@ -91,6 +91,12 @@ const AutocompleteCamiones: React.FC<AutocompleteCamionesProps> = ({
             '& .MuiAutocomplete-option': { fontWeight: 400 },
             '& .Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: theme.colores.azul },
             '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: theme.colores.azul },
+          }}
+          ListboxProps={{
+            style: {
+              maxHeight: '200px',
+              overflow: 'auto'
+            }
           }}
           renderInput={(params) => (
             <TextField

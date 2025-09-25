@@ -34,7 +34,9 @@ const Sidebar: React.FC<SidebarProps> = ({
   const { provinciasCarga, provinciasDescarga } = useProvincias(cargas);
 
   useEffect(() => {
-    setFilteredCargas(cargas);
+    // Sort cargas by ID in descending order (highest to lowest)
+    const sortedCargas = [...cargas].sort((a, b) => b.id - a.id);
+    setFilteredCargas(sortedCargas);
     handleFilterChange('sin-filtro', null);
   }, [cargas]);
   
@@ -65,7 +67,9 @@ const Sidebar: React.FC<SidebarProps> = ({
         break;
     }
     
-    setFilteredCargas(filtered);
+    // Sort filtered results by ID in descending order (highest to lowest)
+    const sortedFiltered = [...filtered].sort((a, b) => b.id - a.id);
+    setFilteredCargas(sortedFiltered);
   };
 
   const provinciasOptions = provinciasCarga.map(p => ({

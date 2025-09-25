@@ -1,5 +1,6 @@
-import React, { useState } from "react";
-import { Box, Typography, Button, Dialog, DialogContent, DialogTitle } from "@mui/material";
+import React, { useState, useEffect } from "react";
+import { Box, Typography, Button, Dialog, DialogContent, DialogTitle, TextField, InputAdornment } from "@mui/material";
+import SearchIcon from "@mui/icons-material/Search";
 import CardMobile from "../cards/mobile/CardMobile";
 import ContratoForm from "../forms/contratos/ContratoForm";
 import { CustomButtom } from "../botones/CustomButtom";
@@ -31,6 +32,9 @@ const ContratosMobile: React.FC<ContratosMobileProps> = ({
   // Estado para crear carga
   const [openCrearCarga, setOpenCrearCarga] = useState(false);
   const [contratoParaCarga, setContratoParaCarga] = useState<any>(null);
+  // Estado para búsqueda
+  const [busqueda, setBusqueda] = useState("");
+  const [contratosFiltrados, setContratosFiltrados] = useState<any[]>([]);
 
   // Campos a mostrar en la card de contrato
   const contratoFields = [
@@ -55,6 +59,31 @@ const ContratosMobile: React.FC<ContratosMobileProps> = ({
     "Unidad",
     "Cargamento",
   ];
+
+  // Inicializar contratos filtrados cuando se cargan los contratos
+  useEffect(() => {
+    setContratosFiltrados(contratos);
+  }, [contratos]);
+
+  // Filtrar contratos basado en la búsqueda
+  useEffect(() => {
+    if (!busqueda) {
+      setContratosFiltrados(contratos);
+    } else {
+      const filtered = contratos.filter((contrato) => {
+        const searchLower = busqueda.toLowerCase();
+        return (
+          contrato.id.toString().includes(searchLower) ||
+          contrato.titularCartaDePorte?.razonSocial?.toLowerCase().includes(searchLower) ||
+          contrato.destinatario?.razonSocial?.toLowerCase().includes(searchLower) ||
+          JSON.stringify(contrato).toLowerCase().includes(searchLower)
+        );
+      });
+      // Mantener el orden descendente por ID
+      const sortedFiltered = [...filtered].sort((a, b) => b.id - a.id);
+      setContratosFiltrados(sortedFiltered);
+    }
+  }, [busqueda, contratos]);
 
   const handleExpandContrato = (index: number) => {
     setExpandedContrato(expandedContrato === index ? null : index);
@@ -122,8 +151,32 @@ const ContratosMobile: React.FC<ContratosMobileProps> = ({
           Agregar contrato +
         </Button>
       </Box>
-      {contratos.length > 0 ? (
-        contratos.map((contrato, idx) => (
+      
+      {/* Campo de búsqueda */}
+      <TextField
+        variant="outlined"
+        size="small"
+        placeholder="Buscar contratos..."
+        value={busqueda}
+        onChange={(e) => setBusqueda(e.target.value)}
+        fullWidth
+        sx={{
+          mb: 1,
+          backgroundColor: "#fff",
+          borderRadius: "50px",
+          maxWidth: "400px",
+        }}
+        InputProps={{
+          startAdornment: (
+            <InputAdornment position="start">
+              <SearchIcon color="action" />
+            </InputAdornment>
+          ),
+        }}
+      />
+      
+      {contratosFiltrados.length > 0 ? (
+        contratosFiltrados.map((contrato, idx) => (
           <Box key={contrato.id || idx} mb={3}>
             <CardMobile
               item={contrato}
@@ -186,10 +239,10 @@ const ContratosMobile: React.FC<ContratosMobileProps> = ({
           gap={2}
         >
           <Typography variant="h6" color="textSecondary">
-            No hay contratos disponibles
+            {contratos.length > 0 ? "No se encontraron resultados" : "No hay contratos disponibles"}
           </Typography>
           <Typography variant="body2" color="textSecondary" textAlign="center">
-            Hacé clic en "Agregar contrato +" para crear tu primer contrato
+            {contratos.length > 0 ? "Intenta con otros términos de búsqueda" : "Hacé clic en \"Agregar contrato +\" para crear tu primer contrato"}
           </Typography>
         </Box>
       )}
