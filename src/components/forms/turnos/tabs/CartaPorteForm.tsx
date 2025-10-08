@@ -10,8 +10,10 @@ import {
   DialogActions,
   useTheme,
   useMediaQuery,
+  Divider,
 } from "@mui/material";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+import AddIcon from "@mui/icons-material/Add";
 import useCartaPorteHandler from "../../../hooks/turnos/useCartaPorteHandler";
 import { ContextoGeneral } from "../../../Contexto";
 import MainButton from "../../../botones/MainButtom";
@@ -22,6 +24,8 @@ interface CartaPorteFormProps {
   initialData?: {
     numeroCartaPorte?: number;
     CTG?: number;
+    segundaCartaPorte?: number;
+    segundaCTG?: number;
   };
   cuitTitular?: string;
   onSuccess: (updatedData: any) => void;
@@ -42,12 +46,29 @@ const CartaPorteForm: React.FC<CartaPorteFormProps> = ({
   const [ctg, setCtg] = useState<string>(
     initialData?.CTG !== undefined ? String(initialData.CTG) : ""
   );
-  const [errors, setErrors] = useState<{ numeroCartaPorte?: string; ctg?: string }>({});
+  
+  // Estados para la segunda carta de porte
+  const [segundaCartaPorte, setSegundaCartaPorte] = useState<string>(
+    initialData?.segundaCartaPorte !== undefined ? String(initialData.segundaCartaPorte).padStart(13, '0') : ""
+  );
+  const [segundaCTG, setSegundaCTG] = useState<string>(
+    initialData?.segundaCTG !== undefined ? String(initialData.segundaCTG) : ""
+  );
+  const [mostrarSegundaCP, setMostrarSegundaCP] = useState<boolean>(
+    initialData?.segundaCartaPorte !== undefined || initialData?.segundaCTG !== undefined
+  );
+  
+  const [errors, setErrors] = useState<{ 
+    numeroCartaPorte?: string; 
+    ctg?: string;
+    segundaCartaPorte?: string;
+    segundaCTG?: string;
+  }>({});
   
   // Estado para controlar el diálogo de eliminación
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
 
-  const { handleCartaPorteSubmission, handleCartaPorteDeletion } = useCartaPorteHandler();
+  const { handleMultipleCartaPorteSubmission, handleCartaPorteDeletion } = useCartaPorteHandler();
   const {theme} = useContext(ContextoGeneral);
   const { showNotificacion } = useNotificacion();
   
@@ -76,48 +97,127 @@ const CartaPorteForm: React.FC<CartaPorteFormProps> = ({
         ? String(initialData.CTG)
         : ""
     );
-  }, [initialData?.numeroCartaPorte, initialData?.CTG]);
+    setSegundaCartaPorte(
+      initialData?.segundaCartaPorte !== undefined
+        ? String(initialData.segundaCartaPorte)
+        : ""
+    );
+    setSegundaCTG(
+      initialData?.segundaCTG !== undefined
+        ? String(initialData.segundaCTG)
+        : ""
+    );
+    setMostrarSegundaCP(
+      initialData?.segundaCartaPorte !== undefined || initialData?.segundaCTG !== undefined
+    );
+  }, [initialData?.numeroCartaPorte, initialData?.CTG, initialData?.segundaCartaPorte, initialData?.segundaCTG]);
 
   const isUpdate =
     initialData?.numeroCartaPorte !== undefined &&
     Number(numeroCartaPorte) === initialData.numeroCartaPorte;
 
   const validate = () => {
-    const newErrors: { numeroCartaPorte?: string; ctg?: string } = {};
+    const newErrors: { 
+      numeroCartaPorte?: string; 
+      ctg?: string;
+      segundaCartaPorte?: string;
+      segundaCTG?: string;
+    } = {};
+    
+    // Validar primera carta de porte
     if (!numeroCartaPorte) newErrors.numeroCartaPorte = "Número de Carta de Porte es obligatorio";
     else if (numeroCartaPorte.length > 13) newErrors.numeroCartaPorte = "Máximo 13 dígitos";
+    
     if (!ctg) newErrors.ctg = "CTG es obligatorio";
     else if (String(ctg).length > 11) newErrors.ctg = "Máximo 11 dígitos";
+    
+    // Validar segunda carta de porte si está visible
+    if (mostrarSegundaCP) {
+      if (!segundaCartaPorte) newErrors.segundaCartaPorte = "Número de segunda Carta de Porte es obligatorio";
+      else if (segundaCartaPorte.length > 13) newErrors.segundaCartaPorte = "Máximo 13 dígitos";
+      
+      if (!segundaCTG) newErrors.segundaCTG = "Segundo CTG es obligatorio";
+      else if (String(segundaCTG).length > 11) newErrors.segundaCTG = "Máximo 11 dígitos";
+      
+      // Validar que no sean iguales
+      if (numeroCartaPorte && segundaCartaPorte && numeroCartaPorte === segundaCartaPorte) {
+        newErrors.segundaCartaPorte = "No puede ser igual a la primera Carta de Porte";
+      }
+      if (ctg && segundaCTG && ctg === segundaCTG) {
+        newErrors.segundaCTG = "No puede ser igual al primer CTG";
+      }
+    }
+    
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!validate()) return;
-    handleCartaPorteSubmission(
-      turnoId,
-      {
+    
+    try {
+      // Preparar las cartas de porte
+      const cartasPorte = [
+        {
+          numeroCartaPorte: Number(numeroCartaPorte),
+          CTG: Number(ctg),
+          cuitTitular: cuitTitular,
+        }
+      ];
+
+      // Agregar segunda carta de porte si existe
+      if (mostrarSegundaCP && segundaCartaPorte && segundaCTG) {
+        cartasPorte.push({
+          numeroCartaPorte: Number(segundaCartaPorte),
+          CTG: Number(segundaCTG),
+          cuitTitular: cuitTitular,
+        });
+      }
+
+      // Crear/actualizar todas las cartas de porte
+      const results = await handleMultipleCartaPorteSubmission(
+        turnoId,
+        cartasPorte,
+        isUpdate
+      );
+
+      // Retornar ambas cartas de porte
+      onSuccess({
+        primeraCartaPorte: results[0],
         numeroCartaPorte: Number(numeroCartaPorte),
         CTG: Number(ctg),
-        cuitTitular: cuitTitular,
-      },
-      isUpdate
-    )
-      .then((result) => onSuccess(result))
-      .catch((error) => {
-        let mensaje = 'Error al procesar Carta de Porte';
-        try {
-          const parsed = JSON.parse(error.message);
-          if (parsed.mensaje) mensaje = parsed.mensaje;
-        } catch {}
-        showNotificacion(mensaje, 'error');
-        console.error('Error al procesar Carta de Porte:', error);
+        segundaCartaPorte: segundaCartaPorte ? Number(segundaCartaPorte) : undefined,
+        segundaCTG: segundaCTG ? Number(segundaCTG) : undefined,
       });
+    } catch (error) {
+      let mensaje = 'Error al procesar Carta de Porte';
+      try {
+        const parsed = JSON.parse((error as Error).message);
+        if (parsed.mensaje) mensaje = parsed.mensaje;
+      } catch {}
+      showNotificacion(mensaje, 'error');
+      console.error('Error al procesar Carta de Porte:', error);
+    }
   };
 
   // Funciones para el diálogo de eliminación
   const handleOpenDeleteDialog = () => setOpenDeleteDialog(true);
   const handleCloseDeleteDialog = () => setOpenDeleteDialog(false);
+
+  const handleMostrarSegundaCP = () => {
+    setMostrarSegundaCP(true);
+  };
+
+  const handleOcultarSegundaCP = () => {
+    setMostrarSegundaCP(false);
+    setSegundaCartaPorte("");
+    setSegundaCTG("");
+    setErrors(prev => ({
+      ...prev,
+      segundaCartaPorte: undefined,
+      segundaCTG: undefined
+    }));
+  };
 
   const handleDelete = async () => {
     if (!numeroCartaPorte) return;
@@ -132,39 +232,125 @@ const CartaPorteForm: React.FC<CartaPorteFormProps> = ({
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
-      <TextField
-        label="Número Carta de Porte"
-        type="text"
-        value={numeroCartaPorte}
-        onChange={(e) => {
-          const newValue = e.target.value;
-          if (/^\d{0,13}$/.test(newValue)) {
-            setNumeroCartaPorte(newValue);
-          }
-        }}
-        inputProps={{ maxLength: 13 }}
-        error={!!errors.numeroCartaPorte}
-        helperText={errors.numeroCartaPorte}
-        fullWidth
-        disabled={initialData?.numeroCartaPorte !== undefined}
-        sx={{ ...azulStyles, mt: 2 }}
-      />
-      <TextField
-        label="CTG"
-        type="text"
-        value={ctg}
-        onChange={(e) => {
-          const newValue = e.target.value;
-          if (/^\d{0,11}$/.test(newValue)) {
-            setCtg(newValue);
-          }
-        }}
-        inputProps={{ maxLength: 11 }}
-        error={!!errors.ctg}
-        helperText={errors.ctg}
-        fullWidth
-        sx={azulStyles}
-      />
+      {/* Primera Carta de Porte */}
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+        <TextField
+          label="Número Carta de Porte"
+          type="text"
+          value={numeroCartaPorte}
+          onChange={(e) => {
+            const newValue = e.target.value;
+            if (/^\d{0,13}$/.test(newValue)) {
+              setNumeroCartaPorte(newValue);
+            }
+          }}
+          inputProps={{ maxLength: 13 }}
+          error={!!errors.numeroCartaPorte}
+          helperText={errors.numeroCartaPorte}
+          fullWidth
+          disabled={initialData?.numeroCartaPorte !== undefined}
+          sx={{ ...azulStyles, mt: 2 }}
+        />
+        <TextField
+          label="CTG"
+          type="text"
+          value={ctg}
+          onChange={(e) => {
+            const newValue = e.target.value;
+            if (/^\d{0,11}$/.test(newValue)) {
+              setCtg(newValue);
+            }
+          }}
+          inputProps={{ maxLength: 11 }}
+          error={!!errors.ctg}
+          helperText={errors.ctg}
+          fullWidth
+          sx={azulStyles}
+        />
+      </Box>
+
+      {/* Botón para asociar segunda carta de porte */}
+      {!mostrarSegundaCP && (
+        <Button
+          onClick={handleMostrarSegundaCP}
+          startIcon={<AddIcon />}
+          sx={{
+            color: theme.colores.azul,
+            borderColor: theme.colores.azul,
+            border: '1px solid',
+            borderRadius: '8px',
+            textTransform: 'none',
+            fontWeight: 500,
+            '&:hover': {
+              backgroundColor: 'rgba(22, 54, 96, 0.1)',
+              borderColor: theme.colores.azulOscuro,
+            }
+          }}
+          variant="outlined"
+        >
+          Asociar otra carta de porte
+        </Button>
+      )}
+
+      {/* Segunda Carta de Porte */}
+      {mostrarSegundaCP && (
+        <Box>
+          <Divider sx={{ my: 2 }}>
+            <Box sx={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: 1,
+              color: theme.colores.azul,
+              fontWeight: 500
+            }}>
+              Segunda Carta de Porte
+              <IconButton 
+                onClick={handleOcultarSegundaCP}
+                size="small"
+                sx={{ color: '#d32f2f' }}
+              >
+                <DeleteOutlineIcon fontSize="small" />
+              </IconButton>
+            </Box>
+          </Divider>
+          
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <TextField
+              label="Número Segunda Carta de Porte"
+              type="text"
+              value={segundaCartaPorte}
+              onChange={(e) => {
+                const newValue = e.target.value;
+                if (/^\d{0,13}$/.test(newValue)) {
+                  setSegundaCartaPorte(newValue);
+                }
+              }}
+              inputProps={{ maxLength: 13 }}
+              error={!!errors.segundaCartaPorte}
+              helperText={errors.segundaCartaPorte}
+              fullWidth
+              sx={azulStyles}
+            />
+            <TextField
+              label="Segundo CTG"
+              type="text"
+              value={segundaCTG}
+              onChange={(e) => {
+                const newValue = e.target.value;
+                if (/^\d{0,11}$/.test(newValue)) {
+                  setSegundaCTG(newValue);
+                }
+              }}
+              inputProps={{ maxLength: 11 }}
+              error={!!errors.segundaCTG}
+              helperText={errors.segundaCTG}
+              fullWidth
+              sx={azulStyles}
+            />
+          </Box>
+        </Box>
+      )}
+
       <Box
         sx={{
           display: "flex",

@@ -9,45 +9,57 @@ const useCartaPorteHandler = () => {
     "ngrok-skip-browser-warning": "true",
   };
 
-  // Función para crear o actualizar la Carta de Porte
-  const handleCartaPorteSubmission = async (
+  // Función para crear o actualizar múltiples Cartas de Porte
+  const handleMultipleCartaPorteSubmission = async (
     turnoId: string,
-    payload: { numeroCartaPorte: number; CTG: number; cuitTitular?: string },
+    cartasPorte: Array<{ numeroCartaPorte: number; CTG: number; cuitTitular?: string }>,
     isUpdate: boolean
   ) => {
-    const method = isUpdate ? "PUT" : "POST";
-    const url = isUpdate
-      ? `${backendURL}/cartasdeporte/${payload.numeroCartaPorte}`
-      : `${backendURL}/cartasdeporte`;
+    const results = [];
+    
+    for (let i = 0; i < cartasPorte.length; i++) {
+      const carta = cartasPorte[i];
+      const method = isUpdate && i === 0 ? "PUT" : "POST";
+      const url = isUpdate && i === 0
+        ? `${backendURL}/cartasdeporte/${carta.numeroCartaPorte}`
+        : `${backendURL}/cartasdeporte`;
 
-    const cartaResponse = await fetch(url, {
-      method,
-      headers,
-      body: JSON.stringify({
-        numeroCartaPorte: payload.numeroCartaPorte,
-        CTG: payload.CTG,
-        cuitTitular: payload.cuitTitular,
-        idTurno: turnoId,
-      }),
-    });
-    if (!cartaResponse.ok) {
-      throw new Error(await cartaResponse.text());
+      const cartaResponse = await fetch(url, {
+        method,
+        headers,
+        body: JSON.stringify({
+          numeroCartaPorte: carta.numeroCartaPorte,
+          CTG: carta.CTG,
+          cuitTitular: carta.cuitTitular,
+          idTurno: turnoId,
+        }),
+      });
+      
+      if (!cartaResponse.ok) {
+        throw new Error(await cartaResponse.text());
+      }
+      
+      const data = await cartaResponse.json();
+      results.push(data);
     }
-    const data = await cartaResponse.json();
 
-    // Actualizar el turno con idCartaDePorte y estado 8 (En Viaje)
-    const turnoResponse = await fetch(`${backendURL}/turnos/${turnoId}`, {
-      method: "PUT",
-      headers,
-      body: JSON.stringify({
-        idCartaDePorte: data.id,
-        idEstado: 8,
-      }),
-    });
-    if (!turnoResponse.ok) {
-      throw new Error(await turnoResponse.text());
+    // Actualizar el turno con la primera carta de porte y estado 8 (En Viaje)
+    if (results.length > 0) {
+      const turnoResponse = await fetch(`${backendURL}/turnos/${turnoId}`, {
+        method: "PUT",
+        headers,
+        body: JSON.stringify({
+          idCartaDePorte: results[0].id,
+          idEstado: 8,
+        }),
+      });
+      
+      if (!turnoResponse.ok) {
+        throw new Error(await turnoResponse.text());
+      }
     }
-    return data;
+    
+    return results;
   };
 
   // Función para eliminar la Carta de Porte
@@ -68,7 +80,20 @@ const useCartaPorteHandler = () => {
     }
   };
 
-  return { handleCartaPorteSubmission, handleCartaPorteDeletion };
+  // Función original para compatibilidad (mantener para no romper código existente)
+  const handleCartaPorteSubmission = async (
+    turnoId: string,
+    payload: { numeroCartaPorte: number; CTG: number; cuitTitular?: string },
+    isUpdate: boolean
+  ) => {
+    return handleMultipleCartaPorteSubmission(turnoId, [payload], isUpdate).then(results => results[0]);
+  };
+
+  return { 
+    handleCartaPorteSubmission, 
+    handleMultipleCartaPorteSubmission,
+    handleCartaPorteDeletion 
+  };
 };
 
 export default useCartaPorteHandler;

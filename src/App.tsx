@@ -1,8 +1,8 @@
 // App.tsx 
-import { CssBaseline, useMediaQuery } from "@mui/material";
+import { CssBaseline, useMediaQuery, Button } from "@mui/material";
 import Box from "@mui/material/Box";
 import { useState, useContext } from "react";
-import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
+import { BrowserRouter, Route, Routes, Navigate, useLocation } from "react-router-dom";
 import Usuarios from "./components/admin/Usuarios";
 import { AuthProvider, useAuth } from "./components/autenticacion/ContextoAuth";
 import { NotificacionProvider } from "./components/Notificaciones/NotificacionSnackbar";
@@ -27,6 +27,8 @@ import Cookies from "js-cookie";
 import { HelpBot } from './components/helpbot';
 import { NavigationHistoryProvider } from './components/breadcrumb/NavigationHistoryContext';
 import { NavigationBreadcrumb } from './components/breadcrumb/NavigationBreadcrumb';
+import { BuscadorTurnoDialog } from './components/cargas/BuscadorTurnoDialog';
+import Mensajes from './components/mensajes/Mensajes';
 
 function MainLayout({
   navAbierto,
@@ -42,7 +44,14 @@ function MainLayout({
   isMobile: boolean;
 }) {
   const { user } = useAuth();
+  const { theme } = useContext(ContextoGeneral);
   const rolId = user?.rol?.id;
+  const location = useLocation();
+  const [openBuscadorTurno, setOpenBuscadorTurno] = useState(false);
+  
+  // Verificar si estamos en la pantalla de cargas (solo /cargas, no /cargas/:id ni /cargas/:id/cupos)
+  const isInCargasScreen = location.pathname === '/cargas' || (location.pathname.startsWith('/cargas/') && !location.pathname.includes('/cupos'));
+
   return (
     <NavigationHistoryProvider>
       <WebSocketComponent />
@@ -66,7 +75,29 @@ function MainLayout({
           flexDirection: 'column',
         }}
       >
-        <NavigationBreadcrumb />
+        <NavigationBreadcrumb 
+          rightContent={isInCargasScreen && (rolId === 1 || rolId === 2) ? (
+            <Button
+              variant="text"
+              size="small"
+              onClick={() => setOpenBuscadorTurno(true)}
+              sx={{
+                color: theme.colores.azul,
+                textTransform: 'none',
+                fontSize: '0.875rem',
+                fontWeight: 400,
+                opacity: 0.8,
+                '&:hover': {
+                  opacity: 1,
+                  backgroundColor: 'transparent',
+                  textDecoration: 'underline'
+                }
+              }}
+            >
+              Turbo-turno
+            </Button>
+          ) : undefined}
+        />
         <Box sx={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
         <Routes>
           <Route
@@ -154,6 +185,14 @@ function MainLayout({
             }
           />
           <Route
+            path="/mensajes"
+            element={
+              <RutasProtegidas allowedRoles={[1, 2, 3, 4]}>
+                <Mensajes />
+              </RutasProtegidas>
+            }
+          />
+          <Route
             path="/clima"
             element={
               <RutasProtegidas allowedRoles={[1, 4]}>
@@ -192,6 +231,12 @@ function MainLayout({
         </Routes>
       </Box>
       </Box>
+      
+      {/* Dialog de buscador de turnos */}
+      <BuscadorTurnoDialog 
+        open={openBuscadorTurno}
+        onClose={() => setOpenBuscadorTurno(false)}
+      />
     </NavigationHistoryProvider>
   );
 }
