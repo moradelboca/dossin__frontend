@@ -31,50 +31,68 @@ const pathToLabel = (pathname: string) => {
   return pathname.replace('/', '').charAt(0).toUpperCase() + pathname.slice(2);
 };
 
-export const NavigationBreadcrumb: React.FC = () => {
+interface NavigationBreadcrumbProps {
+  rightContent?: React.ReactNode;
+}
+
+export const NavigationBreadcrumb: React.FC<NavigationBreadcrumbProps> = ({ rightContent }) => {
   const { history, currentIndex, goTo } = useNavigationHistory();
   const { theme } = useContext(ContextoGeneral);
 
   return (
-    <Box sx={{ width: '100%', p: 1, background: 'transparent' }}>
-      <Paper elevation={1} sx={{ p: 1.5, background: '#f7fafd', borderRadius: 2, display: 'inline-block', minWidth: 200 }}>
-        <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} aria-label="breadcrumb">
-          {history.map((entry, idx) => {
-            if (idx === currentIndex) {
-              return (
-                <Typography style={{ color: theme.colores.azul }} key={entry.pathname + idx} fontWeight={600}>
-                  {entry.label || pathToLabel(entry.pathname)}
-                </Typography>
-              );
-            } else if (idx < currentIndex) {
-              return (
-                <Link
-                  key={entry.pathname + idx}
-                  color="inherit"
-                  underline="hover"
-                  sx={{ cursor: 'pointer' }}
-                  onClick={() => goTo(idx)}
-                >
-                  {entry.label || pathToLabel(entry.pathname)}
-                </Link>
-              );
-            } else {
-              // Futuro
-              return (
-                <Link
-                  key={entry.pathname + idx}
-                  color="inherit"
-                  underline="hover"
-                  sx={{ cursor: 'pointer', color: '#b0b0b0', fontStyle: 'italic' }}
-                  onClick={() => goTo(idx)}
-                >
-                  {entry.label || pathToLabel(entry.pathname)}
-                </Link>
-              );
-            }
-          })}
-        </Breadcrumbs>
-      </Paper>
+    <Box sx={{ 
+      width: '100%', 
+      p: 1, 
+      background: 'transparent',
+      display: 'flex',
+      alignItems: 'center',
+      gap: 1
+    }}>
+      <Box sx={{ flex: rightContent ? '0 0 80%' : '1' }}>
+        <Paper elevation={1} sx={{ p: 1.5, background: '#f7fafd', borderRadius: 2, display: 'inline-block', minWidth: 200 }}>
+          <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} aria-label="breadcrumb">
+            {history.map((entry, idx) => {
+              if (idx === currentIndex) {
+                return (
+                  <Typography style={{ color: theme.colores.azul }} key={entry.pathname + idx} fontWeight={600}>
+                    {entry.label || pathToLabel(entry.pathname)}
+                  </Typography>
+                );
+              } else if (idx < currentIndex) {
+                return (
+                  <Link
+                    key={entry.pathname + idx}
+                    color="inherit"
+                    underline="hover"
+                    sx={{ cursor: 'pointer' }}
+                    onClick={() => goTo(idx)}
+                  >
+                    {entry.label || pathToLabel(entry.pathname)}
+                  </Link>
+                );
+              } else {
+                // Futuro
+                return (
+                  <Link
+                    key={entry.pathname + idx}
+                    color="inherit"
+                    underline="hover"
+                    sx={{ cursor: 'pointer', color: '#b0b0b0', fontStyle: 'italic' }}
+                    onClick={() => goTo(idx)}
+                  >
+                    {entry.label || pathToLabel(entry.pathname)}
+                  </Link>
+                );
+              }
+            })}
+          </Breadcrumbs>
+        </Paper>
+      </Box>
+      {rightContent && (
+        <Box sx={{ flex: '0 0 20%', display: 'flex', justifyContent: 'flex-end' }}>
+          {rightContent}
+        </Box>
+      )}
     </Box>
   );
 }; 
