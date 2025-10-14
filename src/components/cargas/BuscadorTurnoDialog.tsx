@@ -181,13 +181,28 @@ export const BuscadorTurnoDialog: React.FC<BuscadorTurnoDialogProps> = ({ open, 
         turnosData = [data];
       }
       
-      // Normalizar los datos de turnos
-      const turnosNormalizados = turnosData.map((turno: any) => ({
-        ...turno,
-        camion: typeof turno.camion === "string" ? { patente: turno.camion } : turno.camion,
-        acoplado: typeof turno.acoplado === "string" ? { patente: turno.acoplado } : turno.acoplado,
-        acopladoExtra: typeof turno.acopladoExtra === "string" ? { patente: turno.acopladoExtra } : turno.acopladoExtra,
-      }));
+      // Normalizar los datos de turnos - aplanar la estructura turnoInfo
+      const turnosNormalizados = turnosData.map((turno: any) => {
+        // Si el turno tiene turnoInfo, aplanar esa estructura
+        if (turno.turnoInfo) {
+          return {
+            ...turno.turnoInfo,
+            // Mantener algunos campos del nivel raíz si existen
+            carga: turno.carga,
+            // Normalizar campos que pueden ser strings
+            camion: typeof turno.turnoInfo.camion === "string" ? { patente: turno.turnoInfo.camion } : turno.turnoInfo.camion,
+            acoplado: typeof turno.turnoInfo.acoplado === "string" ? { patente: turno.turnoInfo.acoplado } : turno.turnoInfo.acoplado,
+            acopladoExtra: typeof turno.turnoInfo.acopladoExtra === "string" ? { patente: turno.turnoInfo.acopladoExtra } : turno.turnoInfo.acopladoExtra,
+          };
+        }
+        // Si no tiene turnoInfo, mantener la estructura original
+        return {
+          ...turno,
+          camion: typeof turno.camion === "string" ? { patente: turno.camion } : turno.camion,
+          acoplado: typeof turno.acoplado === "string" ? { patente: turno.acoplado } : turno.acoplado,
+          acopladoExtra: typeof turno.acopladoExtra === "string" ? { patente: turno.acopladoExtra } : turno.acopladoExtra,
+        };
+      });
 
       setTurnos(turnosNormalizados);
       setSearched(true);
@@ -525,9 +540,9 @@ export const BuscadorTurnoDialog: React.FC<BuscadorTurnoDialogProps> = ({ open, 
                             </TableRow>
                           </TableHead>
                           <TableBody>
-                            {turnos.map((turno) => (
+                            {turnos.map((turno, index) => (
                               <TurnoGridRow
-                                key={turno.id}
+                                key={turno.id || `turno-${index}`}
                                 turno={turno}
                                 cupo={{ carga: turno.carga }}
                                 refreshCupos={() => handleBuscar()}
