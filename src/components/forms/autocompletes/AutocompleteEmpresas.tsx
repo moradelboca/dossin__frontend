@@ -26,6 +26,8 @@ interface AutocompleteEmpresasProps {
   helperText?: string | null;
   labelText?: string;
   rolEmpresa?: string; // Para filtrar empresas (ej.: "transportista")
+  width?: number | string; // Ancho del componente
+  fullWidth?: boolean; // Si debe ocupar todo el ancho disponible
 }
 
 const AutocompleteEmpresas: React.FC<AutocompleteEmpresasProps> = ({
@@ -36,6 +38,8 @@ const AutocompleteEmpresas: React.FC<AutocompleteEmpresasProps> = ({
   helperText = '',
   labelText = '',
   rolEmpresa = '',
+  width,
+  fullWidth = false,
 }) => {
   const { backendURL, theme } = useContext(ContextoGeneral);
   const [allEmpresas, setAllEmpresas] = useState<Empresa[]>([]);
@@ -122,7 +126,7 @@ const AutocompleteEmpresas: React.FC<AutocompleteEmpresasProps> = ({
             return <li key={key} {...rest}>{`${emp.razonSocial} - ${emp.nombreFantasia}`}</li>;
           }}
           sx={{
-            width: 300,
+            width: fullWidth ? '100%' : (width || 300),
             '& .MuiAutocomplete-option': { fontWeight: 400 },
             '& .Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: theme.colores.azul },
             '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: theme.colores.azul },
