@@ -5,8 +5,10 @@ import {
   Grid,
   CircularProgress,
   Alert,
-  useTheme
+  useTheme,
+  Button
 } from '@mui/material';
+import { Add as AddIcon } from '@mui/icons-material';
 import { ContratoWithStats, FiltrosSeguimiento } from '../../types/contratosComerciales';
 import TarjetaContrato from './TarjetaContrato';
 import FiltrosSeguimientoComponent from './FiltrosSeguimiento';
@@ -17,13 +19,15 @@ interface SeguimientoContratosProps {
   loading: boolean;
   error: string | null;
   onEditContrato?: (contrato: ContratoWithStats) => void;
+  onCreateContrato?: () => void;
 }
 
 const SeguimientoContratos: React.FC<SeguimientoContratosProps> = ({
   contratos,
   loading,
   error,
-  onEditContrato
+  onEditContrato,
+  onCreateContrato
 }) => {
   const theme = useTheme();
   const { theme: customTheme } = useContext(ContextoGeneral);
@@ -248,12 +252,27 @@ const SeguimientoContratos: React.FC<SeguimientoContratosProps> = ({
           <Typography variant="h5" color="text.secondary" gutterBottom>
             {contratos.length > 0 ? 'No se encontraron contratos' : 'No hay contratos disponibles'}
           </Typography>
-          <Typography variant="body1" color="text.secondary">
+          <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
             {contratos.length > 0 
               ? 'Intenta ajustar los filtros de búsqueda'
               : 'Los contratos comerciales aparecerán aquí una vez que se creen'
             }
           </Typography>
+          {contratos.length === 0 && onCreateContrato && (
+            <Button
+              variant="contained"
+              startIcon={<AddIcon />}
+              onClick={onCreateContrato}
+              sx={{
+                backgroundColor: customTheme?.colores?.azul || '#163660',
+                '&:hover': {
+                  backgroundColor: customTheme?.colores?.azulOscuro || '#0f2a4a'
+                }
+              }}
+            >
+              Crear Primer Contrato
+            </Button>
+          )}
         </Box>
       )}
     </Box>

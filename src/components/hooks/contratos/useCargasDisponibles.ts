@@ -32,7 +32,6 @@ const useCargasDisponibles = (backendURL: string, contratosConCargas: any[] = []
       }
 
       const cargasData = await response.json();
-      console.log('Cargas fetched from backend:', cargasData);
       const cargasAsociadas = getCargasAsociadas();
 
       // Process loads and mark as associated or not
@@ -72,7 +71,6 @@ const useCargasDisponibles = (backendURL: string, contratosConCargas: any[] = []
       // For now, show all loads to debug - we can filter later
       const cargasRelevantes = cargasProcesadas;
 
-      console.log('Cargas procesadas:', cargasRelevantes);
       setCargas(cargasRelevantes);
     } catch (err) {
       console.error('Error fetching cargas disponibles:', err);

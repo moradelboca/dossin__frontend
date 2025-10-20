@@ -58,6 +58,7 @@ const ContratosComerciales: React.FC = () => {
     severity: 'info'
   });
   const [editOpen, setEditOpen] = useState(false);
+  const [createOpen, setCreateOpen] = useState(false);
   const [contratoSeleccionado, setContratoSeleccionado] = useState<ContratoWithStats | null>(null);
 
   // Fetch contracts and loads
@@ -176,57 +177,16 @@ const ContratosComerciales: React.FC = () => {
     setEditOpen(true);
   };
 
+  const handleCreateContrato = () => {
+    setCreateOpen(true);
+  };
+
   const handleCloseSnackbar = () => {
     setSnackbar(prev => ({ ...prev, open: false }));
   };
 
   const loading = contratosLoading || cargasLoading;
   const error = contratosError || cargasError;
-
-  // Show message if no contracts and no error (likely table doesn't exist)
-  if (!loading && contratos.length === 0 && !error) {
-    return (
-      <Box sx={{ 
-        backgroundColor: customTheme?.colores?.grisClaro || '#f6f6f6', 
-        height: '100%', 
-        minHeight: 0, 
-        minWidth: 0, 
-        width: '100%', 
-        overflowY: 'auto',
-        p: 4,
-        textAlign: 'center'
-      }}>
-        <Typography variant="h5" color="text.secondary" gutterBottom>
-          Tabla de Contratos Comerciales no encontrada
-        </Typography>
-        <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
-          Para usar esta funcionalidad, necesitas crear la tabla en la base de datos.
-        </Typography>
-        <Box sx={{ 
-          p: 3, 
-          backgroundColor: 'white', 
-          borderRadius: 2,
-          textAlign: 'left',
-          maxWidth: 600,
-          mx: 'auto',
-          boxShadow: 1
-        }}>
-          <Typography variant="h6" gutterBottom>
-            Pasos para configurar:
-          </Typography>
-          <Typography variant="body2" component="div" sx={{ mb: 2 }}>
-            1. Ejecuta la migración SQL en tu base de datos Supabase
-          </Typography>
-          <Typography variant="body2" component="div" sx={{ mb: 2 }}>
-            2. El archivo de migración está en: <code>src/lib/supabase-migrations.sql</code>
-          </Typography>
-          <Typography variant="body2" component="div">
-            3. Una vez creada la tabla, recarga esta página
-          </Typography>
-        </Box>
-      </Box>
-    );
-  }
 
   return (
     <Box sx={{ 
@@ -318,6 +278,7 @@ const ContratosComerciales: React.FC = () => {
             loading={loading}
             error={error}
             onEditContrato={handleEditContrato}
+            onCreateContrato={handleCreateContrato}
           />
         </TabPanel>
         <TabPanel value={tabValue} index={1}>
@@ -341,6 +302,14 @@ const ContratosComerciales: React.FC = () => {
         onSuccess={() => { setEditOpen(false); refreshContratos(); showSnackbar('Contrato actualizado', 'success'); }}
         modo="editar"
         contratoInicial={contratoSeleccionado as any}
+      />
+
+      {/* Create dialog */}
+      <CrearContratoDialog
+        open={createOpen}
+        onClose={() => setCreateOpen(false)}
+        onSuccess={() => { setCreateOpen(false); refreshContratos(); showSnackbar('Contrato creado exitosamente', 'success'); }}
+        modo="crear"
       />
 
       {/* Snackbar for notifications */}
