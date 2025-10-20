@@ -569,7 +569,7 @@ export default function CuposMobile({
               <DateCalendar
                 value={calendarMode === 'start' ? customStart : customEnd}
                 minDate={calendarMode === 'end' ? customStart : undefined}
-                maxDate={calendarMode === 'start' ? customEnd : (user?.rol?.id === 1 ? undefined : dayjs())}
+                maxDate={calendarMode === 'start' ? customEnd : (user?.rol?.id === 1 ? undefined : dayjs().subtract(1, 'day'))}
                 onChange={(date) => {
                   if (!date) return;
                   if (calendarMode === 'start') {

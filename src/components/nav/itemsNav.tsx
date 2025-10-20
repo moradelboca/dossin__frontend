@@ -9,6 +9,7 @@ import {
 } from "@mui/icons-material";
 import AdminPanelSettingsOutlinedIcon from "@mui/icons-material/AdminPanelSettingsOutlined";
 import AssignmentOutlinedIcon from "@mui/icons-material/AssignmentOutlined";
+import BusinessCenterOutlinedIcon from "@mui/icons-material/BusinessCenterOutlined";
 import CalculateOutlinedIcon from "@mui/icons-material/CalculateOutlined";
 import GridView from "@mui/icons-material/GridView";
 import ThunderstormOutlinedIcon from "@mui/icons-material/ThunderstormOutlined";
@@ -26,6 +27,7 @@ export interface NavItem {
     // Items protegidos:
     { label: "Cargas", ruta: "/cargas", rolesPermitidos: [1, 2, 3, 4], icono: <ViewInAr /> },
     { label: "Contratos", ruta: "/contratos", rolesPermitidos: [1, 2], icono: <AssignmentOutlinedIcon /> },
+    { label: "Contratos Comerciales", ruta: "/contratos-comerciales", rolesPermitidos: [1, 2], icono: <BusinessCenterOutlinedIcon /> },
     { label: "Colaboradores", ruta: "/colaboradores", rolesPermitidos: [1, 2, 4], icono: <GroupsOutlined /> },
     { label: "Ubicaciones", ruta: "/ubicaciones", rolesPermitidos: [1, 2, 4], icono: <AddLocationAltOutlined /> },
     { label: "Empresas", ruta: "/empresas", rolesPermitidos: [1, 2, 4], icono: <DomainAddOutlined /> },

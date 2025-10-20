@@ -15,6 +15,7 @@ import Choferes from "./components/choferes/Choferes";
 import Clima from "./components/clima/Clima";
 import { ContextoGeneral, ValoresContexto } from "./components/Contexto";
 import Contratos from "./components/contratos/Contratos";
+import ContratosComerciales from "./components/contratosComerciales/ContratosComerciales";
 import Dashboard from "./components/dashboard/Dashboard";
 import Empresas from "./components/empresas/Empresas";
 import Inconvenientes from "./components/inconvenientes/Inconvenientes";
@@ -141,6 +142,14 @@ function MainLayout({
             element={
               <RutasProtegidas allowedRoles={[1, 2]}>
                 <Contratos />
+              </RutasProtegidas>
+            }
+          />
+          <Route
+            path="/contratos-comerciales"
+            element={
+              <RutasProtegidas allowedRoles={[1, 2]}>
+                <ContratosComerciales />
               </RutasProtegidas>
             }
           />

@@ -199,3 +199,146 @@ export async function listKMZFilesForLote(
         return [];
     }
 }
+
+// =====================================================
+// FUNCIONES PARA CONTRATOS COMERCIALES
+// =====================================================
+
+// Obtener todos los contratos comerciales
+export async function getContratosComerciales(): Promise<any[]> {
+    try {
+        const { data, error } = await supabaseAgro
+            .from('ContratosComerciales')
+            .select('*')
+            .order('created_at', { ascending: false });
+
+        if (error) {
+            console.error('Error fetching contratos comerciales:', error);
+            // If table doesn't exist, return empty array with a warning
+            if (error.code === 'PGRST205') {
+                console.warn('Table ContratosComerciales does not exist. Please run the migration first.');
+                return [];
+            }
+            throw error;
+        }
+
+        return data || [];
+    } catch (error) {
+        console.error('Error in getContratosComerciales:', error);
+        return [];
+    }
+}
+
+// Obtener un contrato comercial por ID
+export async function getContratoComercialById(id: number): Promise<any | null> {
+    try {
+        const { data, error } = await supabaseAgro
+            .from('ContratosComerciales')
+            .select('*')
+            .eq('id', id)
+            .single();
+
+        if (error) {
+            console.error('Error fetching contrato comercial:', error);
+            return null;
+        }
+
+        return data;
+    } catch (error) {
+        console.error('Error in getContratoComercialById:', error);
+        return null;
+    }
+}
+
+// Actualizar cargas asociadas a un contrato
+export async function updateCargasAsociadas(
+    contratoId: number, 
+    cargasIds: number[]
+): Promise<boolean> {
+    try {
+        const { error } = await supabaseAgro
+            .from('ContratosComerciales')
+            .update({ 
+                cargasIds: cargasIds,
+                updated_at: new Date().toISOString()
+            })
+            .eq('id', contratoId);
+
+        if (error) {
+            console.error('Error updating cargas asociadas:', error);
+            throw error;
+        }
+
+        return true;
+    } catch (error) {
+        console.error('Error in updateCargasAsociadas:', error);
+        return false;
+    }
+}
+
+// Crear un nuevo contrato comercial
+export async function createContratoComercial(contrato: any): Promise<any | null> {
+    try {
+        const { data, error } = await supabaseAgro
+            .from('ContratosComerciales')
+            .insert([contrato])
+            .select()
+            .single();
+
+        if (error) {
+            console.error('Error creating contrato comercial:', error);
+            throw error;
+        }
+
+        return data;
+    } catch (error) {
+        console.error('Error in createContratoComercial:', error);
+        return null;
+    }
+}
+
+// Actualizar un contrato comercial
+export async function updateContratoComercial(
+    id: number, 
+    updates: any
+): Promise<boolean> {
+    try {
+        const { error } = await supabaseAgro
+            .from('ContratosComerciales')
+            .update({ 
+                ...updates,
+                updated_at: new Date().toISOString()
+            })
+            .eq('id', id);
+
+        if (error) {
+            console.error('Error updating contrato comercial:', error);
+            throw error;
+        }
+
+        return true;
+    } catch (error) {
+        console.error('Error in updateContratoComercial:', error);
+        return false;
+    }
+}
+
+// Eliminar un contrato comercial
+export async function deleteContratoComercial(id: number): Promise<boolean> {
+    try {
+        const { error } = await supabaseAgro
+            .from('ContratosComerciales')
+            .delete()
+            .eq('id', id);
+
+        if (error) {
+            console.error('Error deleting contrato comercial:', error);
+            throw error;
+        }
+
+        return true;
+    } catch (error) {
+        console.error('Error in deleteContratoComercial:', error);
+        return false;
+    }
+}

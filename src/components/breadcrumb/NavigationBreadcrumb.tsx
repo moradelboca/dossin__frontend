@@ -19,6 +19,7 @@ const pathToLabel = (pathname: string) => {
   if (pathname.startsWith('/cargas')) return 'Cargas';
   if (pathname.startsWith('/empresas')) return 'Empresas';
   if (pathname.startsWith('/cupos')) return 'Cupos';
+  if (pathname.startsWith('/contratos-comerciales')) return 'Contratos comerciales';
   if (pathname.startsWith('/contratos')) return 'Contratos';
   if (pathname.startsWith('/colaboradores')) return 'Colaboradores';
   if (pathname.startsWith('/ubicaciones')) return 'Ubicaciones';
