@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { 
   getContratosComerciales, 
   updateCargasAsociadas 
-} from '../../../lib/supabase';
+} from '../../../lib/contratos-comerciales-api';
 import { 
   ContratoComercial, 
   ContratoWithStats, 
@@ -79,7 +79,7 @@ const useContratosComerciales = (backendURL: string) => {
       setLoading(true);
       setError(null);
 
-      // Fetch contracts from Supabase
+      // Fetch contracts from Dossin backend
       const contratosData = await getContratosComerciales();
       
       if (!contratosData.length) {
@@ -118,6 +118,7 @@ const useContratosComerciales = (backendURL: string) => {
   const updateCargas = async (contratoId: number, cargasIds: number[]): Promise<boolean> => {
     try {
       const success = await updateCargasAsociadas(contratoId, cargasIds);
+      
       if (success) {
         // Refresh the specific contract
         await fetchContratos();

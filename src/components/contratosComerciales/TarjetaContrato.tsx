@@ -223,7 +223,7 @@ const TarjetaContrato: React.FC<TarjetaContratoProps> = ({ contrato, onEdit }) =
                 {contrato.cargas.map((carga) => (
                   <Box key={carga.id} sx={{ display: 'flex', justifyContent: 'space-between', py: 0.5 }}>
                     <Typography variant="caption">
-                      CP #{carga.numeroCartaPorte}
+                      Carga #{carga.numeroCartaPorte}
                     </Typography>
                     <Typography variant="caption" sx={{ fontWeight: 'bold' }}>
                       {(carga.kgDescargadosTotales || 0).toLocaleString()} kg

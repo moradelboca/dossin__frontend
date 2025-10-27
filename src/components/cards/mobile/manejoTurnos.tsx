@@ -419,7 +419,10 @@ export function renderTurnosDialogs({
           <DialogContent>
             <PesajeForm
               turnoId={turnoLocal.id}
-              initialData={{ kgDescargados: turnoLocal.kgDescargados, precioGrano: turnoLocal.precioGrano }}
+              initialData={{ 
+                kgDescargados: turnoLocal.kgDescargados, 
+                precioGrano: turnoLocal.precioGrano ? turnoLocal.precioGrano * 1000 : turnoLocal.precioGrano // Convertir de precio por kg a precio por tonelada para mostrar al usuario
+              }}
               onSuccess={async () => {
                 try {
                   const nextEstadoId = getNextEstadoId(turnoLocal.estado?.nombre);

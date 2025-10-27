@@ -53,7 +53,7 @@ const PesajeForm: React.FC<PesajeFormProps> = ({
     try {
       const payload = {
         kgDescargados: Number(kgDescargados),
-        precioGrano: Number(precioGrano),
+        precioGrano: Number(precioGrano) / 1000, // Convertir de precio por tonelada a precio por kg
       };
       const url = `${backendURL}/turnos/${turnoId}`;
       const response = await fetch(url, {

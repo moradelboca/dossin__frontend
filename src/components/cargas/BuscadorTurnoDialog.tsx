@@ -29,11 +29,13 @@ import { ContextoGeneral } from '../Contexto';
 import TurnoGridRow from './cupos/tabsCupos/TurnoGridRow';
 import { exportarCSV, exportarPDF, exportarImagen } from '../../utils/exportUtils';
 import { AnalisisDescargas } from './AnalisisDescargas';
+import { ModoLiquidacion } from './ModoLiquidacion';
 import ViewColumnIcon from '@mui/icons-material/ViewColumn';
 import SaveAltIcon from '@mui/icons-material/SaveAlt';
 import ImageIcon from '@mui/icons-material/Image';
 import SearchIcon from '@mui/icons-material/Search';
 import CloseIcon from '@mui/icons-material/Close';
+import ReceiptIcon from '@mui/icons-material/Receipt';
 import { ESTADO_PERMISOS } from '../../utils/turnoEstadoPermisos';
 
 interface BuscadorTurnoDialogProps {
@@ -108,8 +110,11 @@ export const BuscadorTurnoDialog: React.FC<BuscadorTurnoDialogProps> = ({ open, 
   const [valorBusqueda, setValorBusqueda] = useState<string>('');
   const [estadoSeleccionado, setEstadoSeleccionado] = useState<{ id: number; nombre: string } | null>(null);
   const [turnos, setTurnos] = useState<any[]>([]);
+  const [turnosCompletos, setTurnosCompletos] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
+  const [loadingCompletos, setLoadingCompletos] = useState(false);
   const [searched, setSearched] = useState(false);
+  const [modoLiquidacion, setModoLiquidacion] = useState(false);
   
   // Estados para columnas y exportación (reutilizados del grid)
   const [selectedColumns, setSelectedColumns] = useState<string[]>(columnasPorDefecto);
@@ -204,8 +209,63 @@ export const BuscadorTurnoDialog: React.FC<BuscadorTurnoDialogProps> = ({ open, 
         };
       });
 
-      setTurnos(turnosNormalizados);
+      // Eliminar duplicados basándose en el ID del turno
+      // Si no hay ID, usar una combinación de campos únicos para identificar duplicados
+      const turnosUnicos = turnosNormalizados.filter((turno: any, index: number, self: any[]) => {
+        if (turno.id) {
+          // Si tiene ID, usar el ID para identificar duplicados
+          return index === self.findIndex((t: any) => t.id === turno.id);
+        } else {
+          // Si no tiene ID, usar una combinación de campos para identificar duplicados
+          const camposUnicos = `${turno.colaborador?.cuil || ''}-${turno.empresa?.cuit || ''}-${turno.camion?.patente || ''}-${turno.acoplado?.patente || ''}-${turno.estado?.nombre || ''}`;
+          return index === self.findIndex((t: any) => {
+            if (t.id) return false; // Si el otro tiene ID, no es duplicado
+            const otrosCamposUnicos = `${t.colaborador?.cuil || ''}-${t.empresa?.cuit || ''}-${t.camion?.patente || ''}-${t.acoplado?.patente || ''}-${t.estado?.nombre || ''}`;
+            return otrosCamposUnicos === camposUnicos;
+          });
+        }
+      });
+
+      // Fallback: Si aún hay duplicados, usar un método más simple
+      const turnosFinales = turnosUnicos.length > 0 ? turnosUnicos : turnosNormalizados;
+
+      setTurnos(turnosFinales);
       setSearched(true);
+      
+      // Si el estado es "Facturado", obtener datos completos de cada turno
+      if (estadoSeleccionado?.nombre.toLowerCase() === 'facturado') {
+        setLoadingCompletos(true);
+        try {
+          const turnosCompletosData = await Promise.all(
+            turnosFinales.map(async (turno: any) => {
+              try {
+                const res = await fetch(`${backendURL}/turnos/${turno.id}`, {
+                  method: 'GET',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'ngrok-skip-browser-warning': 'true',
+                  },
+                });
+                if (res.ok) {
+                  return await res.json();
+                }
+                return turno;
+              } catch (err) {
+                console.error('Error obteniendo turno completo:', err);
+                return turno;
+              }
+            })
+          );
+          setTurnosCompletos(turnosCompletosData);
+        } catch (err) {
+          console.error('Error obteniendo turnos completos:', err);
+          setTurnosCompletos([]);
+        } finally {
+          setLoadingCompletos(false);
+        }
+      } else {
+        setTurnosCompletos([]);
+      }
     } catch (error) {
       console.error('Error buscando turnos:', error);
       alert('Error al buscar turnos');
@@ -221,7 +281,9 @@ export const BuscadorTurnoDialog: React.FC<BuscadorTurnoDialogProps> = ({ open, 
     setValorBusqueda('');
     setEstadoSeleccionado(null);
     setTurnos([]);
+    setTurnosCompletos([]);
     setSearched(false);
+    setModoLiquidacion(false);
   };
 
   const handleCloseDialog = () => {
@@ -291,18 +353,18 @@ export const BuscadorTurnoDialog: React.FC<BuscadorTurnoDialogProps> = ({ open, 
             onChange={(_, newValue) => setActiveTab(newValue)}
             sx={{
               '& .MuiTab-root': {
-                color: theme.colores.gris || '#666',
+                color: `${theme.colores.azul} !important`,
                 fontWeight: 500,
                 textTransform: 'none',
                 fontSize: '0.95rem',
                 transition: 'all 0.3s ease',
                 '&:hover': {
-                  color: theme.colores.azul,
+                  color: `${theme.colores.azul} !important`,
                   backgroundColor: `${theme.colores.azul}15`,
                 },
               },
               '& .Mui-selected': {
-                color: theme.colores.azul,
+                color: `${theme.colores.azul} !important`,
                 fontWeight: 700,
                 backgroundColor: `${theme.colores.azul}20`,
                 borderBottom: `2px solid ${theme.colores.azul}`,
@@ -466,25 +528,46 @@ export const BuscadorTurnoDialog: React.FC<BuscadorTurnoDialogProps> = ({ open, 
                       </Typography>
                       
                       <Box sx={{ display: 'flex', gap: 1 }}>
-                        <Tooltip title="Filtrar columnas">
-                          <IconButton
-                            size="small"
-                            onClick={(e) => setAnchorElColumns(e.currentTarget)}
-                            sx={{ color: theme.colores.azul }}
-                          >
-                            <ViewColumnIcon />
-                          </IconButton>
-                        </Tooltip>
-                        
-                        <Tooltip title="Exportar">
-                          <IconButton
-                            size="small"
-                            onClick={(e) => setAnchorElExport(e.currentTarget)}
-                            sx={{ color: theme.colores.azul }}
-                          >
-                            <SaveAltIcon />
-                          </IconButton>
-                        </Tooltip>
+                        {estadoSeleccionado?.nombre.toLowerCase() === 'facturado' && (
+                          <Tooltip title={modoLiquidacion ? "Vista Normal" : "Modo Liquidación"}>
+                            <IconButton
+                              size="small"
+                              onClick={() => setModoLiquidacion(!modoLiquidacion)}
+                              sx={{ 
+                                color: modoLiquidacion ? '#fff' : theme.colores.azul,
+                                backgroundColor: modoLiquidacion ? theme.colores.azul : 'transparent',
+                                '&:hover': {
+                                  backgroundColor: modoLiquidacion ? theme.colores.azulOscuro || '#163660' : `${theme.colores.azul}20`,
+                                }
+                              }}
+                            >
+                              <ReceiptIcon />
+                            </IconButton>
+                          </Tooltip>
+                        )}
+                        {!modoLiquidacion && (
+                          <>
+                            <Tooltip title="Filtrar columnas">
+                              <IconButton
+                                size="small"
+                                onClick={(e) => setAnchorElColumns(e.currentTarget)}
+                                sx={{ color: theme.colores.azul }}
+                              >
+                                <ViewColumnIcon />
+                              </IconButton>
+                            </Tooltip>
+                            
+                            <Tooltip title="Exportar">
+                              <IconButton
+                                size="small"
+                                onClick={(e) => setAnchorElExport(e.currentTarget)}
+                                sx={{ color: theme.colores.azul }}
+                              >
+                                <SaveAltIcon />
+                              </IconButton>
+                            </Tooltip>
+                          </>
+                        )}
                       </Box>
                     </Box>
 
@@ -527,32 +610,39 @@ export const BuscadorTurnoDialog: React.FC<BuscadorTurnoDialogProps> = ({ open, 
                       </MenuItem>
                     </Menu>
 
-                    {/* Grid de turnos */}
-                    <Box sx={{ width: '100%', maxWidth: '90vw', overflowX: 'auto' }}>
-                      <TableContainer component={Paper}>
-                        <Table>
-                          <TableHead>
-                            <TableRow>
-                              {selectedColumns.map((field) => (
-                                <TableCell key={field}>{headerNames[fields.indexOf(field)]}</TableCell>
+                    {/* Grid de turnos o Modo Liquidación */}
+                    {modoLiquidacion ? (
+                      <ModoLiquidacion 
+                        turnos={turnosCompletos.length > 0 ? turnosCompletos : turnos} 
+                        loading={loadingCompletos}
+                      />
+                    ) : (
+                      <Box sx={{ width: '100%', maxWidth: '90vw', overflowX: 'auto' }}>
+                        <TableContainer component={Paper}>
+                          <Table>
+                            <TableHead>
+                              <TableRow>
+                                {selectedColumns.map((field) => (
+                                  <TableCell key={field}>{headerNames[fields.indexOf(field)]}</TableCell>
+                                ))}
+                                <TableCell>Acciones</TableCell>
+                              </TableRow>
+                            </TableHead>
+                            <TableBody>
+                              {turnos.map((turno, index) => (
+                                <TurnoGridRow
+                                  key={turno.id || `turno-${index}`}
+                                  turno={turno}
+                                  cupo={{ carga: turno.carga }}
+                                  refreshCupos={() => handleBuscar()}
+                                  fields={selectedColumns}
+                                />
                               ))}
-                              <TableCell>Acciones</TableCell>
-                            </TableRow>
-                          </TableHead>
-                          <TableBody>
-                            {turnos.map((turno, index) => (
-                              <TurnoGridRow
-                                key={turno.id || `turno-${index}`}
-                                turno={turno}
-                                cupo={{ carga: turno.carga }}
-                                refreshCupos={() => handleBuscar()}
-                                fields={selectedColumns}
-                              />
-                            ))}
-                          </TableBody>
-                        </Table>
-                      </TableContainer>
-                    </Box>
+                            </TableBody>
+                          </Table>
+                        </TableContainer>
+                      </Box>
+                    )}
                   </Box>
                 )}
               </>

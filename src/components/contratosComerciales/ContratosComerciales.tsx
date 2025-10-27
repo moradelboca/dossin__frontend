@@ -158,6 +158,7 @@ const ContratosComerciales: React.FC = () => {
       const currentCargasIds = contrato.cargasIds || [];
       // Avoid duplicates
       const merged = Array.from(new Set([...currentCargasIds, ...cargasIds]));
+      
       const success = await updateCargas(contratoId, merged);
       if (success) {
         showSnackbar(`Se asociaron ${cargasIds.length} cargas`, 'success');
