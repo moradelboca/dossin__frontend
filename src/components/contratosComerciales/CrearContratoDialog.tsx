@@ -20,9 +20,11 @@ import {
   Add as AddIcon
 } from '@mui/icons-material';
 import { ContextoGeneral } from '../Contexto';
-import { createContratoComercial, updateContratoComercial, deleteContratoComercial } from '../../lib/supabase';
+import { createContratoComercialFromForm, updateContratoComercial, deleteContratoComercial } from '../../lib/contratos-comerciales-api';
 import AutocompleteEmpresas, { Empresa } from '../forms/autocompletes/AutocompleteEmpresas';
 import { ContratoWithStats } from '../../types/contratosComerciales';
+import useCargamentos from '../hooks/contratos/useCargamentos';
+import { useAuth } from '../autenticacion/ContextoAuth';
 
 interface CrearContratoDialogProps {
   open: boolean;
@@ -31,18 +33,6 @@ interface CrearContratoDialogProps {
   modo?: 'crear' | 'editar';
   contratoInicial?: ContratoWithStats | null;
 }
-
-const CULTIVOS_OPTIONS = [
-  { value: 1, label: 'Soja' },
-  { value: 2, label: 'Maíz' },
-  { value: 3, label: 'Trigo' },
-  { value: 4, label: 'Girasol' },
-  { value: 5, label: 'Sorgo' },
-  { value: 6, label: 'Cebada' },
-  { value: 7, label: 'Avena' },
-  { value: 8, label: 'Centeno' },
-  { value: 9, label: 'Otros' }
-];
 
 const ESTADOS_OPTIONS = [
   { value: 'activo', label: 'Activo' },
@@ -59,56 +49,42 @@ const CrearContratoDialog: React.FC<CrearContratoDialogProps> = ({
   contratoInicial = null
 }) => {
   const theme = useTheme();
-  const { theme: customTheme } = useContext(ContextoGeneral);
+  const { theme: customTheme, backendURL } = useContext(ContextoGeneral);
+  const { user } = useAuth();
   const [loading, setLoading] = useState(false);
+  const { cargamentos, loading: cargamentosLoading } = useCargamentos(backendURL);
   const [formData, setFormData] = useState<{
-    numeroContrato: string;
+    nombreContrato: string;
     fechaContrato: string;
-    fechaInicioEntrega: string;
-    fechaFinEntrega: string;
-    productorId: number;
-    productorNombre: string;
-    exportadorId: number;
-    exportadorNombre: string;
-    tipoGrano: number;
-    tipoGranoNombre: string;
-    calidad: string;
-    humedadMaxima: number;
-    impurezasMaximas: number;
+    fechaInicio: string;
+    fechaFin: string;
+    idCargamento: number;
+    cuitProductor: number;
+    cuitCliente: number;
     cantidadTotalKg: number;
     cantidadEntregadaKg: number;
     precioPorKg: number;
     moneda: string;
-    condicionesPago: string;
-    lugarEntrega: string;
-    condicionesEntrega: string;
     estado: string;
     observaciones: string;
-    cargasIds: number[];
+    creadoPor: string;
+    idCargas: number[];
   }>({
-    numeroContrato: '',
+    nombreContrato: '',
     fechaContrato: new Date().toISOString().split('T')[0],
-    fechaInicioEntrega: '',
-    fechaFinEntrega: '',
-    productorId: 0,
-    productorNombre: '',
-    exportadorId: 0,
-    exportadorNombre: '',
-    tipoGrano: 1,
-    tipoGranoNombre: 'Soja',
-    calidad: '',
-    humedadMaxima: 0,
-    impurezasMaximas: 0,
+    fechaInicio: '',
+    fechaFin: '',
+    idCargamento: 1,
+    cuitProductor: 0,
+    cuitCliente: 0,
     cantidadTotalKg: 0,
     cantidadEntregadaKg: 0,
     precioPorKg: 0,
-    moneda: 'USD',
-    condicionesPago: '',
-    lugarEntrega: '',
-    condicionesEntrega: '',
+    moneda: 'ARS',
     estado: 'activo',
     observaciones: '',
-    cargasIds: []
+    creadoPor: user?.email || 'admin@dossin.com.ar',
+    idCargas: []
   });
 
   // Estados para las empresas seleccionadas
@@ -120,29 +96,21 @@ const CrearContratoDialog: React.FC<CrearContratoDialogProps> = ({
   React.useEffect(() => {
     if (open && contratoInicial && modo === 'editar') {
       setFormData({
-        numeroContrato: contratoInicial.numeroContrato || '',
+        nombreContrato: contratoInicial.numeroContrato || '',
         fechaContrato: contratoInicial.fechaContrato || new Date().toISOString().split('T')[0],
-        fechaInicioEntrega: contratoInicial.fechaInicioEntrega || '',
-        fechaFinEntrega: contratoInicial.fechaFinEntrega || '',
-        productorId: contratoInicial.productorId || 0,
-        productorNombre: contratoInicial.productorNombre || '',
-        exportadorId: contratoInicial.exportadorId || 0,
-        exportadorNombre: contratoInicial.exportadorNombre || '',
-        tipoGrano: contratoInicial.tipoGrano || 1,
-        tipoGranoNombre: contratoInicial.tipoGranoNombre || 'Soja',
-        calidad: contratoInicial.calidad || '',
-        humedadMaxima: Number(contratoInicial.humedadMaxima) || 0,
-        impurezasMaximas: Number(contratoInicial.impurezasMaximas) || 0,
+        fechaInicio: contratoInicial.fechaInicioEntrega || '',
+        fechaFin: contratoInicial.fechaFinEntrega || '',
+        idCargamento: contratoInicial.tipoGrano || 1,
+        cuitProductor: contratoInicial.productorId || 0,
+        cuitCliente: contratoInicial.exportadorId || 0,
         cantidadTotalKg: Number(contratoInicial.cantidadTotalKg) || 0,
         cantidadEntregadaKg: Number(contratoInicial.cantidadEntregadaKg) || 0,
         precioPorKg: Number(contratoInicial.precioPorKg) || 0,
-        moneda: contratoInicial.moneda || 'USD',
-        condicionesPago: contratoInicial.condicionesPago || '',
-        lugarEntrega: contratoInicial.lugarEntrega || '',
-        condicionesEntrega: contratoInicial.condicionesEntrega || '',
+        moneda: contratoInicial.moneda || 'ARS',
         estado: contratoInicial.estado || 'activo',
         observaciones: contratoInicial.observaciones || '',
-        cargasIds: contratoInicial.cargasIds || []
+        creadoPor: user?.email || 'admin@dossin.com.ar',
+        idCargas: contratoInicial.cargasIds || []
       });
       // Preselect empresas by CUIT if we have ids/names
       if (contratoInicial.productorId) {
@@ -175,12 +143,10 @@ const CrearContratoDialog: React.FC<CrearContratoDialogProps> = ({
     }));
   };
 
-  const handleCultivoChange = (tipoGrano: number) => {
-    const cultivo = CULTIVOS_OPTIONS.find(c => c.value === tipoGrano);
+  const handleCultivoChange = (idCargamento: number) => {
     setFormData(prev => ({
       ...prev,
-      tipoGrano,
-      tipoGranoNombre: cultivo?.label || 'Soja'
+      idCargamento
     }));
   };
 
@@ -190,14 +156,12 @@ const CrearContratoDialog: React.FC<CrearContratoDialogProps> = ({
     if (empresa) {
       setFormData(prev => ({
         ...prev,
-        productorId: parseInt(empresa.cuit.toString()),
-        productorNombre: empresa.razonSocial
+        cuitProductor: parseInt(empresa.cuit.toString())
       }));
     } else {
       setFormData(prev => ({
         ...prev,
-        productorId: 0,
-        productorNombre: ''
+        cuitProductor: 0
       }));
     }
   };
@@ -207,14 +171,12 @@ const CrearContratoDialog: React.FC<CrearContratoDialogProps> = ({
     if (empresa) {
       setFormData(prev => ({
         ...prev,
-        exportadorId: parseInt(empresa.cuit.toString()),
-        exportadorNombre: empresa.razonSocial
+        cuitCliente: parseInt(empresa.cuit.toString())
       }));
     } else {
       setFormData(prev => ({
         ...prev,
-        exportadorId: 0,
-        exportadorNombre: ''
+        cuitCliente: 0
       }));
     }
   };
@@ -224,7 +186,7 @@ const CrearContratoDialog: React.FC<CrearContratoDialogProps> = ({
       setLoading(true);
       
       // Validate required fields
-      if (!formData.numeroContrato || !formData.fechaFinEntrega || !productorSeleccionado || !exportadorSeleccionado) {
+      if (!formData.nombreContrato || !formData.fechaFin || !productorSeleccionado || !exportadorSeleccionado) {
         alert('Por favor completa todos los campos obligatorios');
         return;
       }
@@ -241,41 +203,28 @@ const CrearContratoDialog: React.FC<CrearContratoDialogProps> = ({
           alert('Error al actualizar el contrato');
         }
       } else {
-        const contratoData = {
-          ...formData,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        };
-        const result = await createContratoComercial(contratoData);
+        const result = await createContratoComercialFromForm(formData, user?.email);
       
         if (result) {
           onSuccess();
           onClose();
           // Reset form
           setFormData({
-            numeroContrato: '',
+            nombreContrato: '',
             fechaContrato: new Date().toISOString().split('T')[0],
-            fechaInicioEntrega: '',
-            fechaFinEntrega: '',
-            productorId: 0,
-            productorNombre: '',
-            exportadorId: 0,
-            exportadorNombre: '',
-            tipoGrano: 1,
-            tipoGranoNombre: 'Soja',
-            calidad: '',
-            humedadMaxima: 0,
-            impurezasMaximas: 0,
+            fechaInicio: '',
+            fechaFin: '',
+            idCargamento: 1,
+            cuitProductor: 0,
+            cuitCliente: 0,
             cantidadTotalKg: 0,
             cantidadEntregadaKg: 0,
             precioPorKg: 0,
-            moneda: 'USD',
-            condicionesPago: '',
-            lugarEntrega: '',
-            condicionesEntrega: '',
+            moneda: 'ARS',
             estado: 'activo',
             observaciones: '',
-            cargasIds: []
+            creadoPor: user?.email || 'admin@dossin.com.ar',
+            idCargas: []
           });
           setProductorSeleccionado(null);
           setExportadorSeleccionado(null);
@@ -354,8 +303,8 @@ const CrearContratoDialog: React.FC<CrearContratoDialogProps> = ({
             <TextField
               fullWidth
               label="Número de Contrato *"
-              value={formData.numeroContrato}
-              onChange={(e) => handleInputChange('numeroContrato', e.target.value)}
+              value={formData.nombreContrato}
+              onChange={(e) => handleInputChange('nombreContrato', e.target.value)}
               required
             />
           </Grid>
@@ -377,8 +326,8 @@ const CrearContratoDialog: React.FC<CrearContratoDialogProps> = ({
               fullWidth
               label="Fecha Inicio Entrega"
               type="date"
-              value={formData.fechaInicioEntrega}
-              onChange={(e) => handleInputChange('fechaInicioEntrega', e.target.value)}
+              value={formData.fechaInicio}
+              onChange={(e) => handleInputChange('fechaInicio', e.target.value)}
               InputLabelProps={{ shrink: true }}
             />
           </Grid>
@@ -388,8 +337,8 @@ const CrearContratoDialog: React.FC<CrearContratoDialogProps> = ({
               fullWidth
               label="Fecha Fin Entrega *"
               type="date"
-              value={formData.fechaFinEntrega}
-              onChange={(e) => handleInputChange('fechaFinEntrega', e.target.value)}
+              value={formData.fechaFin}
+              onChange={(e) => handleInputChange('fechaFin', e.target.value)}
               InputLabelProps={{ shrink: true }}
               required
             />
@@ -412,8 +361,8 @@ const CrearContratoDialog: React.FC<CrearContratoDialogProps> = ({
               labelText="Productor *"
               rolEmpresa="Titular Carta de Porte"
               fullWidth={true}
-              error={!productorSeleccionado && formData.productorId > 0}
-              helperText={!productorSeleccionado && formData.productorId > 0 ? "Selecciona un productor válido" : ""}
+              error={!productorSeleccionado && formData.cuitProductor > 0}
+              helperText={!productorSeleccionado && formData.cuitProductor > 0 ? "Selecciona un productor válido" : ""}
             />
           </Grid>
 
@@ -427,8 +376,8 @@ const CrearContratoDialog: React.FC<CrearContratoDialogProps> = ({
               labelText="Exportador *"
               rolEmpresa="Destinatario"
               fullWidth={true}
-              error={!exportadorSeleccionado && formData.exportadorId > 0}
-              helperText={!exportadorSeleccionado && formData.exportadorId > 0 ? "Selecciona un exportador válido" : ""}
+              error={!exportadorSeleccionado && formData.cuitCliente > 0}
+              helperText={!exportadorSeleccionado && formData.cuitCliente > 0 ? "Selecciona un exportador válido" : ""}
             />
           </Grid>
 
@@ -443,46 +392,18 @@ const CrearContratoDialog: React.FC<CrearContratoDialogProps> = ({
             <FormControl fullWidth>
               <InputLabel>Tipo de Grano</InputLabel>
               <Select
-                value={formData.tipoGrano}
+                value={formData.idCargamento}
                 onChange={(e) => handleCultivoChange(e.target.value as number)}
                 label="Tipo de Grano"
+                disabled={cargamentosLoading}
               >
-                {CULTIVOS_OPTIONS.map(cultivo => (
-                  <MenuItem key={cultivo.value} value={cultivo.value}>
-                    {cultivo.label}
+                {cargamentos.map(cargamento => (
+                  <MenuItem key={cargamento.id} value={cargamento.id}>
+                    {cargamento.nombre}
                   </MenuItem>
                 ))}
               </Select>
             </FormControl>
-          </Grid>
-
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              label="Calidad"
-              value={formData.calidad}
-              onChange={(e) => handleInputChange('calidad', e.target.value)}
-            />
-          </Grid>
-
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              label="Humedad Máxima (%)"
-              type="number"
-              value={formData.humedadMaxima}
-              onChange={(e) => handleInputChange('humedadMaxima', parseFloat(e.target.value) || 0)}
-            />
-          </Grid>
-
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              label="Impurezas Máximas (%)"
-              type="number"
-              value={formData.impurezasMaximas}
-              onChange={(e) => handleInputChange('impurezasMaximas', parseFloat(e.target.value) || 0)}
-            />
           </Grid>
 
           {/* Cantidades y Precios */}
@@ -536,42 +457,6 @@ const CrearContratoDialog: React.FC<CrearContratoDialogProps> = ({
                 <MenuItem value="EUR">EUR</MenuItem>
               </Select>
             </FormControl>
-          </Grid>
-
-          {/* Condiciones Comerciales */}
-          <Grid item xs={12}>
-            <Box sx={{ mb: 2, mt: 2, color: customTheme?.colores?.azul || theme?.palette?.primary?.main || '#163660', fontSize: '1.1rem', fontWeight: 'bold' }}>
-              Condiciones Comerciales
-            </Box>
-          </Grid>
-
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              label="Condiciones de Pago"
-              value={formData.condicionesPago}
-              onChange={(e) => handleInputChange('condicionesPago', e.target.value)}
-            />
-          </Grid>
-
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              label="Lugar de Entrega"
-              value={formData.lugarEntrega}
-              onChange={(e) => handleInputChange('lugarEntrega', e.target.value)}
-            />
-          </Grid>
-
-          <Grid item xs={12}>
-            <TextField
-              fullWidth
-              label="Condiciones de Entrega"
-              multiline
-              rows={2}
-              value={formData.condicionesEntrega}
-              onChange={(e) => handleInputChange('condicionesEntrega', e.target.value)}
-            />
           </Grid>
 
           {/* Estado y Observaciones */}

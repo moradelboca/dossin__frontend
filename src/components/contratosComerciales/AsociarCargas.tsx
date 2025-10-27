@@ -95,7 +95,10 @@ const AsociarCargas: React.FC<AsociarCargasProps> = ({
   };
 
   // Check if a load can be associated with a contract (same grain type)
-  const canAssociate = (carga: CargaDisponible, contrato: ContratoWithStats): boolean => {
+  const canAssociate = (carga: CargaDisponible | undefined, contrato: ContratoWithStats): boolean => {
+    if (!carga) {
+      return false;
+    }
     return carga.cultivo === contrato.tipoGrano;
   };
 
@@ -139,7 +142,8 @@ const AsociarCargas: React.FC<AsociarCargasProps> = ({
     // Filter loads that can be associated
     const validCargas = Array.from(selectedCargas).filter(cargaId => {
       const carga = cargasDisponibles.find(c => c.id === cargaId);
-      return carga && canAssociate(carga, contrato);
+      const canAssociateResult = canAssociate(carga, contrato);
+      return carga && canAssociateResult;
     });
 
     // Perform a single bulk association update when supported
@@ -341,7 +345,7 @@ const AsociarCargas: React.FC<AsociarCargasProps> = ({
                               }}
                             >
                               <Typography variant="body2">
-                                CP #{carga.numeroCartaPorte || carga.id} - {(carga.kgNeto || 0).toLocaleString()} kg
+                                Carga #{carga.numeroCartaPorte || carga.id}
                               </Typography>
                               <Button
                                 size="small"
