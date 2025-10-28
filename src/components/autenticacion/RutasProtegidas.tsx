@@ -26,7 +26,7 @@ const RutasProtegidas = ({ children, allowedRoles }: ProtectedRouteProps) => {
         login({
           id: 1,
           email: "fabriciosolisw@gmail.com",
-          rol: { id: 1, nombre: "admin" }
+          rol: { id: 4, nombre: "admin" }
         })
         setVerificando(false);
         return;

@@ -49,7 +49,7 @@ const useCargasDisponibles = (backendURL: string, contratosConCargas: any[] = []
           destinatario: carga.destinatario,
           kgNeto: carga.kgNeto || carga.cantidadKg,
           kgDescargadosTotales: carga.kgDescargadosTotales, // Will be undefined for regular /cargas endpoint
-          cultivo: carga.cultivo || carga.cargamento?.tipoCargamento?.id || 1,
+          cultivo: carga.cultivo || carga.cargamento?.id || 1,
           estado: carga.estado?.nombre || carga.estado || 'N/A',
           // Location data
           ubicacionCarga: carga.ubicacionCarga,

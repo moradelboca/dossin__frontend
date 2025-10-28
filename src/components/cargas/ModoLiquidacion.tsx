@@ -120,13 +120,24 @@ export const ModoLiquidacion: React.FC<ModoLiquidacionProps> = ({ turnos, loadin
     empresasGrouped.forEach((empresa) => {
       empresa.turnos.forEach((turno) => {
         const adelantos = calcularAdelantos(turno);
+        
+        // Buscar el flete pagador en la carta de porte
+        const fletePagador = turno.cartaDePorte?.[0]?.titular?.roles?.find(
+          (rol: any) => rol.nombre === 'Flete pagador' || rol.id === 8
+        ) ? turno.cartaDePorte[0].titular : null;
+        
         datosExport.push({
           'Empresa': empresa.razonSocial,
           'CUIT': empresa.cuit,
           'Camionero': `${turno.colaborador?.nombre || ''} ${turno.colaborador?.apellido || ''}`.trim(),
           'Patente Camión': turno.camion?.patente || '',
           'Patente Acoplado': turno.acoplado?.patente || '',
-          'CTG': turno.cartaDePorte?.CTG || '',
+          'CTG': turno.cartaDePorte?.[0]?.CTG || '',
+          'Número Orden Pago': turno.numeroOrdenPago || '',
+          'N° Factura': turno.factura?.nroFactura || '',
+          'Tipo Factura': turno.factura?.tipoFactura?.nombre || '',
+          'Punto Venta': turno.factura?.puntoDeVenta || '',
+          'Flete Pagador': fletePagador ? `${fletePagador.razonSocial || fletePagador.nombreFantasia || ''} (CUIT: ${fletePagador.cuit || ''})` : '',
           'Adelantos': formatMoney(adelantos),
           'Kg Neto': turno.kgNeto || 0,
           'Kg Descargados': turno.kgDescargados || 0,
@@ -148,6 +159,11 @@ export const ModoLiquidacion: React.FC<ModoLiquidacionProps> = ({ turnos, loadin
         'Patente Camión': '',
         'Patente Acoplado': '',
         'CTG': '',
+        'Número Orden Pago': '',
+        'N° Factura': '',
+        'Tipo Factura': '',
+        'Punto Venta': '',
+        'Flete Pagador': '',
         'Adelantos': '',
         'Kg Neto': '',
         'Kg Descargados': '',
@@ -257,12 +273,12 @@ export const ModoLiquidacion: React.FC<ModoLiquidacionProps> = ({ turnos, loadin
                 <Typography variant="h6" sx={{ fontWeight: 600, color: theme.colores.azul }}>
                   {empresa.razonSocial}
                 </Typography>
-                <Typography variant="body2" sx={{ color: theme.colores.gris }}>
+                <Typography variant="body2" sx={{ color: '#666', fontWeight: 500 }}>
                   CUIT: {empresa.cuit}
                 </Typography>
               </Box>
               <Box sx={{ textAlign: 'right', mr: 3 }}>
-                <Typography variant="body2" sx={{ color: theme.colores.gris }}>
+                <Typography variant="body2" sx={{ color: '#666', fontWeight: 500 }}>
                   {empresa.turnos.length} turno{empresa.turnos.length !== 1 ? 's' : ''}
                 </Typography>
                 <Typography variant="h6" sx={{ color: theme.colores.azul, fontWeight: 600 }}>
@@ -276,6 +292,12 @@ export const ModoLiquidacion: React.FC<ModoLiquidacionProps> = ({ turnos, loadin
               {/* Lista de turnos */}
               {empresa.turnos.map((turno, turnoIdx) => {
                 const adelantos = calcularAdelantos(turno);
+                
+                // Buscar el flete pagador en la carta de porte
+                const fletePagador = turno.cartaDePorte?.[0]?.titular?.roles?.some(
+                  (rol: any) => rol.nombre === 'Flete pagador' || rol.id === 8
+                ) ? turno.cartaDePorte[0].titular : null;
+                
                 return (
                   <Paper key={turnoIdx} sx={{ p: 2, border: `1px solid ${theme.colores.azul}30` }}>
                     <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1, color: theme.colores.azul }}>
@@ -283,35 +305,68 @@ export const ModoLiquidacion: React.FC<ModoLiquidacionProps> = ({ turnos, loadin
                     </Typography>
                     <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 2 }}>
                       <Box>
-                        <Typography variant="body2" sx={{ color: theme.colores.gris }}>Camionero</Typography>
+                        <Typography variant="body2" sx={{ color: '#666', fontWeight: 500 }}>Camionero</Typography>
                         <Typography>
                           {turno.colaborador?.nombre} {turno.colaborador?.apellido}
                         </Typography>
                       </Box>
                       <Box>
-                        <Typography variant="body2" sx={{ color: theme.colores.gris }}>Patente Camión</Typography>
+                        <Typography variant="body2" sx={{ color: '#666', fontWeight: 500 }}>Patente Camión</Typography>
                         <Typography>{turno.camion?.patente || '-'}</Typography>
                       </Box>
                       <Box>
-                        <Typography variant="body2" sx={{ color: theme.colores.gris }}>Patente Acoplado</Typography>
+                        <Typography variant="body2" sx={{ color: '#666', fontWeight: 500 }}>Patente Acoplado</Typography>
                         <Typography>{turno.acoplado?.patente || '-'}</Typography>
                       </Box>
                       <Box>
-                        <Typography variant="body2" sx={{ color: theme.colores.gris }}>CTG</Typography>
-                        <Typography>{turno.cartaDePorte?.CTG || '-'}</Typography>
+                        <Typography variant="body2" sx={{ color: '#666', fontWeight: 500 }}>CTG</Typography>
+                        <Typography>{turno.cartaDePorte?.[0]?.CTG || '-'}</Typography>
                       </Box>
                       <Box>
-                        <Typography variant="body2" sx={{ color: theme.colores.gris }}>Adelantos</Typography>
+                        <Typography variant="body2" sx={{ color: '#666', fontWeight: 500 }}>Adelantos</Typography>
                         <Typography>${formatMoney(adelantos)}</Typography>
                       </Box>
                       <Box>
-                        <Typography variant="body2" sx={{ color: theme.colores.gris }}>Kg Neto</Typography>
+                        <Typography variant="body2" sx={{ color: '#666', fontWeight: 500 }}>Kg Neto</Typography>
                         <Typography>{turno.kgNeto || 0}</Typography>
                       </Box>
                       <Box>
-                        <Typography variant="body2" sx={{ color: theme.colores.gris }}>Kg Descargados</Typography>
+                        <Typography variant="body2" sx={{ color: '#666', fontWeight: 500 }}>Kg Descargados</Typography>
                         <Typography>{turno.kgDescargados || 0}</Typography>
                       </Box>
+                      {turno.numeroOrdenPago && (
+                        <Box>
+                          <Typography variant="body2" sx={{ color: '#666', fontWeight: 500 }}>Número Orden Pago</Typography>
+                          <Typography>{turno.numeroOrdenPago}</Typography>
+                        </Box>
+                      )}
+                      {turno.factura && (
+                        <>
+                      <Box>
+                        <Typography variant="body2" sx={{ color: '#666', fontWeight: 500 }}>N° Factura</Typography>
+                        <Typography>{turno.factura.nroFactura || '-'}</Typography>
+                      </Box>
+                      <Box>
+                        <Typography variant="body2" sx={{ color: '#666', fontWeight: 500 }}>Tipo Factura</Typography>
+                        <Typography>{turno.factura.tipoFactura?.nombre || '-'}</Typography>
+                      </Box>
+                      <Box>
+                        <Typography variant="body2" sx={{ color: '#666', fontWeight: 500 }}>Punto Venta</Typography>
+                        <Typography>{turno.factura.puntoDeVenta || '-'}</Typography>
+                      </Box>
+                        </>
+                      )}
+                      {fletePagador && (
+                        <Box>
+                          <Typography variant="body2" sx={{ color: '#666', fontWeight: 500 }}>Flete Pagador</Typography>
+                          <Typography>{fletePagador.razonSocial || fletePagador.nombreFantasia || '-'}</Typography>
+                          {fletePagador.cuit && (
+                            <Typography variant="caption" sx={{ color: '#666', fontWeight: 500 }}>
+                              CUIT: {fletePagador.cuit}
+                            </Typography>
+                          )}
+                        </Box>
+                      )}
                     </Box>
                     
                     {/* Precios */}

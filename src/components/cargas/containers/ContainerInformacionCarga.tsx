@@ -1,6 +1,7 @@
 import { Box, Typography } from "@mui/material";
 import { useContext } from "react";
 import { ContextoCargas } from "./ContainerTajetasCargas";
+import { useAuth } from "../../autenticacion/ContextoAuth";
 import ContainerInfoCard from "../../cards/cargas/ContainerInfoCard";
 import ContainerTipoAcoplado from "./ContainerTipoAcoplado";
 
@@ -12,6 +13,9 @@ import GroupIcon from "@mui/icons-material/Group";
 export default function ContainerInformacionCarga() {
     const { cupos, cargaSeleccionada, handleClickAbrirDialog } =
         useContext(ContextoCargas);
+    const { user } = useAuth();
+    const rolId = user?.rol?.id;
+    const canEdit = rolId === 1 || rolId === 2;
     const cuposLength = cupos.length;
 
     return (
@@ -31,8 +35,8 @@ export default function ContainerInformacionCarga() {
                     title="Tarifa"
                     value={`$${cargaSeleccionada?.tarifa || "-"} / ${cargaSeleccionada?.tipoTarifa?.nombre || "-"}`}
                     icon={<MonetizationOnIcon />}
-                    onEdit={() => handleClickAbrirDialog(2)}
-                    isEditable={!!cargaSeleccionada}
+                    onEdit={() => canEdit && handleClickAbrirDialog(2)}
+                    isEditable={!!cargaSeleccionada && canEdit}
                 />
 
                 {/* Kilómetros */}
@@ -40,8 +44,8 @@ export default function ContainerInformacionCarga() {
                     title="Kilómetros"
                     value={cargaSeleccionada?.cantidadKm || 0}
                     icon={<PublicIcon />}
-                    onEdit={() => handleClickAbrirDialog(1)}
-                    isEditable={!!cargaSeleccionada}
+                    onEdit={() => canEdit && handleClickAbrirDialog(1)}
+                    isEditable={!!cargaSeleccionada && canEdit}
                 />
 
                 {/* Cupos creados */}
@@ -49,8 +53,8 @@ export default function ContainerInformacionCarga() {
                     title="Cupos creados"
                     value={cuposLength}
                     icon={<GroupIcon />}
-                    onEdit={() => console.log("Navegar a cupos")}
-                    isEditable={!!cargaSeleccionada}
+                    onEdit={() => {}}
+                    isEditable={false}
                 />
 
                 {/* Tipo de acoplado */}
