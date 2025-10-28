@@ -55,6 +55,7 @@ export function ContainerTarjetasCargas({
 
   const { user } = useAuth();
   const rolId = user?.rol?.id;
+  const canEdit = rolId === 1 || rolId === 2;
 
   // Handler para seleccionar una carga (usa la función del padre)
   const handleCardClick = useCallback((carga: any) => {
@@ -62,9 +63,10 @@ export function ContainerTarjetasCargas({
   }, [setCargaSeleccionada]);
 
   const handleClickAbrirDialog = useCallback((paso: any) => {
+    if (!canEdit) return;
     setPasoSeleccionado(paso);
     setOpenDialog(true);
-  }, []);
+  }, [canEdit]);
 
   const handleCloseDialog = () => {
     setOpenDialog(false);

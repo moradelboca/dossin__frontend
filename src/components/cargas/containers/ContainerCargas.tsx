@@ -10,11 +10,15 @@ import CrearCargaStepper from "../creadores/CrearCargaStepper";
 import Dialog from "@mui/material/Dialog";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
+import { useAuth } from "../../autenticacion/ContextoAuth";
 
 export function ContainerCargas() {
   const { backendURL } = useContext(ContextoGeneral);
   const { idCarga } = useParams();
   const isMobile = useMediaQuery('(max-width:768px)');
+  const { user } = useAuth();
+  const rolId = user?.rol?.id;
+  const canEdit = rolId === 1 || rolId === 2;
 
   // Estados para las cargas y su estado (cargando/cargado)
   const [cargas, setCargas] = useState<any[]>([]);
@@ -136,6 +140,7 @@ export function ContainerCargas() {
 
   // Handler para abrir el diálogo en mobile
   const handleClickAbrirDialogMobile = (paso: any) => {
+    if (!canEdit) return;
     setPasoSeleccionadoMobile(paso);
     setOpenDialogMobile(true);
   };
