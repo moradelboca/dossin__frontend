@@ -300,9 +300,10 @@ export function renderTurnosDialogs({
               <PesoBrutoForm
                 turnoId={turnoLocal.id}
                 initialTara={turnoLocal.tara}
+                turno={turnoLocal}
                 onSuccess={handleFormSuccess}
-              onCancel={() => setOpenDialog(null)}
-            />
+                onCancel={() => setOpenDialog(null)}
+              />
           </DialogContent>
         </Dialog>
       );

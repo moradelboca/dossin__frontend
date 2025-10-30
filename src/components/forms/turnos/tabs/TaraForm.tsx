@@ -161,7 +161,7 @@ export const TaraForm: React.FC<Omit<TaraFormProps, 'initialTara'> & { initialTa
   );
 };
 
-export const PesoBrutoForm: React.FC<Omit<TaraFormProps, 'initialTara'> & { initialTara?: { id?: string; pesoBruto?: number } }> = ({
+export const PesoBrutoForm: React.FC<Omit<TaraFormProps, 'initialTara'> & { initialTara?: { id?: string; pesoBruto?: number; pesoTara?: number } }> = ({
   turnoId,
   initialTara,
   turno,
@@ -170,10 +170,43 @@ export const PesoBrutoForm: React.FC<Omit<TaraFormProps, 'initialTara'> & { init
 }) => {
   const [pesoBruto, setPesoBruto] = useState<number | "">(initialTara?.pesoBruto || "");
   const [errors, setErrors] = useState<{ pesoBruto?: string }>({});
+  const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
+  const [diferenciaCalculada, setDiferenciaCalculada] = useState<number>(0);
+  const [kgTaraActual, setKgTaraActual] = useState<number | null>(null);
   const { handleTaraSubmission } = useTaraHandler();
   const {theme, backendURL} = useContext(ContextoGeneral);
   const tema = useTheme();
   const isMobile = useMediaQuery(tema.breakpoints.down("sm"));
+
+  // Obtener el kgTara actualizado del backend si no está en el turno
+  useEffect(() => {
+    const obtenerKgTara = async () => {
+      // Si ya tenemos kgTara del turno, usarlo
+      if (turno?.kgTara) {
+        setKgTaraActual(turno.kgTara);
+        return;
+      }
+      
+      // Si no, buscar el turno actualizado del backend
+      try {
+        const response = await fetch(`${backendURL}/turnos/${turnoId}`, {
+          headers: {
+            "Content-Type": "application/json",
+            "ngrok-skip-browser-warning": "true",
+          },
+        });
+        if (response.ok) {
+          const turnoActualizado = await response.json();
+          const kgTara = turnoActualizado?.kgTara || turnoActualizado?.tara?.pesoTara || null;
+          setKgTaraActual(kgTara);
+        }
+      } catch (error) {
+        console.error("Error al obtener kgTara:", error);
+      }
+    };
+    
+    obtenerKgTara();
+  }, [turnoId, backendURL, turno?.kgTara]);
 
   // Estilos para el borde azul al enfocar
   const azulStyles = {
@@ -199,8 +232,7 @@ export const PesoBrutoForm: React.FC<Omit<TaraFormProps, 'initialTara'> & { init
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async () => {
-    if (!validate()) return;
+  const handleConfirmSubmit = async () => {
     try {
       const payload = {
         ...(turno || {}),
@@ -213,10 +245,39 @@ export const PesoBrutoForm: React.FC<Omit<TaraFormProps, 'initialTara'> & { init
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ idEstado: 7 }),
       });
+      setOpenConfirmDialog(false);
       onSuccess(result);
     } catch (error) {
       console.error("Error al procesar peso bruto:", error);
+      setOpenConfirmDialog(false);
     }
+  };
+
+  const handleSubmit = () => {
+    if (!validate()) return;
+    
+    // Calcular la diferencia entre peso bruto y kg tara
+    // Prioridad: kgTaraActual (del backend) > turno?.kgTara > turno?.tara?.pesoTara > initialTara?.pesoTara
+    const kgTara = kgTaraActual !== null 
+      ? kgTaraActual 
+      : turno?.kgTara || turno?.tara?.pesoTara || initialTara?.pesoTara || 0;
+    const diferencia = Number(pesoBruto) - kgTara;
+    
+    // Guardar la diferencia calculada para mostrarla en el diálogo
+    setDiferenciaCalculada(diferencia);
+    
+    // Si la diferencia es menor a 27,000 kg, mostrar diálogo de confirmación
+    if (diferencia < 27000) {
+      setOpenConfirmDialog(true);
+      return;
+    }
+    
+    // Si la diferencia es >= 27,000 kg, proceder directamente
+    handleConfirmSubmit();
+  };
+
+  const handleCloseConfirmDialog = () => {
+    setOpenConfirmDialog(false);
   };
 
   return (
@@ -268,6 +329,35 @@ export const PesoBrutoForm: React.FC<Omit<TaraFormProps, 'initialTara'> & { init
           divWidth={isMobile ? '100%' : 'auto'}
         />
       </Box>
+      {/* Diálogo de confirmación para diferencia menor a 27,000 kg */}
+      <Dialog open={openConfirmDialog} onClose={handleCloseConfirmDialog} maxWidth="xs" fullWidth>
+        <DialogTitle>Confirmar Carga de Peso Bruto</DialogTitle>
+        <DialogContent>
+          ¿Está seguro que está cargando los kg brutos? La diferencia con la tara es menor a 27.000 kg ({diferenciaCalculada.toLocaleString('es-AR')} kg) ¿Está seguro que quiere subirlos?
+        </DialogContent>
+        <DialogActions sx={{ padding: 2, gap: 1 }}>
+          <MainButton
+            onClick={handleCloseConfirmDialog}
+            text="No"
+            backgroundColor="transparent"
+            textColor={theme.colores.azul}
+            width="auto"
+            borderRadius="8px"
+            hoverBackgroundColor="rgba(22, 54, 96, 0.1)"
+            divWidth="auto"
+          />
+          <MainButton
+            onClick={handleConfirmSubmit}
+            text="Sí"
+            backgroundColor={theme.colores.azul}
+            textColor="#fff"
+            width="auto"
+            borderRadius="8px"
+            hoverBackgroundColor={theme.colores.azulOscuro}
+            divWidth="auto"
+          />
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };
