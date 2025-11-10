@@ -20,7 +20,9 @@ import { useAuth } from '../../autenticacion/ContextoAuth';
 import { puedeVerEstado, puedeEditarEstado } from '../../../utils/turnoEstadoPermisos';
 import InfoTooltip from '../../InfoTooltip';
 import NoteAltOutlinedIcon from '@mui/icons-material/NoteAltOutlined';
+import TableChartIcon from '@mui/icons-material/TableChart';
 import Popover from '@mui/material/Popover';
+import { DatosExtraTurnoDialog } from '../../turnos/DatosExtraTurnoDialog';
 
 interface CardMobileProps {
   item: any;
@@ -76,6 +78,7 @@ const CardMobile: React.FC<CardMobileProps> = ({
   const [anchorElNota, setAnchorElNota] = React.useState<null | HTMLElement>(null);
   const [notaLocal, setNotaLocal] = React.useState<string>("");
   const [notaLoading] = React.useState(false);
+  const [datosExtraDialogOpen, setDatosExtraDialogOpen] = React.useState(false);
   const openNota = Boolean(anchorElNota);
   const handleCloseNota = () => setAnchorElNota(null);
   
@@ -568,9 +571,23 @@ const CardMobile: React.FC<CardMobileProps> = ({
             }
           }}
         >
-          <Typography variant="subtitle2" sx={{ color: theme.colores.azul, fontWeight: 600, mb: 1 }}>
-            Nota del turno
-          </Typography>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+            <Typography variant="subtitle2" sx={{ color: theme.colores.azul, fontWeight: 600 }}>
+              Nota del turno
+            </Typography>
+            <Tooltip title="Datos extra del turno">
+              <IconButton
+                size="small"
+                onClick={() => {
+                  setDatosExtraDialogOpen(true);
+                  handleCloseNota();
+                }}
+                sx={{ color: theme.colores.azul }}
+              >
+                <TableChartIcon fontSize="small" />
+              </IconButton>
+            </Tooltip>
+          </Box>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
             <textarea
               value={notaLocal}
@@ -600,6 +617,16 @@ const CardMobile: React.FC<CardMobileProps> = ({
             </Box>
           </Box>
         </Popover>
+      )}
+      
+      {/* Dialog para datos extra del turno */}
+      {!noEsTurno && (
+        <DatosExtraTurnoDialog
+          open={datosExtraDialogOpen}
+          onClose={() => setDatosExtraDialogOpen(false)}
+          turno={manejoTurnos.turnoLocal}
+          refreshTurnos={refreshCupos}
+        />
       )}
     </Box>
   );
