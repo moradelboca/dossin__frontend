@@ -32,6 +32,7 @@ import {
   createAtributo,
   updateAtributo,
   deleteAtributo,
+  checkAtributoEnUso,
 } from '../../lib/datos-extra-turnos-api';
 import type { MaestroAtributo, TipoDato } from '../../types/datos-extra';
 import { toUpperCamelCase } from '../../utils/stringUtils';
@@ -147,7 +148,27 @@ export const MaestroAtributosTurnos: React.FC = () => {
   };
 
   const handleDelete = async (id: number) => {
-    if (!confirm('¿Está seguro de que desea eliminar este atributo?')) {
+    const atributo = atributos.find(a => a.id === id);
+    if (!atributo) return;
+
+    // Check if attribute is being used in any turno
+    let enUso = 0;
+    try {
+      enUso = await checkAtributoEnUso(atributo.nombre_atributo);
+    } catch (err) {
+      console.error('Error checking atributo usage:', err);
+    }
+
+    // Show informative message based on usage
+    const mensaje = enUso > 0 
+      ? `Este atributo está siendo usado en ${enUso} turno(s).\n\n` +
+        `¿Desea continuar con el borrado lógico?\n\n` +
+        `Los datos históricos se conservarán en los turnos existentes, pero el atributo ` +
+        `ya no se mostrará en la interfaz ni estará disponible para nuevos turnos.`
+      : `¿Está seguro de que desea eliminar el atributo "${atributo.nombre_atributo}"?\n\n` +
+        `Se realizará un borrado lógico (el atributo se ocultará pero los datos se conservarán).`;
+
+    if (!confirm(mensaje)) {
       return;
     }
 
