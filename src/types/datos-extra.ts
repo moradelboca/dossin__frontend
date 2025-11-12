@@ -7,6 +7,7 @@ export interface MaestroAtributo {
   nombre_atributo: string;
   tipo_dato: TipoDato;
   created_at?: string;
+  deleted_at?: string | null;
 }
 
 export interface DatosExtraTurno {

@@ -12,13 +12,14 @@ import type {
 // =====================================================
 
 /**
- * Get all attribute definitions
+ * Get all active attribute definitions (soft delete filter)
  */
 export async function getAtributos(): Promise<MaestroAtributo[]> {
   try {
     const { data, error } = await supabaseAgro
       .from('maestro_atributos_turnos')
       .select('*')
+      .is('deleted_at', null) // Only return active attributes
       .order('nombre_atributo', { ascending: true });
 
     if (error) {
@@ -86,14 +87,16 @@ export async function updateAtributo(
 }
 
 /**
- * Delete an attribute definition
+ * Delete an attribute definition (soft delete)
+ * Sets deleted_at timestamp instead of physically deleting the record
  */
 export async function deleteAtributo(id: number): Promise<boolean> {
   try {
     const { error } = await supabaseAgro
       .from('maestro_atributos_turnos')
-      .delete()
-      .eq('id', id);
+      .update({ deleted_at: new Date().toISOString() })
+      .eq('id', id)
+      .is('deleted_at', null); // Only allow deleting if not already deleted
 
     if (error) {
       console.error('Error deleting atributo:', error);
@@ -104,6 +107,44 @@ export async function deleteAtributo(id: number): Promise<boolean> {
   } catch (error) {
     console.error('Error in deleteAtributo:', error);
     return false;
+  }
+}
+
+/**
+ * Check if an attribute is being used in any turno
+ * Returns the count of turnos that have data for this attribute
+ * 
+ * Note: PostgREST has limitations with complex JSONB queries, so we fetch
+ * all records and filter client-side. For better performance with large datasets,
+ * consider creating a database function.
+ */
+export async function checkAtributoEnUso(nombreAtributo: string): Promise<number> {
+  try {
+    // Fetch all datos_extra_turnos records
+    // In production with large datasets, consider using a database function
+    const { data, error } = await supabaseAgro
+      .from('datos_extra_turnos')
+      .select('datos');
+
+    if (error) {
+      console.error('Error checking atributo usage:', error);
+      return 0;
+    }
+
+    if (!data) {
+      return 0;
+    }
+
+    // Filter records where the attribute exists and has a non-null value
+    const count = data.filter((record) => {
+      const datos = record.datos as Record<string, any>;
+      return datos && datos[nombreAtributo] !== undefined && datos[nombreAtributo] !== null;
+    }).length;
+
+    return count;
+  } catch (error) {
+    console.error('Error in checkAtributoEnUso:', error);
+    return 0;
   }
 }
 
