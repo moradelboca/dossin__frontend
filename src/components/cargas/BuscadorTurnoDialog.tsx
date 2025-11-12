@@ -48,7 +48,6 @@ import LocalShippingIcon from '@mui/icons-material/LocalShipping';
 import DescriptionIcon from '@mui/icons-material/Description';
 import { ESTADO_PERMISOS } from '../../utils/turnoEstadoPermisos';
 import { getContratosComerciales } from '../../lib/contratos-comerciales-api';
-import { ContratoComercial } from '../../types/contratosComerciales';
 
 interface BuscadorTurnoDialogProps {
   open: boolean;
@@ -138,7 +137,7 @@ export const BuscadorTurnoDialog: React.FC<BuscadorTurnoDialogProps> = ({ open, 
   
   // Nuevos estados para carga y contrato
   const [cargaInfo, setCargaInfo] = useState<any>(null);
-  const [contratoInfo, setContratoInfo] = useState<ContratoComercial | null>(null);
+  const [contratoInfo, setContratoInfo] = useState<any>(null);
   const [loadingExtra, setLoadingExtra] = useState(false);
 
   // Estilos para azul en focus
@@ -151,10 +150,11 @@ export const BuscadorTurnoDialog: React.FC<BuscadorTurnoDialogProps> = ({ open, 
     },
   };
 
-  // Función para obtener información de la carga
+  // Función para obtener información de la carga usando el endpoint estándar
   const obtenerInfoCarga = async (idCarga: number) => {
     try {
-      const response = await fetch(`${backendURL}/cargas/kgDescargadosTotales/${idCarga}`, {
+      // Primero intentar con el endpoint estándar
+      const response = await fetch(`${backendURL}/cargas/${idCarga}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -163,8 +163,22 @@ export const BuscadorTurnoDialog: React.FC<BuscadorTurnoDialogProps> = ({ open, 
       });
 
       if (response.ok) {
-        const data = await response.json();
-        return data.carga;
+        const carga = await response.json();
+        return carga;
+      }
+      
+      // Si falla, intentar con el endpoint de kgDescargadosTotales
+      const response2 = await fetch(`${backendURL}/cargas/kgDescargadosTotales/${idCarga}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': 'true',
+        },
+      });
+
+      if (response2.ok) {
+        const data = await response2.json();
+        return data.carga || data;
       }
       return null;
     } catch (error) {
@@ -173,10 +187,12 @@ export const BuscadorTurnoDialog: React.FC<BuscadorTurnoDialogProps> = ({ open, 
     }
   };
 
-  // Función para buscar carga por número de carta de porte
-  const buscarCargaPorCartaPorte = async (numeroCartaPorte: number) => {
+  // Función para buscar la carga que contiene este turno
+  // La relación es: Turno → Cupo → Carga
+  const buscarCargaPorTurnoId = async (turnoId: string) => {
     try {
-      const response = await fetch(`${backendURL}/cargas`, {
+      // Obtener todas las cargas
+      const responseCargas = await fetch(`${backendURL}/cargas`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -184,14 +200,54 @@ export const BuscadorTurnoDialog: React.FC<BuscadorTurnoDialogProps> = ({ open, 
         },
       });
 
-      if (response.ok) {
-        const cargas = await response.json();
-        const cargaEncontrada = cargas.find((c: any) => c.numeroCartaPorte === numeroCartaPorte);
-        return cargaEncontrada || null;
+      if (!responseCargas.ok) {
+        return null;
       }
+
+      const cargas = await responseCargas.json();
+
+      // Para cada carga, buscar en sus cupos si contiene este turno
+      for (const carga of cargas) {
+        try {
+          // Obtener los cupos de esta carga
+          const responseCupos = await fetch(`${backendURL}/cargas/${carga.id}/cupos`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              'ngrok-skip-browser-warning': 'true',
+            },
+          });
+
+          if (responseCupos.ok) {
+            const cupos = await responseCupos.json();
+
+            // Buscar el turno en los cupos
+            for (const cupo of cupos) {
+              // Buscar en turnos normales
+              if (Array.isArray(cupo.turnos)) {
+                const turnoEncontrado = cupo.turnos.find((t: any) => t.id === turnoId);
+                if (turnoEncontrado) {
+                  return carga;
+                }
+              }
+
+              // Buscar en turnos con errores
+              if (Array.isArray(cupo.turnosConErrores)) {
+                const turnoEncontrado = cupo.turnosConErrores.find((t: any) => t.id === turnoId);
+                if (turnoEncontrado) {
+                  return carga;
+                }
+              }
+            }
+          }
+        } catch (err) {
+          // Continuar con la siguiente carga
+        }
+      }
+
       return null;
     } catch (error) {
-      console.error('Error buscando carga por carta de porte:', error);
+      console.error('Error buscando carga por turno ID:', error);
       return null;
     }
   };
@@ -314,39 +370,76 @@ export const BuscadorTurnoDialog: React.FC<BuscadorTurnoDialogProps> = ({ open, 
         try {
           const turno = turnosFinales[0];
           
-          // Obtener el ID de la carga del turno
-          let idCarga: number | null = null;
-          let carga: any = null;
-          
-          // Intentar obtener el ID de la carga desde diferentes ubicaciones posibles
-          if (turno.carga?.id) {
-            idCarga = turno.carga.id;
-          } else if (turno.idCarga) {
-            idCarga = turno.idCarga;
-          } else if (typeof turno.carga === 'number') {
-            idCarga = turno.carga;
-          }
-          
-          // Si encontramos el ID de la carga, obtener su información
-          if (idCarga) {
-            carga = await obtenerInfoCarga(idCarga);
-          } else {
-            // Si no hay ID directo, intentar buscar por número de carta de porte
-            const numeroCartaPorte = turno.cartaDePorte?.[0]?.numeroCartaPorte;
-            if (numeroCartaPorte) {
-              carga = await buscarCargaPorCartaPorte(numeroCartaPorte);
-              if (carga) {
-                idCarga = carga.id;
+          // Paso 1: Obtener el turno completo (puede tener más información)
+          let turnoCompleto = turno;
+          if (turno.id) {
+            try {
+              const turnoRes = await fetch(`${backendURL}/turnos/${turno.id}`, {
+                method: 'GET',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'ngrok-skip-browser-warning': 'true',
+                },
+              });
+              if (turnoRes.ok) {
+                turnoCompleto = await turnoRes.json();
               }
+            } catch (err) {
+              console.error('Error obteniendo turno completo:', err);
             }
           }
           
-          if (carga && idCarga) {
+          // Paso 2: Intentar obtener la carga
+          let carga: any = null;
+          let idCarga: number | null = null;
+          
+          // Método 1: Desde el turno completo
+          if (turnoCompleto.carga?.id) {
+            idCarga = turnoCompleto.carga.id;
+          } else if (turnoCompleto.idCarga) {
+            idCarga = turnoCompleto.idCarga;
+          } else if (typeof turnoCompleto.carga === 'number') {
+            idCarga = turnoCompleto.carga;
+          }
+          
+          // Método 2: Buscar la carga que contiene este turno (Turno → Cupo → Carga)
+          if (!idCarga && turnoCompleto.id) {
+            carga = await buscarCargaPorTurnoId(turnoCompleto.id);
+            if (carga) {
+              idCarga = carga.id;
+            }
+          }
+          
+          // Método 3: Si tenemos el ID, obtener la carga completa
+          if (idCarga && !carga) {
+            carga = await obtenerInfoCarga(idCarga);
+          }
+          
+          // Paso 3: Si encontramos la carga, buscar el contrato
+          if (carga && carga.id) {
             setCargaInfo(carga);
             
-            // Obtener contrato asociado
-            const contrato = await obtenerContratoAsociado(idCarga);
-            setContratoInfo(contrato);
+            // Buscar contrato en contratos comerciales
+            const contratoComercial = await obtenerContratoAsociado(carga.id);
+            
+            // También buscar en contratos normales (como hace manejoTurnos.tsx)
+            let contratoNormal = null;
+            try {
+              const contratosRes = await fetch(`${backendURL}/contratos`, {
+                headers: { 'ngrok-skip-browser-warning': 'true' }
+              });
+              if (contratosRes.ok) {
+                const contratos = await contratosRes.json();
+                contratoNormal = contratos.find((c: any) => {
+                  return Array.isArray(c.cargas) && c.cargas.some((car: any) => car.id === carga.id);
+                });
+              }
+            } catch (err) {
+              console.error('Error buscando contratos normales:', err);
+            }
+            
+            // Priorizar contrato comercial, sino usar contrato normal
+            setContratoInfo(contratoComercial || contratoNormal);
           } else {
             setCargaInfo(null);
             setContratoInfo(null);
@@ -660,38 +753,47 @@ export const BuscadorTurnoDialog: React.FC<BuscadorTurnoDialogProps> = ({ open, 
                             <Grid container spacing={1.5}>
                               <Grid item xs={12}>
                                 <Typography variant="body2" color="textSecondary">
-                                  <strong>Carta de Porte:</strong> {cargaInfo.numeroCartaPorte || 'N/A'}
+                                  <strong>ID:</strong> {cargaInfo.id || 'N/A'}
                                 </Typography>
                               </Grid>
-                              <Grid item xs={12}>
-                                <Typography variant="body2" color="textSecondary">
-                                  <strong>Fecha:</strong> {cargaInfo.fecha ? new Date(cargaInfo.fecha).toLocaleDateString() : 'N/A'}
-                                </Typography>
-                              </Grid>
-                              <Grid item xs={12}>
-                                <Typography variant="body2" color="textSecondary">
-                                  <strong>Titular:</strong> {cargaInfo.titularCartaDePorte?.razonSocial || 'N/A'}
-                                </Typography>
-                              </Grid>
-                              <Grid item xs={12}>
-                                <Typography variant="body2" color="textSecondary">
-                                  <strong>Destinatario:</strong> {cargaInfo.destinatario?.razonSocial || 'N/A'}
-                                </Typography>
-                              </Grid>
-                              <Grid item xs={6}>
-                                <Typography variant="body2" color="textSecondary">
-                                  <strong>Kg Neto:</strong> {cargaInfo.kgNeto?.toLocaleString() || 'N/A'}
-                                </Typography>
-                              </Grid>
-                              <Grid item xs={6}>
-                                <Typography variant="body2" color="textSecondary">
-                                  <strong>Cultivo:</strong> {cargaInfo.cargamento?.nombre || 'N/A'}
-                                </Typography>
-                              </Grid>
+                              {cargaInfo.descripcion && (
+                                <Grid item xs={12}>
+                                  <Typography variant="body2" color="textSecondary">
+                                    <strong>Descripción:</strong> {cargaInfo.descripcion}
+                                  </Typography>
+                                </Grid>
+                              )}
+                              {cargaInfo.cargamento && (
+                                <Grid item xs={12}>
+                                  <Typography variant="body2" color="textSecondary">
+                                    <strong>Cultivo:</strong> {cargaInfo.cargamento.nombre || 'N/A'}
+                                  </Typography>
+                                </Grid>
+                              )}
+                              {cargaInfo.tipoTarifa && (
+                                <Grid item xs={6}>
+                                  <Typography variant="body2" color="textSecondary">
+                                    <strong>Tarifa:</strong> ${cargaInfo.tarifa?.toLocaleString() || 'N/A'} / {cargaInfo.tipoTarifa.nombre || 'N/A'}
+                                  </Typography>
+                                </Grid>
+                              )}
+                              {cargaInfo.cantidadKm && (
+                                <Grid item xs={6}>
+                                  <Typography variant="body2" color="textSecondary">
+                                    <strong>Distancia:</strong> {cargaInfo.cantidadKm} km
+                                  </Typography>
+                                </Grid>
+                              )}
                               {cargaInfo.ubicacionCarga && (
                                 <Grid item xs={12}>
                                   <Typography variant="body2" color="textSecondary">
                                     <strong>Origen:</strong> {cargaInfo.ubicacionCarga.nombre || 'N/A'}
+                                    {cargaInfo.ubicacionCarga.localidad && (
+                                      <span> - {cargaInfo.ubicacionCarga.localidad.nombre}</span>
+                                    )}
+                                    {cargaInfo.ubicacionCarga.localidad?.provincia && (
+                                      <span>, {cargaInfo.ubicacionCarga.localidad.provincia.nombre}</span>
+                                    )}
                                   </Typography>
                                 </Grid>
                               )}
@@ -699,20 +801,55 @@ export const BuscadorTurnoDialog: React.FC<BuscadorTurnoDialogProps> = ({ open, 
                                 <Grid item xs={12}>
                                   <Typography variant="body2" color="textSecondary">
                                     <strong>Destino:</strong> {cargaInfo.ubicacionDescarga.nombre || 'N/A'}
+                                    {cargaInfo.ubicacionDescarga.localidad && (
+                                      <span> - {cargaInfo.ubicacionDescarga.localidad.nombre}</span>
+                                    )}
+                                    {cargaInfo.ubicacionDescarga.localidad?.provincia && (
+                                      <span>, {cargaInfo.ubicacionDescarga.localidad.provincia.nombre}</span>
+                                    )}
                                   </Typography>
                                 </Grid>
                               )}
-                              {cargaInfo.estado && (
+                              {cargaInfo.horaInicioCarga && cargaInfo.horaFinCarga && (
+                                <Grid item xs={6}>
+                                  <Typography variant="body2" color="textSecondary">
+                                    <strong>Horario Carga:</strong> {cargaInfo.horaInicioCarga} - {cargaInfo.horaFinCarga}
+                                  </Typography>
+                                </Grid>
+                              )}
+                              {cargaInfo.horaInicioDescarga && cargaInfo.horaFinDescarga && (
+                                <Grid item xs={6}>
+                                  <Typography variant="body2" color="textSecondary">
+                                    <strong>Horario Descarga:</strong> {cargaInfo.horaInicioDescarga} - {cargaInfo.horaFinDescarga}
+                                  </Typography>
+                                </Grid>
+                              )}
+                              {cargaInfo.tiposAcoplados && cargaInfo.tiposAcoplados.length > 0 && (
                                 <Grid item xs={12}>
-                                  <Chip 
-                                    label={cargaInfo.estado.nombre || cargaInfo.estado} 
-                                    size="small"
-                                    sx={{ 
-                                      backgroundColor: `${theme.colores.azul}20`,
-                                      color: theme.colores.azul,
-                                      fontWeight: 600
-                                    }}
-                                  />
+                                  <Typography variant="body2" color="textSecondary">
+                                    <strong>Tipos de Acoplado:</strong> {cargaInfo.tiposAcoplados.map((t: any) => t.nombre).join(', ')}
+                                  </Typography>
+                                </Grid>
+                              )}
+                              {cargaInfo.tolerancia && (
+                                <Grid item xs={12}>
+                                  <Typography variant="body2" color="textSecondary">
+                                    <strong>Tolerancia:</strong> {cargaInfo.tolerancia} kg
+                                  </Typography>
+                                </Grid>
+                              )}
+                              {cargaInfo.plantaProcedenciaRuca && (
+                                <Grid item xs={12}>
+                                  <Typography variant="body2" color="textSecondary">
+                                    <strong>Planta Procedencia RUCA:</strong> {cargaInfo.plantaProcedenciaRuca}
+                                  </Typography>
+                                </Grid>
+                              )}
+                              {cargaInfo.destinoRuca && (
+                                <Grid item xs={12}>
+                                  <Typography variant="body2" color="textSecondary">
+                                    <strong>Destino RUCA:</strong> {cargaInfo.destinoRuca}
+                                  </Typography>
                                 </Grid>
                               )}
                             </Grid>
@@ -732,70 +869,160 @@ export const BuscadorTurnoDialog: React.FC<BuscadorTurnoDialogProps> = ({ open, 
                             <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                               <DescriptionIcon sx={{ color: theme.colores.azul, mr: 1 }} />
                               <Typography variant="h6" sx={{ color: theme.colores.azul, fontWeight: 600 }}>
-                                Contrato Comercial
+                                {contratoInfo.numeroContrato || contratoInfo.nombreContrato ? 'Contrato Comercial' : 'Contrato'}
                               </Typography>
                             </Box>
                             <Divider sx={{ mb: 2 }} />
                             <Grid container spacing={1.5}>
                               <Grid item xs={12}>
                                 <Typography variant="body2" color="textSecondary">
-                                  <strong>Número:</strong> {contratoInfo.numeroContrato || 'N/A'}
+                                  <strong>ID:</strong> {contratoInfo.id || 'N/A'}
                                 </Typography>
                               </Grid>
-                              <Grid item xs={12}>
-                                <Typography variant="body2" color="textSecondary">
-                                  <strong>Productor:</strong> {contratoInfo.productorNombre || 'N/A'}
-                                </Typography>
-                              </Grid>
-                              <Grid item xs={12}>
-                                <Typography variant="body2" color="textSecondary">
-                                  <strong>Exportador:</strong> {contratoInfo.exportadorNombre || 'N/A'}
-                                </Typography>
-                              </Grid>
-                              <Grid item xs={12}>
-                                <Typography variant="body2" color="textSecondary">
-                                  <strong>Tipo de Grano:</strong> {contratoInfo.tipoGranoNombre || 'N/A'}
-                                </Typography>
-                              </Grid>
-                              <Grid item xs={6}>
-                                <Typography variant="body2" color="textSecondary">
-                                  <strong>Cantidad Total:</strong> {contratoInfo.cantidadTotalKg?.toLocaleString() || 'N/A'} kg
-                                </Typography>
-                              </Grid>
-                              <Grid item xs={6}>
-                                <Typography variant="body2" color="textSecondary">
-                                  <strong>Precio/Kg:</strong> {contratoInfo.moneda} {contratoInfo.precioPorKg?.toFixed(2) || 'N/A'}
-                                </Typography>
-                              </Grid>
-                              <Grid item xs={12}>
-                                <Typography variant="body2" color="textSecondary">
-                                  <strong>Fecha Inicio:</strong> {contratoInfo.fechaInicioEntrega ? new Date(contratoInfo.fechaInicioEntrega).toLocaleDateString() : 'N/A'}
-                                </Typography>
-                              </Grid>
-                              <Grid item xs={12}>
-                                <Typography variant="body2" color="textSecondary">
-                                  <strong>Fecha Fin:</strong> {contratoInfo.fechaFinEntrega ? new Date(contratoInfo.fechaFinEntrega).toLocaleDateString() : 'N/A'}
-                                </Typography>
-                              </Grid>
-                              <Grid item xs={12}>
-                                <Chip 
-                                  label={contratoInfo.estado.toUpperCase()} 
-                                  size="small"
-                                  sx={{ 
-                                    backgroundColor: 
-                                      contratoInfo.estado === 'activo' ? '#4caf5020' :
-                                      contratoInfo.estado === 'cumplido' ? '#2196f320' :
-                                      contratoInfo.estado === 'cancelado' ? '#f4433620' :
-                                      '#ff980020',
-                                    color: 
-                                      contratoInfo.estado === 'activo' ? '#4caf50' :
-                                      contratoInfo.estado === 'cumplido' ? '#2196f3' :
-                                      contratoInfo.estado === 'cancelado' ? '#f44336' :
-                                      '#ff9800',
-                                    fontWeight: 600
-                                  }}
-                                />
-                              </Grid>
+                              {/* Campos para contratos normales (/contratos) */}
+                              {contratoInfo.titularCartaDePorte && (
+                                <Grid item xs={12}>
+                                  <Typography variant="body2" color="textSecondary">
+                                    <strong>Titular Carta de Porte:</strong> {contratoInfo.titularCartaDePorte.razonSocial || contratoInfo.titularCartaDePorte.nombreFantasia || 'N/A'}
+                                    {contratoInfo.titularCartaDePorte.cuit && (
+                                      <span> (CUIT: {contratoInfo.titularCartaDePorte.cuit})</span>
+                                    )}
+                                  </Typography>
+                                </Grid>
+                              )}
+                              {contratoInfo.remitenteProductor && (
+                                <Grid item xs={12}>
+                                  <Typography variant="body2" color="textSecondary">
+                                    <strong>Remitente Productor:</strong> {contratoInfo.remitenteProductor.razonSocial || contratoInfo.remitenteProductor.nombreFantasia || 'N/A'}
+                                    {contratoInfo.remitenteProductor.cuit && (
+                                      <span> (CUIT: {contratoInfo.remitenteProductor.cuit})</span>
+                                    )}
+                                  </Typography>
+                                </Grid>
+                              )}
+                              {contratoInfo.remitenteVentaPrimaria && (
+                                <Grid item xs={12}>
+                                  <Typography variant="body2" color="textSecondary">
+                                    <strong>Remitente Venta Primaria:</strong> {contratoInfo.remitenteVentaPrimaria.razonSocial || contratoInfo.remitenteVentaPrimaria.nombreFantasia || 'N/A'}
+                                    {contratoInfo.remitenteVentaPrimaria.cuit && (
+                                      <span> (CUIT: {contratoInfo.remitenteVentaPrimaria.cuit})</span>
+                                    )}
+                                  </Typography>
+                                </Grid>
+                              )}
+                              {(contratoInfo.destinatario || contratoInfo.destinatarioNombre) && (
+                                <Grid item xs={12}>
+                                  <Typography variant="body2" color="textSecondary">
+                                    <strong>Destinatario:</strong> {
+                                      contratoInfo.destinatarioNombre || 
+                                      contratoInfo.destinatario?.razonSocial || 
+                                      contratoInfo.destinatario?.nombreFantasia || 
+                                      'N/A'
+                                    }
+                                    {contratoInfo.destinatario?.cuit && (
+                                      <span> (CUIT: {contratoInfo.destinatario.cuit})</span>
+                                    )}
+                                  </Typography>
+                                </Grid>
+                              )}
+                              {contratoInfo.cargas && Array.isArray(contratoInfo.cargas) && contratoInfo.cargas.length > 0 && (
+                                <Grid item xs={12}>
+                                  <Typography variant="body2" color="textSecondary">
+                                    <strong>Cargas asociadas:</strong> {contratoInfo.cargas.length}
+                                    {contratoInfo.cargas[0].cargamento && (
+                                      <span> - Cultivo: {contratoInfo.cargas[0].cargamento.nombre}</span>
+                                    )}
+                                  </Typography>
+                                  {/* Mostrar destinatario desde la primera carga si existe */}
+                                  {contratoInfo.cargas[0].destinatario && (
+                                    <Typography variant="body2" color="textSecondary" sx={{ mt: 0.5 }}>
+                                      <strong>Destinatario (desde carga):</strong> {
+                                        contratoInfo.cargas[0].destinatario.razonSocial || 
+                                        contratoInfo.cargas[0].destinatario.nombreFantasia || 
+                                        'N/A'
+                                      }
+                                    </Typography>
+                                  )}
+                                </Grid>
+                              )}
+                              {/* Campos para contratos comerciales (/contratos-comerciales) */}
+                              {contratoInfo.numeroContrato && (
+                                <Grid item xs={12}>
+                                  <Typography variant="body2" color="textSecondary">
+                                    <strong>Número Contrato:</strong> {contratoInfo.numeroContrato}
+                                  </Typography>
+                                </Grid>
+                              )}
+                              {contratoInfo.productorNombre && (
+                                <Grid item xs={12}>
+                                  <Typography variant="body2" color="textSecondary">
+                                    <strong>Productor:</strong> {contratoInfo.productorNombre}
+                                  </Typography>
+                                </Grid>
+                              )}
+                              {contratoInfo.exportadorNombre && (
+                                <Grid item xs={12}>
+                                  <Typography variant="body2" color="textSecondary">
+                                    <strong>Exportador:</strong> {contratoInfo.exportadorNombre}
+                                  </Typography>
+                                </Grid>
+                              )}
+                              {contratoInfo.tipoGranoNombre && (
+                                <Grid item xs={12}>
+                                  <Typography variant="body2" color="textSecondary">
+                                    <strong>Tipo de Grano:</strong> {contratoInfo.tipoGranoNombre}
+                                  </Typography>
+                                </Grid>
+                              )}
+                              {contratoInfo.cantidadTotalKg && (
+                                <Grid item xs={6}>
+                                  <Typography variant="body2" color="textSecondary">
+                                    <strong>Cantidad Total:</strong> {contratoInfo.cantidadTotalKg.toLocaleString()} kg
+                                  </Typography>
+                                </Grid>
+                              )}
+                              {contratoInfo.precioPorKg && (
+                                <Grid item xs={6}>
+                                  <Typography variant="body2" color="textSecondary">
+                                    <strong>Precio/Kg:</strong> {contratoInfo.moneda || 'ARS'} {contratoInfo.precioPorKg.toFixed(2)}
+                                  </Typography>
+                                </Grid>
+                              )}
+                              {contratoInfo.fechaInicioEntrega && (
+                                <Grid item xs={12}>
+                                  <Typography variant="body2" color="textSecondary">
+                                    <strong>Fecha Inicio:</strong> {new Date(contratoInfo.fechaInicioEntrega).toLocaleDateString()}
+                                  </Typography>
+                                </Grid>
+                              )}
+                              {contratoInfo.fechaFinEntrega && (
+                                <Grid item xs={12}>
+                                  <Typography variant="body2" color="textSecondary">
+                                    <strong>Fecha Fin:</strong> {new Date(contratoInfo.fechaFinEntrega).toLocaleDateString()}
+                                  </Typography>
+                                </Grid>
+                              )}
+                              {contratoInfo.estado && (
+                                <Grid item xs={12}>
+                                  <Chip 
+                                    label={typeof contratoInfo.estado === 'string' ? contratoInfo.estado.toUpperCase() : contratoInfo.estado.nombre?.toUpperCase() || 'N/A'} 
+                                    size="small"
+                                    sx={{ 
+                                      backgroundColor: 
+                                        (typeof contratoInfo.estado === 'string' ? contratoInfo.estado : contratoInfo.estado.nombre) === 'activo' ? '#4caf5020' :
+                                        (typeof contratoInfo.estado === 'string' ? contratoInfo.estado : contratoInfo.estado.nombre) === 'cumplido' ? '#2196f320' :
+                                        (typeof contratoInfo.estado === 'string' ? contratoInfo.estado : contratoInfo.estado.nombre) === 'cancelado' ? '#f4433620' :
+                                        '#ff980020',
+                                      color: 
+                                        (typeof contratoInfo.estado === 'string' ? contratoInfo.estado : contratoInfo.estado.nombre) === 'activo' ? '#4caf50' :
+                                        (typeof contratoInfo.estado === 'string' ? contratoInfo.estado : contratoInfo.estado.nombre) === 'cumplido' ? '#2196f3' :
+                                        (typeof contratoInfo.estado === 'string' ? contratoInfo.estado : contratoInfo.estado.nombre) === 'cancelado' ? '#f44336' :
+                                        '#ff9800',
+                                      fontWeight: 600
+                                    }}
+                                  />
+                                </Grid>
+                              )}
                             </Grid>
                           </CardContent>
                         </Card>
