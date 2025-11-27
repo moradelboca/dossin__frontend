@@ -30,6 +30,7 @@ import { NavigationHistoryProvider } from './components/breadcrumb/NavigationHis
 import { NavigationBreadcrumb } from './components/breadcrumb/NavigationBreadcrumb';
 import { BuscadorTurnoDialog } from './components/cargas/BuscadorTurnoDialog';
 import Mensajes from './components/mensajes/Mensajes';
+import Widgets from './components/widgets/Widgets';
 
 function MainLayout({
   navAbierto,
@@ -198,6 +199,14 @@ function MainLayout({
             element={
               <RutasProtegidas allowedRoles={[1, 2, 3, 4]}>
                 <Mensajes />
+              </RutasProtegidas>
+            }
+          />
+          <Route
+            path="/widgets"
+            element={
+              <RutasProtegidas allowedRoles={[1]}>
+                <Widgets />
               </RutasProtegidas>
             }
           />
