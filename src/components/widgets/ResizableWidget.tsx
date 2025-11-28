@@ -77,7 +77,7 @@ export function ResizableWidget({ archivo }: ResizableWidgetProps) {
         minWidth: '300px',
         minHeight: '300px',
         display: 'inline-block',
-        mb: 3,
+        flexShrink: 0,
         mr: 3,
       }}
     >
