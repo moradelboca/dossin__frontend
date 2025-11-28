@@ -1,6 +1,6 @@
 import { Archivo } from '../interfaces/archivo';
 
-const API_BASE_URL = 'https://dev.dossin.com.ar/api';
+const API_BASE_URL = 'https://admin.dossin.com.ar/api';
 
 export const archivosService = {
   async obtenerArchivos(): Promise<Archivo[]> {
