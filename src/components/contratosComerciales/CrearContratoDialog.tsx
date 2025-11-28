@@ -13,7 +13,9 @@ import {
   Box,
   Grid,
   IconButton,
-  useTheme
+  useTheme,
+  Tabs,
+  Tab,
 } from '@mui/material';
 import {
   Close as CloseIcon,
@@ -25,6 +27,7 @@ import AutocompleteEmpresas, { Empresa } from '../forms/autocompletes/Autocomple
 import { ContratoWithStats } from '../../types/contratosComerciales';
 import useCargamentos from '../hooks/contratos/useCargamentos';
 import { useAuth } from '../autenticacion/ContextoAuth';
+import { LimitesCalidadTab } from './LimitesCalidadTab';
 
 interface CrearContratoDialogProps {
   open: boolean;
@@ -91,6 +94,7 @@ const CrearContratoDialog: React.FC<CrearContratoDialogProps> = ({
   const [productorSeleccionado, setProductorSeleccionado] = useState<Empresa | null>(null);
   const [exportadorSeleccionado, setExportadorSeleccionado] = useState<Empresa | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [tabValue, setTabValue] = useState(0);
 
   // Prefill when editing
   React.useEffect(() => {
@@ -290,7 +294,34 @@ const CrearContratoDialog: React.FC<CrearContratoDialogProps> = ({
         </IconButton>
       </DialogTitle>
 
-      <DialogContent sx={{ p: 3 }}>
+      <DialogContent sx={{ p: 0 }}>
+        <Tabs
+          value={tabValue}
+          onChange={(_, newValue) => setTabValue(newValue)}
+          sx={{
+            borderBottom: 1,
+            borderColor: 'divider',
+            px: 3,
+            pt: 2,
+            '& .MuiTab-root': {
+              color: theme.palette.text.secondary,
+              fontWeight: 500,
+              textTransform: 'none',
+            },
+            '& .Mui-selected': {
+              color: `${customTheme?.colores?.azul || theme?.palette?.primary?.main || '#163660'} !important`,
+            },
+            '& .MuiTabs-indicator': {
+              backgroundColor: customTheme?.colores?.azul || theme?.palette?.primary?.main || '#163660',
+            },
+          }}
+        >
+          <Tab label="Información General" />
+          <Tab label="Límites de Calidad" />
+        </Tabs>
+
+        {tabValue === 0 && (
+          <Box sx={{ p: 3 }}>
         <Grid container spacing={3}>
           {/* Información Básica */}
           <Grid item xs={12}>
@@ -488,6 +519,14 @@ const CrearContratoDialog: React.FC<CrearContratoDialogProps> = ({
             />
           </Grid>
         </Grid>
+          </Box>
+        )}
+
+        {tabValue === 1 && (
+          <Box>
+            <LimitesCalidadTab idContrato={modo === 'editar' && contratoInicial?.id ? contratoInicial.id : null} />
+          </Box>
+        )}
       </DialogContent>
 
       <DialogActions sx={{ p: 3, gap: 2 }}>

@@ -2,6 +2,8 @@ import React, { useContext, useState } from "react";
 import { Box, TextField, Typography, useTheme, useMediaQuery } from "@mui/material";
 import { ContextoGeneral } from "../../../Contexto";
 import MainButton from "../../../botones/MainButtom";
+import { MedicionesCalidadForm } from "./MedicionesCalidadForm";
+import { createMedicionesLote } from "../../../../lib/parametros-calidad-api";
 
 interface PesajeFormProps {
   turnoId: number;
@@ -19,7 +21,7 @@ const PesajeForm: React.FC<PesajeFormProps> = ({
   onSuccess,
   onCancel,
 }) => {
-  const { backendURL } = useContext(ContextoGeneral);
+  const { theme, backendURL } = useContext(ContextoGeneral);
   const [kgDescargados, setKgDescargados] = useState<number | string>(
     initialData?.kgDescargados ?? ""
   );
@@ -27,7 +29,7 @@ const PesajeForm: React.FC<PesajeFormProps> = ({
     initialData?.precioGrano ?? ""
   );
   const [errors, setErrors] = useState<{ [key: string]: string | null }>({});
-  const {theme} = useContext(ContextoGeneral);
+  const [mediciones, setMediciones] = useState<Record<number, number | ''>>({});
 
   const tema = useTheme();
   const isMobile = useMediaQuery(tema.breakpoints.down("sm"));
@@ -63,6 +65,27 @@ const PesajeForm: React.FC<PesajeFormProps> = ({
       });
       if (!response.ok) throw new Error(await response.text());
       const updatedData = await response.json();
+
+      // Guardar mediciones de calidad si hay alguna
+      const medicionesValidas = Object.entries(mediciones)
+        .filter(([_, valor]) => valor !== '' && valor !== null && valor !== undefined)
+        .map(([idParametro, valorMedido]) => ({
+          idParametroCalidad: Number(idParametro),
+          valorMedido: Number(valorMedido),
+        }));
+
+      if (medicionesValidas.length > 0) {
+        try {
+          await createMedicionesLote(turnoId.toString(), {
+            etapaMedicion: 'descarga',
+            mediciones: medicionesValidas,
+          });
+        } catch (error) {
+          console.error("Error al guardar mediciones de calidad:", error);
+          // No bloqueamos el flujo si falla guardar las mediciones
+        }
+      }
+
       onSuccess(updatedData);
     } catch (error: any) {
       console.error(`Error: ${error.message}`);
@@ -120,6 +143,16 @@ const PesajeForm: React.FC<PesajeFormProps> = ({
       <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5, ml: 0.5 }}>
         Ingrese el precio del grano por tonelada. El sistema lo convertirá automáticamente a precio por kg.
       </Typography>
+
+      <MedicionesCalidadForm
+        etapaMedicion="descarga"
+        mediciones={mediciones}
+        onMedicionesChange={setMediciones}
+        errors={Object.fromEntries(
+          Object.entries(errors).map(([key, value]) => [key, value ?? ''])
+        )}
+      />
+
       <Box
         sx={{
           display: "flex",

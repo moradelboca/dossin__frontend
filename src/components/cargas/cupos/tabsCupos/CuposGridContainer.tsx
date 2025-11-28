@@ -82,7 +82,8 @@ const fields = [
   "factura",
   "numeroOrdenPago",
   "cartaDePorte.numeroCartaPorte",
-  "cartaDePorte.CTG"
+  "cartaDePorte.CTG",
+  "mediciones.calidad"
 ];
 const headerNames = [
   "Estado",
@@ -102,7 +103,8 @@ const headerNames = [
   "Factura",
   "N° Orden Pago",
   "Carta de Porte",
-  "CTG"
+  "CTG",
+  "Mediciones Calidad"
 ];
 
 export const CuposGridContainer: React.FC<CuposGridContainerProps & { estadoCarga: string }> = ({

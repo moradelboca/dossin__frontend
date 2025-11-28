@@ -18,6 +18,7 @@ import Contratos from "./components/contratos/Contratos";
 import ContratosComerciales from "./components/contratosComerciales/ContratosComerciales";
 import Dashboard from "./components/dashboard/Dashboard";
 import Empresas from "./components/empresas/Empresas";
+import { ParametrosCalidad } from "./components/parametros-calidad/ParametrosCalidad";
 import Inconvenientes from "./components/inconvenientes/Inconvenientes";
 import PaginaNoDisponible from "./components/inconvenientes/PaginaNoDisponible";
 import { MapaMain } from "./components/mapa/MapaMain";
@@ -155,6 +156,14 @@ function MainLayout({
             }
           />
           <Route
+            path="/parametros-calidad"
+            element={
+              <RutasProtegidas allowedRoles={[1, 2]}>
+                <ParametrosCalidad />
+              </RutasProtegidas>
+            }
+          />
+          <Route
             path="/colaboradores"
             element={
               <RutasProtegidas allowedRoles={[1, 2, 4]}>
@@ -261,7 +270,7 @@ function MainLayout({
 
 function App() {
   const [navAbierto, setNavAbierto] = useState(false);
-  const anchoAbierto = 200;
+  const anchoAbierto = 300;
   const anchoCerrado = 60;
   const isMobile = useMediaQuery("(max-width:768px)");
   const accessToken = Cookies.get("accessToken");
