@@ -172,17 +172,74 @@ export function ContainerCupos() {
       const turnos = Array.isArray(turnosData) ? turnosData : turnosData.turnos || [];
       const turnosConErrores = turnosData.turnosConErrores || [];
       
-      // Normalizar los campos de patente
-      const normalizarTurno = (turno: any) => ({
-        ...turno,
-        camion: typeof turno.camion === "string" ? { patente: turno.camion } : turno.camion,
-        acoplado: typeof turno.acoplado === "string" ? { patente: turno.acoplado } : turno.acoplado,
-        acopladoExtra: typeof turno.acopladoExtra === "string" ? { patente: turno.acopladoExtra } : turno.acopladoExtra,
-      });
+      // Normalizar los campos de patente y cargar mediciones completas
+      const normalizarTurno = async (turno: any) => {
+        const turnoNormalizado = {
+          ...turno,
+          camion: typeof turno.camion === "string" ? { patente: turno.camion } : turno.camion,
+          acoplado: typeof turno.acoplado === "string" ? { patente: turno.acoplado } : turno.acoplado,
+          acopladoExtra: typeof turno.acopladoExtra === "string" ? { patente: turno.acopladoExtra } : turno.acopladoExtra,
+        };
+        
+        // Si el turno tiene ID, cargar datos completos incluyendo mediciones
+        if (turno.id) {
+          try {
+            const turnoCompletoRes = await fetch(`${backendURL}/turnos/${turno.id}`, {
+              method: 'GET',
+              headers: {
+                'Content-Type': 'application/json',
+                'ngrok-skip-browser-warning': 'true',
+              },
+            });
+            let turnoCompleto = turnoNormalizado;
+            if (turnoCompletoRes.ok) {
+              turnoCompleto = {
+                ...turnoNormalizado,
+                ...(await turnoCompletoRes.json()),
+                // Preservar campos normalizados
+                camion: turnoNormalizado.camion,
+                acoplado: turnoNormalizado.acoplado,
+                acopladoExtra: turnoNormalizado.acopladoExtra,
+              };
+            }
+            
+            // Obtener mediciones del turno
+            try {
+              const medicionesRes = await fetch(`${backendURL}/turnos/${turno.id}/mediciones`, {
+                method: 'GET',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'ngrok-skip-browser-warning': 'true',
+                },
+              });
+              if (medicionesRes.ok) {
+                const mediciones = await medicionesRes.json();
+                turnoCompleto.mediciones = Array.isArray(mediciones) ? mediciones : [];
+              } else {
+                turnoCompleto.mediciones = [];
+              }
+            } catch (medicionesErr) {
+              console.error('Error obteniendo mediciones del turno:', medicionesErr);
+              turnoCompleto.mediciones = [];
+            }
+            
+            return turnoCompleto;
+          } catch (err) {
+            console.error('Error obteniendo turno completo:', err);
+            return { ...turnoNormalizado, mediciones: [] };
+          }
+        }
+        
+        return turnoNormalizado;
+      };
+      
+      // Cargar turnos completos en paralelo
+      const turnosCompletos = await Promise.all(turnos.map(normalizarTurno));
+      const turnosConErroresCompletos = await Promise.all(turnosConErrores.map(normalizarTurno));
       
       return {
-        turnos: turnos.map(normalizarTurno),
-        turnosConErrores: turnosConErrores.map(normalizarTurno),
+        turnos: turnosCompletos,
+        turnosConErrores: turnosConErroresCompletos,
       };
     } catch (err) {
       console.error('Excepción al obtener turnos', { fecha, err });
@@ -239,7 +296,7 @@ export function ContainerCupos() {
       
       // Si es logística (rolId: 4), usar directamente los datos de cupos sin llamadas adicionales
       if (user?.rol?.id === 4) {
-        return normalizarCupos(cuposFiltrados);
+        return await normalizarCupos(cuposFiltrados);
       }
       
       // Si es modo grid, necesitamos los turnos
@@ -300,7 +357,7 @@ export function ContainerCupos() {
       
       // Si es logística (rolId: 4), usar directamente los datos de cupos sin llamadas adicionales
       if (user?.rol?.id === 4) {
-        return { cupos: normalizarCupos(cuposData), tieneMasDatos: true };
+        return { cupos: await normalizarCupos(cuposData), tieneMasDatos: true };
       }
       
       // Si es modo grid, necesitamos los turnos

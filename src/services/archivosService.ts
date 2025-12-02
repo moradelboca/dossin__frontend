@@ -6,7 +6,7 @@ export const archivosService = {
   async obtenerArchivos(): Promise<Archivo[]> {
     const response = await fetch(`${API_BASE_URL}/archivos` , {
       credentials: "include" 
-    } );
+    });
     if (!response.ok) {
       throw new Error('Error al obtener archivos');
     }

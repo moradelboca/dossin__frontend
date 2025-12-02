@@ -4,6 +4,8 @@ import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import useTaraHandler from "../../../hooks/turnos/useTaraHandler";
 import { ContextoGeneral } from "../../../Contexto";
 import MainButton from "../../../botones/MainButtom";
+import { MedicionesCalidadForm } from "./MedicionesCalidadForm";
+import { createMedicionesLote } from "../../../../lib/parametros-calidad-api";
 
 interface TaraFormProps {
   turnoId: string;
@@ -169,10 +171,11 @@ export const PesoBrutoForm: React.FC<Omit<TaraFormProps, 'initialTara'> & { init
   onCancel,
 }) => {
   const [pesoBruto, setPesoBruto] = useState<number | "">(initialTara?.pesoBruto || "");
-  const [errors, setErrors] = useState<{ pesoBruto?: string }>({});
+  const [errors, setErrors] = useState<{ pesoBruto?: string; [key: string]: string | undefined }>({});
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
   const [diferenciaCalculada, setDiferenciaCalculada] = useState<number>(0);
   const [kgTaraActual, setKgTaraActual] = useState<number | null>(null);
+  const [mediciones, setMediciones] = useState<Record<number, number | ''>>({});
   const { handleTaraSubmission } = useTaraHandler();
   const {theme, backendURL} = useContext(ContextoGeneral);
   const tema = useTheme();
@@ -235,10 +238,30 @@ export const PesoBrutoForm: React.FC<Omit<TaraFormProps, 'initialTara'> & { init
   const handleConfirmSubmit = async () => {
     try {
       const payload = {
-        ...(turno || {}),
         kgBruto: Number(pesoBruto),
       };
       const result = await handleTaraSubmission(turnoId, payload);
+      
+      // Guardar mediciones de calidad si hay alguna
+      const medicionesValidas = Object.entries(mediciones)
+        .filter(([_, valor]) => valor !== '' && valor !== null && valor !== undefined)
+        .map(([idParametro, valorMedido]) => ({
+          idParametroCalidad: Number(idParametro),
+          valorMedido: Number(valorMedido),
+        }));
+
+      if (medicionesValidas.length > 0) {
+        try {
+          await createMedicionesLote(turnoId, {
+            etapaMedicion: 'carga',
+            mediciones: medicionesValidas,
+          });
+        } catch (error) {
+          console.error("Error al guardar mediciones de calidad:", error);
+          // No bloqueamos el flujo si falla guardar las mediciones
+        }
+      }
+
       // PUT para cambiar a estado cargado (id 7)
       await fetch(`${backendURL}/turnos/${turnoId}`, {
         method: "PUT",
@@ -298,6 +321,16 @@ export const PesoBrutoForm: React.FC<Omit<TaraFormProps, 'initialTara'> & { init
         fullWidth
         sx={{ ...azulStyles, mt: 2 }}
       />
+      
+      <MedicionesCalidadForm
+        etapaMedicion="carga"
+        mediciones={mediciones}
+        onMedicionesChange={setMediciones}
+        errors={Object.fromEntries(
+          Object.entries(errors).map(([key, value]) => [key, value ?? ''])
+        )}
+      />
+
       <Box
         sx={{
           display: "flex",

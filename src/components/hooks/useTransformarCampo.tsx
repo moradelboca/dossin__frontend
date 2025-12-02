@@ -108,6 +108,45 @@ const useTransformarCampo = () => {
           return cartaDePorteArrayCTG.map((carta: any) => `${carta.CTG}`).join(", ");
         }
         return "No especificado";
+      case "mediciones.calidad":
+        // Mostrar todas las mediciones de calidad agrupadas por parámetro
+        if (item.mediciones && Array.isArray(item.mediciones) && item.mediciones.length > 0) {
+          // Agrupar por parámetro
+          const medicionesPorParametro: Record<string, { carga?: number; descarga?: number; unidad?: string }> = {};
+          
+          item.mediciones.forEach((medicion: any) => {
+            const paramNombre = medicion.parametroCalidad?.nombre || 'Sin nombre';
+            const etapa = medicion.etapaMedicion?.toLowerCase() || '';
+            const valor = medicion.valorMedido;
+            const unidad = medicion.parametroCalidad?.unidadMedida || '';
+            
+            if (!medicionesPorParametro[paramNombre]) {
+              medicionesPorParametro[paramNombre] = { unidad };
+            }
+            
+            if (etapa === 'carga') {
+              medicionesPorParametro[paramNombre].carga = valor;
+            } else if (etapa === 'descarga') {
+              medicionesPorParametro[paramNombre].descarga = valor;
+            }
+          });
+          
+          // Formatear como "Parámetro: carga/descarga unidad"
+          return Object.entries(medicionesPorParametro)
+            .map(([nombre, datos]) => {
+              const partes: string[] = [];
+              if (datos.carga !== undefined && datos.carga !== null) {
+                partes.push(`carga: ${datos.carga}`);
+              }
+              if (datos.descarga !== undefined && datos.descarga !== null) {
+                partes.push(`descarga: ${datos.descarga}`);
+              }
+              const valores = partes.length > 0 ? ` (${partes.join(', ')})` : '';
+              return `${nombre}${valores}${datos.unidad ? ` ${datos.unidad}` : ''}`;
+            })
+            .join(' | ') || "Sin mediciones";
+        }
+        return "Sin mediciones";
       default:
         return value || "No especificado";
     }

@@ -77,7 +77,8 @@ const fields = [
   "factura",
   "numeroOrdenPago",
   "cartaDePorte.numeroCartaPorte",
-  "cartaDePorte.CTG"
+  "cartaDePorte.CTG",
+  "mediciones.calidad"
 ];
 
 const headerNames = [
@@ -98,7 +99,8 @@ const headerNames = [
   "Factura",
   "N° Orden Pago",
   "Carta de Porte",
-  "CTG"
+  "CTG",
+  "Mediciones Calidad"
 ];
 
 const columnasPorDefecto = [
@@ -457,39 +459,60 @@ export const BuscadorTurnoDialog: React.FC<BuscadorTurnoDialogProps> = ({ open, 
         setContratoInfo(null);
       }
       
-      // Si el estado es "Facturado", obtener datos completos de cada turno
-      if (estadoSeleccionado?.nombre.toLowerCase() === 'facturado') {
-        setLoadingCompletos(true);
-        try {
-          const turnosCompletosData = await Promise.all(
-            turnosFinales.map(async (turno: any) => {
+      // Obtener datos completos de cada turno para incluir mediciones
+      setLoadingCompletos(true);
+      try {
+        const turnosCompletosData = await Promise.all(
+          turnosFinales.map(async (turno: any) => {
+            try {
+              // Obtener turno completo
+              const res = await fetch(`${backendURL}/turnos/${turno.id}`, {
+                method: 'GET',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'ngrok-skip-browser-warning': 'true',
+                },
+              });
+              let turnoCompleto = turno;
+              if (res.ok) {
+                turnoCompleto = await res.json();
+              }
+              
+              // Obtener mediciones del turno
               try {
-                const res = await fetch(`${backendURL}/turnos/${turno.id}`, {
+                const medicionesRes = await fetch(`${backendURL}/turnos/${turno.id}/mediciones`, {
                   method: 'GET',
                   headers: {
                     'Content-Type': 'application/json',
                     'ngrok-skip-browser-warning': 'true',
                   },
                 });
-                if (res.ok) {
-                  return await res.json();
+                if (medicionesRes.ok) {
+                  const mediciones = await medicionesRes.json();
+                  turnoCompleto.mediciones = Array.isArray(mediciones) ? mediciones : [];
+                } else {
+                  turnoCompleto.mediciones = [];
                 }
-                return turno;
-              } catch (err) {
-                console.error('Error obteniendo turno completo:', err);
-                return turno;
+              } catch (medicionesErr) {
+                console.error('Error obteniendo mediciones del turno:', medicionesErr);
+                turnoCompleto.mediciones = [];
               }
-            })
-          );
-          setTurnosCompletos(turnosCompletosData);
-        } catch (err) {
-          console.error('Error obteniendo turnos completos:', err);
-          setTurnosCompletos([]);
-        } finally {
-          setLoadingCompletos(false);
-        }
-      } else {
+              
+              return turnoCompleto;
+            } catch (err) {
+              console.error('Error obteniendo turno completo:', err);
+              return { ...turno, mediciones: [] };
+            }
+          })
+        );
+        setTurnosCompletos(turnosCompletosData);
+        // Actualizar también los turnos con los datos completos para que se muestren las mediciones
+        setTurnos(turnosCompletosData);
+      } catch (err) {
+        console.error('Error obteniendo turnos completos:', err);
         setTurnosCompletos([]);
+      } finally {
+        setLoadingCompletos(false);
       }
     } catch (error) {
       console.error('Error buscando turnos:', error);
@@ -1083,7 +1106,7 @@ export const BuscadorTurnoDialog: React.FC<BuscadorTurnoDialogProps> = ({ open, 
                       </Typography>
                       
                       <Box sx={{ display: 'flex', gap: 1 }}>
-                        {estadoSeleccionado?.nombre.toLowerCase() === 'facturado' && (
+                        {searched && turnos.length > 0 && (
                           <Tooltip title={modoLiquidacion ? "Vista Normal" : "Modo Liquidación"}>
                             <IconButton
                               size="small"
