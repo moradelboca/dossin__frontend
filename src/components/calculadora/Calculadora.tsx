@@ -18,6 +18,7 @@ import {
 } from "react-number-format";
 import { ContextoGeneral } from "../Contexto";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import axios from "axios";
 
 interface CustomProps {
   onChange: (event: { target: { name: string; value: string } }) => void;
@@ -171,8 +172,11 @@ const TarifaApp: React.FC = () => {
     }
     if (hasError) return;
 
-    const res = await fetch("/tarifas.csv");
-    const text = await res.text();
+    const res = await axios.get("/tarifas.csv", { 
+      responseType: 'text',
+      withCredentials: false 
+    });
+    const text = res.data;
     const data = Papa.parse<string[]>(text, { header: false }).data;
     const fila = data.find((f) => parseInt(f[0]) === km);
     if (!fila) return;

@@ -1,5 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { ContextoGeneral } from "../Contexto";
+import { axiosGet } from "../../lib/axiosConfig";
 
 export const useDataFetch = (endpoint: string, entidad: string, usarAuthURL: boolean) => {
   const { backendURL, authURL } = useContext(ContextoGeneral);
@@ -8,14 +9,7 @@ export const useDataFetch = (endpoint: string, entidad: string, usarAuthURL: boo
   const apiURL = usarAuthURL ? authURL : backendURL;
 
   const refreshDatos = () => {
-    fetch(`${apiURL}/${endpoint}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        "ngrok-skip-browser-warning": "true",
-      },
-    })
-      .then((response) => response.json())
+    axiosGet<any[]>(endpoint, apiURL)
       .then((data) => {
         setDatos(data);
         setEstadoCarga("Cargado");

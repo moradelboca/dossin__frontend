@@ -17,6 +17,7 @@ import { useEffect, useState } from "react";
 import { ContextoGeneral } from "../Contexto";
 import CreadorUser from "./CreadorUser";
 import Avatar from "@mui/material/Avatar";
+import { axiosGet } from "../../lib/axiosConfig";
 
 interface EditToolbarProps {
     setRows: (newRows: (oldRows: GridRowsProp) => GridRowsProp) => void;
@@ -95,15 +96,7 @@ export default function TablaUser() {
     const [estadoCarga, setEstadoCarga] = useState("Cargando");
 
     const refreshUsers = () => {
-        fetch(`${authURL}/auth/usuarios`, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-                "ngrok-skip-browser-warning": "true",
-            },
-            mode: "cors", // Asegúrate de configurar esto
-          })
-            .then((response) => response.json())
+        axiosGet<any[]>('auth/usuarios', authURL)
             .then((data) => {
                 setUsers(data);
                 setEstadoCarga("Cargado");

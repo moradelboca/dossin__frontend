@@ -12,39 +12,37 @@ import type {
   MedicionParametroCreate,
   MedicionesLoteCreate,
 } from '../types/parametros-calidad';
+import { axiosRequest } from './axiosConfig';
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000';
 
-// Helper function to make API calls
-async function apiCall(endpoint: string, options: RequestInit = {}): Promise<Response> {
-  const url = `${BACKEND_URL}${endpoint}`;
-  
-  const defaultHeaders = {
-    'Content-Type': 'application/json',
-    'ngrok-skip-browser-warning': 'true',
-  };
-
-  const response = await fetch(url, {
-    ...options,
-    headers: {
-      ...defaultHeaders,
-      ...options.headers,
-    },
-  });
-
-  if (!response.ok) {
+// Helper function to make API calls using axios
+async function apiCall<T = any>(
+  endpoint: string,
+  options: {
+    method?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
+    data?: any;
+    headers?: Record<string, string>;
+  } = {}
+): Promise<T> {
+  try {
+    return await axiosRequest<T>(endpoint, BACKEND_URL, {
+      method: options.method || 'GET',
+      data: options.data,
+      headers: options.headers,
+    });
+  } catch (error: any) {
     let errorDetails = '';
-    try {
-      const errorText = await response.text();
-      errorDetails = errorText;
-    } catch (e) {
-      // Could not read error response body
+    if (error.response?.data) {
+      errorDetails = typeof error.response.data === 'string' 
+        ? error.response.data 
+        : JSON.stringify(error.response.data);
+    } else if (error.message) {
+      errorDetails = error.message;
     }
     
-    throw new Error(`API call failed: ${response.status} ${response.statusText}. Details: ${errorDetails}`);
+    throw new Error(`API call failed: ${error.response?.status || 'Unknown'} ${error.response?.statusText || ''}. Details: ${errorDetails}`);
   }
-
-  return response;
 }
 
 // =====================================================
@@ -56,8 +54,7 @@ async function apiCall(endpoint: string, options: RequestInit = {}): Promise<Res
  */
 export async function getParametrosCalidad(): Promise<ParametroCalidad[]> {
   try {
-    const response = await apiCall('/parametros-calidad');
-    const data = await response.json();
+    const data = await apiCall<ParametroCalidad[]>('/parametros-calidad');
     return data || [];
   } catch (error) {
     console.error('Error fetching parámetros de calidad:', error);
@@ -72,11 +69,10 @@ export async function createParametroCalidad(
   parametro: ParametroCalidadCreate
 ): Promise<ParametroCalidad | null> {
   try {
-    const response = await apiCall('/parametros-calidad', {
+    const data = await apiCall<ParametroCalidad>('/parametros-calidad', {
       method: 'POST',
-      body: JSON.stringify(parametro),
+      data: parametro,
     });
-    const data = await response.json();
     return data;
   } catch (error) {
     console.error('Error creating parámetro de calidad:', error);
@@ -94,7 +90,7 @@ export async function updateParametroCalidad(
   try {
     await apiCall(`/parametros-calidad/${id}`, {
       method: 'PUT',
-      body: JSON.stringify(updates),
+      data: updates,
     });
     return true;
   } catch (error) {
@@ -129,8 +125,7 @@ export async function getLimitesContractuales(
   idContrato: number
 ): Promise<LimiteContractual[]> {
   try {
-    const response = await apiCall(`/limites-contractuales/${idContrato}/limites`);
-    const data = await response.json();
+    const data = await apiCall<LimiteContractual[]>(`/limites-contractuales/${idContrato}/limites`);
     return data || [];
   } catch (error) {
     console.error('Error fetching límites contractuales:', error);
@@ -145,8 +140,7 @@ export async function getLimitesContractualesTodos(
   idContrato: number
 ): Promise<LimiteContractual[]> {
   try {
-    const response = await apiCall(`/limites-contractuales/${idContrato}/limites/todos`);
-    const data = await response.json();
+    const data = await apiCall<LimiteContractual[]>(`/limites-contractuales/${idContrato}/limites/todos`);
     return data || [];
   } catch (error) {
     console.error('Error fetching todos los límites contractuales:', error);
@@ -162,11 +156,10 @@ export async function createLimiteContractual(
   limite: LimiteContractualCreate
 ): Promise<LimiteContractual | null> {
   try {
-    const response = await apiCall(`/limites-contractuales/${idContrato}/limites/individual`, {
+    const data = await apiCall<LimiteContractual>(`/limites-contractuales/${idContrato}/limites/individual`, {
       method: 'POST',
-      body: JSON.stringify(limite),
+      data: limite,
     });
-    const data = await response.json();
     return data;
   } catch (error) {
     console.error('Error creating límite contractual:', error);
@@ -184,7 +177,7 @@ export async function configurarLimitesContractuales(
   try {
     await apiCall(`/limites-contractuales/${idContrato}/limites`, {
       method: 'POST',
-      body: JSON.stringify({ limites }),
+      data: { limites },
     });
     return true;
   } catch (error) {
@@ -201,8 +194,7 @@ export async function getLimiteContractual(
   idLimite: number
 ): Promise<LimiteContractual | null> {
   try {
-    const response = await apiCall(`/limites-contractuales/${idContrato}/limites/${idLimite}`);
-    const data = await response.json();
+    const data = await apiCall<LimiteContractual>(`/limites-contractuales/${idContrato}/limites/${idLimite}`);
     return data;
   } catch (error) {
     console.error('Error fetching límite contractual:', error);
@@ -221,7 +213,7 @@ export async function updateLimiteContractual(
   try {
     await apiCall(`/limites-contractuales/${idContrato}/limites/${idLimite}`, {
       method: 'PUT',
-      body: JSON.stringify(updates),
+      data: updates,
     });
     return true;
   } catch (error) {
@@ -265,8 +257,7 @@ export async function getMedicionesTurno(
     const url = etapa
       ? `/turnos/${idTurno}/mediciones?etapa=${etapa}`
       : `/turnos/${idTurno}/mediciones`;
-    const response = await apiCall(url);
-    const data = await response.json();
+    const data = await apiCall<MedicionParametro[]>(url);
     return data || [];
   } catch (error) {
     console.error('Error fetching mediciones del turno:', error);
@@ -282,11 +273,10 @@ export async function createMedicionParametro(
   medicion: MedicionParametroCreate
 ): Promise<MedicionParametro | null> {
   try {
-    const response = await apiCall(`/turnos/${idTurno}/mediciones`, {
+    const data = await apiCall<MedicionParametro>(`/turnos/${idTurno}/mediciones`, {
       method: 'POST',
-      body: JSON.stringify(medicion),
+      data: medicion,
     });
-    const data = await response.json();
     return data;
   } catch (error) {
     console.error('Error creating medición:', error);
@@ -302,11 +292,10 @@ export async function createMedicionesLote(
   medicionesLote: MedicionesLoteCreate
 ): Promise<MedicionParametro[] | null> {
   try {
-    const response = await apiCall(`/turnos/${idTurno}/mediciones/lote`, {
+    const data = await apiCall<MedicionParametro[]>(`/turnos/${idTurno}/mediciones/lote`, {
       method: 'POST',
-      body: JSON.stringify(medicionesLote),
+      data: medicionesLote,
     });
-    const data = await response.json();
     return data || [];
   } catch (error) {
     console.error('Error creating mediciones en lote:', error);
@@ -322,8 +311,7 @@ export async function getMedicionParametro(
   idMedicion: number
 ): Promise<MedicionParametro | null> {
   try {
-    const response = await apiCall(`/turnos/${idTurno}/mediciones/${idMedicion}`);
-    const data = await response.json();
+    const data = await apiCall<MedicionParametro>(`/turnos/${idTurno}/mediciones/${idMedicion}`);
     return data;
   } catch (error) {
     console.error('Error fetching medición:', error);
@@ -342,7 +330,7 @@ export async function updateMedicionParametro(
   try {
     await apiCall(`/turnos/${idTurno}/mediciones/${idMedicion}`, {
       method: 'PUT',
-      body: JSON.stringify(updates),
+      data: updates,
     });
     return true;
   } catch (error) {

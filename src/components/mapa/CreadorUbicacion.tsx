@@ -13,6 +13,7 @@ import {
   import DeleteUbicacion from "./DeleteUbicaciones";
   import useMediaQuery from "@mui/material/useMediaQuery";
   import MainButton from "../botones/MainButtom";
+  import { axiosGet, axiosPost, axiosPut } from "../../lib/axiosConfig";
   
   interface Ubicacion {
     handleClose: any;
@@ -41,52 +42,31 @@ import {
   
     // Cargar ubicaciones, tipos y localidades
     useEffect(() => {
-      fetch(`${backendURL}/ubicaciones`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          "ngrok-skip-browser-warning": "true",
-        },
-      })
-        .then((response) => response.json())
+      axiosGet<any[]>('ubicaciones', backendURL)
         .then((ubicaciones) => {
           setUbicaciones(ubicaciones);
           setEstadoCarga(false);
         })
         .catch(() => console.error("Error al obtener las ubicaciones disponibles"));
-    }, []);
+    }, [backendURL]);
   
     useEffect(() => {
-      fetch(`${backendURL}/ubicaciones/tiposUbicaciones`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          "ngrok-skip-browser-warning": "true",
-        },
-      })
-        .then((response) => response.json())
+      axiosGet<any[]>('ubicaciones/tiposUbicaciones', backendURL)
         .then((tipoUbicacion) => {
           setTipoUbicacion(tipoUbicacion);
           setEstadoCarga(false);
         })
         .catch(() => console.error("Error al obtener los tipos de ubicacion"));
-    }, []);
+    }, [backendURL]);
   
     useEffect(() => {
-      fetch(`${backendURL}/ubicaciones/localidades`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          "ngrok-skip-browser-warning": "true",
-        },
-      })
-        .then((response) => response.json())
+      axiosGet<any[]>('ubicaciones/localidades', backendURL)
         .then((localidades) => {
           setLocalidades(localidades);
           setEstadoCarga(false);
         })
         .catch(() => console.error("Error al obtener las localidades"));
-    }, []);
+    }, [backendURL]);
   
     // Inicializa el objeto de datos a partir de la ubicación seleccionada (si existe)
     const [datosNuevaUbicacion, setDatosNuevaUbicacion] = useState<any>({
@@ -176,26 +156,13 @@ import {
   
       if (!validUrl || !validTipo || !validLocalidad) return;
   
-      const metodo = ubicacionSeleccionada ? "PUT" : "POST";
-      const url = ubicacionSeleccionada
-        ? `${backendURL}/ubicaciones/${datosNuevaUbicacion.id}`
-        : `${backendURL}/ubicaciones`;
-  
-      fetch(url, {
-        method: metodo,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(datosNuevaUbicacion),
-      })
-        .then((response) => {
-          if (!response.ok) {
-            return response.text().then((text) => {
-              throw new Error(text);
-            });
-          }
-          return response.json();
-        })
+      const apiCall = ubicacionSeleccionada
+        ? axiosPut(`ubicaciones/${datosNuevaUbicacion.id}`, datosNuevaUbicacion, backendURL)
+        : axiosPost('ubicaciones', datosNuevaUbicacion, backendURL);
+
+      apiCall
         .then((data) => {
-          if (metodo === "POST") {
+          if (!ubicacionSeleccionada) {
             setUbicaciones((prev: any) => [...prev, data]);
           } else {
             const index = ubicaciones.findIndex(

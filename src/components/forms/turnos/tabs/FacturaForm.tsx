@@ -20,6 +20,7 @@ import MainButton from '../../../botones/MainButtom';
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { Dialog as MuiDialog } from '@mui/material';
 import { useNotificacion } from '../../../Notificaciones/NotificacionSnackbar';
+import { axiosGet, axiosPut, axiosPost, axiosDelete } from '../../../../lib/axiosConfig';
 
 
 interface TipoFactura {
@@ -96,18 +97,16 @@ const FacturaForm: React.FC<FacturaFormProps> = ({
       };
 
   const { data, errors, validateAll, setData } = useValidation(initialData, rules);
-  const headers = {
-    'Content-Type': 'application/json',
-    'ngrok-skip-browser-warning': 'true',
-  };
+  // const headers = {
+  //   'Content-Type': 'application/json',
+  //   'ngrok-skip-browser-warning': 'true',
+  // };
 
   // Cargar tipos de factura
   useEffect(() => {
     const fetchTiposFactura = async () => {
       try {
-        const response = await fetch(`${backendURL}/facturas/tipos`, { method: 'GET', headers });
-        if (!response.ok) throw new Error('Error al obtener los tipos de factura');
-        const data = await response.json();
+        const data = await axiosGet<any[]>('facturas/tipos', backendURL);
         setTiposFacturaOptions(data);
       } catch (error) {
         console.error(error);
@@ -141,23 +140,9 @@ const FacturaForm: React.FC<FacturaFormProps> = ({
   const handleDelete = async () => {
     try {
       // 1. Desasociar la factura del turno (sin idEstado)
-      await fetch(`${backendURL}/turnos/${turnoId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'ngrok-skip-browser-warning': 'true',
-        },
-        body: JSON.stringify({ factura: null }),
-      });
+      await axiosPut(`turnos/${turnoId}`, { factura: null }, backendURL);
       // 2. Eliminar la factura
-      const response = await fetch(`${backendURL}/facturas/${initialFactura?.id}`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-          'ngrok-skip-browser-warning': 'true',
-        },
-      });
-      if (!response.ok) throw new Error(await response.text());
+      await axiosDelete(`facturas/${initialFactura?.id}`, backendURL);
       onSuccess(null);
       handleCloseDeleteDialog();
     } catch (error: any) {
@@ -176,13 +161,7 @@ const FacturaForm: React.FC<FacturaFormProps> = ({
   // Nueva función para asociar factura existente al turno
   const asociarFacturaATurno = async (facturaId: string) => {
     try {
-      const response = await fetch(`${backendURL}/turnos/${turnoId}`, {
-        method: 'PUT',
-        headers,
-        body: JSON.stringify({ idFactura: facturaId }),
-      });
-      if (!response.ok) throw new Error(await response.text());
-      const updatedTurno = await response.json();
+      const updatedTurno = await axiosPut(`turnos/${turnoId}`, { idFactura: facturaId }, backendURL);
       onSuccess(updatedTurno);
     } catch (error) {
       console.error('Error al asociar la factura al turno:', error);
@@ -211,12 +190,7 @@ const FacturaForm: React.FC<FacturaFormProps> = ({
       setPendingSubmit(true);
 
       // Then proceed with factura creation/association
-      const response = await fetch(`${backendURL}/facturas`, {
-        method: 'GET',
-        headers,
-      });
-      if (!response.ok) throw new Error('Error al buscar facturas');
-      const facturas = await response.json();
+      const facturas = await axiosGet<any[]>('facturas', backendURL);
       const existente = facturas.find((f: any) =>
         String(f.cuitEmisor) === String(cuitEmisor) &&
         String(f.nroFactura) === String(nroFactura) &&
@@ -236,13 +210,7 @@ const FacturaForm: React.FC<FacturaFormProps> = ({
         idTipoFactura: Number(tipoFacturaId),
         puntoDeVenta,
       };
-      const createResponse = await fetch(`${backendURL}/facturas/crear-factura`, {
-        method: 'POST',
-        headers,
-        body: JSON.stringify(payload),
-      });
-      if (!createResponse.ok) throw new Error(await createResponse.text());
-      const facturaCreada = await createResponse.json();
+      const facturaCreada = await axiosPost('facturas/crear-factura', payload, backendURL);
       // Asociar la factura creada al turno
       await asociarFacturaATurno(facturaCreada.id);
       setPendingSubmit(false);

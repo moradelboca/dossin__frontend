@@ -10,6 +10,7 @@ import Typography from '@mui/material/Typography';
 import Link from '@mui/material/Link';
 import { ContextoGeneral } from './Contexto';
 import { useLocation } from 'react-router-dom';
+import { axiosGet } from '../lib/axiosConfig';
 
 const StyledTooltip = styled(({ className, ...props }: TooltipProps) => (
   <Tooltip {...props} classes={{ popper: className }} />
@@ -71,8 +72,7 @@ const InfoTooltip: React.FC<InfoTooltipProps> = ({
 
   const handleOpenDialog = async () => {
     try {
-      const res = await fetch(`${general?.authURL}/auth/usuarios`);
-      const usuarios = await res.json();
+      const usuarios = await axiosGet<any[]>(`auth/usuarios`, general?.authURL);
       const asignadoA = usuarios.find((u: any) => u.email === ASIGNADO_EMAIL);
       // Prellenar título con solo la información de la pantalla
       let titulo = `Pantalla: ${location.pathname}`;

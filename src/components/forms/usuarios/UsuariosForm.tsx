@@ -14,6 +14,7 @@ import { ContextoGeneral } from "../../Contexto";
 import DeleteEntidad from "../../dialogs/DeleteEntidad";
 import useValidation from "../../hooks/useValidation";
 import MainButton from '../../botones/MainButtom';
+import { axiosGet, axiosPost, axiosPut } from "../../../lib/axiosConfig";
 
 interface UsuariosFormProps {
   seleccionado?: any;
@@ -58,14 +59,7 @@ const UsuariosForm: React.FC<UsuariosFormProps> = ({
   );
 
   useEffect(() => {
-    fetch(`${authURL}/auth/usuarios/roles`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        "ngrok-skip-browser-warning": "true",
-      },
-    })
-      .then((response) => response.json())
+    axiosGet<any[]>('auth/usuarios/roles', authURL)
       .then((data) => setRoles(data))
       .catch(() => console.error("Error al obtener los roles"));
   }, [authURL]);
@@ -93,8 +87,6 @@ const UsuariosForm: React.FC<UsuariosFormProps> = ({
   const handleSubmit = () => {
     if (validateAll()) {
       const isEdit = Boolean(seleccionado?.id);
-      const metodo = isEdit ? "PUT" : "POST";
-      const url = `${authURL}/auth/usuarios${isEdit ? `/${seleccionado?.id}` : ''}`;
       
       const payloadActivo = typeof activo === 'boolean' 
         ? activo 
@@ -106,15 +98,12 @@ const UsuariosForm: React.FC<UsuariosFormProps> = ({
         ...(isEdit && { activo: payloadActivo })
       };
 
-      fetch(url, {
-        method: metodo,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(isEdit ? payload : { ...payload, activo: true }),
-      })
-        .then(async (response) => {
-          if (!response.ok) throw new Error(await response.text());
-          return response.json();
-        })
+      const finalPayload = isEdit ? payload : { ...payload, activo: true };
+      const apiCall = isEdit
+        ? axiosPut(`auth/usuarios/${seleccionado?.id}`, finalPayload, authURL)
+        : axiosPost('auth/usuarios', finalPayload, authURL);
+
+      apiCall
         .then((newData) => {
           setDatos(isEdit
             ? datos.map(usuario => usuario.id === data.id ? newData : usuario)

@@ -1,6 +1,7 @@
 // hooks/useTaraHandler.ts
 import { useContext } from "react";
 import { ContextoGeneral } from "../../Contexto";
+import { axiosPut, axiosDelete, axiosGet } from "../../../lib/axiosConfig";
 
 
 
@@ -28,25 +29,10 @@ export const useBorrarTurno = () => {
   const { backendURL } = useContext(ContextoGeneral);
   const deleteTara = async (turnoId: number, idTara: number) => {
     // Actualizar turno: setear idTara a null
-    const turnoResponse = await fetch(`${backendURL}/turnos/${turnoId}`, {
-      method: "PUT",
-      headers: {
-            "Content-Type": "application/json",
-            "ngrok-skip-browser-warning": "true",
-          },
-      body: JSON.stringify({ tara: null }),
-    });
-    if (!turnoResponse.ok) throw new Error(await turnoResponse.text());
+    await axiosPut(`turnos/${turnoId}`, { tara: null }, backendURL);
 
     // Eliminar la Tara
-    const taraResponse = await fetch(`${backendURL}/taras/${idTara}`, {
-      method: "DELETE",
-      headers: {
-            "Content-Type": "application/json",
-            "ngrok-skip-browser-warning": "true",
-          },
-    });
-    if (!taraResponse.ok) throw new Error(await taraResponse.text());
+    await axiosDelete(`taras/${idTara}`, backendURL);
 
     return true;
   };
@@ -55,14 +41,7 @@ export const useBorrarTurno = () => {
    * Elimina la Factura asociada al turno.
    */
   const deleteFactura = async (facturaId: number) => {
-    const response = await fetch(`${backendURL}/facturas/${facturaId}`, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-        "ngrok-skip-browser-warning": "true",
-      },
-    });
-    if (!response.ok) throw new Error(await response.text());
+    await axiosDelete(`facturas/${facturaId}`, backendURL);
     return true;
   };
 
@@ -73,33 +52,11 @@ export const useBorrarTurno = () => {
     tipo: "efectivo" | "gasoil",
     turnoId: number
   ) => {
-    const response = await fetch(`${backendURL}/adelantos/${tipo}`, {
-      method: "GET",
-      headers: {
-            "Content-Type": "application/json",
-            "ngrok-skip-browser-warning": "true",
-          },
-    });
-    if (!response.ok)
-      throw new Error(`Error al obtener los adelantos ${tipo}`);
-    const data = await response.json();
+    const data = await axiosGet<any[]>(`adelantos/${tipo}`, backendURL);
     // Filtrar los adelantos que correspondan al turno
     const adelantos = data.filter((item: any) => item.turnoDeCarga?.id === turnoId);
     for (const adelanto of adelantos) {
-      const deleteResponse = await fetch(
-        `${backendURL}/adelantos/${tipo}/${adelanto.id}`,
-        {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-            "ngrok-skip-browser-warning": "true",
-          },
-        }
-      );
-      if (!deleteResponse.ok)
-        throw new Error(
-          `Error al eliminar el adelanto ${tipo} con id ${adelanto.id}`
-        );
+      await axiosDelete(`adelantos/${tipo}/${adelanto.id}`, backendURL);
     }
     return true;
   };
@@ -131,14 +88,7 @@ export const useBorrarTurno = () => {
       await deleteAdelantosPorTipo("gasoil", turno.id);
 
       // 5. Finalmente, eliminar el turno
-      const turnoResponse = await fetch(`${backendURL}/turnos/${turno.id}`, {
-        method: "DELETE",
-        headers: {
-            "Content-Type": "application/json",
-            "ngrok-skip-browser-warning": "true",
-          },
-      });
-      if (!turnoResponse.ok) throw new Error(await turnoResponse.text());
+      await axiosDelete(`turnos/${turno.id}`, backendURL);
 
       return { deleted: true, turnoId: turno.id };
     } catch (error) {

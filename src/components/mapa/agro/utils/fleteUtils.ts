@@ -1,6 +1,7 @@
 // Utilidades para cálculo de fletes
 import Papa from "papaparse";
 import { calcularDistanciaReal, redondearDistanciaParaTarifa } from "../../../../utils/distanciaUtils";
+import axios from "axios";
 
 /**
  * Calcula la distancia entre dos puntos usando la fórmula de Haversine
@@ -38,8 +39,11 @@ export function calcularDistanciaFlete(
  */
 export async function obtenerTarifaFlete(distanciaKm: number): Promise<number | null> {
     try {
-        const res = await fetch("/tarifas.csv");
-        const text = await res.text();
+        const res = await axios.get("/tarifas.csv", { 
+            responseType: 'text',
+            withCredentials: false 
+        });
+        const text = res.data;
         const data = Papa.parse<string[]>(text, { header: false }).data;
         
         // Buscar la fila que coincida con la distancia

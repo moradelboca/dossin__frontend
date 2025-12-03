@@ -5,6 +5,7 @@ import { ContextoGeneral } from '../../Contexto';
 import AddIcon from '@mui/icons-material/Add';
 import Dialog from '@mui/material/Dialog';
 import EmpresaForm from '../empresas/EmpresaForm';
+import { axiosGet } from '../../../lib/axiosConfig';
 
 interface Rol {
   nombre: string;
@@ -47,14 +48,7 @@ const AutocompleteEmpresas: React.FC<AutocompleteEmpresasProps> = ({
   const [openDialog, setOpenDialog] = useState(false);
 
   useEffect(() => {
-    fetch(`${backendURL}/empresas`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'ngrok-skip-browser-warning': 'true'
-      }
-    })
-      .then(response => response.json())
+    axiosGet<Empresa[]>('empresas', backendURL)
       .then((data: Empresa[]) => {
         // Fuerzo que todos los cuit sean string
         const normalizados = data.map(emp => ({ ...emp, cuit: emp.cuit.toString() }));

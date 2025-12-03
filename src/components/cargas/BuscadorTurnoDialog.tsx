@@ -30,6 +30,7 @@ import {
   Chip,
 } from '@mui/material';
 import { ContextoGeneral } from '../Contexto';
+import { axiosGet } from '../../lib/axiosConfig';
 // import { useAuth } from '../autenticacion/ContextoAuth';
 import TurnoGridRow from './cupos/tabsCupos/TurnoGridRow';
 import { exportarCSV, exportarPDF, exportarImagen } from '../../utils/exportUtils';
@@ -156,33 +157,18 @@ export const BuscadorTurnoDialog: React.FC<BuscadorTurnoDialogProps> = ({ open, 
   const obtenerInfoCarga = async (idCarga: number) => {
     try {
       // Primero intentar con el endpoint estándar
-      const response = await fetch(`${backendURL}/cargas/${idCarga}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'ngrok-skip-browser-warning': 'true',
-        },
-      });
-
-      if (response.ok) {
-        const carga = await response.json();
+      try {
+        const carga = await axiosGet<any>(`cargas/${idCarga}`, backendURL);
         return carga;
+      } catch {
+        // Si falla, intentar con el endpoint de kgDescargadosTotales
+        try {
+          const data = await axiosGet<any>(`cargas/kgDescargadosTotales/${idCarga}`, backendURL);
+          return data.carga || data;
+        } catch {
+          return null;
+        }
       }
-      
-      // Si falla, intentar con el endpoint de kgDescargadosTotales
-      const response2 = await fetch(`${backendURL}/cargas/kgDescargadosTotales/${idCarga}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'ngrok-skip-browser-warning': 'true',
-        },
-      });
-
-      if (response2.ok) {
-        const data = await response2.json();
-        return data.carga || data;
-      }
-      return null;
     } catch (error) {
       console.error('Error obteniendo información de carga:', error);
       return null;
@@ -194,51 +180,29 @@ export const BuscadorTurnoDialog: React.FC<BuscadorTurnoDialogProps> = ({ open, 
   const buscarCargaPorTurnoId = async (turnoId: string) => {
     try {
       // Obtener todas las cargas
-      const responseCargas = await fetch(`${backendURL}/cargas`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'ngrok-skip-browser-warning': 'true',
-        },
-      });
-
-      if (!responseCargas.ok) {
-        return null;
-      }
-
-      const cargas = await responseCargas.json();
+      const cargas = await axiosGet<any[]>('cargas', backendURL);
 
       // Para cada carga, buscar en sus cupos si contiene este turno
       for (const carga of cargas) {
         try {
           // Obtener los cupos de esta carga
-          const responseCupos = await fetch(`${backendURL}/cargas/${carga.id}/cupos`, {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-              'ngrok-skip-browser-warning': 'true',
-            },
-          });
+          const cupos = await axiosGet<any[]>(`cargas/${carga.id}/cupos`, backendURL);
 
-          if (responseCupos.ok) {
-            const cupos = await responseCupos.json();
-
-            // Buscar el turno en los cupos
-            for (const cupo of cupos) {
-              // Buscar en turnos normales
-              if (Array.isArray(cupo.turnos)) {
-                const turnoEncontrado = cupo.turnos.find((t: any) => t.id === turnoId);
-                if (turnoEncontrado) {
-                  return carga;
-                }
+          // Buscar el turno en los cupos
+          for (const cupo of cupos) {
+            // Buscar en turnos normales
+            if (Array.isArray(cupo.turnos)) {
+              const turnoEncontrado = cupo.turnos.find((t: any) => t.id === turnoId);
+              if (turnoEncontrado) {
+                return carga;
               }
+            }
 
-              // Buscar en turnos con errores
-              if (Array.isArray(cupo.turnosConErrores)) {
-                const turnoEncontrado = cupo.turnosConErrores.find((t: any) => t.id === turnoId);
-                if (turnoEncontrado) {
-                  return carga;
-                }
+            // Buscar en turnos con errores
+            if (Array.isArray(cupo.turnosConErrores)) {
+              const turnoEncontrado = cupo.turnosConErrores.find((t: any) => t.id === turnoId);
+              if (turnoEncontrado) {
+                return carga;
               }
             }
           }
@@ -293,19 +257,7 @@ export const BuscadorTurnoDialog: React.FC<BuscadorTurnoDialogProps> = ({ open, 
         url += `estado=${encodeURIComponent(estadoSeleccionado.nombre.toLowerCase())}`;
       }
 
-      const response = await fetch(url, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'ngrok-skip-browser-warning': 'true',
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error('Error al buscar turnos');
-      }
-
-      const data = await response.json();
+      const data = await axiosGet<any>(url.replace(backendURL + '/', ''), backendURL);
       
       // Manejar diferentes formatos de respuesta
       let turnosData = [];
@@ -376,16 +328,7 @@ export const BuscadorTurnoDialog: React.FC<BuscadorTurnoDialogProps> = ({ open, 
           let turnoCompleto = turno;
           if (turno.id) {
             try {
-              const turnoRes = await fetch(`${backendURL}/turnos/${turno.id}`, {
-                method: 'GET',
-                headers: {
-                  'Content-Type': 'application/json',
-                  'ngrok-skip-browser-warning': 'true',
-                },
-              });
-              if (turnoRes.ok) {
-                turnoCompleto = await turnoRes.json();
-              }
+              turnoCompleto = await axiosGet<any>(`turnos/${turno.id}`, backendURL);
             } catch (err) {
               console.error('Error obteniendo turno completo:', err);
             }
@@ -427,15 +370,10 @@ export const BuscadorTurnoDialog: React.FC<BuscadorTurnoDialogProps> = ({ open, 
             // También buscar en contratos normales (como hace manejoTurnos.tsx)
             let contratoNormal = null;
             try {
-              const contratosRes = await fetch(`${backendURL}/contratos`, {
-                headers: { 'ngrok-skip-browser-warning': 'true' }
+              const contratos = await axiosGet<any[]>('contratos', backendURL);
+              contratoNormal = contratos.find((c: any) => {
+                return Array.isArray(c.cargas) && c.cargas.some((car: any) => car.id === carga.id);
               });
-              if (contratosRes.ok) {
-                const contratos = await contratosRes.json();
-                contratoNormal = contratos.find((c: any) => {
-                  return Array.isArray(c.cargas) && c.cargas.some((car: any) => car.id === carga.id);
-                });
-              }
             } catch (err) {
               console.error('Error buscando contratos normales:', err);
             }
@@ -466,33 +404,17 @@ export const BuscadorTurnoDialog: React.FC<BuscadorTurnoDialogProps> = ({ open, 
           turnosFinales.map(async (turno: any) => {
             try {
               // Obtener turno completo
-              const res = await fetch(`${backendURL}/turnos/${turno.id}`, {
-                method: 'GET',
-                headers: {
-                  'Content-Type': 'application/json',
-                  'ngrok-skip-browser-warning': 'true',
-                },
-              });
               let turnoCompleto = turno;
-              if (res.ok) {
-                turnoCompleto = await res.json();
+              try {
+                turnoCompleto = await axiosGet<any>(`turnos/${turno.id}`, backendURL);
+              } catch {
+                // Si falla, usar el turno original
               }
               
               // Obtener mediciones del turno
               try {
-                const medicionesRes = await fetch(`${backendURL}/turnos/${turno.id}/mediciones`, {
-                  method: 'GET',
-                  headers: {
-                    'Content-Type': 'application/json',
-                    'ngrok-skip-browser-warning': 'true',
-                  },
-                });
-                if (medicionesRes.ok) {
-                  const mediciones = await medicionesRes.json();
-                  turnoCompleto.mediciones = Array.isArray(mediciones) ? mediciones : [];
-                } else {
-                  turnoCompleto.mediciones = [];
-                }
+                const mediciones = await axiosGet<any[]>(`turnos/${turno.id}/mediciones`, backendURL);
+                turnoCompleto.mediciones = Array.isArray(mediciones) ? mediciones : [];
               } catch (medicionesErr) {
                 console.error('Error obteniendo mediciones del turno:', medicionesErr);
                 turnoCompleto.mediciones = [];

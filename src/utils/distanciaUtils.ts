@@ -1,6 +1,7 @@
 /**
  * Utilidades para el cálculo de distancias geográficas
  */
+import axios from 'axios';
 
 // API Key de OpenRouteService desde variables de entorno
 const OPENROUTE_API_KEY = import.meta.env.VITE_OPENROUTE_API_KEY;
@@ -81,15 +82,12 @@ export async function calcularDistanciaOpenRoute(
   apiKey: string
 ): Promise<number> {
   try {
-    const response = await fetch(
-      `https://api.openrouteservice.org/v2/directions/driving-car?api_key=${apiKey}&start=${lon1},${lat1}&end=${lon2},${lat2}`
+    const response = await axios.get(
+      `https://api.openrouteservice.org/v2/directions/driving-car?api_key=${apiKey}&start=${lon1},${lat1}&end=${lon2},${lat2}`,
+      { withCredentials: false }
     );
     
-    if (!response.ok) {
-      throw new Error(`Error en la API: ${response.status}`);
-    }
-    
-    const data = await response.json();
+    const data = response.data;
     
     if (!data.features || data.features.length === 0) {
       throw new Error('No se encontró ruta');
@@ -97,9 +95,9 @@ export async function calcularDistanciaOpenRoute(
     
     // Retorna la distancia en kilómetros
     return data.features[0].properties.segments[0].distance / 1000;
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error calculando distancia con OpenRouteService:', error);
-    throw error;
+    throw new Error(error.response?.status ? `Error en la API: ${error.response.status}` : error.message);
   }
 }
 

@@ -1,5 +1,6 @@
 import { useContext } from 'react';
 import { ContextoGeneral } from '../../Contexto';
+import { axiosPost, axiosPut } from '../../../lib/axiosConfig';
 
 interface FacturaPayload {
   idFactura?: string; // si es update
@@ -19,10 +20,6 @@ const useFacturaHandler = () => {
   const handleFacturaSubmission = async (cuitEmpresa: string | number, payload: FacturaPayload) => {
     try {
       const isUpdating = Boolean(payload.idFactura);
-      const url = isUpdating
-        ? `${backendURL}/facturas/${payload.idFactura}`
-        : `${backendURL}/facturas/${cuitEmpresa}/crear-factura`;
-      const method = isUpdating ? 'PUT' : 'POST';
 
       const body = isUpdating
         ? {
@@ -39,17 +36,10 @@ const useFacturaHandler = () => {
             total: payload.total,
           };
 
-      const facturaResponse = await fetch(url, {
-        method,
-        headers: {
-          "Content-Type": "application/json",
-          "ngrok-skip-browser-warning": "true",
-        },
-        body: JSON.stringify(body),
-      });
-
-      if (!facturaResponse.ok) throw new Error(await facturaResponse.text());
-      const facturaData = await facturaResponse.json();
+      const facturaData = isUpdating
+        ? await axiosPut<any>(`facturas/${payload.idFactura}`, body, backendURL)
+        : await axiosPost<any>(`facturas/${cuitEmpresa}/crear-factura`, body, backendURL);
+      
       return facturaData;
     } catch (error) {
       console.error('Error en el proceso de Factura:', error);

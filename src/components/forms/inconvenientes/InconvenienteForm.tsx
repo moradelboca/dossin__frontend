@@ -6,6 +6,7 @@ import { ContextoGeneral } from "../../Contexto";
 import { FormularioProps } from "../../../interfaces/FormularioProps";
 import { useAuth } from "../../autenticacion/ContextoAuth";
 import MainButton from '../../botones/MainButtom';
+import { axiosGet, axiosPost } from "../../../lib/axiosConfig";
 
 
 const InconvenienteForm: React.FC<FormularioProps> = ({
@@ -37,17 +38,10 @@ const InconvenienteForm: React.FC<FormularioProps> = ({
 
   // Fetch para obtener los usuarios
   useEffect(() => {
-    fetch(`${authURL}/auth/usuarios`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        "ngrok-skip-browser-warning": "true",
-      },
-    })
-      .then((response) => response.json())
+    axiosGet<any[]>('auth/usuarios', authURL)
       .then((data) => setUsuarios(data))
       .catch(() => console.error("Error al obtener los usuarios"));
-  }, []);
+  }, [authURL]);
 
   // Inicializar descripcion y asignadoA desde 'seleccionado' si está presente
   useEffect(() => {
@@ -70,27 +64,13 @@ const InconvenienteForm: React.FC<FormularioProps> = ({
   }, [usuarios, seleccionado]);
 
   useEffect(() => {
-    fetch(`${backendURL}/inconvenientes/tiposinconvenientes`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        "ngrok-skip-browser-warning": "true",
-      },
-    })
-      .then((response) => response.json())
+    axiosGet<any[]>('inconvenientes/tiposinconvenientes', backendURL)
       .then((data) => setTiposInconvenientes(data))
       .catch((error) => {console.error("Error al obtener los Tipos de Inconvenientes: \n", error);});
   }, [backendURL]);
 
   useEffect(() => {
-    fetch(`${backendURL}/inconvenientes/urgenciainconvenientes`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        "ngrok-skip-browser-warning": "true",
-      },
-    })
-      .then((response) => response.json())
+    axiosGet<any[]>('inconvenientes/urgenciainconvenientes', backendURL)
       .then((data) => setNivelesUrgencia(data))
       .catch((error) => {console.error("Error al obtener los Niveles de Urgencia: \n", error);});
   }, [backendURL]);
@@ -139,26 +119,15 @@ const InconvenienteForm: React.FC<FormularioProps> = ({
       };
 
       // Aquí podrías diferenciar entre POST y PUT según tus necesidades
-      fetch(`${backendURL}/inconvenientes`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "ngrok-skip-browser-warning": "true",
-        },
-        body: JSON.stringify(payload),
-      })
-        .then(async (response) => {
-          if (!response.ok) {
-            const errorMessage = await response.text();
-            throw new Error(`Error del servidor: ${errorMessage}`);
-          }
-          return response.json();
-        })
+      axiosPost('inconvenientes', payload, backendURL)
         .then((newData) => {
           setDatos([...datos, newData]);
           handleClose();
         })
-        .catch((error) => console.error(`Error: ${error.message}`));
+        .catch((error: any) => {
+          const errorMessage = error?.response?.data?.message || error?.message || 'Error desconocido';
+          console.error(`Error: ${errorMessage}`);
+        });
     }
   };
 

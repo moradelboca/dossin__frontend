@@ -10,6 +10,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { CargamentoProvinciaPrueba } from "../CargamentoProvinciaPrueba";
+import { axiosGet } from "../../../lib/axiosConfig";
 
 // Definición del tipo para los datos de cargas
 type Cargas = {
@@ -41,13 +42,9 @@ const DashboardCargas: React.FC<DashboardCargasProps & { startDate?: string, end
         const params = new URLSearchParams();
         if (startDate) params.append('fechaDesde', startDate);
         if (endDate) params.append('fechaHasta', endDate);
-        const res = await fetch(`${dashboardURL}/cargas/cargamento-provincia?${params.toString()}`, {
-          headers: {
-            "Content-Type": "application/json",
-            "ngrok-skip-browser-warning": "true",
-          }
-        });
-        data = await res.json();
+        const queryString = params.toString();
+        const url = queryString ? `cargas/cargamento-provincia?${queryString}` : 'cargas/cargamento-provincia';
+        data = await axiosGet<any>(url, dashboardURL);
       }
       // Procesar data: [{ provincia, Maiz: 100, Trigo: 200, ... }, ...]
       // Necesitamos el mapping de id a nombre de cargamento

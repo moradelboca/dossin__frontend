@@ -14,6 +14,7 @@ import { ContextoGeneral } from "../Contexto";
 import CreadorEntidad from "../dialogs/CreadorEntidad";
 import { GridTemplate } from "../grid/GridTemplate";
 import MobileCardList from "../mobile/MobileCardList";
+import { axiosGet } from "../../lib/axiosConfig";
 
 interface TablaTemplateProps {
   titulo: string;
@@ -70,15 +71,11 @@ export default function TablaTemplate({
 
   const apiURL = usarAuthURL ? authURL : backendURL;
   const refreshDatos = () => {
-    fetch(`${apiURL}/${endpoint}`, {
-      method: "GET",
-      headers: { "Content-Type": "application/json", "ngrok-skip-browser-warning": "true" },
-    })
-      .then(r => { if (!r.ok) throw new Error(); return r.json(); })
+    axiosGet<any[]>(endpoint, apiURL)
       .then(d => { setDatos(d); setEstadoCarga("Cargado"); })
       .catch(() => { setEstadoCarga("Error"); });
   };
-  useEffect(() => { refreshDatos(); }, [apiURL]);
+  useEffect(() => { refreshDatos(); }, [apiURL, endpoint]);
 
   const handleOpen = (item: any) => { setSeleccionado(item); setOpen(true); };
   const handleClose = () => { setSeleccionado(null); setOpen(false); refreshDatos(); };

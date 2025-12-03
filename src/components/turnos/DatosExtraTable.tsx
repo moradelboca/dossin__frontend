@@ -24,6 +24,7 @@ import {
 import type { MaestroAtributo, DatosExtraTurno } from '../../types/datos-extra';
 import { formatValueByType } from '../../utils/stringUtils';
 import { DatosExtraTurnoDialog } from './DatosExtraTurnoDialog';
+import { axiosGet } from '../../lib/axiosConfig';
 
 export const DatosExtraTable: React.FC = () => {
   const { theme, backendURL } = useContext(ContextoGeneral);
@@ -71,17 +72,8 @@ export const DatosExtraTable: React.FC = () => {
       await Promise.all(
         turnoIds.map(async (turnoId) => {
           try {
-            const response = await fetch(`${backendURL}/turnos/${turnoId}`, {
-              method: 'GET',
-              headers: {
-                'Content-Type': 'application/json',
-                'ngrok-skip-browser-warning': 'true',
-              },
-            });
-            if (response.ok) {
-              const turnoData = await response.json();
-              turnosData[turnoId] = turnoData;
-            }
+            const turnoData = await axiosGet<any>(`turnos/${turnoId}`, backendURL);
+            turnosData[turnoId] = turnoData;
           } catch (err) {
             console.error(`Error loading turno ${turnoId}:`, err);
           }

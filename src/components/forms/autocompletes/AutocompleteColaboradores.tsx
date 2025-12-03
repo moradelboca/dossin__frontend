@@ -5,6 +5,7 @@ import AddIcon from '@mui/icons-material/Add';
 import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
 import ChoferForm from '../Choferes/ChoferForm';
+import { axiosGet } from '../../../lib/axiosConfig';
 
 interface Colaborador {
   cuil: string;
@@ -36,14 +37,7 @@ const AutocompleteColaboradores: React.FC<AutocompleteColaboradoresProps> = ({
   const [openDialog, setOpenDialog] = useState(false);
 
   useEffect(() => {
-    fetch(`${backendURL}/colaboradores`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'ngrok-skip-browser-warning': 'true',
-      },
-    })
-      .then(response => response.json())
+    axiosGet<Colaborador[]>('colaboradores', backendURL)
       .then((data: Colaborador[]) => {
         // Fuerzo que todos los cuil sean string
         const normalizados = data.map(col => ({ ...col, cuil: col.cuil.toString() }));

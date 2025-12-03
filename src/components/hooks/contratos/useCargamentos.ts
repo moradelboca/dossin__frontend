@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { axiosGet } from '../../../lib/axiosConfig';
 
 interface Cargamento {
   id: number;
@@ -20,19 +21,7 @@ const useCargamentos = (backendURL: string) => {
         setLoading(true);
         setError(null);
 
-        const response = await fetch(`${backendURL}/cargas/cargamentos`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            "ngrok-skip-browser-warning": "true",
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error('Error al obtener los cargamentos');
-        }
-
-        const data = await response.json();
+        const data = await axiosGet<Cargamento[]>("cargas/cargamentos", backendURL);
         setCargamentos(data);
       } catch (err) {
         console.error('Error fetching cargamentos:', err);

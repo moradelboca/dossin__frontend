@@ -1,3 +1,5 @@
+import axios from 'axios';
+
 interface FinnegansTokenResponse {
   access_token: string;
   token_type: string;
@@ -40,19 +42,16 @@ class FinnegansApiService {
       url.searchParams.append('client_secret', this.clientSecret);
       url.searchParams.append('grant_type', 'client_credentials');
 
-      const response = await fetch(url.toString(), {
-        method: 'GET',
+      const response = await axios.get(url.toString(), {
         headers: {
           'Accept': 'text/plain',
         },
+        withCredentials: false,
+        responseType: 'text',
       });
 
-      if (!response.ok) {
-        throw new Error(`Failed to get token: ${response.status} ${response.statusText}`);
-      }
-
       // La API devuelve el token como texto plano, no como JSON
-      const tokenText = await response.text();
+      const tokenText = response.data;
       console.log('🔍 Respuesta de la API:', tokenText);
       
       // Crear el objeto de token manualmente
@@ -125,34 +124,45 @@ class FinnegansApiService {
   /**
    * Makes an authenticated request to the Finnegans API
    */
-  async makeAuthenticatedRequest(endpoint: string, options: RequestInit = {}): Promise<Response> {
+  async makeAuthenticatedRequest(endpoint: string, options: any = {}): Promise<any> {
     const token = await this.getAccessToken();
     
-    const response = await fetch(`${this.baseUrl}${endpoint}`, {
-      ...options,
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
-        ...options.headers,
-      },
-    });
-
-    // If token is invalid, try to refresh and retry once
-    if (response.status === 401) {
-      this.clearToken();
-      const newToken = await this.getAccessToken();
-      
-      return fetch(`${this.baseUrl}${endpoint}`, {
-        ...options,
+    try {
+      const response = await axios({
+        url: `${this.baseUrl}${endpoint}`,
+        method: options.method || 'GET',
+        data: options.body || options.data,
         headers: {
-          'Authorization': `Bearer ${newToken}`,
+          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
           ...options.headers,
         },
+        withCredentials: false,
       });
-    }
 
-    return response;
+      return response;
+    } catch (error: any) {
+      // If token is invalid, try to refresh and retry once
+      if (error.response?.status === 401) {
+        this.clearToken();
+        const newToken = await this.getAccessToken();
+        
+        const retryResponse = await axios({
+          url: `${this.baseUrl}${endpoint}`,
+          method: options.method || 'GET',
+          data: options.body || options.data,
+          headers: {
+            'Authorization': `Bearer ${newToken}`,
+            'Content-Type': 'application/json',
+            ...options.headers,
+          },
+          withCredentials: false,
+        });
+
+        return retryResponse;
+      }
+      throw error;
+    }
   }
 }
 

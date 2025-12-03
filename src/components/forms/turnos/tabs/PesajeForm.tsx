@@ -4,6 +4,7 @@ import { ContextoGeneral } from "../../../Contexto";
 import MainButton from "../../../botones/MainButtom";
 import { MedicionesCalidadForm } from "./MedicionesCalidadForm";
 import { createMedicionesLote } from "../../../../lib/parametros-calidad-api";
+import { axiosPut } from "../../../../lib/axiosConfig";
 
 interface PesajeFormProps {
   turnoId: number;
@@ -57,14 +58,7 @@ const PesajeForm: React.FC<PesajeFormProps> = ({
         kgDescargados: Number(kgDescargados),
         precioGrano: Number(precioGrano) / 1000, // Convertir de precio por tonelada a precio por kg
       };
-      const url = `${backendURL}/turnos/${turnoId}`;
-      const response = await fetch(url, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      if (!response.ok) throw new Error(await response.text());
-      const updatedData = await response.json();
+      const updatedData = await axiosPut(`turnos/${turnoId}`, payload, backendURL);
 
       // Guardar mediciones de calidad si hay alguna
       const medicionesValidas = Object.entries(mediciones)

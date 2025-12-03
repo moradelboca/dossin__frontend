@@ -14,6 +14,7 @@ import DashboardCargas from "./graficos/DashboardCargas";
 import DashboardFechas from "./graficos/DashboardFechas";
 import DashboardFechasDialog from "../dialogs/dashboard/DashboardFechasDialog";
 import { useMediaQuery } from '@mui/material';
+import { axiosGet } from "../../lib/axiosConfig";
 
 interface DashboardGraficosProps {
   opcion: "cargas" | "fechas";
@@ -42,13 +43,7 @@ const DashboardGraficos: React.FC<DashboardGraficosProps> = ({ opcion, startDate
   const isLargeScreen = useMediaQuery("(min-width:1200px)");
 
   React.useEffect(() => {
-    fetch(`${backendURL}/cargamentos`, {
-      headers: {
-        'Content-Type': 'application/json',
-        'ngrok-skip-browser-warning': 'true',
-      },
-    })
-      .then(r => r.ok ? r.json() : Promise.reject())
+    axiosGet<any[]>('cargamentos', backendURL)
       .then(data => setCargamentos(data))
       .catch(() => setCargamentos([]));
   }, [backendURL]);

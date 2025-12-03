@@ -4,6 +4,7 @@ import { ContextoGeneral } from '../../Contexto';
 import AddIcon from '@mui/icons-material/Add';
 import Dialog from '@mui/material/Dialog';
 import AcopladoForm from '../acoplados/AcopladoForm';
+import { axiosGet } from '../../../lib/axiosConfig';
 
 interface Acoplado {
   patente: string;
@@ -32,14 +33,7 @@ const AutocompleteAcoplados: React.FC<AutocompleteAcopladosProps> = ({
   const handleCloseDialog = () => setOpenDialog(false);
 
   useEffect(() => {
-    fetch(`${backendURL}/acoplados`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'ngrok-skip-browser-warning': 'true',
-      },
-    })
-      .then(response => response.json())
+    axiosGet<any>('acoplados', backendURL)
       .then((data: any) => {
         const lista: Acoplado[] = Array.isArray(data)
           ? data

@@ -3,6 +3,7 @@ import { Box } from "@mui/material";
 import CrearNuevoTurnoForm from "./CrearNuevoTurnoForm";
 import EditarTurnoForm from "./EditarTurnoForm";
 import { ContextoGeneral } from "../../Contexto";
+import { axiosGet } from "../../../lib/axiosConfig";
 
 export interface TurnoFormProps {
   seleccionado?: any;
@@ -22,9 +23,7 @@ const TurnoForm: React.FC<TurnoFormProps> = (props) => {
   useEffect(() => {
     const fetchCarga = async () => {
       try {
-        const response = await fetch(`${backendURL}/cargas/${props.idCarga}`);
-        if (!response.ok) throw new Error("No se pudo obtener la carga");
-        const carga = await response.json();
+        const carga = await axiosGet<any>(`cargas/${props.idCarga}`, backendURL);
         // Lógica para required
         const tipos = carga.tiposAcoplados || [];
         const tieneBitrenLocal = tipos.some((t: any) => t.nombre === "Bitren");

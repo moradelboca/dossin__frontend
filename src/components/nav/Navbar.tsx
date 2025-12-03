@@ -13,6 +13,7 @@ import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import { useAuth } from "../autenticacion/ContextoAuth";
 import { ContextoGeneral } from "../Contexto";
 import hermex from "../../assets/hermex.png";
+import { axiosGet } from "../../lib/axiosConfig";
 
 const CustomToolbar = styled(Toolbar)<{ transicion: string }>(
   ({ transicion }) => ({
@@ -48,8 +49,7 @@ export default function Navbar(props: NavbarProps) {
 
   useEffect(() => {
     if (user && !user.profileImage && user.email) {
-      fetch(`${authURL}/auth/usuarios?email=${encodeURIComponent(user.email)}`)
-        .then(res => res.json())
+      axiosGet<any[]>(`auth/usuarios?email=${encodeURIComponent(user.email)}`, authURL)
         .then(data => {
           const found = Array.isArray(data) ? data.find((u: any) => u.email === user.email) : null;
           if (found && found.imagen && found.imagen.startsWith("http")) {

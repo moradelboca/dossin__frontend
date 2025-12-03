@@ -7,6 +7,7 @@ import AutocompleteCamiones from "../autocompletes/AutocompleteCamiones";
 import AutocompleteAcoplados from "../autocompletes/AutocompleteAcoplados";
 import useValidation from "../../hooks/useValidation";
 import MainButton from "../../botones/MainButtom";
+import { axiosPost } from "../../../lib/axiosConfig";
 
 interface CrearNuevoTurnoFormProps {
   setDatos: (datos: any) => void;
@@ -78,18 +79,7 @@ const CrearNuevoTurnoForm: React.FC<CrearNuevoTurnoFormProps> = ({
     };
 
     try {
-      const response = await fetch(`${backendURL}/cargas/${idCarga}/cupos/${fechaCupo}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-
-      if (!response.ok) {
-        const errorMessage = await response.text();
-        throw new Error(`Error del servidor: ${errorMessage}`);
-      }
-
-      const newData = await response.json();
+      const newData = await axiosPost(`cargas/${idCarga}/cupos/${fechaCupo}`, payload, backendURL);
       setDatos((prevDatos: any[]) => [...prevDatos, newData]);
       handleClose();
     } catch (error: any) {

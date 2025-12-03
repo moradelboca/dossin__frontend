@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import Papa from 'papaparse';
 import { calcularDistancia, redondearDistanciaParaTarifa } from '../utils/distanciaUtils';
+import axios from 'axios';
 
 export interface Ubicacion {
   id: number;
@@ -100,8 +101,11 @@ export const useCalculoTarifa = () => {
       }
 
       // Cargar tarifas del CSV
-      const res = await fetch("/tarifas.csv");
-      const text = await res.text();
+      const res = await axios.get("/tarifas.csv", { 
+        responseType: 'text',
+        withCredentials: false 
+      });
+      const text = res.data;
       const data = Papa.parse<string[]>(text, { header: false }).data;
       
       // Buscar la tarifa para la distancia calculada

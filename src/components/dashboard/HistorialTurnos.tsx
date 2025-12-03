@@ -23,6 +23,7 @@ import {
 import AddIcon from "@mui/icons-material/Add";
 import { ContextoGeneral } from "../Contexto";
 import CardMobile from "../cards/mobile/CardMobile";
+import { axiosGet } from "../../lib/axiosConfig";
 
 const HistorialTurnos: React.FC = () => {
   const { dashboardURL } = useContext(ContextoGeneral);
@@ -42,22 +43,9 @@ const HistorialTurnos: React.FC = () => {
   const [openDialog, setOpenDialog] = useState<boolean>(false);
   const [selectedTurno, setSelectedTurno] = useState<any>(null);
 
-  const fetchOptions = {
-    headers: {
-      "Content-Type": "application/json",
-      "ngrok-skip-browser-warning": "true",
-    },
-  };
-
   useEffect(() => {
     // Fetch para turnos recientes
-    fetch(`${dashboardURL}/turnos/fecha/`, fetchOptions)
-      .then((res) => {
-        if (!res.ok) {
-          throw new Error("Error en la petición de turnos recientes");
-        }
-        return res.json();
-      })
+    axiosGet<any>('turnos/fecha/', dashboardURL)
       .then((data) => {
         // Se espera que el response tenga la forma: { Fecha:"2025-02-06", Cantidad:0, Turnos: [] }
         setRecentData(data);
@@ -70,13 +58,7 @@ const HistorialTurnos: React.FC = () => {
       });
 
     // Fetch para turnos anteriores
-    fetch(`${dashboardURL}/turnos`, fetchOptions)
-      .then((res) => {
-        if (!res.ok) {
-          throw new Error("Error en la petición de turnos anteriores");
-        }
-        return res.json();
-      })
+    axiosGet<any>('turnos', dashboardURL)
       .then((data) => {
         setAnterioresData(data.turnos);
         setLoadingAnteriores(false);

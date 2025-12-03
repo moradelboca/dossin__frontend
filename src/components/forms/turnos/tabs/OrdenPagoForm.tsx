@@ -2,6 +2,7 @@ import React, { useContext, useState } from "react";
 import { TextField, Box, useTheme, useMediaQuery } from "@mui/material";
 import { ContextoGeneral } from "../../../Contexto";
 import MainButton from "../../../botones/MainButtom";
+import { axiosPut } from "../../../../lib/axiosConfig";
 
 interface OrdenPagoFormProps {
   turnoId: number;
@@ -33,15 +34,7 @@ const OrdenPagoForm: React.FC<OrdenPagoFormProps> = ({ turnoId, initialData, onS
     }
 
     try {
-      const url = `${backendURL}/turnos/${turnoId}`;
-      const response = await fetch(url, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ numeroOrdenPago }),
-      });
-
-      if (!response.ok) throw new Error(await response.text());
-      const updatedData = await response.json();
+      const updatedData = await axiosPut(`turnos/${turnoId}`, { numeroOrdenPago }, backendURL);
       onSuccess(updatedData);
     } catch (error: any) {
       console.error(`Error: ${error.message}`);

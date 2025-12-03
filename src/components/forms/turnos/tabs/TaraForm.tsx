@@ -6,6 +6,7 @@ import { ContextoGeneral } from "../../../Contexto";
 import MainButton from "../../../botones/MainButtom";
 import { MedicionesCalidadForm } from "./MedicionesCalidadForm";
 import { createMedicionesLote } from "../../../../lib/parametros-calidad-api";
+import { axiosGet, axiosPut } from "../../../../lib/axiosConfig";
 
 interface TaraFormProps {
   turnoId: string;
@@ -67,11 +68,7 @@ export const TaraForm: React.FC<Omit<TaraFormProps, 'initialTara'> & { initialTa
       };
       const result = await handleTaraSubmission(turnoId, payload);
       // PUT para cambiar a estado tarado (id 6)
-      await fetch(`${backendURL}/turnos/${turnoId}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ idEstado: 6 }),
-      });
+      await axiosPut(`turnos/${turnoId}`, { idEstado: 6 }, backendURL);
       onSuccess(result);
     } catch (error) {
       console.error("Error al procesar tara:", error);
@@ -192,17 +189,9 @@ export const PesoBrutoForm: React.FC<Omit<TaraFormProps, 'initialTara'> & { init
       
       // Si no, buscar el turno actualizado del backend
       try {
-        const response = await fetch(`${backendURL}/turnos/${turnoId}`, {
-          headers: {
-            "Content-Type": "application/json",
-            "ngrok-skip-browser-warning": "true",
-          },
-        });
-        if (response.ok) {
-          const turnoActualizado = await response.json();
-          const kgTara = turnoActualizado?.kgTara || turnoActualizado?.tara?.pesoTara || null;
-          setKgTaraActual(kgTara);
-        }
+        const turnoActualizado = await axiosGet<any>(`turnos/${turnoId}`, backendURL);
+        const kgTara = turnoActualizado?.kgTara || turnoActualizado?.tara?.pesoTara || null;
+        setKgTaraActual(kgTara);
       } catch (error) {
         console.error("Error al obtener kgTara:", error);
       }
@@ -263,11 +252,7 @@ export const PesoBrutoForm: React.FC<Omit<TaraFormProps, 'initialTara'> & { init
       }
 
       // PUT para cambiar a estado cargado (id 7)
-      await fetch(`${backendURL}/turnos/${turnoId}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ idEstado: 7 }),
-      });
+      await axiosPut(`turnos/${turnoId}`, { idEstado: 7 }, backendURL);
       setOpenConfirmDialog(false);
       onSuccess(result);
     } catch (error) {

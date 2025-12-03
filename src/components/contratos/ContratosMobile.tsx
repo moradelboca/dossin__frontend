@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Box, Typography, Button, Dialog, DialogContent, DialogTitle, TextField, InputAdornment } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import CardMobile from "../cards/mobile/CardMobile";
 import ContratoForm from "../forms/contratos/ContratoForm";
 import { CustomButtom } from "../botones/CustomButtom";
 import CrearCargaStepper from "../cargas/creadores/CrearCargaStepper";
+import { ContextoGeneral } from "../Contexto";
+import { axiosPost, axiosPut } from "../../lib/axiosConfig";
 
 interface ContratosMobileProps {
   contratos: any[];
@@ -25,6 +27,7 @@ const ContratosMobile: React.FC<ContratosMobileProps> = ({
   handleClose,
   theme,
 }) => {
+  const { backendURL } = useContext(ContextoGeneral);
   // Para expandir cards de contratos
   const [expandedContrato, setExpandedContrato] = useState<number | null>(null);
   // Para expandir cards de cargas
@@ -102,17 +105,7 @@ const ContratosMobile: React.FC<ContratosMobileProps> = ({
   const handleCargaCreated = async (nuevaCarga: any) => {
     try {
       // 1. Crear la carga
-      const backendURL = import.meta.env.VITE_BACKEND_URL || '';
-      const resCarga = await fetch(`${backendURL}/cargas`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "ngrok-skip-browser-warning": "true",
-        },
-        body: JSON.stringify(nuevaCarga.payload),
-      });
-      if (!resCarga.ok) throw new Error("Error creando carga");
-      const cargaCreada = await resCarga.json();
+      const cargaCreada = await axiosPost('cargas', nuevaCarga.payload, backendURL);
       // 2. Actualizar contrato con la nueva carga
       const idsExistentes = contratoParaCarga.cargas?.map((c: any) => c.id) || [];
       const payloadContrato = {
@@ -122,14 +115,7 @@ const ContratosMobile: React.FC<ContratosMobileProps> = ({
           cargaCreada.id,
         ],
       };
-      await fetch(`${backendURL}/contratos/${contratoParaCarga.id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          "ngrok-skip-browser-warning": "true",
-        },
-        body: JSON.stringify(payloadContrato),
-      });
+      await axiosPut(`contratos/${contratoParaCarga.id}`, payloadContrato, backendURL);
       refreshContratos();
       setOpenCrearCarga(false);
       setContratoParaCarga(null);

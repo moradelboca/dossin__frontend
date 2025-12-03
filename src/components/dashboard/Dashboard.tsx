@@ -4,6 +4,7 @@ import { Box, IconButton, Button } from "@mui/material";
 import AddIcon from '@mui/icons-material/Add';
 import { ContextoGeneral } from "../Contexto";
 import { useAuth } from "../autenticacion/ContextoAuth";
+import { axiosGet } from "../../lib/axiosConfig";
 import DashboardCard from "../cards/Dashboard/DashboardCard";
 import DashboardGraficos from "./DashboardGraficos";
 import InconvenientesDialog from "../dialogs/dashboard/InconvenientesDialog";
@@ -107,12 +108,6 @@ const Dashboard: React.FC = () => {
 
   const [calendarMode, setCalendarMode] = useState<'start' | 'end'>('start');
 
-  const fetchOptions = {
-    headers: {
-      "Content-Type": "application/json",
-      "ngrok-skip-browser-warning": "true"
-    }
-  };
 
  
 
@@ -180,8 +175,7 @@ const Dashboard: React.FC = () => {
       // No ejecuto ningún fetch real en local
       return;
     } else {
-      fetch(`${dashboardURL}/turnos`, fetchOptions)
-        .then(r => r.ok ? r.json() : Promise.reject())
+      axiosGet<any[]>("turnos", dashboardURL)
         .then(data => {
           // Filtrar por rango de fechas
           const filtered = Array.isArray(data)
@@ -208,14 +202,12 @@ const Dashboard: React.FC = () => {
           setCo2Emitido(0);
         });
       // Fetch Colaboradores 
-      fetch(`${dashboardURL}/choferes/nuevos`, fetchOptions)
-        .then(r => r.ok ? r.json() : Promise.reject())
+      axiosGet<any>("choferes/nuevos", dashboardURL)
         .then(data => setColaboradores(data))
         .catch(error => console.error("Error fetching colaboradores", error));
 
       // Fetch Inconvenientes (endpoint real)
-      fetch(`${dashboardURL}/inconvenientes`, fetchOptions)
-        .then(r => r.ok ? r.json() : Promise.reject())
+      axiosGet<any[]>("inconvenientes", dashboardURL)
         .then(data => {
           const total = Array.isArray(data) ? data.reduce((acc, curr) => acc + (curr.cantidadTotal || 0), 0) : 0;
           setInconvenientes({ lista: data, total });
@@ -223,14 +215,12 @@ const Dashboard: React.FC = () => {
         .catch((error) => console.error("Hubo un error con inconvenientes", error));
 
       // Fetch Toneladas Transportadas
-      fetch(`${dashboardURL}/turnos/toneladas`, fetchOptions)
-        .then(r => r.ok ? r.json() : Promise.reject())
+      axiosGet<{ Toneladas: string }>("turnos/toneladas", dashboardURL)
         .then(data => setToneladasTransportadas(data.Toneladas)) // Usamos directamente el string formateado
         .catch(() => setToneladasTransportadas("0 t"));
 
       // Fetch Toneladas Transportadas Totales
-      fetch(`${dashboardURL}/toneladas-totales?fechaDesde=${startDate.format('YYYY-MM-DD')}&fechaHasta=${endDate.format('YYYY-MM-DD')}`, fetchOptions)
-        .then(r => r.ok ? r.json() : Promise.reject())
+      axiosGet<{ toneladasTotales: number }>(`toneladas-totales?fechaDesde=${startDate.format('YYYY-MM-DD')}&fechaHasta=${endDate.format('YYYY-MM-DD')}`, dashboardURL)
         .then(data => setToneladasTransportadas(`${data.toneladasTotales} t`))
         .catch(() => setToneladasTransportadas("0 t"));
     }

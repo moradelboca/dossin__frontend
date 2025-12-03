@@ -11,6 +11,7 @@ import {
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import { ContextoGeneral } from "../../Contexto";
+import { axiosGet } from "../../../lib/axiosConfig";
 
 interface SidebarBuscadorProps {
   onFilterChange: (filterType: string, filterValue: any) => void;
@@ -56,14 +57,7 @@ const SidebarBuscador: React.FC<SidebarBuscadorProps> = ({
   ];
 
   useEffect(() => {
-    fetch(`${backendURL}/cargamentos`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        "ngrok-skip-browser-warning": "true",
-      },
-    })
-      .then((res) => res.json())
+    axiosGet<any[]>('cargamentos', backendURL)
       .then((data) => {
         if (Array.isArray(data)) setCargamentos(data);
       })

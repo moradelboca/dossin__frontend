@@ -20,6 +20,7 @@ import InfoTooltip from '../../../InfoTooltip';
 import NoteAltOutlinedIcon from '@mui/icons-material/NoteAltOutlined';
 import Popover from '@mui/material/Popover';
 import Typography from '@mui/material/Typography';
+import { axiosPut } from '../../../../lib/axiosConfig';
 
 interface TurnoGridRowProps {
   turno: any;
@@ -30,7 +31,7 @@ interface TurnoGridRowProps {
 }
 
 const TurnoGridRow: React.FC<TurnoGridRowProps> = ({ turno, cupo, refreshCupos, fields }) => {
-  const { theme } = useContext(ContextoGeneral);
+  const { theme, backendURL } = useContext(ContextoGeneral);
   const transformarCampo = useTransformarCampo();
   const manejoTurnos = useManejoTurnos({ item: turno, cupo, refreshCupos });
   const { user } = useAuth();
@@ -360,12 +361,7 @@ const TurnoGridRow: React.FC<TurnoGridRowProps> = ({ turno, cupo, refreshCupos, 
           <Button
             onClick={async () => {
               try {
-                const response = await fetch(`${import.meta.env.VITE_BACKEND_URL || ''}/turnos/${manejoTurnos.turnoLocal.id}`, {
-                  method: 'PUT',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({ idEstado: 4 }),
-                });
-                if (!response.ok) throw new Error(await response.text());
+                await axiosPut(`turnos/${manejoTurnos.turnoLocal.id}`, { idEstado: 4 }, backendURL);
                 if (refreshCupos) refreshCupos();
                 setOpenCancelarDialog(false);
               } catch (err) {

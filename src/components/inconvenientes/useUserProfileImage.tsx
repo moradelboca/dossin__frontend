@@ -1,5 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { ContextoGeneral } from "../Contexto";
+import { axiosGet } from "../../lib/axiosConfig";
 
 export function useUserProfileImage(email?: string, initialImage?: string | null) {
   const { authURL } = useContext(ContextoGeneral);
@@ -17,8 +18,7 @@ export function useUserProfileImage(email?: string, initialImage?: string | null
     }
     setLoading(true);
     setError(null);
-    fetch(`${authURL}/auth/usuarios/email/${encodeURIComponent(email)}`)
-      .then(res => res.json())
+    axiosGet<any>(`auth/usuarios/email/${encodeURIComponent(email)}`, authURL)
       .then(data => {
         if (data && data.imagen && data.imagen.startsWith("http")) {
           setProfileImage(data.imagen);

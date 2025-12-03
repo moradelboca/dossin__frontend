@@ -30,6 +30,7 @@ import { useAuth } from "../autenticacion/ContextoAuth";
 import TurnoConErroresForm from '../forms/turnos/tabs/turnosConErrores/TurnoConErroresForm';
 import InfoTooltip from "../InfoTooltip";
 import { useNavigate } from "react-router-dom";
+import { axiosGet, axiosPut } from "../../lib/axiosConfig";
 
 // interface Usuario { ... } // Elimino o comento esta interfaz
 
@@ -260,12 +261,7 @@ const Row: React.FC<{
                     setOpenCorregir(true);
                     setTurnoErrorMsg(null);
                     try {
-                      const res = await fetch(`${backendURL}/turnos/${row.titulo}`);
-                      if (!res.ok) {
-                        const errorText = await res.text();
-                        throw new Error(`Error al buscar turno: ${errorText}`);
-                      }
-                      const data = await res.json();
+                      const data = await axiosGet<any>(`turnos/${row.titulo}`, backendURL);
                       setTurnoConErrores(data);
                     } catch (e: any) {
                       setTurnoConErrores(null);
@@ -335,14 +331,7 @@ const Inconvenientes: React.FC = () => {
       setUsuarios(usuariosPruebas);
       return;
     }
-    fetch(`${authURL}/auth/usuarios`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        "ngrok-skip-browser-warning": "true",
-      },
-    })
-      .then((response) => response.json())
+    axiosGet<any[]>('auth/usuarios', authURL)
       .then((data) => setUsuarios(data))
       .catch(() => setUsuarios([]));
   }, [authURL, stage]);
@@ -354,14 +343,7 @@ const Inconvenientes: React.FC = () => {
     }
     const fetchData = async () => {
       try {
-        const response = await fetch(`${backendURL}/inconvenientes`, {
-          headers: {
-            "Content-Type": "application/json",
-            "ngrok-skip-browser-warning": "true",
-          },
-        });
-        if (!response.ok) throw new Error("Error en el servidor");
-        const data = await response.json();
+        const data = await axiosGet<Inconveniente[]>('inconvenientes', backendURL);
         setInconvenientes(data);
       } catch (error) {
         console.error("Error fetching inconvenientes:", error);
@@ -372,28 +354,11 @@ const Inconvenientes: React.FC = () => {
 
   // Cambiar el estado: 1=Pendiente, 4=Atendiendo, 2=Resuelto
   const handleEstadoChange = (inconvenienteId: number, nuevoEstado: number) => {
-    const metodo = "PUT";
-    const url = `${backendURL}/inconvenientes/${inconvenienteId}`;
-
     const payload = {
       estado: nuevoEstado,
     };
 
-    fetch(url, {
-      method: metodo,
-      headers: {
-        "Content-Type": "application/json",
-        "ngrok-skip-browser-warning": "true",
-      },
-      body: JSON.stringify(payload),
-    })
-      .then(async (response) => {
-        if (!response.ok) {
-          const errorMessage = await response.text();
-          throw new Error(`Error del servidor: ${errorMessage}`);
-        }
-        return response.json();
-      })
+    axiosPut(`inconvenientes/${inconvenienteId}`, payload, backendURL)
       .then((updatedData) => {
         setInconvenientes((prevDatos) =>
           prevDatos.map((inconveniente) =>

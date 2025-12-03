@@ -1,6 +1,7 @@
 // hooks/useCargas.ts
 
 import { useState, useEffect } from "react";
+import { axiosGet } from "../../../lib/axiosConfig";
 
 type Carga = any;
 
@@ -25,15 +26,7 @@ const useCargas = (
     ) {
       const ids = cargasInput.split(",").map((id) => id.trim());
       Promise.all(
-        ids.map((id) =>
-          fetch(`${backendURL}/cargas/${id}`, {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              "ngrok-skip-browser-warning": "true",
-            },
-          }).then((res) => res.json())
-        )
+        ids.map((id) => axiosGet<any>(`cargas/${id}`, backendURL))
       )
         .then((lista) => setCargas(lista))
         .catch((error) =>

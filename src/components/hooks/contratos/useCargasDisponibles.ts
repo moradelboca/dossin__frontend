@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { CargaDisponible, CULTIVOS_MAP } from '../../../types/contratosComerciales';
+import { axiosGet } from '../../../lib/axiosConfig';
 
 const useCargasDisponibles = (backendURL: string, contratosConCargas: any[] = []) => {
   const [cargas, setCargas] = useState<CargaDisponible[]>([]);
@@ -23,15 +24,7 @@ const useCargasDisponibles = (backendURL: string, contratosConCargas: any[] = []
       setLoading(true);
       setError(null);
 
-      const response = await fetch(`${backendURL}/cargas`, {
-        headers: { "ngrok-skip-browser-warning": "true" }
-      });
-
-      if (!response.ok) {
-        throw new Error('Error fetching cargas');
-      }
-
-      const cargasData = await response.json();
+      const cargasData = await axiosGet<any[]>("cargas", backendURL);
       const cargasAsociadas = getCargasAsociadas();
 
       // Process loads and mark as associated or not

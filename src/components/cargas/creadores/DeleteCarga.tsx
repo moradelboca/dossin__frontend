@@ -3,6 +3,7 @@ import { useContext, useState } from "react";
 import { ContextoCargas } from "../containers/ContainerTajetasCargas";
 import { ContextoGeneral } from "../../Contexto";
 import ClearSharpIcon from "@mui/icons-material/ClearSharp";
+import { axiosDelete } from "../../../lib/axiosConfig";
 
 export default function DeleteCarga(props: any) {
     const { handleCloseDialog, onDeleteSuccess } = props;
@@ -26,17 +27,7 @@ export default function DeleteCarga(props: any) {
         }
 
         // Si no hay cupos asociados ELIMINAMOS la carga
-        fetch(`${backendURL}/cargas/${cargaSeleccionada.id}`, {
-            method: "DELETE",
-            headers: {
-              "Content-Type": "application/json",
-              "ngrok-skip-browser-warning": "true",
-            },
-          })
-          .then(response => {
-            if (!response.ok) throw new Error('Error en la eliminación');
-            return response.json();
-          })
+        axiosDelete(`cargas/${cargaSeleccionada.id}`, backendURL)
           .then(() => {
             handleCloseDialog();
             onDeleteSuccess();

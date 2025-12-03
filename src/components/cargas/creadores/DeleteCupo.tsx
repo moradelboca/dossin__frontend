@@ -2,6 +2,7 @@ import { Box, Button, Typography } from "@mui/material";
 import { useContext } from "react";
 import { ContextoGeneral } from "../../Contexto";
 import ClearSharpIcon from "@mui/icons-material/ClearSharp";
+import { axiosDelete } from "../../../lib/axiosConfig";
 
 // Define el tipo para el cupo (ajústalo según tu modelo)
 interface Cupo {
@@ -25,14 +26,7 @@ export default function DeleteCupo(props: DeleteCupoProps) {
   const { backendURL, theme } = useContext(ContextoGeneral);
 
   const handleDeleteCupo = () => {
-    fetch(`${backendURL}/cargas/${idCarga}/cupos/${fecha}`, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-        "ngrok-skip-browser-warning": "true",
-      },
-    })
-      .then((response) => response.json())
+    axiosDelete(`cargas/${idCarga}/cupos/${fecha}`, backendURL)
       .then(() => {
         refreshCupos();
         handleCloseDialog();

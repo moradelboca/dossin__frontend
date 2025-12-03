@@ -15,6 +15,7 @@ import {
 } from "@mui/material";
 import { ContextoGeneral } from "../../../../Contexto";
 import MainButton from "../../../../botones/MainButtom";
+import { axiosGet, axiosPost, axiosPut, axiosDelete } from "../../../../../lib/axiosConfig";
 
 interface TipoMedioPago {
   id: number;
@@ -44,12 +45,7 @@ const AdelantoEfectivoForm: React.FC<AdelantoEfectivoFormProps> = ({
   onSuccess,
   onCancel,
 }) => {
-  const { backendURL } = useContext(ContextoGeneral);
-  const headers = {
-    "Content-Type": "application/json",
-    "ngrok-skip-browser-warning": "true",
-  };
-  const { theme } = useContext(ContextoGeneral);
+  const { backendURL, theme } = useContext(ContextoGeneral);
 
   const tema = useTheme();
   const isMobile = useMediaQuery(tema.breakpoints.down("sm"));
@@ -90,12 +86,7 @@ const AdelantoEfectivoForm: React.FC<AdelantoEfectivoFormProps> = ({
   useEffect(() => {
     const fetchTiposMedioPago = async () => {
       try {
-        const response = await fetch(`${backendURL}/adelantos/efectivo/tipos`, {
-          method: "GET",
-          headers,
-        });
-        if (!response.ok) throw new Error("Error al obtener los tipos de medio de pago");
-        const data = await response.json();
+        const data = await axiosGet<TipoMedioPago[]>('adelantos/efectivo/tipos', backendURL);
         setTiposMedioPagoOptions(data);
       } catch (error) {
         console.error(error);
@@ -151,24 +142,9 @@ const AdelantoEfectivoForm: React.FC<AdelantoEfectivoFormProps> = ({
     };
 
     try {
-      let url = `${backendURL}/adelantos/efectivo`;
-      let method = "POST";
-
-      // Si ya existe un adelanto, se actualiza mediante PUT
-      if (adelanto && adelanto.id) {
-        url = `${backendURL}/adelantos/efectivo/${adelanto.id}`;
-        method = "PUT";
-      }
-
-      const response = await fetch(url, {
-        method,
-        headers,
-        body: JSON.stringify(payload),
-      });
-      if (!response.ok) {
-        throw new Error(await response.text());
-      }
-      const data = await response.json();
+      const data = adelanto && adelanto.id
+        ? await axiosPut(`adelantos/efectivo/${adelanto.id}`, payload, backendURL)
+        : await axiosPost('adelantos/efectivo', payload, backendURL);
       onSuccess(data);
     } catch (error) {
       console.error("Error al procesar el adelanto efectivo:", error);
@@ -185,16 +161,7 @@ const AdelantoEfectivoForm: React.FC<AdelantoEfectivoFormProps> = ({
   const handleDelete = async () => {
     if (!adelanto || !adelanto.id) return;
     try {
-      const response = await fetch(
-        `${backendURL}/adelantos/efectivo/${adelanto.id}`,
-        {
-          method: "DELETE",
-          headers,
-        }
-      );
-      if (!response.ok) {
-        throw new Error(await response.text());
-      }
+      await axiosDelete(`adelantos/efectivo/${adelanto.id}`, backendURL);
       // Notifica al padre o actualiza la lista tras la eliminación
       onSuccess({ deleted: true, id: adelanto.id });
       // Limpiar los campos del formulario

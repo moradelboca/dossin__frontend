@@ -21,6 +21,8 @@ import {
 } from "@mui/material";
 import { ContextoGeneral } from "../Contexto";
 import AutocompletarUbicacionMapa from "../cargas/autocompletar/AutocompletarUbicacionMapa";
+import { axiosGet } from "../../lib/axiosConfig";
+import axios from "axios";
 
 Chart.register(
     CategoryScale,
@@ -72,14 +74,7 @@ const Clima = () => {
     const [selectedLocation, setSelectedLocation] = useState<Ubicacion | null>(null);
 
     useEffect(() => {
-        fetch(`${backendURL}/ubicaciones`, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-                "ngrok-skip-browser-warning": "true",
-            },
-        })
-            .then((response) => response.json())
+        axiosGet<Ubicacion[]>('ubicaciones', backendURL)
             .then((ubicaciones) => {
                 setUbicaciones(ubicaciones);
                 if (ubicaciones.length > 0 && !selectedLocation) {
@@ -111,10 +106,11 @@ const Clima = () => {
                     timezone: "auto",
                 };
 
-                const response = await fetch(
-                    `${url}?latitude=${params.latitude}&longitude=${params.longitude}&daily=${params.daily.join(",")}&timezone=${params.timezone}&past_days=${params.past_days}`
+                const response = await axios.get(
+                    `${url}?latitude=${params.latitude}&longitude=${params.longitude}&daily=${params.daily.join(",")}&timezone=${params.timezone}&past_days=${params.past_days}`,
+                    { withCredentials: false }
                 );
-                const data = await response.json();
+                const data = response.data;
 
                 setWeatherData({
                     time: data.daily.time,
@@ -135,10 +131,11 @@ const Clima = () => {
                     timezone: "auto",
                 };
 
-                const response = await fetch(
-                    `${url}?latitude=${params.latitude}&longitude=${params.longitude}&hourly=${params.hourly.join(",")}&timezone=${params.timezone}&past_days=${params.past_days}`
+                const response = await axios.get(
+                    `${url}?latitude=${params.latitude}&longitude=${params.longitude}&hourly=${params.hourly.join(",")}&timezone=${params.timezone}&past_days=${params.past_days}`,
+                    { withCredentials: false }
                 );
-                const data = await response.json();
+                const data = response.data;
 
                 setWeatherData({
                     time: data.hourly.time,

@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
+import { axiosPost, axiosPut } from "../../lib/axiosConfig";
 
 export const useSaveHandler = (
     fields: string[], 
@@ -27,26 +28,18 @@ export const useSaveHandler = (
             return;
         }
 
-        const method = seleccionado ? "PUT" : "POST";
-        const url = seleccionado
-            ? `${backendURL}/${endpoint}/${datos[fields[0]]}` // Assume el primer field como ID único
-            : `${backendURL}/${endpoint}`;
+        const isUpdate = !!seleccionado;
+        const url = isUpdate
+            ? `${endpoint}/${datos[fields[0]]}` // Assume el primer field como ID único
+            : endpoint;
 
-        fetch(url, {
-            method,
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(datos),
-        })
-            .then((response) => {
-                if (!response.ok) {
-                    return response.text().then((text) => {
-                        throw new Error(text);
-                    });
-                }
-                return response.json();
-            })
+        const requestPromise = isUpdate
+            ? axiosPut<any>(url, datos, backendURL)
+            : axiosPost<any>(url, datos, backendURL);
+
+        requestPromise
             .then((data) => {
-                if (method === "POST") {
+                if (!isUpdate) {
                     setDatos([...datos, data]); // Usar el array actual + nuevo dato
                 } else {
                     const updatedDatos = datos.map((item: { [x: string]: any; }) =>

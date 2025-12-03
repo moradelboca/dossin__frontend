@@ -10,6 +10,7 @@ import {
 import { ContextoGeneral } from "../../Contexto";
 import dayjs from "dayjs";
 import { CargasFechasMock } from "../CargasFechasMock";
+import { axiosGet } from "../../../lib/axiosConfig";
 
 interface DashboardFechasProps {
   selections: {
@@ -33,13 +34,7 @@ const DashboardFechas: React.FC<DashboardFechasProps> = ({ selections, chartHeig
     if (isLocal) {
       setAllData(CargasFechasMock);
     } else {
-      fetch(`${dashboardURL}/cargas`, {
-        headers: {
-          "Content-Type": "application/json",
-          "ngrok-skip-browser-warning": "true",
-        },
-      })
-        .then(r => r.ok ? r.json() : Promise.reject())
+      axiosGet<any[]>('cargas', dashboardURL)
         .then(data => setAllData(data))
         .catch(() => setAllData([]));
     }

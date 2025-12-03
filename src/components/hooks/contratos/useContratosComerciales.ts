@@ -8,6 +8,7 @@ import {
   ContratoWithStats, 
   CargaAsociada
 } from '../../../types/contratosComerciales';
+import { axiosGet } from '../../../lib/axiosConfig';
 
 const useContratosComerciales = (backendURL: string) => {
   const [contratos, setContratos] = useState<ContratoWithStats[]>([]);
@@ -24,26 +25,21 @@ const useContratosComerciales = (backendURL: string) => {
       const cargas = await Promise.all(
         cargasIds.map(async (id) => {
           try {
-            const response = await fetch(`${backendURL}/cargas/kgDescargadosTotales/${id}`, {
-              headers: { "ngrok-skip-browser-warning": "true" }
-            });
-            if (response.ok) {
-              const data = await response.json();
-              const carga = data.carga;
-              const kgDescargadosTotales = parseFloat(data.kgDescargadosTotales) || 0;
-              
-              return {
-                id: carga.id,
-                numeroCartaPorte: carga.numeroCartaPorte,
-                fecha: carga.fecha,
-                titular: carga.titularCartaDePorte || { razonSocial: 'N/A' },
-                destinatario: carga.destinatario || { razonSocial: 'N/A' },
-                kgNeto: carga.kgNeto || 0,
-                kgDescargadosTotales: kgDescargadosTotales,
-                cultivo: carga.cultivo || 1,
-                estado: carga.estado?.nombre || 'N/A'
-              };
-            }
+            const data = await axiosGet<any>(`cargas/kgDescargadosTotales/${id}`, backendURL);
+            const carga = data.carga;
+            const kgDescargadosTotales = parseFloat(data.kgDescargadosTotales) || 0;
+            
+            return {
+              id: carga.id,
+              numeroCartaPorte: carga.numeroCartaPorte,
+              fecha: carga.fecha,
+              titular: carga.titularCartaDePorte || { razonSocial: 'N/A' },
+              destinatario: carga.destinatario || { razonSocial: 'N/A' },
+              kgNeto: carga.kgNeto || 0,
+              kgDescargadosTotales: kgDescargadosTotales,
+              cultivo: carga.cultivo || 1,
+              estado: carga.estado?.nombre || 'N/A'
+            };
           } catch (error) {
             console.error(`Error fetching carga ${id}:`, error);
           }

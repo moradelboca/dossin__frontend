@@ -2,6 +2,7 @@
 // Endpoint: /contratos-comerciales
 
 import { ContratoComercial } from '../types/contratosComerciales';
+import { axiosRequest } from './axiosConfig';
 
 // Interface for the backend API request/response format
 interface ContratoComercialBackend {
@@ -43,44 +44,39 @@ interface ContratoComercialBackend {
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000';
 
-// Helper function to make API calls
-async function apiCall(endpoint: string, options: RequestInit = {}): Promise<Response> {
-  const url = `${BACKEND_URL}${endpoint}`;
-  
-  const defaultHeaders = {
-    'Content-Type': 'application/json',
-    'ngrok-skip-browser-warning': 'true',
-  };
-
-  const response = await fetch(url, {
-    ...options,
-    headers: {
-      ...defaultHeaders,
-      ...options.headers,
-    },
-  });
-
-  if (!response.ok) {
-    // Try to get error details from response body
+// Helper function to make API calls using axios
+async function apiCall<T = any>(
+  endpoint: string,
+  options: {
+    method?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
+    data?: any;
+    headers?: Record<string, string>;
+  } = {}
+): Promise<T> {
+  try {
+    return await axiosRequest<T>(endpoint, BACKEND_URL, {
+      method: options.method || 'GET',
+      data: options.data,
+      headers: options.headers,
+    });
+  } catch (error: any) {
     let errorDetails = '';
-    try {
-      const errorText = await response.text();
-      errorDetails = errorText;
-    } catch (e) {
-      // Could not read error response body
+    if (error.response?.data) {
+      errorDetails = typeof error.response.data === 'string' 
+        ? error.response.data 
+        : JSON.stringify(error.response.data);
+    } else if (error.message) {
+      errorDetails = error.message;
     }
     
-    throw new Error(`API call failed: ${response.status} ${response.statusText}. Details: ${errorDetails}`);
+    throw new Error(`API call failed: ${error.response?.status || 'Unknown'} ${error.response?.statusText || ''}. Details: ${errorDetails}`);
   }
-
-  return response;
 }
 
 // GET - Obtener todos los contratos comerciales
 export async function getContratosComerciales(): Promise<ContratoComercial[]> {
   try {
-    const response = await apiCall('/contratos-comerciales');
-    const data = await response.json();
+    const data = await apiCall<ContratoComercialBackend[]>('/contratos-comerciales');
     // Convert backend format to frontend format
     return data.map(convertBackendToFrontend) || [];
   } catch (error) {
@@ -92,8 +88,7 @@ export async function getContratosComerciales(): Promise<ContratoComercial[]> {
 // GET - Obtener un contrato comercial por ID
 export async function getContratoComercialById(id: number): Promise<ContratoComercial | null> {
   try {
-    const response = await apiCall(`/contratos-comerciales/${id}`);
-    const data = await response.json();
+    const data = await apiCall<ContratoComercialBackend>(`/contratos-comerciales/${id}`);
     return convertBackendToFrontend(data);
   } catch (error) {
     console.error('Error fetching contrato comercial:', error);
@@ -138,12 +133,11 @@ export async function createContratoComercialFromForm(formData: ContratoFormData
       throw new Error(`Missing required fields: ${missingFields.join(', ')}`);
     }
     
-    const response = await apiCall('/contratos-comerciales', {
+    const data = await apiCall<ContratoComercialBackend>('/contratos-comerciales', {
       method: 'POST',
-      body: JSON.stringify(dataToSend),
+      data: dataToSend,
     });
     
-    const data = await response.json();
     return convertBackendToFrontend(data);
   } catch (error) {
     console.error('Error creating contrato comercial:', error);
@@ -159,7 +153,7 @@ export async function updateContratoComercial(
   try {
     await apiCall(`/contratos-comerciales/${id}`, {
       method: 'PUT',
-      body: JSON.stringify(updates),
+      data: updates,
     });
     return true;
   } catch (error) {
@@ -189,7 +183,7 @@ export async function updateCargasAsociadas(
   try {
     await apiCall(`/contratos-comerciales/${contratoId}`, {
       method: 'PUT',
-      body: JSON.stringify({ idCargas: cargasIds }),
+      data: { idCargas: cargasIds },
     });
     
     return true;

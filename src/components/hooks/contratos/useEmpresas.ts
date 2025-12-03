@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { axiosGet } from "../../../lib/axiosConfig";
 
 const useEmpresas = (backendURL: string) => {
   const [empresas, setEmpresas] = useState<any[]>([]);
@@ -7,10 +8,7 @@ const useEmpresas = (backendURL: string) => {
   const fetchEmpresas = async () => {
     try {
       setCargando(true);
-      const response = await fetch(`${backendURL}/empresas`, {
-        headers: { "ngrok-skip-browser-warning": "true" }
-      });
-      const data = await response.json();
+      const data = await axiosGet<any[]>("empresas", backendURL);
       setEmpresas(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error("Error fetching empresas:", error);
