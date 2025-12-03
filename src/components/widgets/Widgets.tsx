@@ -77,8 +77,14 @@ export default function Widgets() {
   }
 
   return (
-    <Box sx={{ p: 3, height: '100%', overflow: 'auto', position: 'relative' }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+    <Box sx={{ 
+      p: 3, 
+      height: '100%', 
+      display: 'flex', 
+      flexDirection: 'column',
+      overflow: 'hidden'
+    }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, flexShrink: 0 }}>
         <Typography variant="h4">Widgets</Typography>
         <Button
           variant="contained"
@@ -88,7 +94,27 @@ export default function Widgets() {
           Crear Widget
         </Button>
       </Box>
-      <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
+      <Box sx={{ 
+        display: 'flex', 
+        flexWrap: 'nowrap',
+        overflowX: 'auto',
+        overflowY: 'hidden',
+        flex: 1,
+        pb: 1,
+        '&::-webkit-scrollbar': {
+          height: '12px',
+        },
+        '&::-webkit-scrollbar-track': {
+          backgroundColor: 'rgba(0, 0, 0, 0.05)',
+        },
+        '&::-webkit-scrollbar-thumb': {
+          backgroundColor: 'rgba(0, 0, 0, 0.2)',
+          borderRadius: '6px',
+          '&:hover': {
+            backgroundColor: 'rgba(0, 0, 0, 0.3)',
+          },
+        },
+      }}>
         {archivos.map((archivo) => (
           <ResizableWidget 
             key={archivo.id} 

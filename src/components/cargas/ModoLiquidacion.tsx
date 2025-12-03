@@ -23,6 +23,7 @@ import SaveAltIcon from '@mui/icons-material/SaveAlt';
 import ImageIcon from '@mui/icons-material/Image';
 import { ContextoGeneral } from '../Contexto';
 import { exportarCSV, exportarPDF, exportarImagen } from '../../utils/exportUtils';
+import { AjustesMermas } from '../turnos/AjustesMermas';
 
 interface ModoLiquidacionProps {
   turnos: any[];
@@ -411,6 +412,13 @@ export const ModoLiquidacion: React.FC<ModoLiquidacionProps> = ({ turnos, loadin
                             </TableBody>
                           </Table>
                         </TableContainer>
+                      </Box>
+                    )}
+
+                    {/* Ajustes de Mermas */}
+                    {turno.precios?.ajustesMermas && (
+                      <Box sx={{ mt: 2 }}>
+                        <AjustesMermas ajustesMermas={turno.precios.ajustesMermas} />
                       </Box>
                     )}
                   </Paper>
