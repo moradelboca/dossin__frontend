@@ -1,5 +1,5 @@
 import { Archivo, Usuario } from '../interfaces/archivo';
-import { axiosGet } from '../lib/axiosConfig';
+import { axiosGet, axiosPost, axiosDelete, createAxiosInstance } from '../lib/axiosConfig';
 
 const API_BASE_URL = 'https://api.dossin.com.ar/api';
 const AUTH_URL = 'https://auth.dossin.com.ar';
@@ -18,71 +18,57 @@ export const archivosService = {
   },
 
   async obtenerUsuarios(): Promise<Usuario[]> {
-    const response = await fetch(`${AUTH_URL}/auth/usuarios`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'ngrok-skip-browser-warning': 'true',
-      },
-      mode: 'cors',
-    });
-    if (!response.ok) {
+    try {
+      return await axiosGet<Usuario[]>('/auth/usuarios', AUTH_URL);
+    } catch (error) {
       throw new Error('Error al obtener usuarios');
     }
-    return response.json();
   },
 
   async compartirArchivo(id: number, emails: string[]): Promise<void> {
-    const response = await fetch(`${API_BASE_URL}/archivos/${id}/usuarios`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ emails }),
-    });
-    if (!response.ok) {
+    try {
+      await axiosPost(`archivos/${id}/usuarios`, { emails }, API_BASE_URL);
+    } catch (error) {
       throw new Error('Error al compartir archivo');
     }
   },
 
   async revocarAcceso(id: number, emails: string[]): Promise<void> {
-    const response = await fetch(`${API_BASE_URL}/archivos/${id}/usuarios`, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ emails }),
-    });
-    if (!response.ok) {
+    try {
+      await axiosDelete(`archivos/${id}/usuarios`, API_BASE_URL, {
+        data: { emails }
+      });
+    } catch (error) {
       throw new Error('Error al revocar acceso');
     }
   },
 
   async eliminarArchivo(id: number): Promise<void> {
-    const response = await fetch(`${API_BASE_URL}/archivos/${id}`, {
-      method: 'DELETE',
-    });
-    if (!response.ok) {
+    try {
+      await axiosDelete(`archivos/${id}`, API_BASE_URL);
+    } catch (error) {
       throw new Error('Error al eliminar archivo');
     }
   },
 
   async crearArchivo(nombre: string, descripcion: string, archivo: File, creadoPor: string): Promise<Archivo> {
-    const formData = new FormData();
-    formData.append('nombre', nombre);
-    formData.append('descripcion', descripcion);
-    formData.append('archivo', archivo);
-    formData.append('creadoPor', creadoPor);
+    try {
+      const formData = new FormData();
+      formData.append('nombre', nombre);
+      formData.append('descripcion', descripcion);
+      formData.append('archivo', archivo);
+      formData.append('creadoPor', creadoPor);
 
-    const response = await fetch(`${API_BASE_URL}/archivos`, {
-      method: 'POST',
-      body: formData,
-    });
-    
-    if (!response.ok) {
+      const instance = createAxiosInstance(API_BASE_URL);
+      const response = await instance.post<Archivo>('archivos', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      
+      return response.data;
+    } catch (error) {
       throw new Error('Error al crear archivo');
     }
-    
-    return response.json();
   }
 };
