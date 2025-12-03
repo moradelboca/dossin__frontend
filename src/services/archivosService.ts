@@ -1,4 +1,4 @@
-import { Archivo } from '../interfaces/archivo';
+import { Archivo, Usuario } from '../interfaces/archivo';
 import { axiosGet } from '../lib/axiosConfig';
 
 const API_BASE_URL = 'https://api.dossin.com.ar/api';

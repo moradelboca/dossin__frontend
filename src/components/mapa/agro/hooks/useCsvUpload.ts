@@ -126,27 +126,8 @@ export const useCsvUpload = () => {
    */
   const fixEncoding = (text: string): string => {
     // Mapeo de caracteres mal codificados comunes
+    // Solo incluir entradas con claves válidas (no vacías)
     const encodingMap: { [key: string]: string } = {
-      '': 'ó',
-      '': 'á',
-      '': 'é',
-      '': 'í',
-      '': 'ú',
-      '': 'ñ',
-      '': 'Ñ',
-      '': 'Á',
-      '': 'É',
-      '': 'Í',
-      '': 'Ó',
-      '': 'Ú',
-      '': 'ü',
-      '': 'Ü',
-      '': '¿',
-      '': '¡',
-      '': '°',
-      '': '€',
-      '': '£',
-      '': '¥',
       // Caracteres específicos del problema - usar diferentes caracteres
       '¥2': '2',
       '¥0': '0',
