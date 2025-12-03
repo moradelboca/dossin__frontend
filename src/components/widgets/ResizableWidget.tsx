@@ -1,17 +1,24 @@
-import { Box, Card, CardContent, Typography } from "@mui/material";
+import { Box, Card, CardContent, Typography, IconButton, Tooltip } from "@mui/material";
 import { useRef, useState, useEffect } from "react";
+import ShareIcon from "@mui/icons-material/Share";
+import DeleteIcon from "@mui/icons-material/Delete";
 import { Archivo } from "../../interfaces/archivo";
 import { archivosService } from "../../services/archivosService";
+import { ShareWidgetDialog } from "./ShareWidgetDialog";
 
 interface ResizableWidgetProps {
   archivo: Archivo;
+  onDelete?: (id: number) => void;
+  onUpdate?: (archivo: Archivo) => void;
 }
 
-export function ResizableWidget({ archivo }: ResizableWidgetProps) {
+export function ResizableWidget({ archivo, onDelete, onUpdate }: ResizableWidgetProps) {
   const [size, setSize] = useState({ width: 600, height: 600 });
   const [isResizing, setIsResizing] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const resizeTypeRef = useRef<string>('');
+  const [shareDialogOpen, setShareDialogOpen] = useState(false);
+  const [archivoActual, setArchivoActual] = useState<Archivo>(archivo);
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -67,6 +74,28 @@ export function ResizableWidget({ archivo }: ResizableWidgetProps) {
     }
   };
 
+  const handleShare = (emails: string[]) => {
+    const archivoActualizado = { ...archivoActual, compartidoCon: emails };
+    setArchivoActual(archivoActualizado);
+    if (onUpdate) {
+      onUpdate(archivoActualizado);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (window.confirm(`¿Estás seguro de que deseas eliminar el widget "${archivoActual.nombre}"?`)) {
+      try {
+        await archivosService.eliminarArchivo(archivoActual.id);
+        if (onDelete) {
+          onDelete(archivoActual.id);
+        }
+      } catch (error) {
+        console.error('Error al eliminar widget:', error);
+        alert('Error al eliminar el widget');
+      }
+    }
+  };
+
   return (
     <Box
       ref={containerRef}
@@ -82,17 +111,37 @@ export function ResizableWidget({ archivo }: ResizableWidgetProps) {
       }}
     >
       <Card sx={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
-        <CardContent sx={{ pb: 1 }}>
-          <Typography variant="h6" gutterBottom>
-            {archivo.nombre}
+        <CardContent sx={{ pb: 1, position: 'relative' }}>
+          <Box sx={{ position: 'absolute', top: 8, right: 8, display: 'flex', gap: 0.5 }}>
+            <Tooltip title="Compartir widget">
+              <IconButton
+                size="small"
+                onClick={() => setShareDialogOpen(true)}
+                sx={{ '&:hover': { backgroundColor: 'rgba(25, 118, 210, 0.1)' } }}
+              >
+                <ShareIcon fontSize="small" />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Eliminar widget">
+              <IconButton
+                size="small"
+                onClick={handleDelete}
+                sx={{ '&:hover': { backgroundColor: 'rgba(211, 47, 47, 0.1)' } }}
+              >
+                <DeleteIcon fontSize="small" />
+              </IconButton>
+            </Tooltip>
+          </Box>
+          <Typography variant="h6" gutterBottom sx={{ pr: 8 }}>
+            {archivoActual.nombre}
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            {archivo.descripcion}
+            {archivoActual.descripcion}
           </Typography>
         </CardContent>
         <Box sx={{ flex: 1, px: 2, pb: 2, minHeight: 0 }}>
           <iframe
-            src={archivosService.obtenerUrlContenido(archivo.id)}
+            src={archivosService.obtenerUrlContenido(archivoActual.id)}
             style={{
               width: '100%',
               height: '100%',
@@ -100,7 +149,7 @@ export function ResizableWidget({ archivo }: ResizableWidgetProps) {
               borderRadius: '4px',
               pointerEvents: isResizing ? 'none' : 'auto'
             }}
-            title={archivo.nombre}
+            title={archivoActual.nombre}
           />
         </Box>
       </Card>
@@ -162,6 +211,14 @@ export function ResizableWidget({ archivo }: ResizableWidgetProps) {
             borderColor: 'transparent transparent #999 transparent',
           }
         }}
+      />
+
+      <ShareWidgetDialog
+        open={shareDialogOpen}
+        onClose={() => setShareDialogOpen(false)}
+        archivoId={archivoActual.id}
+        compartidoConActual={archivoActual.compartidoCon}
+        onShare={handleShare}
       />
     </Box>
   );
