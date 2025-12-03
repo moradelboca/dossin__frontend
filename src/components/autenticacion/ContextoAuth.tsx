@@ -1,6 +1,7 @@
 // ContextoAuth.tsx
 import { createContext, useState, useContext, ReactNode } from "react";
 import { ContextoGeneral } from "../Contexto";
+import { axiosGet } from "../../lib/axiosConfig";
 
 interface RolUsuario {
   id: number;
@@ -34,20 +35,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
    const logout = async () => {
     setUser(null);
     try {
-      const response = await fetch(`${authURL}/auth/logout`, {
-        method: "GET",
-        headers: {
-          "ngrok-skip-browser-warning": "true"
-        },
-        credentials: "include",
-      });
-      if (response.ok) {
-        window.open("https://admin.dossin.com.ar/login", "_self");
-      } else {
-        console.error("Logout request failed with status:", response.status);
-      }
-    } catch (error) {
+      await axiosGet("auth/logout", authURL);
+      window.open("https://admin.dossin.com.ar/login", "_self");
+    } catch (error: any) {
       console.error("Logout request failed, not redirecting.", error);
+      // Still redirect even if request fails
+      window.open("https://admin.dossin.com.ar/login", "_self");
     }
   };
 

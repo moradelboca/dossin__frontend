@@ -30,6 +30,7 @@ import {
   Chip,
 } from '@mui/material';
 import { ContextoGeneral } from '../Contexto';
+import { axiosGet } from '../../lib/axiosConfig';
 // import { useAuth } from '../autenticacion/ContextoAuth';
 import TurnoGridRow from './cupos/tabsCupos/TurnoGridRow';
 import { exportarCSV, exportarPDF, exportarImagen } from '../../utils/exportUtils';
@@ -47,7 +48,6 @@ import InfoIcon from '@mui/icons-material/Info';
 import LocalShippingIcon from '@mui/icons-material/LocalShipping';
 import DescriptionIcon from '@mui/icons-material/Description';
 import { ESTADO_PERMISOS } from '../../utils/turnoEstadoPermisos';
-import { getContratosComerciales } from '../../lib/contratos-comerciales-api';
 
 interface BuscadorTurnoDialogProps {
   open: boolean;
@@ -140,7 +140,6 @@ export const BuscadorTurnoDialog: React.FC<BuscadorTurnoDialogProps> = ({ open, 
   // Nuevos estados para carga y contrato
   const [cargaInfo, setCargaInfo] = useState<any>(null);
   const [contratoInfo, setContratoInfo] = useState<any>(null);
-  const [loadingExtra, setLoadingExtra] = useState(false);
 
   // Estilos para azul en focus
   const azulStyles = {
@@ -152,121 +151,6 @@ export const BuscadorTurnoDialog: React.FC<BuscadorTurnoDialogProps> = ({ open, 
     },
   };
 
-  // Función para obtener información de la carga usando el endpoint estándar
-  const obtenerInfoCarga = async (idCarga: number) => {
-    try {
-      // Primero intentar con el endpoint estándar
-      const response = await fetch(`${backendURL}/cargas/${idCarga}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'ngrok-skip-browser-warning': 'true',
-        },
-      });
-
-      if (response.ok) {
-        const carga = await response.json();
-        return carga;
-      }
-      
-      // Si falla, intentar con el endpoint de kgDescargadosTotales
-      const response2 = await fetch(`${backendURL}/cargas/kgDescargadosTotales/${idCarga}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'ngrok-skip-browser-warning': 'true',
-        },
-      });
-
-      if (response2.ok) {
-        const data = await response2.json();
-        return data.carga || data;
-      }
-      return null;
-    } catch (error) {
-      console.error('Error obteniendo información de carga:', error);
-      return null;
-    }
-  };
-
-  // Función para buscar la carga que contiene este turno
-  // La relación es: Turno → Cupo → Carga
-  const buscarCargaPorTurnoId = async (turnoId: string) => {
-    try {
-      // Obtener todas las cargas
-      const responseCargas = await fetch(`${backendURL}/cargas`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'ngrok-skip-browser-warning': 'true',
-        },
-      });
-
-      if (!responseCargas.ok) {
-        return null;
-      }
-
-      const cargas = await responseCargas.json();
-
-      // Para cada carga, buscar en sus cupos si contiene este turno
-      for (const carga of cargas) {
-        try {
-          // Obtener los cupos de esta carga
-          const responseCupos = await fetch(`${backendURL}/cargas/${carga.id}/cupos`, {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-              'ngrok-skip-browser-warning': 'true',
-            },
-          });
-
-          if (responseCupos.ok) {
-            const cupos = await responseCupos.json();
-
-            // Buscar el turno en los cupos
-            for (const cupo of cupos) {
-              // Buscar en turnos normales
-              if (Array.isArray(cupo.turnos)) {
-                const turnoEncontrado = cupo.turnos.find((t: any) => t.id === turnoId);
-                if (turnoEncontrado) {
-                  return carga;
-                }
-              }
-
-              // Buscar en turnos con errores
-              if (Array.isArray(cupo.turnosConErrores)) {
-                const turnoEncontrado = cupo.turnosConErrores.find((t: any) => t.id === turnoId);
-                if (turnoEncontrado) {
-                  return carga;
-                }
-              }
-            }
-          }
-        } catch (err) {
-          // Continuar con la siguiente carga
-        }
-      }
-
-      return null;
-    } catch (error) {
-      console.error('Error buscando carga por turno ID:', error);
-      return null;
-    }
-  };
-
-  // Función para obtener el contrato asociado a una carga
-  const obtenerContratoAsociado = async (idCarga: number) => {
-    try {
-      const contratos = await getContratosComerciales();
-      const contratoEncontrado = contratos.find(
-        (contrato) => contrato.cargasIds && contrato.cargasIds.includes(idCarga)
-      );
-      return contratoEncontrado || null;
-    } catch (error) {
-      console.error('Error obteniendo contrato asociado:', error);
-      return null;
-    }
-  };
 
   const handleBuscar = async () => {
     if (!criterioSeleccionado) return;
@@ -293,19 +177,7 @@ export const BuscadorTurnoDialog: React.FC<BuscadorTurnoDialogProps> = ({ open, 
         url += `estado=${encodeURIComponent(estadoSeleccionado.nombre.toLowerCase())}`;
       }
 
-      const response = await fetch(url, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'ngrok-skip-browser-warning': 'true',
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error('Error al buscar turnos');
-      }
-
-      const data = await response.json();
+      const data = await axiosGet<any>(url.replace(backendURL + '/', ''), backendURL);
       
       // Manejar diferentes formatos de respuesta
       let turnosData = [];
@@ -366,92 +238,30 @@ export const BuscadorTurnoDialog: React.FC<BuscadorTurnoDialogProps> = ({ open, 
       setTurnos(turnosFinales);
       setSearched(true);
       
-      // Si busca por CTG y hay un solo turno, obtener información de carga y contrato
+      // Si busca por CTG y hay un solo turno, usar la información de carga y obtener el contrato
       if (criterioSeleccionado.value === 'ctg' && turnosFinales.length === 1) {
-        setLoadingExtra(true);
-        try {
-          const turno = turnosFinales[0];
+        const turno = turnosFinales[0];
+        
+        // La carga ya viene en la respuesta del GET por CTG
+        if (turno.carga) {
+          setCargaInfo(turno.carga);
           
-          // Paso 1: Obtener el turno completo (puede tener más información)
-          let turnoCompleto = turno;
-          if (turno.id) {
+          // Obtener el contrato usando el idContrato de la carga
+          if (turno.carga.idContrato) {
             try {
-              const turnoRes = await fetch(`${backendURL}/turnos/${turno.id}`, {
-                method: 'GET',
-                headers: {
-                  'Content-Type': 'application/json',
-                  'ngrok-skip-browser-warning': 'true',
-                },
-              });
-              if (turnoRes.ok) {
-                turnoCompleto = await turnoRes.json();
-              }
-            } catch (err) {
-              console.error('Error obteniendo turno completo:', err);
+              // Obtener contrato normal
+              const contrato = await axiosGet<any>(`contratos/${turno.carga.idContrato}`, backendURL);
+              setContratoInfo(contrato);
+            } catch (error) {
+              console.error('Error obteniendo contrato:', error);
+              setContratoInfo(null);
             }
-          }
-          
-          // Paso 2: Intentar obtener la carga
-          let carga: any = null;
-          let idCarga: number | null = null;
-          
-          // Método 1: Desde el turno completo
-          if (turnoCompleto.carga?.id) {
-            idCarga = turnoCompleto.carga.id;
-          } else if (turnoCompleto.idCarga) {
-            idCarga = turnoCompleto.idCarga;
-          } else if (typeof turnoCompleto.carga === 'number') {
-            idCarga = turnoCompleto.carga;
-          }
-          
-          // Método 2: Buscar la carga que contiene este turno (Turno → Cupo → Carga)
-          if (!idCarga && turnoCompleto.id) {
-            carga = await buscarCargaPorTurnoId(turnoCompleto.id);
-            if (carga) {
-              idCarga = carga.id;
-            }
-          }
-          
-          // Método 3: Si tenemos el ID, obtener la carga completa
-          if (idCarga && !carga) {
-            carga = await obtenerInfoCarga(idCarga);
-          }
-          
-          // Paso 3: Si encontramos la carga, buscar el contrato
-          if (carga && carga.id) {
-            setCargaInfo(carga);
-            
-            // Buscar contrato en contratos comerciales
-            const contratoComercial = await obtenerContratoAsociado(carga.id);
-            
-            // También buscar en contratos normales (como hace manejoTurnos.tsx)
-            let contratoNormal = null;
-            try {
-              const contratosRes = await fetch(`${backendURL}/contratos`, {
-                headers: { 'ngrok-skip-browser-warning': 'true' }
-              });
-              if (contratosRes.ok) {
-                const contratos = await contratosRes.json();
-                contratoNormal = contratos.find((c: any) => {
-                  return Array.isArray(c.cargas) && c.cargas.some((car: any) => car.id === carga.id);
-                });
-              }
-            } catch (err) {
-              console.error('Error buscando contratos normales:', err);
-            }
-            
-            // Priorizar contrato comercial, sino usar contrato normal
-            setContratoInfo(contratoComercial || contratoNormal);
           } else {
-            setCargaInfo(null);
             setContratoInfo(null);
           }
-        } catch (error) {
-          console.error('Error obteniendo información extra:', error);
+        } else {
           setCargaInfo(null);
           setContratoInfo(null);
-        } finally {
-          setLoadingExtra(false);
         }
       } else {
         // Si no es búsqueda por CTG o hay múltiples turnos, limpiar la info extra
@@ -465,34 +275,29 @@ export const BuscadorTurnoDialog: React.FC<BuscadorTurnoDialogProps> = ({ open, 
         const turnosCompletosData = await Promise.all(
           turnosFinales.map(async (turno: any) => {
             try {
+              // Preservar el campo carga del turno original (viene en la respuesta del GET por CTG)
+              const cargaOriginal = turno.carga;
+              const contratoOriginal = turno.contrato || turno.contratoInfo;
+              
               // Obtener turno completo
-              const res = await fetch(`${backendURL}/turnos/${turno.id}`, {
-                method: 'GET',
-                headers: {
-                  'Content-Type': 'application/json',
-                  'ngrok-skip-browser-warning': 'true',
-                },
-              });
               let turnoCompleto = turno;
-              if (res.ok) {
-                turnoCompleto = await res.json();
+              try {
+                turnoCompleto = await axiosGet<any>(`turnos/${turno.id}`, backendURL);
+                // Preservar carga y contrato del turno original si no vienen en el turno completo
+                if (!turnoCompleto.carga && cargaOriginal) {
+                  turnoCompleto.carga = cargaOriginal;
+                }
+                if (!turnoCompleto.contrato && !turnoCompleto.contratoInfo && contratoOriginal) {
+                  turnoCompleto.contrato = contratoOriginal;
+                }
+              } catch {
+                // Si falla, usar el turno original
               }
               
               // Obtener mediciones del turno
               try {
-                const medicionesRes = await fetch(`${backendURL}/turnos/${turno.id}/mediciones`, {
-                  method: 'GET',
-                  headers: {
-                    'Content-Type': 'application/json',
-                    'ngrok-skip-browser-warning': 'true',
-                  },
-                });
-                if (medicionesRes.ok) {
-                  const mediciones = await medicionesRes.json();
-                  turnoCompleto.mediciones = Array.isArray(mediciones) ? mediciones : [];
-                } else {
-                  turnoCompleto.mediciones = [];
-                }
+                const mediciones = await axiosGet<any[]>(`turnos/${turno.id}/mediciones`, backendURL);
+                turnoCompleto.mediciones = Array.isArray(mediciones) ? mediciones : [];
               } catch (medicionesErr) {
                 console.error('Error obteniendo mediciones del turno:', medicionesErr);
                 turnoCompleto.mediciones = [];
@@ -752,12 +557,7 @@ export const BuscadorTurnoDialog: React.FC<BuscadorTurnoDialogProps> = ({ open, 
             {/* Información adicional de Carga y Contrato */}
             {searched && criterioSeleccionado?.value === 'ctg' && turnos.length === 1 && (
               <Box sx={{ mb: 3 }}>
-                {loadingExtra ? (
-                  <Box sx={{ display: 'flex', justifyContent: 'center', py: 3 }}>
-                    <CircularProgress size={30} sx={{ color: theme.colores.azul }} />
-                  </Box>
-                ) : (
-                  <Grid container spacing={2}>
+                <Grid container spacing={2}>
                     {/* Tarjeta de información de la Carga */}
                     {cargaInfo && (
                       <Grid item xs={12} md={6}>
@@ -1053,7 +853,7 @@ export const BuscadorTurnoDialog: React.FC<BuscadorTurnoDialogProps> = ({ open, 
                     )}
 
                     {/* Mensaje si no hay información de carga o contrato */}
-                    {!cargaInfo && !contratoInfo && !loadingExtra && (
+                    {!cargaInfo && !contratoInfo && (
                       <Grid item xs={12}>
                         <Card sx={{ 
                           border: `1px solid ${theme.colores.gris}30`,
@@ -1071,7 +871,6 @@ export const BuscadorTurnoDialog: React.FC<BuscadorTurnoDialogProps> = ({ open, 
                       </Grid>
                     )}
                   </Grid>
-                )}
               </Box>
             )}
 

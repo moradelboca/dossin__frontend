@@ -1,4 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
+import { ContextoGeneral } from '../components/Contexto';
+import { axiosGet } from '../lib/axiosConfig';
 
 interface Ubicacion {
   id: number;
@@ -24,6 +26,7 @@ interface Ubicacion {
 }
 
 export function useUbicacionesCalculadora() {
+  const { backendURL } = useContext(ContextoGeneral);
   const [ubicaciones, setUbicaciones] = useState<Ubicacion[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -34,15 +37,7 @@ export function useUbicacionesCalculadora() {
         setLoading(true);
         setError(null);
         
-        // Aquí deberías hacer la llamada a tu API para obtener las ubicaciones
-        // Por ahora, voy a simular una respuesta con datos de ejemplo
-        const response = await fetch('/api/ubicaciones'); // Ajusta la URL según tu API
-        
-        if (!response.ok) {
-          throw new Error('Error al cargar ubicaciones');
-        }
-        
-        const data = await response.json();
+        const data = await axiosGet<Ubicacion[]>('ubicaciones', backendURL);
         setUbicaciones(data);
       } catch (err) {
         console.error('Error cargando ubicaciones:', err);
@@ -101,7 +96,7 @@ export function useUbicacionesCalculadora() {
     };
 
     cargarUbicaciones();
-  }, []);
+  }, [backendURL]);
 
   return {
     ubicaciones,

@@ -5,6 +5,7 @@ import AutocompleteColaboradores from "../../../autocompletes/AutocompleteColabo
 import AutocompleteEmpresas from "../../../autocompletes/AutocompleteEmpresas";
 import AutocompleteCamiones from "../../../autocompletes/AutocompleteCamiones";
 import AutocompleteAcoplados from "../../../autocompletes/AutocompleteAcoplados";
+import { axiosGet, axiosPut } from "../../../../../lib/axiosConfig";
 
 interface TurnoConErroresFormProps {
   seleccionado?: any;
@@ -40,21 +41,9 @@ const TurnoConErroresForm: React.FC<TurnoConErroresFormProps> = ({
   useEffect(() => {
     const fetchRequiereBitren = async () => {
       try {
-        const response = await fetch(`${backendURL}/cargas/${idCarga}/requiere-bitren`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            "ngrok-skip-browser-warning": "true",
-          },
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          // Supongamos que data es un booleano que indica si requiere bitren
-          setTieneBitren(Array.isArray(data) && data.length > 0 ? true : false);
-        } else {
-          throw new Error("No se pudo obtener el estado de requiere-bitren");
-        }
+        const data = await axiosGet<any>(`cargas/${idCarga}/requiere-bitren`, backendURL);
+        // Supongamos que data es un booleano que indica si requiere bitren
+        setTieneBitren(Array.isArray(data) && data.length > 0 ? true : false);
       } catch (error) {
         console.error("Error fetching requiere-bitren:", error);
         setTieneBitren(false);
@@ -154,13 +143,7 @@ const TurnoConErroresForm: React.FC<TurnoConErroresFormProps> = ({
 
 
     try {
-      const response = await fetch(`${backendURL}/turnos/${seleccionado.id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      if (!response.ok) throw new Error(await response.text());
-      const updatedData = await response.json();
+      const updatedData = await axiosPut(`turnos/${seleccionado.id}`, payload, backendURL);
 
       setDatos(
         datos.map((turno: any) =>

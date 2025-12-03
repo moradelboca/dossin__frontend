@@ -8,6 +8,7 @@ import AutocompletarUbicacion from "../autocompletar/AutocompletarUbicacion";
 import { ContextoStepper } from "../creadores/CrearCargaStepper";
 import Dialog from '@mui/material/Dialog';
 import { CreadorUbicacion } from '../../mapa/CreadorUbicacion';
+import { axiosGet } from "../../../lib/axiosConfig";
 
 export default function SelectorDeUbicacion() {
     const { datosNuevaCarga, datosSinCompletar } = useContext(ContextoStepper);
@@ -21,14 +22,7 @@ export default function SelectorDeUbicacion() {
     const [openCreador, setOpenCreador] = useState(false);
 
     useEffect(() => {
-        fetch(`${backendURL}/ubicaciones`, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-                "ngrok-skip-browser-warning": "true",
-            },
-        })
-            .then((response) => response.json())
+        axiosGet<any[]>('ubicaciones', backendURL)
             .then((ubicaciones) => {
                 setUbicaciones(ubicaciones);
                 setEstadoCarga(false);
@@ -36,18 +30,11 @@ export default function SelectorDeUbicacion() {
             .catch((error) =>
                 console.error("Error al obtener las Ubicaciones disponibles: ", error)
             );
-    }, []);
+    }, [backendURL]);
 
     const refreshUbicaciones = () => {
         setEstadoCarga(true);
-        fetch(`${backendURL}/ubicaciones`, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-                "ngrok-skip-browser-warning": "true",
-            },
-        })
-            .then((response) => response.json())
+        axiosGet<any[]>('ubicaciones', backendURL)
             .then((ubicaciones) => {
                 setUbicaciones(ubicaciones);
                 setEstadoCarga(false);

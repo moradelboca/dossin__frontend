@@ -14,6 +14,7 @@ import { ContextoGeneral } from "../../Contexto";
 import { FormularioProps } from "../../../interfaces/FormularioProps";
 import { useNotificacion } from "../../Notificaciones/NotificacionSnackbar";
 import MainButton from "../../botones/MainButtom";
+import { axiosPost, axiosPut } from "../../../lib/axiosConfig";
 
 const CamionForm: React.FC<FormularioProps> = ({
   seleccionado = {},
@@ -62,25 +63,13 @@ const CamionForm: React.FC<FormularioProps> = ({
     }
 
     try {
-      const metodo = seleccionado?.patente ? "PUT" : "POST";
-      const url = seleccionado?.patente
-        ? `${backendURL}/camiones/${data.patente}`
-        : `${backendURL}/camiones`;
+      const apiCall = seleccionado?.patente
+        ? axiosPut(`camiones/${data.patente}`, data, backendURL)
+        : axiosPost('camiones', data, backendURL);
 
-      const response = await fetch(url, {
-        method: metodo,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
-
-      if (!response.ok) {
-        const errorMessage = await response.text();
-        throw new Error(errorMessage);
-      }
-
-      const newData = await response.json();
+      const newData = await apiCall;
       
-      if (metodo === "POST") {
+      if (!seleccionado?.patente) {
         setDatos([...datos, newData]);
         showNotificacion('Camión creado exitosamente', 'success');
       } else {
@@ -92,14 +81,10 @@ const CamionForm: React.FC<FormularioProps> = ({
       }
       
       handleClose();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error:', error);
-      showNotificacion(
-        error instanceof Error 
-          ? error.message 
-          : 'Error al procesar la solicitud',
-        'error'
-      );
+      const errorMessage = error?.response?.data?.message || error?.message || 'Error al procesar la solicitud';
+      showNotificacion(errorMessage, 'error');
     }
   };
 

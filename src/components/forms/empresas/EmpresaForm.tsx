@@ -11,6 +11,7 @@ import CuilFormat from "../formatos/CuilFormat";
 import NumeroFormat from "../formatos/NumeroFormat";
 import { useNotificacion } from "../../Notificaciones/NotificacionSnackbar";
 import MainButton from '../../botones/MainButtom';
+import { axiosGet, axiosPost, axiosPut } from "../../../lib/axiosConfig";
 
 
 const EmpresaForm: React.FC<FormularioProps> = ({
@@ -137,19 +138,7 @@ const EmpresaForm: React.FC<FormularioProps> = ({
 
   useEffect(() => {
     setLoadingLocalidades(true);
-    fetch(`${backendURL}/ubicaciones/localidades`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        "ngrok-skip-browser-warning": "true",
-      },
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`Error HTTP: ${response.status}`);
-        }
-        return response.json();
-      })
+    axiosGet<any[]>('ubicaciones/localidades', backendURL)
       .then((data) =>
         setLocalidades(
           data.map((ubicacion: any) => ({
@@ -168,19 +157,7 @@ const EmpresaForm: React.FC<FormularioProps> = ({
 
   useEffect(() => {
     setLoadingRoles(true);
-    fetch(`${backendURL}/empresas/roles`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        "ngrok-skip-browser-warning": "true",
-      },
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`Error HTTP: ${response.status}`);
-        }
-        return response.json();
-      })
+    axiosGet<any[]>('empresas/roles', backendURL)
       .then((data) => setRoles(data))
       .catch((error) => {
         throw new Error(`Error: ${error}`);
@@ -227,9 +204,6 @@ const EmpresaForm: React.FC<FormularioProps> = ({
   const handleSubmit = () => {
     if (validateAll()) {
       const metodo = seleccionado?.cuit ? "PUT" : "POST";
-      const url = seleccionado?.cuit
-        ? `${backendURL}/empresas/${data.cuit}`
-        : `${backendURL}/empresas`;
 
       const localidadObjeto = localidades.find(
         (loc) => loc.displayName === localidadSeleccionada
@@ -249,24 +223,11 @@ const EmpresaForm: React.FC<FormularioProps> = ({
         email: data.email,
       };
 
-      fetch(url, {
-        method: metodo,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      })
-      .then(async (response) => {
-        if (!response.ok) {
-          let errorMessage = await response.text();
-          try {
-            const errorData = JSON.parse(errorMessage);
-            errorMessage = errorData.message || errorMessage;
-          } catch (e) {
-            // Si no es JSON, quedarse con el texto plano
-          }
-          throw new Error(errorMessage);
-        }
-        return response.json();
-      })
+      const apiCall = metodo === "POST"
+        ? axiosPost('empresas', payload, backendURL)
+        : axiosPut(`empresas/${data.cuit}`, payload, backendURL);
+
+      apiCall
         .then((newData) => {
           if (metodo === "POST") {
             setDatos([...datos, newData]);
@@ -281,10 +242,11 @@ const EmpresaForm: React.FC<FormularioProps> = ({
           }
           handleClose();
         })
-        .catch((error) => {
+        .catch((error: any) => {
           console.error('Error:', error);
+          const errorMessage = error?.response?.data?.message || error?.message || 'Error desconocido';
           showNotificacion(
-            `Error al procesar la solicitud: ${error.message}`,
+            `Error al procesar la solicitud: ${errorMessage}`,
             'error'
           );
         });

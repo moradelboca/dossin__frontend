@@ -11,6 +11,7 @@ import Dialog from "@mui/material/Dialog";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import { useAuth } from "../../autenticacion/ContextoAuth";
+import { axiosGet, axiosPut } from "../../../lib/axiosConfig";
 
 export function ContainerCargas() {
   const { backendURL } = useContext(ContextoGeneral);
@@ -34,14 +35,7 @@ export function ContainerCargas() {
 
   // Función para obtener las cargas del backend
   const refreshCargas = useCallback(() => {
-    fetch(`${backendURL}/cargas`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        "ngrok-skip-browser-warning": "true",
-      },
-    })
-      .then((res) => res.json())
+    axiosGet<any[]>('cargas', backendURL)
       .then((data) => {
         if (Array.isArray(data)) {
           setCargas(data);
@@ -75,14 +69,7 @@ export function ContainerCargas() {
   // Obtener los cupos de la carga seleccionada
   useEffect(() => {
     if (cargaSeleccionada?.id) {
-      fetch(`${backendURL}/cargas/${cargaSeleccionada.id}/cupos`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          "ngrok-skip-browser-warning": "true",
-        },
-      })
-        .then((res) => res.json())
+      axiosGet<any[]>(`cargas/${cargaSeleccionada.id}/cupos`, backendURL)
         .then((data) => {
           // Normalizar los campos de los turnos
           const cuposNormalizados = Array.isArray(data)
@@ -119,20 +106,9 @@ export function ContainerCargas() {
     try {
       if (!fullCarga.id) return;
       
-      const response = await fetch(`${backendURL}/cargas/${fullCarga.id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'ngrok-skip-browser-warning': 'true'
-        },
-        body: JSON.stringify(fullCarga.payload)
-      });
-      
-      if (response.ok) {
-        refreshCargas();
-        const updatedCarga = await response.json();
-        setCargaSeleccionada(updatedCarga);
-      }
+      const updatedCarga = await axiosPut(`cargas/${fullCarga.id}`, fullCarga.payload, backendURL);
+      refreshCargas();
+      setCargaSeleccionada(updatedCarga);
     } catch (error) {
       console.error('Error actualizando carga:', error);
     }

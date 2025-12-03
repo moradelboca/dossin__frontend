@@ -9,6 +9,7 @@ import { useState, useEffect, useContext } from "react";
 import { ContextoGeneral } from "../../Contexto";
 import { ContextoStepper } from "../creadores/CrearCargaStepper";
 import React from "react";
+import { axiosGet } from "../../../lib/axiosConfig";
 
 export default function SelectorDeAcoplados() {
     const { backendURL } = useContext(ContextoGeneral);
@@ -17,14 +18,7 @@ export default function SelectorDeAcoplados() {
     const [estadoCarga, setEstadoCarga] = useState("Cargando");
 
     useEffect(() => {
-        fetch(`${backendURL}/acoplados/tiposacoplados`, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-                "ngrok-skip-browser-warning": "true",
-            },
-        })
-            .then((response) => response.json())
+        axiosGet<any[]>('acoplados/tiposacoplados', backendURL)
             .then((data) => {
                 setTiposAcoplados(data);
                 setEstadoCarga("Cargado");
@@ -32,7 +26,7 @@ export default function SelectorDeAcoplados() {
             .catch(() =>
                 console.error("Error al obtener las tiposAcoplados disponibles")
             );
-    }, []);
+    }, [backendURL]);
 
     const imagenes: any = [
         { nombre: "Batea", imagen: "https://i.imgur.com/KmmClLu.png" },

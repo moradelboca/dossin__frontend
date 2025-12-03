@@ -206,7 +206,7 @@ function MainLayout({
           <Route
             path="/mensajes"
             element={
-              <RutasProtegidas allowedRoles={[1, 2, 3, 4]}>
+              <RutasProtegidas allowedRoles={[1, 3, 4]}>
                 <Mensajes />
               </RutasProtegidas>
             }

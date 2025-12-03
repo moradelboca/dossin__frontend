@@ -1,6 +1,7 @@
 // useBuscarEmpresa.ts
 import { useState, useEffect, useContext } from "react";
 import { ContextoGeneral } from "../../Contexto";
+import { axiosGet } from "../../../lib/axiosConfig";
 
 export interface Empresa {
   cuit: string;
@@ -24,15 +25,8 @@ const useBuscarEmpresa = (value: string | null): UseBuscarEmpresaReturn => {
       return;
     }
 
-    fetch(`${backendURL}/empresas`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        "ngrok-skip-browser-warning": "true",
-      },
-    })
-      .then((response) => response.json())
-      .then((data: Empresa[]) => {
+    axiosGet<Empresa[]>('empresas', backendURL)
+      .then((data) => {
         // Si se pasa un string, se busca la empresa por el string completo (razonSocial - nombreFantasia)
         const encontrada = data.find(
           (emp) => `${emp.nombreFantasia} - ${emp.razonSocial}` === value || emp.cuit === value

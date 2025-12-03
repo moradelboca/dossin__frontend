@@ -36,7 +36,7 @@ export interface NavItem {
     { label: "Empresas", ruta: "/empresas", rolesPermitidos: [1, 2, 4], icono: <DomainAddOutlined /> },
     { label: "Camiones", ruta: "/camiones", rolesPermitidos: [1, 2, 4], icono: <LocalShippingOutlined /> },
     { label: "Inconvenientes", ruta: "/inconvenientes", rolesPermitidos: [1, 2, 4], icono: <ErrorOutline /> },
-    { label: "Mensajes", ruta: "/mensajes", rolesPermitidos: [1, 2, 3, 4], icono: <MessageOutlinedIcon /> },
+    { label: "Mensajes", ruta: "/mensajes", rolesPermitidos: [1, 3, 4], icono: <MessageOutlinedIcon /> },
     { label: "Widgets", ruta: "/widgets", rolesPermitidos: [1], icono: <WidgetsOutlinedIcon /> },
     { label: "Clima", ruta: "/clima", rolesPermitidos: [1, 4], icono: <ThunderstormOutlinedIcon /> },
     { label: "Calculadora", ruta: "/calculadora", rolesPermitidos: [1, 4], icono: <CalculateOutlinedIcon /> },

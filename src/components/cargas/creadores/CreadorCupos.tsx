@@ -13,6 +13,7 @@ import TextField from "@mui/material/TextField";
 import { useState, useContext } from "react";
 import { ContextoGeneral } from "../../Contexto";
 import { useAuth } from "../../autenticacion/ContextoAuth";
+import { axiosPost } from "../../../lib/axiosConfig";
 
 // Tema personalizado
 const tema = createTheme({
@@ -99,18 +100,7 @@ export function CreadorCupos(props: any) {
         fecha: fecha.format("YYYY-MM-DD"),
         cupos: cupoSeleccionado,
       };
-      return fetch(`${backendURL}/cargas/${idCarga}/cupos`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(cupoDeCarga),
-      }).then((response) => {
-        if (!response.ok) {
-          return response.text().then((text) => {
-            throw new Error(text || "Error al crear la carga");
-          });
-        }
-        return response.json();
-      });
+      return axiosPost(`cargas/${idCarga}/cupos`, cupoDeCarga, backendURL);
     });
 
     Promise.all(promesas)

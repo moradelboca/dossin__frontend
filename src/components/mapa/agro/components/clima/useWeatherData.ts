@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { WeatherData } from './types';
+import axios from 'axios';
 
 // Mapeo de períodos a días
 const daysMap = {
@@ -41,10 +42,11 @@ export function useWeatherData(ubicacion: any, isDaily: boolean, selectedPeriod:
                     timezone: "auto",
                 };
 
-                const response = await fetch(
-                    `${url}?latitude=${params.latitude}&longitude=${params.longitude}&daily=${params.daily.join(",")}&timezone=${params.timezone}&past_days=${params.past_days}&forecast_days=${params.forecast_days}`
+                const response = await axios.get(
+                    `${url}?latitude=${params.latitude}&longitude=${params.longitude}&daily=${params.daily.join(",")}&timezone=${params.timezone}&past_days=${params.past_days}&forecast_days=${params.forecast_days}`,
+                    { withCredentials: false }
                 );
-                const data = await response.json();
+                const data = response.data;
 
                 if (data.error) {
                     throw new Error(data.reason || 'Error al obtener datos climáticos');
@@ -80,10 +82,11 @@ export function useWeatherData(ubicacion: any, isDaily: boolean, selectedPeriod:
                     timezone: "auto",
                 };
 
-                const response = await fetch(
-                    `${url}?latitude=${params.latitude}&longitude=${params.longitude}&hourly=${params.hourly.join(",")}&timezone=${params.timezone}&past_days=${params.past_days}&forecast_days=${params.forecast_days}`
+                const response = await axios.get(
+                    `${url}?latitude=${params.latitude}&longitude=${params.longitude}&hourly=${params.hourly.join(",")}&timezone=${params.timezone}&past_days=${params.past_days}&forecast_days=${params.forecast_days}`,
+                    { withCredentials: false }
                 );
-                const data = await response.json();
+                const data = response.data;
 
                 if (data.error) {
                     throw new Error(data.reason || 'Error al obtener datos climáticos');

@@ -13,6 +13,7 @@ import { useMemo } from 'react';
 import { useNotificacion } from "../../Notificaciones/NotificacionSnackbar";
 import MainButton from "../../botones/MainButtom";
 import EmpresaForm from '../empresas/EmpresaForm';
+import { axiosGet, axiosPost, axiosPut } from "../../../lib/axiosConfig";
 
 const ChoferForm: React.FC<FormularioProps> = ({ 
     seleccionado = {}, 
@@ -155,19 +156,7 @@ const ChoferForm: React.FC<FormularioProps> = ({
     
     useEffect(() => {
         setLoadingEmpresas(true);
-        fetch(`${backendURL}/empresas`, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-                "ngrok-skip-browser-warning": "true",
-            },
-        })
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error(`Error HTTP: ${response.status}`);
-          }
-          return response.json();
-        })
+        axiosGet<any[]>('empresas', backendURL)
         .then((data) => setEmpresas(data))
         .catch((error) => {
           throw new Error(`Error al obtener las empresas: ${error}`);
@@ -178,19 +167,7 @@ const ChoferForm: React.FC<FormularioProps> = ({
     
     useEffect(() => {
         setLoadingLocalidades(true);
-        fetch(`${backendURL}/ubicaciones/localidades`, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-                "ngrok-skip-browser-warning": "true",
-            },
-        })
-            .then((response) => {
-              if (!response.ok) {
-                throw new Error(`Error HTTP: ${response.status}`);
-              }
-              return response.json();
-            })
+        axiosGet<any[]>('ubicaciones/localidades', backendURL)
             .then((data) =>
                 setLocalidades(
                     data.map((ubicacion: any) => ({
@@ -245,10 +222,10 @@ const ChoferForm: React.FC<FormularioProps> = ({
 
     const handleSubmit = () => {
         if (validateAll()) {
-            const metodo = seleccionado?.cuil ? "PUT" : "POST";
-            const url = seleccionado?.cuil
-                ? `${backendURL}/colaboradores/${data.cuil}`
-                : `${backendURL}/colaboradores`;
+            // const metodo = seleccionado?.cuil ? "PUT" : "POST";
+            // const url = seleccionado?.cuil
+            //     ? `${backendURL}/colaboradores/${data.cuil}`
+            //     : `${backendURL}/colaboradores`;
 
             const localidadObjeto = localidades.find((loc) => loc.displayName === localidadSeleccionada);
 
@@ -265,26 +242,13 @@ const ChoferForm: React.FC<FormularioProps> = ({
                 idRol: rolObjeto?.id,
             };
             
-            fetch(url, {
-                method: metodo,
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(payload),
-            })
-            .then(async (response) => {
-                if (!response.ok) {
-                  let errorMessage = await response.text();
-                  try {
-                    const errorData = JSON.parse(errorMessage);
-                    errorMessage = errorData.message || errorMessage;
-                  } catch (e) {
-                    // Si no es JSON, quedarse con el texto plano
-                  }
-                  throw new Error(errorMessage);
-                }
-                return response.json();
-              })
+            const apiCall = seleccionado?.cuil
+                ? axiosPut(`colaboradores/${data.cuil}`, payload, backendURL)
+                : axiosPost('colaboradores', payload, backendURL);
+
+            apiCall
             .then((newData) => {
-                if (metodo === "POST") {
+                if (!seleccionado?.cuil) {
                     setDatos([...datos, newData]);
                     showNotificacion('Colaborador creado exitosamente', 'success');
                 } else {
@@ -297,10 +261,11 @@ const ChoferForm: React.FC<FormularioProps> = ({
                 }
                 handleClose();
             })
-            .catch((error) => {
+            .catch((error: any) => {
               console.error('Error:', error);
+              const errorMessage = error?.response?.data?.message || error?.message || 'Error al procesar la solicitud';
               showNotificacion(
-                `Error al procesar la solicitud: ${error.message}`,
+                `Error al procesar la solicitud: ${errorMessage}`,
                 'error'
               );
             });

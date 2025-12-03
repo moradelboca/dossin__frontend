@@ -1,6 +1,7 @@
 // hooks/useTaraHandler.ts
 import { useContext } from "react";
 import { ContextoGeneral } from "../../Contexto";
+import { axiosPut, axiosDelete } from "../../../lib/axiosConfig";
 
 const useTaraHandler = () => {
   const { backendURL } = useContext(ContextoGeneral);
@@ -8,17 +9,7 @@ const useTaraHandler = () => {
   const handleTaraSubmission = async (turnoId: string, payload: any) => {
     try {
       // PUT directo al turno con el payload completo
-      const url = `${backendURL}/turnos/${turnoId}`;
-      const response = await fetch(url, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          "ngrok-skip-browser-warning": "true",
-        },
-        body: JSON.stringify(payload),
-      });
-      if (!response.ok) throw new Error(await response.text());
-      const updatedTurno = await response.json();
+      const updatedTurno = await axiosPut(`turnos/${turnoId}`, payload, backendURL);
       return updatedTurno;
     } catch (error) {
       console.error("Error en el proceso de Tara:", error);
@@ -29,24 +20,8 @@ const useTaraHandler = () => {
   // Función para eliminar la Tara y actualizar el turno
   const handleTaraDeletion = async (turnoId: string, idTara: string) => {
     try {
-      const turnoResponse = await fetch(`${backendURL}/turnos/${turnoId}`, {
-        method: "PUT",
-        headers: {
-                "Content-Type": "application/json",
-                "ngrok-skip-browser-warning": "true",
-            },
-        body: JSON.stringify({ tara: null }),
-      });
-      if (!turnoResponse.ok) throw new Error(await turnoResponse.text());
-      const taraResponse = await fetch(`${backendURL}/taras/${idTara}`, {
-        method: "DELETE",
-        headers: {
-                "Content-Type": "application/json",
-            },
-      });
-
-      if (!taraResponse.ok) throw new Error(await taraResponse.text());
-
+      await axiosPut(`turnos/${turnoId}`, { tara: null }, backendURL);
+      await axiosDelete(`taras/${idTara}`, backendURL);
       return { deleted: true, idTara };
     } catch (error) {
       console.error("Error al eliminar la Tara:", error);

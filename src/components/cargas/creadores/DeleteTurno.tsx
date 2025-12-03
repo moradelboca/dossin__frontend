@@ -3,6 +3,7 @@ import { useContext } from "react";
 import { ContextoGeneral } from "../../Contexto";
 import ClearSharpIcon from "@mui/icons-material/ClearSharp";
 import { useNotificacion } from '../../Notificaciones/NotificacionSnackbar';
+import { axiosDelete } from "../../../lib/axiosConfig";
 
 interface Turnos {
     idTurno: any;
@@ -22,34 +23,19 @@ export default function DeleteTurno(props: Turnos) {
     };
 
     const borrarTurno = () => {
-        fetch(`${backendURL}/turnos/${idTurno}`, {
-            method: "DELETE",
-            headers: {
-                "Content-Type": "application/json",
-                "ngrok-skip-browser-warning": "true",
-            },
-        })
-            .then((response) => {
-                if (!response.ok) throw response;
-                return response.json();
-            })
+        axiosDelete(`turnos/${idTurno}`, backendURL)
             .then(() => {
                 handleCloseDialog();
                 refreshCupos();
                 handleClose();
             })
-            .catch(async (error) => {
-
+            .catch((error: any) => {
                 let errorMsg = "Error al borrar el turno";
-
-                if (error && error.text) {
-                    const text = await error.text();
-                    // Detectar mensaje específico del backend
-                    if (text && (text.includes("adelanto") || text.includes("adelantos"))) {
-                      
-                        errorMsg = "No se puede eliminar este turno, tiene adelantos de efectivo o combustible asociados";
-
-                    }
+                const errorText = error?.response?.data?.message || error?.message || '';
+                
+                // Detectar mensaje específico del backend
+                if (errorText && (errorText.includes("adelanto") || errorText.includes("adelantos"))) {
+                    errorMsg = "No se puede eliminar este turno, tiene adelantos de efectivo o combustible asociados";
                 }
                 showNotificacion(errorMsg, 'error');
                 console.error("Error al borrar el turno", error);

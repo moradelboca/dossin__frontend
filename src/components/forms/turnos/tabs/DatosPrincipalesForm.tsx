@@ -7,6 +7,7 @@ import AutocompleteCamiones from "../../autocompletes/AutocompleteCamiones";
 import AutocompleteAcoplados from "../../autocompletes/AutocompleteAcoplados";
 import useValidationStepper from "../../../hooks/useValidationStepper";
 import MainButton from "../../../botones/MainButtom";
+import { axiosPut } from "../../../../lib/axiosConfig";
 
 interface DatosPrincipalesFormProps {
   seleccionado?: any;
@@ -95,15 +96,7 @@ const DatosPrincipalesForm: React.FC<DatosPrincipalesFormProps> = ({
         patenteAcopladoExtra: patenteAcopladoSeleccionadaExtra || null,
       };
 
-      const url = `${backendURL}/turnos/${seleccionado.id}`;
-      const response = await fetch(url, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-
-      if (!response.ok) throw new Error(await response.text());
-      const updatedData = await response.json();
+      const updatedData = await axiosPut(`turnos/${seleccionado.id}`, payload, backendURL);
 
       // Actualiza el estado de "datos" y cierra el modal
       setDatos(

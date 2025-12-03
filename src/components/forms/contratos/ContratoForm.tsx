@@ -23,6 +23,7 @@ import ContratoFormFields from "./ContratoFormFields";
 import CargasSection from "./CargasSection";
 import DeleteCarga from "../../dialogs/contratos/DeleteCarga";
 import EmpresaForm from "../empresas/EmpresaForm";
+import { axiosGet, axiosPost, axiosPut, axiosDelete } from "../../../lib/axiosConfig";
 
 const ContratoForm: React.FC<FormularioProps & { refreshContratos?: () => void }> = ({
   seleccionado,
@@ -108,27 +109,11 @@ const ContratoForm: React.FC<FormularioProps & { refreshContratos?: () => void }
 
   // Fetch empresas
   useEffect(() => {
-    fetch(`${backendURL}/empresas`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        "ngrok-skip-browser-warning": "true",
-      },
-    })
-      .then((response) => response.json())
+    axiosGet<any[]>('empresas', backendURL)
       .then((data) => setAllEmpresas(data))
       .catch((err) => console.error("Error al obtener las empresas", err));
 
-    //--------------------------------------
-
-    fetch(`${backendURL}/empresas/roles`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        "ngrok-skip-browser-warning": "true",
-      },
-    })
-      .then((response) => response.json())
+    axiosGet<any[]>('empresas/roles', backendURL)
       .then((data) => setRoles(data))
       .catch((err) => console.error("Error al obtener los roles", err));
   }, [backendURL]);
@@ -250,28 +235,14 @@ const ContratoForm: React.FC<FormularioProps & { refreshContratos?: () => void }
       // 1. Crear nuevas cargas (usar carga.payload y URL con /api)
       const nuevasCargasResponses = await Promise.all(
         listaCargasCreadas.map((carga) =>
-          fetch(`${backendURL}/cargas`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "ngrok-skip-browser-warning": "true",
-            },
-            body: JSON.stringify(carga.payload),
-          }).then((res) => res.json())
+          axiosPost('cargas', carga.payload, backendURL)
         )
       );
 
       // 2. Actualizar cargas existentes
       const cargasActualizadas = await Promise.all(
         listaCargasModificadas.map((carga) =>
-          fetch(`${backendURL}/cargas/${carga.id}`, {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-              "ngrok-skip-browser-warning": "true",
-            },
-            body: JSON.stringify(carga.payload),
-          }).then((res) => res.json())
+          axiosPut(`cargas/${carga.id}`, carga.payload, backendURL)
         )
       );
 
@@ -301,9 +272,6 @@ const ContratoForm: React.FC<FormularioProps & { refreshContratos?: () => void }
 
       // 5. Guardar contrato
       const metodo = safeSeleccionado.id ? "PUT" : "POST";
-      const url = safeSeleccionado.id
-        ? `${backendURL}/contratos/${safeSeleccionado.id}`
-        : `${backendURL}/contratos`;
       // Construir el payload con los campos de empresa en camelCase
       const empresasPayload: { [key: string]: string | number | null } = {};
       roles.forEach((rol: any) => {
@@ -326,18 +294,12 @@ const ContratoForm: React.FC<FormularioProps & { refreshContratos?: () => void }
         ...empresasPayload,
         idsCargas,
       };
-      const resContrato = await fetch(url, {
-        method: metodo,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payloadContrato),
-      });
-      if (!resContrato.ok) {
-        const errorData = await resContrato.json();
-        throw new Error(errorData.message || "Error guardando contrato");
-      }
+      const apiCall = safeSeleccionado.id
+        ? axiosPut(`contratos/${safeSeleccionado.id}`, payloadContrato, backendURL)
+        : axiosPost('contratos', payloadContrato, backendURL);
 
       // 6. Actualizar estado global
-      const contratoActualizado = await resContrato.json();
+      const contratoActualizado = await apiCall;
       setDatos((prev: any[]) =>
         metodo === "POST"
           ? [...prev, contratoActualizado]
@@ -398,14 +360,7 @@ const ContratoForm: React.FC<FormularioProps & { refreshContratos?: () => void }
     if (!cargaAEliminar) return;
 
     // Solo para cargas originales
-    fetch(`${backendURL}/cargas/${cargaAEliminar.id}`, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-        "ngrok-skip-browser-warning": "true",
-      },
-    })
-      .then((response) => response.json())
+    axiosDelete(`cargas/${cargaAEliminar.id}`, backendURL)
       .then(() => {
         setCargas((prev) => prev.filter((c) => c.id !== cargaAEliminar.id));
         if (refreshContratos) refreshContratos();

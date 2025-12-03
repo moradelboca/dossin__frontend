@@ -12,6 +12,7 @@ import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
 import Button from "@mui/material/Button";
+import { axiosGet, axiosDelete } from "../../../../lib/axiosConfig";
 
 interface AdelantosTurnoFormProps {
   turnoId: number | string;
@@ -36,7 +37,7 @@ const AdelantosTurnoForm: React.FC<AdelantosTurnoFormProps> = ({
   adelantos = {},
 }) => {
   const [tabIndex, setTabIndex] = useState(0);
-  const { theme } = useContext(ContextoGeneral);
+  const { theme, backendURL } = useContext(ContextoGeneral);
   const handleChange = (_event: React.SyntheticEvent, newValue: number) => {
     setTabIndex(newValue);
   };
@@ -68,13 +69,10 @@ const AdelantosTurnoForm: React.FC<AdelantosTurnoFormProps> = ({
   const refreshAdelantos = async () => {
     try {
       setLoading(true);
-      const backendURL = import.meta.env.VITE_BACKEND_URL || '';
-      const [efvoRes, gasoilRes] = await Promise.all([
-        fetch(`${backendURL}/adelantos/efectivo/${turnoId}`),
-        fetch(`${backendURL}/adelantos/gasoil/${turnoId}`),
+      const [efvo, gasoil] = await Promise.all([
+        axiosGet<any[]>(`adelantos/efectivo/${turnoId}`, backendURL).catch(() => []),
+        axiosGet<any[]>(`adelantos/gasoil/${turnoId}`, backendURL).catch(() => []),
       ]);
-      const efvo = efvoRes.ok ? await efvoRes.json() : [];
-      const gasoil = gasoilRes.ok ? await gasoilRes.json() : [];
       setAdelantosState({ adelantosEfvo: efvo, adelantosGasoil: gasoil });
     } catch (e) {
       // opcional: mostrar error
@@ -89,9 +87,7 @@ const AdelantosTurnoForm: React.FC<AdelantosTurnoFormProps> = ({
     if (!deleteAdelanto) return;
     setLoading(true);
     try {
-      const backendURL = import.meta.env.VITE_BACKEND_URL || '';
-      const url = `${backendURL}/adelantos/${deleteAdelanto.tipo === 'efvo' ? 'efectivo' : 'gasoil'}/${deleteAdelanto.data.id}`;
-      await fetch(url, { method: 'DELETE', headers: { 'Content-Type': 'application/json' } });
+      await axiosDelete(`adelantos/${deleteAdelanto.tipo === 'efvo' ? 'efectivo' : 'gasoil'}/${deleteAdelanto.data.id}`, backendURL);
       setDeleteAdelanto(null);
       await refreshAdelantos();
     } catch (e) {

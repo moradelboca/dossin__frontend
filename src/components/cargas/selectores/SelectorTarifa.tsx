@@ -9,6 +9,7 @@ import { NumericFormat, NumericFormatProps } from "react-number-format";
 import React from "react";
 import Stack from "@mui/material/Stack";
 import { ContextoStepper } from "../creadores/CrearCargaStepper";
+import { axiosGet } from "../../../lib/axiosConfig";
 
 interface CustomProps {
     onChange: (event: { target: { name: string; value: string } }) => void;
@@ -59,14 +60,7 @@ export default function SelectorTarifa() {
     const [estadoCarga, setEstadoCarga] = useState(true);
 
     useEffect(() => {
-        fetch(`${backendURL}/cargas/tipostarifas`, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-                "ngrok-skip-browser-warning": "true",
-            },
-        })
-            .then((response) => response.json())
+        axiosGet<any[]>('cargas/tipostarifas', backendURL)
             .then((tarifas) => {
                 setTarifas(tarifas);
                 setEstadoCarga(false);
@@ -74,7 +68,7 @@ export default function SelectorTarifa() {
             .catch(() =>
                 console.error("Error al obtener las Tarifas disponibles")
             );
-    }, []);
+    }, [backendURL]);
 
     const seleccionarTiposTarifas = (_event: any, seleccionado: string | null) => {
                 if (!seleccionado) return;

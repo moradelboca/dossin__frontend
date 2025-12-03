@@ -15,6 +15,7 @@ import { ContextoGeneral } from "../../Contexto";
 import { FormularioProps } from "../../../interfaces/FormularioProps";
 import { useNotificacion } from "../../Notificaciones/NotificacionSnackbar";
 import MainButton from "../../botones/MainButtom";
+import { axiosGet, axiosPost, axiosPut } from "../../../lib/axiosConfig";
 
 const AcopladoForm: React.FC<FormularioProps> = ({
   seleccionado = {},
@@ -64,14 +65,7 @@ const AcopladoForm: React.FC<FormularioProps> = ({
   );
 
   useEffect(() => {
-    fetch(`${backendURL}/acoplados/tiposacoplados`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        "ngrok-skip-browser-warning": "true",
-      },
-    })
-      .then((response) => response.json())
+    axiosGet<any[]>('acoplados/tiposacoplados', backendURL)
       .then((data) => setTiposAcoplados(data))
       .catch(() => console.error("Error al obtener los tipos de acoplados disponibles"));
   }, [backendURL]);
@@ -84,10 +78,10 @@ const AcopladoForm: React.FC<FormularioProps> = ({
     }
 
     try {
-      const metodo = seleccionado?.patente ? "PUT" : "POST";
-      const url = seleccionado?.patente
-        ? `${backendURL}/acoplados/${data.patente}`
-        : `${backendURL}/acoplados`;
+      // const metodo = seleccionado?.patente ? "PUT" : "POST";
+      // const url = seleccionado?.patente
+      //   ? `${backendURL}/acoplados/${data.patente}`
+      //   : `${backendURL}/acoplados`;
   
       const idTipoAcoplado = tiposAcoplados.find(
         (tipo) => tipo.nombre === tipoSeleccionado
@@ -101,20 +95,13 @@ const AcopladoForm: React.FC<FormularioProps> = ({
         idTipoAcoplado,
       };
   
-      const response = await fetch(url, {
-        method: metodo,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-  
-      if (!response.ok) {
-        const errorMessage = await response.text();
-        throw new Error(errorMessage);
-      }
-  
-      const newData = await response.json();
+      const apiCall = seleccionado?.patente
+        ? axiosPut(`acoplados/${data.patente}`, payload, backendURL)
+        : axiosPost('acoplados', payload, backendURL);
+
+      const newData = await apiCall;
       
-      if (metodo === "POST") {
+      if (!seleccionado?.patente) {
         setDatos([...datos, newData]);
         showNotificacion('Acoplado creado exitosamente', 'success');
       } else {
@@ -126,14 +113,10 @@ const AcopladoForm: React.FC<FormularioProps> = ({
       }
       
       handleClose();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error:', error);
-      showNotificacion(
-        error instanceof Error 
-          ? error.message 
-          : 'Error al procesar la solicitud',
-        'error'
-      );
+      const errorMessage = error?.response?.data?.message || error?.message || 'Error al procesar la solicitud';
+      showNotificacion(errorMessage, 'error');
     }
   };
 

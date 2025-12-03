@@ -16,6 +16,7 @@ import { useContext, useEffect, useState } from "react";
 import { CustomButtom } from "../../botones/CustomButtom";
 import { ContextoGeneral } from "../../Contexto";
 import DeleteTurno from "./DeleteTurno";
+import { axiosGet, axiosPost, axiosPut } from "../../../lib/axiosConfig";
 
 interface CreadorProps {
     fecha?: string;
@@ -72,63 +73,35 @@ export default function CreadorTurno(props: CreadorProps) {
         idEstado: 0,
     });
     useEffect(() => {
-        fetch(`${backendURL}/colaboradores`, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-                "ngrok-skip-browser-warning": "true",
-            },
-        })
-            .then((response) => response.json())
-            .then((data) => {
+        axiosGet<any[]>('colaboradores', backendURL)
+            .then((data: any[]) => {
                 setChoferes(data);
             })
             .catch(() =>
                 console.error("Error al obtener los choferes disponibles")
             );
-        fetch(`${backendURL}/empresas`, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-                "ngrok-skip-browser-warning": "true",
-            },
-        })
-            .then((response) => response.json())
-            .then((data) => {
+        axiosGet<any[]>('empresas', backendURL)
+            .then((data: any[]) => {
                 setEmpresasTransportistas(data);
             })
             .catch(() =>
                 console.error("Error al obtener los choferes disponibles")
             );
-        fetch(`${backendURL}/camiones`, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-                "ngrok-skip-browser-warning": "true",
-            },
-        })
-            .then((response) => response.json())
-            .then((data) => {
+        axiosGet<any[]>('camiones', backendURL)
+            .then((data: any[]) => {
                 setPatentesCamiones(data);
             })
             .catch(() =>
                 console.error("Error al obtener las tiposAcoplados disponibles")
             );
-        fetch(`${backendURL}/acoplados`, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-                "ngrok-skip-browser-warning": "true",
-            },
-        })
-            .then((response) => response.json())
-            .then((data) => {
+        axiosGet<any[]>('acoplados', backendURL)
+            .then((data: any[]) => {
                 setPatentesAcoplados(data);
             })
             .catch(() =>
                 console.error("Error al obtener las tiposAcoplados disponibles")
             );
-    }, []);
+    }, [backendURL]);
     const actualizarNuevoTurno = () => {
         setNuevoTurno({
             cuilChofer: chofer ?? nuevoTurno.cuilChofer,
@@ -173,30 +146,17 @@ export default function CreadorTurno(props: CreadorProps) {
             return;
         }
 
-        const metodo = seleccionado ? "PUT" : "POST";
-        const url = seleccionado
-            ? `${backendURL}/turnos/${idTurno}`
-            : `${backendURL}/cargas/${idCarga}/cupos/${fecha}`;
+        const apiCall = seleccionado
+            ? axiosPut(`turnos/${idTurno}`, nuevoTurno, backendURL)
+            : axiosPost(`cargas/${idCarga}/cupos/${fecha}`, nuevoTurno, backendURL);
 
-        fetch(url, {
-            method: metodo,
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(nuevoTurno),
-        })
-            .then((response) => {
-                if (!response.ok) {
-                    return response.text().then((text) => {
-                        throw new Error(text);
-                    });
-                }
-                return response.json();
-            })
+        apiCall
             .then(() => {
                 handleCloseDialog();
                 refreshCupos();
                 actualizarTurno();
             })
-            .catch((e) => console.error(e));
+            .catch((e: any) => console.error(e));
     };
     const [openDialogDelete, setOpenDialogDelete] = useState(false);
 

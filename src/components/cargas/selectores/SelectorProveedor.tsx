@@ -7,6 +7,7 @@ import { PatternFormat } from "react-number-format";
 import React from "react";
 import Stack from "@mui/material/Stack";
 import { ContextoStepper } from "../creadores/CrearCargaStepper";
+import { axiosGet } from "../../../lib/axiosConfig";
 
 interface CustomProps {
     onChange: (event: { target: { name: string; value: string } }) => void;
@@ -50,14 +51,7 @@ export default function SelectorProveedor() {
     const [estadoCarga, setEstadoCarga] = useState(true);
 
     useEffect(() => {
-        fetch(`${backendURL}/cargas/cargamentos`, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-                "ngrok-skip-browser-warning": "true",
-            },
-        })
-            .then((response) => response.json())
+        axiosGet<any[]>('cargas/cargamentos', backendURL)
             .then((car) => {
                 setCargamentos(car);
                 setEstadoCarga(false);
@@ -65,7 +59,7 @@ export default function SelectorProveedor() {
             .catch(() =>
                 console.error("Error al obtener los Cargamentos disponibles")
             );
-    }, []);
+    }, [backendURL]);
 
     const seleccionarKilometros = (event: any) => {
         datosNuevaCarga["cantidadKm"] = Number(event.target.value);

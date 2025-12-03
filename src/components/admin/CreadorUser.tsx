@@ -4,6 +4,7 @@ import Autocomplete from "@mui/material/Autocomplete";
 import * as React from "react";
 import { useContext, useEffect, useState } from "react";
 import { ContextoGeneral } from "../Contexto";
+import { axiosGet, axiosPost, axiosPut } from "../../lib/axiosConfig";
 
 interface Choferes {
     handleClose: any;
@@ -69,14 +70,7 @@ export default function CreadorUser(props: Choferes) {
     const [estadoCarga, setEstadoCarga] = useState(true);
 
     useEffect(() => {
-        fetch(`${authURL}/auth/usuarios/roles`, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-                "ngrok-skip-browser-warning": "true",
-            },
-        })
-            .then((response) => response.json())
+        axiosGet<any[]>('auth/usuarios/roles', authURL)
             .then((data) => {
                 setRoles(data);
                 setEstadoCarga(false);
@@ -84,7 +78,7 @@ export default function CreadorUser(props: Choferes) {
             .catch(() =>
                 console.error("Error al obtener los choferes disponibles")
             );
-    }, []);
+    }, [authURL]);
 
     const [errorEmail, setErrorEmail] = React.useState(false);
 
@@ -98,24 +92,11 @@ export default function CreadorUser(props: Choferes) {
         if (error) {
             return;
         }
-        const metodo = userSeleccionado ? "PUT" : "POST";
-        const url = userSeleccionado
-            ? `${authURL}/auth/usuarios/${datosNuevoUser["id"]}`
-            : `${authURL}/auth/usuarios`;
+        const apiCall = userSeleccionado
+            ? axiosPut(`auth/usuarios/${datosNuevoUser["id"]}`, datosNuevoUser, authURL)
+            : axiosPost('auth/usuarios', datosNuevoUser, authURL);
 
-        fetch(url, {
-            method: metodo,
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(datosNuevoUser),
-        })
-            .then((response) => {
-                if (!response.ok) {
-                    return response.text().then((text) => {
-                        throw new Error(text);
-                    });
-                }
-                return response.json();
-            })
+        apiCall
             .then(() => {
                 refreshUsers();
             })
@@ -126,19 +107,7 @@ export default function CreadorUser(props: Choferes) {
     const handleDesactivarUsuario = (activo: any) => {
         datosNuevoUser["activo"] = activo;
         setDatosNuevoUser({ ...datosNuevoUser });
-        fetch(`${authURL}/auth/usuarios/${datosNuevoUser["id"]}`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(datosNuevoUser),
-        })
-            .then((response) => {
-                if (!response.ok) {
-                    return response.text().then((text) => {
-                        throw new Error(text);
-                    });
-                }
-                return response.json();
-            })
+        axiosPut(`auth/usuarios/${datosNuevoUser["id"]}`, datosNuevoUser, authURL)
             .then(() => {
                 refreshUsers();
             })

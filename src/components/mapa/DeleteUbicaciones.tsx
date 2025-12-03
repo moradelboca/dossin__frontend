@@ -2,6 +2,7 @@ import { useContext } from "react";
 import { Box, Button, Typography } from "@mui/material";
 import ClearSharpIcon from "@mui/icons-material/ClearSharp";
 import { ContextoGeneral } from "../Contexto";
+import { axiosDelete } from "../../lib/axiosConfig";
 
 interface DeleteUbicacionProps {
   id: number | null;
@@ -24,13 +25,7 @@ export default function DeleteUbicacion({
 
   const borrarUbicacion = async () => {
     try {
-      await fetch(`${backendURL}/ubicaciones/${id}`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          "ngrok-skip-browser-warning": "true",
-        },
-      });
+      await axiosDelete(`ubicaciones/${id}`, backendURL);
     } catch (error) {
       console.error("Error al borrar la ubicación", error);
     } finally {

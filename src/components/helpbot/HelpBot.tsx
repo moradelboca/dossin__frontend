@@ -8,6 +8,7 @@ import { useAuth } from '../autenticacion/ContextoAuth';
 import { ContextoGeneral } from '../Contexto';
 import {  useNavigate } from "react-router-dom";
 import { HelpbotResponse } from '../../interfaces/HelpbotResponse';
+import axios from 'axios';
 
 const DIALOG_WIDTH = 370;
 const DIALOG_HEIGHT = 420;
@@ -34,14 +35,6 @@ const PAGINAS = [
 ];
 
 const MAX_HISTORY = 5;
-
-// Helper para fetch con timeout
-function fetchWithTimeout(resource: RequestInfo, options: RequestInit = {}, timeout = 120000): Promise<Response> {
-  return Promise.race([
-    fetch(resource, options),
-    new Promise<Response>((_, reject) => setTimeout(() => reject(new Error('Timeout de la IA excedido.')), timeout))
-  ]) as Promise<Response>;
-}
 
 const HelpBot: React.FC = () => {
   const { user } = useAuth();
@@ -208,15 +201,15 @@ Si no hay suficiente información en los DOCUMENTOS para responder, devolvé:
           store: true
         };
         console.log('HelpBot: Payload enviado a la IA:', openaiPayload);
-        const response: Response = await fetchWithTimeout('https://api.openai.com/v1/responses', {
-          method: 'POST',
+        const response = await axios.post('https://api.openai.com/v1/responses', openaiPayload, {
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${import.meta.env.VITE_OPENAI_API_KEY || import.meta.env.OPENAI_API_KEY}`,
           },
-          body: JSON.stringify(openaiPayload),
-        }, 30000);
-        const data = await response.json();
+          withCredentials: false,
+          timeout: 30000, // 30 segundos timeout
+        });
+        const data = response.data;
         console.log('HelpBot: Respuesta completa de la API:', data);
 
         // --- INICIO: Extracción robusta de la respuesta de la IA ---

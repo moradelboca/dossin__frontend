@@ -1,13 +1,9 @@
 import { useContext } from "react";
 import { ContextoGeneral } from "../../Contexto";
+import { axiosPost, axiosPut, axiosDelete } from "../../../lib/axiosConfig";
 
 const useCartaPorteHandler = () => {
   const { backendURL } = useContext(ContextoGeneral);
-
-  const headers = {
-    "Content-Type": "application/json",
-    "ngrok-skip-browser-warning": "true",
-  };
 
   // Función para crear o actualizar múltiples Cartas de Porte
   const handleMultipleCartaPorteSubmission = async (
@@ -19,44 +15,28 @@ const useCartaPorteHandler = () => {
     
     for (let i = 0; i < cartasPorte.length; i++) {
       const carta = cartasPorte[i];
-      const method = isUpdate && i === 0 ? "PUT" : "POST";
-      const url = isUpdate && i === 0
-        ? `${backendURL}/cartasdeporte/${carta.numeroCartaPorte}`
-        : `${backendURL}/cartasdeporte`;
+      const isUpdating = isUpdate && i === 0;
 
-      const cartaResponse = await fetch(url, {
-        method,
-        headers,
-        body: JSON.stringify({
-          numeroCartaPorte: carta.numeroCartaPorte,
-          CTG: carta.CTG,
-          cuitTitular: carta.cuitTitular,
-          idTurno: turnoId,
-        }),
-      });
+      const payload = {
+        numeroCartaPorte: carta.numeroCartaPorte,
+        CTG: carta.CTG,
+        cuitTitular: carta.cuitTitular,
+        idTurno: turnoId,
+      };
       
-      if (!cartaResponse.ok) {
-        throw new Error(await cartaResponse.text());
-      }
+      const data = isUpdating
+        ? await axiosPut<any>(`cartasdeporte/${carta.numeroCartaPorte}`, payload, backendURL)
+        : await axiosPost<any>("cartasdeporte", payload, backendURL);
       
-      const data = await cartaResponse.json();
       results.push(data);
     }
 
     // Actualizar el turno con la primera carta de porte y estado 8 (En Viaje)
     if (results.length > 0) {
-      const turnoResponse = await fetch(`${backendURL}/turnos/${turnoId}`, {
-        method: "PUT",
-        headers,
-        body: JSON.stringify({
-          idCartaDePorte: results[0].id,
-          idEstado: 8,
-        }),
-      });
-      
-      if (!turnoResponse.ok) {
-        throw new Error(await turnoResponse.text());
-      }
+      await axiosPut(`turnos/${turnoId}`, {
+        idCartaDePorte: results[0].id,
+        idEstado: 8,
+      }, backendURL);
     }
     
     return results;
@@ -66,13 +46,7 @@ const useCartaPorteHandler = () => {
   const handleCartaPorteDeletion = async (numeroCartaPorte: number) => {
     if (!numeroCartaPorte) return;
     try {
-      const response = await fetch(
-        `${backendURL}/cartasdeporte/${numeroCartaPorte}`,
-        { method: "DELETE", headers }
-      );
-      if (!response.ok) {
-        throw new Error(await response.text());
-      }
+      await axiosDelete(`cartasdeporte/${numeroCartaPorte}`, backendURL);
       return { deleted: true, numeroCartaPorte };
     } catch (error) {
       console.error("Error al eliminar la Carta de Porte:", error);

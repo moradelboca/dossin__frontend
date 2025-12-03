@@ -28,6 +28,7 @@ import { CuposCardsContainer } from "./tabsCupos/CuposCardsContainer";
 import { CuposGridContainer } from "./tabsCupos/CuposGridContainer";
 import { CuposGridPorDiaContainer } from "./tabsCupos/CuposGridPorDiaContainer";
 import CuposMobile from "../../mobile/cupos/CuposMobile";
+import { axiosGet } from "../../../lib/axiosConfig";
 import { useAuth } from "../../autenticacion/ContextoAuth";
 import InfoTooltip from '../../InfoTooltip';
 import dayjs, { Dayjs } from 'dayjs';
@@ -154,21 +155,7 @@ export function ContainerCupos() {
     }
     
     try {
-      const url = `${backendURL}/cargas/${idCarga}/cupos/${fecha}/turnos`;
-      const response = await fetch(url, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          "ngrok-skip-browser-warning": "true",
-        },
-      });
-      
-      if (!response.ok) {
-        console.error('Error HTTP al obtener turnos', { url, status: response.status });
-        return { turnos: [], turnosConErrores: [] };
-      }
-      
-      const turnosData = await response.json();
+      const turnosData = await axiosGet<any>(`cargas/${idCarga}/cupos/${fecha}/turnos`, backendURL);
       const turnos = Array.isArray(turnosData) ? turnosData : turnosData.turnos || [];
       const turnosConErrores = turnosData.turnosConErrores || [];
       
@@ -184,42 +171,26 @@ export function ContainerCupos() {
         // Si el turno tiene ID, cargar datos completos incluyendo mediciones
         if (turno.id) {
           try {
-            const turnoCompletoRes = await fetch(`${backendURL}/turnos/${turno.id}`, {
-              method: 'GET',
-              headers: {
-                'Content-Type': 'application/json',
-                'ngrok-skip-browser-warning': 'true',
-              },
-            });
             let turnoCompleto = turnoNormalizado;
-            if (turnoCompletoRes.ok) {
+            try {
+              const turnoCompletoData = await axiosGet<any>(`turnos/${turno.id}`, backendURL);
               turnoCompleto = {
                 ...turnoNormalizado,
-                ...(await turnoCompletoRes.json()),
+                ...turnoCompletoData,
                 // Preservar campos normalizados
                 camion: turnoNormalizado.camion,
                 acoplado: turnoNormalizado.acoplado,
                 acopladoExtra: turnoNormalizado.acopladoExtra,
               };
+            } catch {
+              // Si falla, usar turno normalizado
             }
             
             // Obtener mediciones del turno
             try {
-              const medicionesRes = await fetch(`${backendURL}/turnos/${turno.id}/mediciones`, {
-                method: 'GET',
-                headers: {
-                  'Content-Type': 'application/json',
-                  'ngrok-skip-browser-warning': 'true',
-                },
-              });
-              if (medicionesRes.ok) {
-                const mediciones = await medicionesRes.json();
-                turnoCompleto.mediciones = Array.isArray(mediciones) ? mediciones : [];
-              } else {
-                turnoCompleto.mediciones = [];
-              }
-            } catch (medicionesErr) {
-              console.error('Error obteniendo mediciones del turno:', medicionesErr);
+              const mediciones = await axiosGet<any[]>(`turnos/${turno.id}/mediciones`, backendURL);
+              turnoCompleto.mediciones = Array.isArray(mediciones) ? mediciones : [];
+            } catch {
               turnoCompleto.mediciones = [];
             }
             
@@ -278,17 +249,7 @@ export function ContainerCupos() {
     const url = construirUrlCupos(fechaDesde, fechaHasta, filtros);
     
     try {
-      const response = await fetch(url, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          "ngrok-skip-browser-warning": "true",
-        },
-      });
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`);
-      }
-      const cuposData = await response.json();
+      const cuposData = await axiosGet<any[]>(url.replace(backendURL + '/', ''), backendURL);
       // Filtrar cupos vacíos del pasado según el filtro
       const cuposFiltrados = cuposData.filter((cupo: any) =>
         filtros.mostrarVaciosDelPasado ? true : (cupo.turnos && cupo.turnos.length > 0)
@@ -336,19 +297,7 @@ export function ContainerCupos() {
     );
     
     try {
-      const response = await fetch(url, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          "ngrok-skip-browser-warning": "true",
-        },
-      });
-      
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`);
-      }
-      
-      const cuposData = await response.json();
+      const cuposData = await axiosGet<any[]>(url.replace(backendURL + '/', ''), backendURL);
       
       // Verificar si hay datos
       if (!cuposData || cuposData.length === 0) {
@@ -449,20 +398,7 @@ export function ContainerCupos() {
     setIsRefreshing(true);
     
     try {
-      const url = `${backendURL}/cargas/${idCarga}/cupos/${fecha}/turnos`;
-      const response = await fetch(url, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          "ngrok-skip-browser-warning": "true",
-        },
-      });
-      
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`);
-      }
-      
-      const turnosData = await response.json();
+      const turnosData = await axiosGet<any>(`cargas/${idCarga}/cupos/${fecha}/turnos`, backendURL);
       const turnos = Array.isArray(turnosData) ? turnosData : turnosData.turnos || [];
       const turnosConErrores = turnosData.turnosConErrores || [];
       

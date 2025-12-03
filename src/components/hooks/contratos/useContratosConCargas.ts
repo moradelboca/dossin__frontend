@@ -1,14 +1,12 @@
 import { useEffect, useState } from "react";
+import { axiosGet } from "../../../lib/axiosConfig";
 
 const useContratosConCargas = (backendURL: string) => {
     const [contratosConCargas, setContratosConCargas] = useState<any[]>([]);
   
     const fetchContratosConCargas = async () => {
       try {
-        const response = await fetch(`${backendURL}/contratos`, {
-          headers: { "ngrok-skip-browser-warning": "true" }
-        });
-        const contratos = await response.json();
+        const contratos = await axiosGet<any[]>("contratos", backendURL);
   
         const contratosActualizados = await Promise.all(
           contratos.map(async (contrato: any) => {
@@ -17,8 +15,7 @@ const useContratosConCargas = (backendURL: string) => {
             const cargas = await Promise.all(
               contrato.idsCargas.map(async (id: string) => {
                 try {
-                  const response = await fetch(`${backendURL}/cargas/${id}`);
-                  return response.ok ? response.json() : null;
+                  return await axiosGet<any>(`cargas/${id}`, backendURL);
                 } catch {
                   return null;
                 }

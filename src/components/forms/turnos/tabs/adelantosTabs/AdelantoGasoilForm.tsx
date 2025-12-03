@@ -15,6 +15,7 @@ import {
 } from "@mui/material";
 import { ContextoGeneral } from "../../../../Contexto";
 import MainButton from "../../../../botones/MainButtom";
+import { axiosGet, axiosPost, axiosPut, axiosDelete } from "../../../../../lib/axiosConfig";
 
 interface TipoCombustible {
   id: number;
@@ -44,12 +45,7 @@ const AdelantoGasoilForm: React.FC<AdelantoGasoilFormProps> = ({
   onSuccess,
   onCancel,
 }) => {
-  const { backendURL } = useContext(ContextoGeneral);
-  const headers = {
-    "Content-Type": "application/json",
-    "ngrok-skip-browser-warning": "true",
-  };
-  const { theme } = useContext(ContextoGeneral);
+  const { backendURL, theme } = useContext(ContextoGeneral);
 
   const tema = useTheme();
   const isMobile = useMediaQuery(tema.breakpoints.down("sm"));
@@ -86,12 +82,7 @@ const AdelantoGasoilForm: React.FC<AdelantoGasoilFormProps> = ({
   useEffect(() => {
     const fetchTiposCombustible = async () => {
       try {
-        const response = await fetch(`${backendURL}/adelantos/gasoil/tipos`, {
-          method: "GET",
-          headers,
-        });
-        if (!response.ok) throw new Error("Error al obtener los tipos de gasoil");
-        const data = await response.json();
+        const data = await axiosGet<TipoCombustible[]>('adelantos/gasoil/tipos', backendURL);
         setTiposCombustibleOptions(data);
       } catch (error) {
         console.error(error);
@@ -161,24 +152,9 @@ const AdelantoGasoilForm: React.FC<AdelantoGasoilFormProps> = ({
     };
 
     try {
-      let url = `${backendURL}/adelantos/gasoil`;
-      let method = "POST";
-
-      // Si ya existe un adelanto, se actualiza mediante PUT
-      if (adelanto && adelanto.id) {
-        url = `${backendURL}/adelantos/gasoil/${adelanto.id}`;
-        method = "PUT";
-      }
-
-      const response = await fetch(url, {
-        method,
-        headers,
-        body: JSON.stringify(payload),
-      });
-      if (!response.ok) {
-        throw new Error(await response.text());
-      }
-      const data = await response.json();
+      const data = adelanto && adelanto.id
+        ? await axiosPut(`adelantos/gasoil/${adelanto.id}`, payload, backendURL)
+        : await axiosPost('adelantos/gasoil', payload, backendURL);
       onSuccess(data);
       // (Opcional) Actualizar la lista de adelantos tras el cambio
     } catch (error) {
@@ -193,16 +169,7 @@ const AdelantoGasoilForm: React.FC<AdelantoGasoilFormProps> = ({
   const handleDelete = async () => {
     if (!adelanto || !adelanto.id) return;
     try {
-      const response = await fetch(
-        `${backendURL}/adelantos/gasoil/${adelanto.id}`,
-        {
-          method: "DELETE",
-          headers,
-        }
-      );
-      if (!response.ok) {
-        throw new Error(await response.text());
-      }
+      await axiosDelete(`adelantos/gasoil/${adelanto.id}`, backendURL);
       // Se notifica al padre o se actualiza la lista local tras la eliminación
       onSuccess({ deleted: true, id: adelanto.id });
       // Limpiar el formulario

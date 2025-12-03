@@ -3,6 +3,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import { ContextoGeneral } from "../Contexto";
 import { useAuth } from "./ContextoAuth";
+import { axiosGet } from "../../lib/axiosConfig";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -38,21 +39,16 @@ const RutasProtegidas = ({ children, allowedRoles }: ProtectedRouteProps) => {
         return;
       }
       try {
-        const response = await fetch(`${authURL}/auth/verify-token`, {
-          method: "GET",
-          credentials: "include",
-          headers: {
-            "Authorization": `Bearer ${accessToken}`,
-            "ngrok-skip-browser-warning": "true"
-          },
-          signal: controller.signal
-        });
-        const data = await response.json();
-        if (!response.ok)  {
-          logout();
-          setVerificando(false);
-          return;
-        }
+        const data = await axiosGet<{ usuario: { id: number; email: string; rol: { id: number; nombre: string } } }>(
+          "auth/verify-token",
+          authURL,
+          {
+            headers: {
+              "Authorization": `Bearer ${accessToken}`,
+            },
+            signal: controller.signal
+          }
+        );
         login({
           id: data.usuario.id,
           email: data.usuario.email,
@@ -60,7 +56,7 @@ const RutasProtegidas = ({ children, allowedRoles }: ProtectedRouteProps) => {
         });
         setVerificando(false);
       } catch (e: any) {
-        if (e.name !== "AbortError") {
+        if (e.name !== "AbortError" && e.code !== "ERR_CANCELED") {
           console.error("Error al verificar el token");
           logout();
         }

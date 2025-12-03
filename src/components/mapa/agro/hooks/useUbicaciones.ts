@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { ContextoGeneral } from '../../../Contexto';
 import { useContext } from 'react';
+import { axiosGet } from '../../../../lib/axiosConfig';
 
 export function useUbicaciones() {
     const { backendURL } = useContext(ContextoGeneral);
@@ -13,19 +14,7 @@ export function useUbicaciones() {
             setLoading(true);
             setError(null);
             
-            const response = await fetch(`${backendURL}/ubicaciones`, {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                    "ngrok-skip-browser-warning": "true",
-                },
-            });
-
-            if (!response.ok) {
-                throw new Error('Error al obtener las ubicaciones');
-            }
-
-            const data = await response.json();
+            const data = await axiosGet<any[]>('ubicaciones', backendURL);
             setUbicaciones(data);
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Error desconocido');

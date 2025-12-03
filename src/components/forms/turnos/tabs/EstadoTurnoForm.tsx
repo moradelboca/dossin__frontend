@@ -2,6 +2,7 @@ import React, { useContext, useState, useEffect } from "react";
 import { Autocomplete, TextField, useTheme, useMediaQuery, Box } from "@mui/material";
 import { ContextoGeneral } from "../../../Contexto";
 import MainButton from "../../../botones/MainButtom";
+import { axiosGet, axiosPut } from "../../../../lib/axiosConfig";
 
 interface EstadoTurnoFormProps {
   turnoId: number;
@@ -27,8 +28,7 @@ const EstadoTurnoForm: React.FC<EstadoTurnoFormProps> = ({
   const isMobile = useMediaQuery(tema.breakpoints.down("sm"));
 
   useEffect(() => {
-    fetch(`${backendURL}/turnos/estados`)
-      .then(res => res.json())
+    axiosGet<{ id: number; nombre: string }[]>('turnos/estados', backendURL)
       .then(data => {
         setEstados(data);
         // Si no hay estado seleccionado, seteo el primero
@@ -44,18 +44,10 @@ const EstadoTurnoForm: React.FC<EstadoTurnoFormProps> = ({
     }
 
     try {
-      const url = `${backendURL}/turnos/${turnoId}`;
       const payload = {
         idEstado: selectedEstado.id,
       };
-      const response = await fetch(url, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-
-      if (!response.ok) throw new Error(await response.text());
-      const updatedData = await response.json();
+      const updatedData = await axiosPut(`turnos/${turnoId}`, payload, backendURL);
       onSuccess(updatedData);
     } catch (err: any) {
       console.error(`Error: ${err.message}`);

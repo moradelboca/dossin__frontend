@@ -23,6 +23,7 @@ import NoteAltOutlinedIcon from '@mui/icons-material/NoteAltOutlined';
 import TableChartIcon from '@mui/icons-material/TableChart';
 import Popover from '@mui/material/Popover';
 import { DatosExtraTurnoDialog } from '../../turnos/DatosExtraTurnoDialog';
+import { axiosPut } from '../../../lib/axiosConfig';
 
 interface CardMobileProps {
   item: any;
@@ -66,7 +67,7 @@ const CardMobile: React.FC<CardMobileProps> = ({
   ocultarBotonesAccion = false,
   noEsTurno = false,
 }) => {
-  const { theme } = useContext(ContextoGeneral);
+  const { theme, backendURL } = useContext(ContextoGeneral);
   const transformarCampo = useTransformarCampo();
   const manejoTurnos = useManejoTurnos({ item, cupo, refreshCupos });
   const { user } = useAuth();
@@ -283,12 +284,7 @@ const CardMobile: React.FC<CardMobileProps> = ({
             <Button
               onClick={async () => {
                 try {
-                  const response = await fetch(`${import.meta.env.VITE_BACKEND_URL || ''}/turnos/${manejoTurnos.turnoLocal.id}`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ idEstado: 4 }),
-                  });
-                  if (!response.ok) throw new Error(await response.text());
+                  await axiosPut(`turnos/${manejoTurnos.turnoLocal.id}`, { idEstado: 4 }, backendURL);
                   if (refreshCupos) refreshCupos();
                   setOpenCancelarDialog(false);
                 } catch (err) {
@@ -546,7 +542,7 @@ const CardMobile: React.FC<CardMobileProps> = ({
           {renderButtons()}
           {childrenCollapse}
         </Box>
-        {!noEsTurno && renderTurnosDialogs({ ...manejoTurnos, theme, cupo, refreshCupos, item })}
+        {!noEsTurno && renderTurnosDialogs({ ...manejoTurnos, theme, cupo, refreshCupos, item, backendURL })}
       </Collapse>
       {/* Popover para nota */}
       {!noEsTurno && (

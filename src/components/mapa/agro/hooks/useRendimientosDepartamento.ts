@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import axios from 'axios';
 
 interface RendimientoDepartamento {
     provincia: string;
@@ -26,14 +27,20 @@ export function useRendimientosDepartamento() {
                 setError(null);
 
                 // Cargar datos de rendimientos
-                const responseRendimientos = await fetch('/src/components/mapa/agro/components/rendimiento/resumen_rendimientos_ultra_mejorado.csv');
-                const textRendimientos = await responseRendimientos.text();
+                const responseRendimientos = await axios.get('/src/components/mapa/agro/components/rendimiento/resumen_rendimientos_ultra_mejorado.csv', {
+                    responseType: 'text',
+                    withCredentials: false
+                });
+                const textRendimientos = responseRendimientos.data;
                 const rendimientosData = parseCSVRendimientos(textRendimientos);
                 setRendimientos(rendimientosData);
 
                 // Cargar datos de localidades por departamento
-                const responseLocalidades = await fetch('/src/components/mapa/agro/components/rendimiento/localidades_por_departamentos_maiz_correcto.csv');
-                const textLocalidades = await responseLocalidades.text();
+                const responseLocalidades = await axios.get('/src/components/mapa/agro/components/rendimiento/localidades_por_departamentos_maiz_correcto.csv', {
+                    responseType: 'text',
+                    withCredentials: false
+                });
+                const textLocalidades = responseLocalidades.data;
                 const localidadesData = parseCSVLocalidades(textLocalidades);
                 setLocalidades(localidadesData);
 

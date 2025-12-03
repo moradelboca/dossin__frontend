@@ -19,6 +19,7 @@ import { ContextoGeneral } from "../../Contexto";
 import DeleteCupo from "../creadores/DeleteCupo";
 import TurnoForm from "../../forms/turnos/TurnoForm";
 import { useAuth } from '../../autenticacion/ContextoAuth';
+import { axiosPut } from "../../../lib/axiosConfig";
 
 const StyledCaja = styled(Box)(() => ({
   minWidth: 230,
@@ -87,17 +88,7 @@ export function TarjetaCupos(props: TarjetaProps & { estaEnElGrid?: boolean }) {
 
   function handleSave() {
     const cupoDeCarga = { cupos: cuposDisponiblesEstado };
-    fetch(`${backendURL}/cargas/${idCarga}/cupos/${fecha}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(cupoDeCarga),
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Error al crear la carga");
-        }
-        response.json();
-      })
+    axiosPut(`cargas/${idCarga}/cupos/${fecha}`, cupoDeCarga, backendURL)
       .then(() => {
         setTimeout(() => {
           handleCloseDialog();

@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { useContext, useEffect, useRef, useState } from "react";
 import { ContextoCargas } from "./ContainerTajetasCargas";
 import { ContextoGeneral } from "../../Contexto";
+import { axiosGet } from "../../../lib/axiosConfig";
 //import { cuposCargasPrueba } from "./cuposCargasPrueba";
 
 export default function ContainerProximosCupos() {
@@ -45,19 +46,7 @@ export default function ContainerProximosCupos() {
 
   useEffect(() => {
     if (cargaSeleccionada?.id) {
-      fetch(`${backendURL}/cargas/${cargaSeleccionada.id}/cupos`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          "ngrok-skip-browser-warning": "true",
-        },
-      })
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error("Error al obtener los cupos");
-          }
-          return response.json();
-        })
+      axiosGet<any[]>(`cargas/${cargaSeleccionada.id}/cupos`, backendURL)
         .then((data) => {
           // Normalizar los campos de los turnos
           const cuposNormalizados = Array.isArray(data)

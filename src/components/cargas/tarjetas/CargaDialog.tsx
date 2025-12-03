@@ -5,9 +5,9 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
 import Button from "@mui/material/Button";
 import DialogContentText from "@mui/material/DialogContentText";
-import { useEffect, useState } from "react";
-import { useContext } from "react";
+import { useEffect, useState, useContext } from "react";
 import { ContextoGeneral } from "../../Contexto";
+import { axiosGet } from "../../../lib/axiosConfig";
 
 export function CargaDialog() {
     const { idCarga } = useParams();
@@ -17,17 +17,18 @@ export function CargaDialog() {
     const [carga, setCarga] = useState<any>({});
 
     useEffect(() => {
-        fetch(`${backendURL}/cargas/${idCarga}`)
-            .then((res) => res.json())
-            .then((data) => {
-                setOpen(true);
-                setCarga(data);
-                console.log(data);
-            })
-            .catch(() =>
-                console.error("Error al obtener las cargas disponibles")
-            );
-    }, []);
+        if (idCarga) {
+            axiosGet<any>(`cargas/${idCarga}`, backendURL)
+                .then((data) => {
+                    setOpen(true);
+                    setCarga(data);
+                    console.log(data);
+                })
+                .catch(() =>
+                    console.error("Error al obtener las cargas disponibles")
+                );
+        }
+    }, [idCarga, backendURL]);
 
     const handleClickCerrarDialog = () => {
         navigate(`/cargas`);

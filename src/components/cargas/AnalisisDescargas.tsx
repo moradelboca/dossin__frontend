@@ -33,6 +33,7 @@ import { ContextoGeneral } from '../Contexto';
 import { DescargaRegistro, PROVEEDORES_DESCARGA } from '../../types/descargas';
 import { parseDescargasCsv } from '../../utils/descargas/parsers';
 import { chunkArray, normalizeTurnosResponse, VALIDATION_CONFIG } from '../../utils/descargas/validation';
+import { axiosGet } from '../../lib/axiosConfig';
 
 interface AnalisisDescargasProps {
   onDataChange?: (data: DescargaRegistro[]) => void;
@@ -161,19 +162,7 @@ export const AnalisisDescargas: React.FC<AnalisisDescargasProps> = ({ onDataChan
         // Hacer consultas en paralelo para cada CTG del lote
         const promesas = lote.map(async (ctg) => {
           try {
-            const response = await fetch(`${backendURL}/turnos?estado=en%20viaje&ctg=${ctg}`, {
-              method: 'GET',
-              headers: {
-                'Content-Type': 'application/json',
-                'ngrok-skip-browser-warning': 'true',
-              },
-            });
-
-            if (!response.ok) {
-              throw new Error(`Error en consulta para CTG ${ctg}`);
-            }
-
-            const data = await response.json();
+            const data = await axiosGet<any[]>(`turnos?estado=en%20viaje&ctg=${ctg}`, backendURL);
             const turnosData = normalizeTurnosResponse(data);
 
             return turnosData.map((turno: any) => ({

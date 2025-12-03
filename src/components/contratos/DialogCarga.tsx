@@ -2,6 +2,7 @@ import { Dialog, DialogContent, DialogTitle } from "@mui/material";
 import { useContext, useEffect, useState } from "react";
 import CrearCargaStepper from "../cargas/creadores/CrearCargaStepper";
 import { ContextoGeneral } from "../Contexto";
+import { axiosPost, axiosPut } from "../../lib/axiosConfig";
 
 interface DialogCargaProps {
   open: boolean;
@@ -23,17 +24,7 @@ export const DialogCarga = ({ open, onClose, contrato, selectedCarga, refreshCon
     const handleCargaCreated = async (nuevaCarga: any) => {
         try {
           // 1. Crear la carga
-          const resCarga = await fetch(`${backendURL}/cargas`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "ngrok-skip-browser-warning": "true",
-            },
-            body: JSON.stringify(nuevaCarga.payload),
-          });
-          
-          if (!resCarga.ok) throw new Error("Error creando carga");
-          const cargaCreada = await resCarga.json();
+          const cargaCreada = await axiosPost('cargas', nuevaCarga.payload, backendURL);
       
           // 2. Obtener IDs existentes de las cargas del estado actual
           const idsExistentes = selectedContrato.cargas?.map((c: any) => c.id) || [];
@@ -48,16 +39,7 @@ export const DialogCarga = ({ open, onClose, contrato, selectedCarga, refreshCon
           };
           
           // 4. Actualizar contrato
-          const resContrato = await fetch(`${backendURL}/contratos/${selectedContrato.id}`, {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-              "ngrok-skip-browser-warning": "true",
-            },
-            body: JSON.stringify(payloadContrato),
-          });
-          
-          if (!resContrato.ok) throw new Error("Error actualizando contrato");
+          await axiosPut(`contratos/${selectedContrato.id}`, payloadContrato, backendURL);
           
           // 5. Actualizar estado global
           refreshContratos();
@@ -81,14 +63,7 @@ export const DialogCarga = ({ open, onClose, contrato, selectedCarga, refreshCon
             onCargaUpdated={async (cargaActualizada) => {
               if (selectedCarga?.id) {
                 try {
-                  await fetch(`${backendURL}/cargas/${selectedCarga.id}`, {
-                    method: "PUT",
-                    headers: {
-                      "Content-Type": "application/json",
-                      "ngrok-skip-browser-warning": "true",
-                    },
-                    body: JSON.stringify(cargaActualizada.payload),
-                  });
+                  await axiosPut(`cargas/${selectedCarga.id}`, cargaActualizada.payload, backendURL);
                   refreshContratos();
                   onClose();
                 } catch (error) {

@@ -4,6 +4,7 @@ import { Box, Button, Typography } from "@mui/material";
 import { useContext } from "react";
 import { ContextoGeneral } from "../Contexto";
 import { useNotificacion } from "../../components/Notificaciones/NotificacionSnackbar";
+import { axiosDelete } from "../../lib/axiosConfig";
 
 interface IDeleteEntidad {
     idEntidad: string | number;
@@ -25,42 +26,22 @@ export default function DeleteEntidad(props: IDeleteEntidad) {
 
     const apiURL = usarAuthURL ? authURL : backendURL;
     const borrarEntidad = () => {
-        fetch(`${apiURL}/${endpointEntidad}/${idEntidad}`, {
-            method: "DELETE",
-            headers: {
-                "Content-Type": "application/json",
-                "ngrok-skip-browser-warning": "true",
-            },
-        })
-            .then(async (response) => {
-                let data;
-                try {
-                    data = await response.json();
-                } catch (e) {
-                    data = {};
-                }
-                if (response.ok) {
-                    if (datos && Array.isArray(datos)) {
-                        const newEntidades = datos.filter(
-                            (entidad: any) => Object.values(entidad)[0] !== idEntidad
-                        );
-                        setDatos(newEntidades);
-                    } else {
-                        console.error("Error: 'datos' no es un array válido.");
-                    }
-                    handleCloseDialog();
-                    handleClose();
+        axiosDelete(`${endpointEntidad}/${idEntidad}`, apiURL)
+            .then(() => {
+                if (datos && Array.isArray(datos)) {
+                    const newEntidades = datos.filter(
+                        (entidad: any) => Object.values(entidad)[0] !== idEntidad
+                    );
+                    setDatos(newEntidades);
                 } else {
-                    if (data && data.mensaje) {
-                        showNotificacion(data.mensaje, 'error');
-                    } else {
-                        showNotificacion('Error al borrar la entidad', 'error');
-                    }
-                    handleCloseDialog();
+                    console.error("Error: 'datos' no es un array válido.");
                 }
+                handleCloseDialog();
+                handleClose();
             })
-            .catch((error) => {
-                showNotificacion('Error al borrar la entidad', 'error');
+            .catch((error: any) => {
+                const errorMessage = error?.response?.data?.mensaje || 'Error al borrar la entidad';
+                showNotificacion(errorMessage, 'error');
                 console.error("Error al borrar la entidad", error);
                 handleCloseDialog();
             });

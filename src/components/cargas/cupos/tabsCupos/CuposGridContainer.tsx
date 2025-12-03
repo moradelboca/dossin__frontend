@@ -33,6 +33,7 @@ import ImageIcon from '@mui/icons-material/Image';
 import { ContextoGeneral } from '../../../Contexto';
 import { useAuth } from '../../../autenticacion/ContextoAuth';
 import CancelIcon from '@mui/icons-material/Cancel';
+import { axiosGet } from '../../../../lib/axiosConfig';
 
 interface Turno {
   id: number;
@@ -114,7 +115,7 @@ export const CuposGridContainer: React.FC<CuposGridContainerProps & { estadoCarg
 }) => {
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedTurno, setSelectedTurno] = useState<any>(null);
-  const { theme } = useContext(ContextoGeneral);
+  const { theme, backendURL } = useContext(ContextoGeneral);
   const { user } = useAuth();
   const rolId = user?.rol?.id;
   
@@ -252,11 +253,7 @@ export const CuposGridContainer: React.FC<CuposGridContainerProps & { estadoCarg
         
         try {
           // Obtener datos de la carga
-          const backendURL = import.meta.env.VITE_BACKEND_URL || '';
-          const cargaResponse = await fetch(`${backendURL}/cargas/${firstCupo.carga}`);
-          if (cargaResponse.ok) {
-            cargoData = await cargaResponse.json();
-          }
+          cargoData = await axiosGet<any>(`cargas/${firstCupo.carga}`, backendURL);
         } catch (error) {
           console.error('Error fetching cargo data:', error);
         }

@@ -10,9 +10,10 @@ import FacturaForm from "../../forms/turnos/tabs/FacturaForm";
 import AdelantosTurnoForm from "../../forms/turnos/tabs/AdelantosTurnoForm";
 import OrdenPagoForm from "../../forms/turnos/tabs/OrdenPagoForm";
 import { getNextEstadoId } from "../../../utils/turnosEstados";
+import { axiosGet, axiosPut } from "../../../lib/axiosConfig";
 
 export function useManejoTurnos({ item, cupo, refreshCupos }: any) {
-  const { theme } = useContext(ContextoGeneral);
+  const { theme, backendURL } = useContext(ContextoGeneral);
 
   // Dialog states for forms
   const [openDialog, setOpenDialog] = useState<null | 'corregir' | 'autorizar' | 'tara' | 'cartaPorte' | 'cargarCarta' | 'pesaje' | 'pago' | 'datospago' | 'factura' | 'adelanto'>(null);
@@ -38,12 +39,7 @@ export function useManejoTurnos({ item, cupo, refreshCupos }: any) {
   const handleGuardarNota = async (turnoId: number) => {
     setNotaLoading(true);
     try {
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL || ''}/turnos/${turnoId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ nota: notaLocal }),
-      });
-      if (!response.ok) throw new Error(await response.text());
+      await axiosPut(`turnos/${turnoId}`, { nota: notaLocal }, backendURL);
       if (refreshCupos) refreshCupos();
       setAnchorElNota(null);
     } catch (err) {
@@ -55,12 +51,7 @@ export function useManejoTurnos({ item, cupo, refreshCupos }: any) {
   const handleBorrarNota = async (turnoId: number) => {
     setNotaLoading(true);
     try {
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL || ''}/turnos/${turnoId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ nota: '' }),
-      });
-      if (!response.ok) throw new Error(await response.text());
+      await axiosPut(`turnos/${turnoId}`, { nota: '' }, backendURL);
       if (refreshCupos) refreshCupos();
       setNotaLocal('');
       setAnchorElNota(null);
@@ -80,10 +71,7 @@ export function useManejoTurnos({ item, cupo, refreshCupos }: any) {
       if (!turnoLocal.precios) { 
         (async () => {
           try {
-            const backendURL = import.meta.env.VITE_BACKEND_URL || '';
-            const res = await fetch(`${backendURL}/turnos/${item.id}`);
-            if (!res.ok) throw new Error('No se pudo obtener datos del turno');
-            const turnoCompleto = await res.json();
+            const turnoCompleto = await axiosGet<any>(`turnos/${item.id}`, backendURL);
             setTurnoLocal(turnoCompleto);
           } catch (e) {
             // console.error(e)
@@ -121,16 +109,11 @@ export function useManejoTurnos({ item, cupo, refreshCupos }: any) {
       setCartaPorteError(null);
       (async () => {
         try {
-          const backendURL = import.meta.env.VITE_BACKEND_URL || '';
-          
           // Obtener datos completos del turno (incluyendo KG)
           let turno = item;
           if (item?.id) {
             try {
-              const turnoRes = await fetch(`${backendURL}/turnos/${item.id}`);
-              if (turnoRes.ok) {
-                turno = await turnoRes.json();
-              }
+              turno = await axiosGet<any>(`turnos/${item.id}`, backendURL);
             } catch (err) {
               // console.error(err);
             }
@@ -138,17 +121,14 @@ export function useManejoTurnos({ item, cupo, refreshCupos }: any) {
           
           let carga = null;
           if (cupo && cupo.carga) {
-            const cargaRes = await fetch(`${backendURL}/cargas/${cupo.carga}`);
-            carga = await cargaRes.json();
+            carga = await axiosGet<any>(`cargas/${cupo.carga}`, backendURL);
           } else if (item.carga || item.idCarga) {
-            const cargaRes = await fetch(`${backendURL}/cargas/${item.carga || item.idCarga}`);
-            carga = await cargaRes.json();
+            carga = await axiosGet<any>(`cargas/${item.carga || item.idCarga}`, backendURL);
           }
           let contrato = null;
           if (carga && carga.id) {
             try {
-              const contratosRes = await fetch(`${backendURL}/contratos`, { headers: { 'ngrok-skip-browser-warning': 'true' } });
-              const contratos = await contratosRes.json();
+              const contratos = await axiosGet<any[]>('contratos', backendURL);
               contrato = contratos.find((contrato: any) => {
                 const tieneCarga = Array.isArray(contrato.cargas) && contrato.cargas.some((c: any) => {
                   return c.id === carga.id;
@@ -207,7 +187,7 @@ export function useManejoTurnos({ item, cupo, refreshCupos }: any) {
 
 export function renderTurnosDialogs({
   openDialog, setOpenDialog, autorizarLoading, setAutorizarLoading, cartaPorteData, cartaPorteLoading, cartaPorteError, copiedField, turnoLocal, setTurnoLocal,
-  handleFormSuccess, handleCopy, getNextEstadoName, theme
+  handleFormSuccess, handleCopy, getNextEstadoName, theme, backendURL
 }: any) {
   switch (openDialog) {
     case 'corregir':
@@ -254,12 +234,7 @@ export function renderTurnosDialogs({
                 try {
                   const nextEstadoId = getNextEstadoId(turnoLocal.estado?.nombre);
                   if (!nextEstadoId) throw new Error('No se puede determinar el próximo estado');
-                  const response = await fetch(`${import.meta.env.VITE_BACKEND_URL || ''}/turnos/${turnoLocal.id}`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ idEstado: nextEstadoId }),
-                  });
-                  if (!response.ok) throw new Error(await response.text());
+                  await axiosPut(`turnos/${turnoLocal.id}`, { idEstado: nextEstadoId }, backendURL);
                   setTurnoLocal({
                     ...turnoLocal,
                     estado: { ...turnoLocal.estado, nombre: getNextEstadoName(turnoLocal.estado?.nombre) }
@@ -398,11 +373,7 @@ export function renderTurnosDialogs({
                 try {
                   const nextEstadoId = getNextEstadoId(turnoLocal.estado?.nombre);
                   if (!nextEstadoId) throw new Error('No se puede determinar el próximo estado');
-                  await fetch(`${import.meta.env.VITE_BACKEND_URL || ''}/turnos/${turnoLocal.id}`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ idEstado: nextEstadoId }),
-                  });
+                  await axiosPut(`turnos/${turnoLocal.id}`, { idEstado: nextEstadoId }, backendURL);
                 } catch (err) {
                   //console.error(err);
                 }
@@ -428,11 +399,7 @@ export function renderTurnosDialogs({
                 try {
                   const nextEstadoId = getNextEstadoId(turnoLocal.estado?.nombre);
                   if (!nextEstadoId) throw new Error('No se puede determinar el próximo estado');
-                  await fetch(`${import.meta.env.VITE_BACKEND_URL || ''}/turnos/${turnoLocal.id}`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ idEstado: nextEstadoId }),
-                  });
+                  await axiosPut(`turnos/${turnoLocal.id}`, { idEstado: nextEstadoId }, backendURL);
                 } catch (err) {
                   //console.error(err);
                 }
@@ -517,11 +484,7 @@ export function renderTurnosDialogs({
               initialData={turnoLocal.numeroOrdenPago}
               onSuccess={async () => {
                 try {
-                  await fetch(`${import.meta.env.VITE_BACKEND_URL || ''}/turnos/${turnoLocal.id}`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ idEstado: 11 }),
-                  });
+                  await axiosPut(`turnos/${turnoLocal.id}`, { idEstado: 11 }, backendURL);
                 } catch (err) {
                   //console.error(err);
                 }
@@ -549,11 +512,7 @@ export function renderTurnosDialogs({
                   if (updatedFactura) {
                     const nextEstadoId = getNextEstadoId(turnoFactura.estado?.nombre);
                     if (!nextEstadoId) throw new Error('No se puede determinar el próximo estado');
-                    await fetch(`${import.meta.env.VITE_BACKEND_URL || ''}/turnos/${turnoFactura.id}`, {
-                      method: 'PUT',
-                      headers: { 'Content-Type': 'application/json' },
-                      body: JSON.stringify({ idEstado: nextEstadoId }),
-                    });
+                    await axiosPut(`turnos/${turnoFactura.id}`, { idEstado: nextEstadoId }, backendURL);
                   }
                 } catch (err) {
                   //console.error(err);

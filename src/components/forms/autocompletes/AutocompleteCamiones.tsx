@@ -4,6 +4,7 @@ import { ContextoGeneral } from '../../Contexto';
 import AddIcon from '@mui/icons-material/Add';
 import Dialog from '@mui/material/Dialog';
 import CamionForm from '../camiones/CamionForm';
+import { axiosGet } from '../../../lib/axiosConfig';
 
 interface Camion {
   patente: string;
@@ -29,14 +30,7 @@ const AutocompleteCamiones: React.FC<AutocompleteCamionesProps> = ({
   const [openDialog, setOpenDialog] = useState(false);
 
   useEffect(() => {
-    fetch(`${backendURL}/camiones`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'ngrok-skip-browser-warning': 'true',
-      },
-    })
-      .then(response => response.json())
+    axiosGet<Camion[]>('camiones', backendURL)
       .then((data: Camion[]) => setCamiones(data))
       .catch(err => console.error('Error al obtener los camiones', err));
   }, [backendURL]);

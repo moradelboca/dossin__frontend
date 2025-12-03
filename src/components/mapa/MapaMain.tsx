@@ -27,6 +27,7 @@ import { ProtectedComponent } from "../protectedComponent/ProtectedComponent";
 import { PlanificacionDialog } from "./agro/components/planificacion/PlanificacionDialog";
 import React from "react";
 import InfoTooltip from "../InfoTooltip";
+import { axiosGet } from "../../lib/axiosConfig";
 
 const { BaseLayer, Overlay } = LayersControl;
 
@@ -110,14 +111,7 @@ useEffect(() => {
 }, []);
 
     const refreshUbicaciones = () => {
-        fetch(`${backendURL}/ubicaciones`, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-                "ngrok-skip-browser-warning": "true",
-            },
-        })
-            .then((response) => response.json())
+        axiosGet<any[]>('ubicaciones', backendURL)
             .then((ubicaciones) => {
                 setUbicaciones(ubicaciones);
                 setEstadoCarga(false);
@@ -129,14 +123,7 @@ useEffect(() => {
 
     // Cargar tipos de ubicación desde la base de datos
     const refreshTiposUbicacion = () => {
-        fetch(`${backendURL}/ubicaciones/tiposUbicaciones`, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-                "ngrok-skip-browser-warning": "true",
-            },
-        })
-            .then((response) => response.json())
+        axiosGet<any[]>('ubicaciones/tiposUbicaciones', backendURL)
             .then((tipos) => {
                 setTipoUbicacion(tipos);
             })
