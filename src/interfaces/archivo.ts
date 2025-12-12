@@ -5,7 +5,7 @@ export interface Archivo {
   creadoPor: string;
   fechaCreacion: string;
   fechaActualizacion: string;
-  compartidoCon: string[];
+  compartidoCon: { idArchivo: number; usuario: string }[];
 }
 
 export interface Usuario {

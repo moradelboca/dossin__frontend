@@ -22,6 +22,7 @@ interface ShareWidgetDialogProps {
   open: boolean;
   onClose: () => void;
   archivoId: number;
+  creadoPor: string;
   compartidoConActual: string[];
   onShare: (emails: string[]) => void;
 }
@@ -30,6 +31,7 @@ export function ShareWidgetDialog({
   open,
   onClose,
   archivoId,
+  creadoPor,
   compartidoConActual,
   onShare,
 }: ShareWidgetDialogProps) {
@@ -51,9 +53,9 @@ export function ShareWidgetDialog({
       setLoading(true);
       setError(null);
       const data = await archivosService.obtenerUsuarios();
-      // Filtrar solo usuarios administradores
+      // Filtrar solo usuarios administradores y excluir al creador
       const administradores = data.filter(
-        (usuario) => usuario.rol.nombre === 'Administrador'
+        (usuario) => usuario.rol.nombre === 'Administrador' && usuario.email !== creadoPor
       );
       setUsuarios(administradores);
     } catch (err) {
