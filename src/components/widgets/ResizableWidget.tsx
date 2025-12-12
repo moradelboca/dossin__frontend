@@ -80,7 +80,11 @@ export function ResizableWidget({ archivo, onDelete, onUpdate }: ResizableWidget
   };
 
   const handleShare = (emails: string[]) => {
-    const archivoActualizado = { ...archivoActual, compartidoCon: emails };
+    const compartidoConActualizado = emails.map(email => ({
+      idArchivo: archivoActual.id,
+      usuario: email
+    }));
+    const archivoActualizado = { ...archivoActual, compartidoCon: compartidoConActualizado };
     setArchivoActual(archivoActualizado);
     if (onUpdate) {
       onUpdate(archivoActualizado);
@@ -123,15 +127,17 @@ export function ResizableWidget({ archivo, onDelete, onUpdate }: ResizableWidget
       <Card sx={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
         <CardContent sx={{ pb: 1, position: 'relative' }}>
           <Box sx={{ position: 'absolute', top: 8, right: 8, display: 'flex', gap: 0.5 }}>
-            <Tooltip title="Compartir widget">
-              <IconButton
-                size="small"
-                onClick={() => setShareDialogOpen(true)}
-                sx={{ '&:hover': { backgroundColor: 'rgba(25, 118, 210, 0.1)' } }}
-              >
-                <ShareIcon fontSize="small" />
-              </IconButton>
-            </Tooltip>
+            {esCreador && (
+              <Tooltip title="Compartir widget">
+                <IconButton
+                  size="small"
+                  onClick={() => setShareDialogOpen(true)}
+                  sx={{ '&:hover': { backgroundColor: 'rgba(25, 118, 210, 0.1)' } }}
+                >
+                  <ShareIcon fontSize="small" />
+                </IconButton>
+              </Tooltip>
+            )}
             {esCreador && (
               <Tooltip title="Eliminar widget">
                 <IconButton
@@ -229,7 +235,8 @@ export function ResizableWidget({ archivo, onDelete, onUpdate }: ResizableWidget
         open={shareDialogOpen}
         onClose={() => setShareDialogOpen(false)}
         archivoId={archivoActual.id}
-        compartidoConActual={archivoActual.compartidoCon}
+        creadoPor={archivoActual.creadoPor}
+        compartidoConActual={archivoActual.compartidoCon.map(c => c.usuario)}
         onShare={handleShare}
       />
     </Box>
