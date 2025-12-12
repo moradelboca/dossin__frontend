@@ -8,8 +8,8 @@ function shouldUseCredentials(baseURL?: string): boolean {
   if (!baseURL) return true; // Por defecto usar credenciales para requests sin baseURL
   
   // Lista de dominios que NO deben usar credenciales (APIs externas sin CORS configurado)
-  const domainsWithoutCredentials = [
-    'dev.dossin.com.ar/api', // API externa que no soporta credenciales
+  const domainsWithoutCredentials: string[] = [
+    // dev.dossin.com.ar/api ahora soporta credenciales - lista vacía
   ];
   
   // Si la URL contiene alguno de estos dominios, NO usar credenciales
@@ -18,7 +18,7 @@ function shouldUseCredentials(baseURL?: string): boolean {
   }
   
   // Por defecto, usar credenciales para todos los demás dominios
-  // (incluyendo localhost, auth.dossin.com.ar, y otros backends configurados)
+  // (incluyendo localhost, auth.dossin.com.ar, dev.dossin.com.ar/api, y otros backends configurados)
   return true;
 }
 
