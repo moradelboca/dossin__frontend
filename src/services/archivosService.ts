@@ -1,7 +1,7 @@
 import { Archivo, Usuario } from '../interfaces/archivo';
 import { axiosGet, axiosPost, axiosDelete, createAxiosInstance } from '../lib/axiosConfig';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://dev.dossin.com.ar/api';
+const API_BASE_URL = import.meta.env.VITE_BACKEND_URL || 'https://dev.dossin.com.ar/api';
 const AUTH_URL = import.meta.env.VITE_AUTH_URL || 'https://auth.dossin.com.ar';
 
 export const archivosService = {
