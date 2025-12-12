@@ -5,6 +5,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { Archivo } from "../../interfaces/archivo";
 import { archivosService } from "../../services/archivosService";
 import { ShareWidgetDialog } from "./ShareWidgetDialog";
+import { useAuth } from "../autenticacion/ContextoAuth";
 
 interface ResizableWidgetProps {
   archivo: Archivo;
@@ -13,12 +14,16 @@ interface ResizableWidgetProps {
 }
 
 export function ResizableWidget({ archivo, onDelete, onUpdate }: ResizableWidgetProps) {
+  const { user } = useAuth();
   const [size, setSize] = useState({ width: 600, height: 600 });
   const [isResizing, setIsResizing] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const resizeTypeRef = useRef<string>('');
   const [shareDialogOpen, setShareDialogOpen] = useState(false);
   const [archivoActual, setArchivoActual] = useState<Archivo>(archivo);
+  
+  // Verificar si el usuario actual es el creador del archivo
+  const esCreador = user?.email === archivoActual.creadoPor;
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -83,6 +88,11 @@ export function ResizableWidget({ archivo, onDelete, onUpdate }: ResizableWidget
   };
 
   const handleDelete = async () => {
+    if (!esCreador) {
+      alert('Solo el creador del archivo puede eliminarlo');
+      return;
+    }
+    
     if (window.confirm(`¿Estás seguro de que deseas eliminar el widget "${archivoActual.nombre}"?`)) {
       try {
         await archivosService.eliminarArchivo(archivoActual.id);
@@ -122,15 +132,17 @@ export function ResizableWidget({ archivo, onDelete, onUpdate }: ResizableWidget
                 <ShareIcon fontSize="small" />
               </IconButton>
             </Tooltip>
-            <Tooltip title="Eliminar widget">
-              <IconButton
-                size="small"
-                onClick={handleDelete}
-                sx={{ '&:hover': { backgroundColor: 'rgba(211, 47, 47, 0.1)' } }}
-              >
-                <DeleteIcon fontSize="small" />
-              </IconButton>
-            </Tooltip>
+            {esCreador && (
+              <Tooltip title="Eliminar widget">
+                <IconButton
+                  size="small"
+                  onClick={handleDelete}
+                  sx={{ '&:hover': { backgroundColor: 'rgba(211, 47, 47, 0.1)' } }}
+                >
+                  <DeleteIcon fontSize="small" />
+                </IconButton>
+              </Tooltip>
+            )}
           </Box>
           <Typography variant="h6" gutterBottom sx={{ pr: 8 }}>
             {archivoActual.nombre}

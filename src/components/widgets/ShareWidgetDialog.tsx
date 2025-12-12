@@ -92,7 +92,10 @@ export function ShareWidgetDialog({
         await archivosService.compartirArchivo(archivoId, emailsAgregar);
       }
       if (emailsEliminar.length > 0) {
-        await archivosService.revocarAcceso(archivoId, emailsEliminar);
+        // Revocar acceso uno por uno
+        for (const email of emailsEliminar) {
+          await archivosService.revocarAcceso(archivoId, email);
+        }
       }
 
       onShare(usuariosSeleccionados);

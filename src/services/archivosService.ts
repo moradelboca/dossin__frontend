@@ -1,8 +1,8 @@
 import { Archivo, Usuario } from '../interfaces/archivo';
 import { axiosGet, axiosPost, axiosDelete, createAxiosInstance } from '../lib/axiosConfig';
 
-const API_BASE_URL = 'https://api.dossin.com.ar/api';
-const AUTH_URL = 'https://auth.dossin.com.ar';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://dev.dossin.com.ar/api';
+const AUTH_URL = import.meta.env.VITE_AUTH_URL || 'https://auth.dossin.com.ar';
 
 export const archivosService = {
   async obtenerArchivos(): Promise<Archivo[]> {
@@ -27,16 +27,16 @@ export const archivosService = {
 
   async compartirArchivo(id: number, emails: string[]): Promise<void> {
     try {
-      await axiosPost(`archivos/${id}/usuarios`, { emails }, API_BASE_URL);
+      await axiosPost(`archivos/${id}/usuarios`, { usuariosPermitidos: emails }, API_BASE_URL);
     } catch (error) {
       throw new Error('Error al compartir archivo');
     }
   },
 
-  async revocarAcceso(id: number, emails: string[]): Promise<void> {
+  async revocarAcceso(id: number, email: string): Promise<void> {
     try {
       await axiosDelete(`archivos/${id}/usuarios`, API_BASE_URL, {
-        data: { emails }
+        data: { emailARevocar: email }
       });
     } catch (error) {
       throw new Error('Error al revocar acceso');
