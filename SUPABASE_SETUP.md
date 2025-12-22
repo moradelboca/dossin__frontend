@@ -14,7 +14,7 @@ En tu dashboard de Supabase, ve a **Storage** y crea un nuevo bucket llamado `km
 
 **Configuración del Bucket:**
 - **Public bucket**: ✅ Activado (para acceso público)
-- **Allowed MIME types**: `application/vnd.google-earth.kmz, application/vnd.google-earth.kml+xml`
+- **Allowed MIME types**: `application/vnd.google-earth.kmz, application/vnd.google-earth.kml+xml, image/jpeg, image/png, image/webp`
 
 ### 2. Configurar Políticas de Seguridad
 
@@ -68,9 +68,18 @@ kmz-files/
 │   │   └── lote_id_1_ubicacion_id_1_timestamp.kml
 │   └── lote_id_2/
 │       └── lote_id_2_ubicacion_id_1_timestamp.kmz
-└── ubicacion_id_2/
-    └── lote_id_1/
-        └── lote_id_1_ubicacion_id_2_timestamp.kmz
+├── ubicacion_id_2/
+│   └── lote_id_1/
+│       └── lote_id_1_ubicacion_id_2_timestamp.kmz
+└── turnos/
+    ├── turno_id_1/
+    │   ├── tara/
+    │   │   └── turno_id_1_tara_timestamp.jpg
+    │   └── bruto/
+    │       └── turno_id_1_bruto_timestamp.jpg
+    └── turno_id_2/
+        └── tara/
+            └── turno_id_2_tara_timestamp.jpg
 ```
 
 ## Funcionalidades Implementadas
@@ -80,6 +89,8 @@ kmz-files/
 - ✅ Eliminación de archivos de Supabase Storage
 - ✅ Asociación de archivos con lotes específicos
 - ✅ Persistencia de archivos entre sesiones
+- ✅ Subida de fotos de turnos (tara y bruto) a Supabase Storage
+- ✅ Gestión de referencias de fotos en tabla `turnos_fotos`
 
 ## Notas Importantes
 

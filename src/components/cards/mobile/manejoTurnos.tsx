@@ -11,6 +11,9 @@ import AdelantosTurnoForm from "../../forms/turnos/tabs/AdelantosTurnoForm";
 import OrdenPagoForm from "../../forms/turnos/tabs/OrdenPagoForm";
 import { getNextEstadoId } from "../../../utils/turnosEstados";
 import { axiosGet, axiosPut } from "../../../lib/axiosConfig";
+import { registrarCambioEstado } from "../../../services/turnosEstadoHistorialService";
+import { useAuth } from "../../autenticacion/ContextoAuth";
+import { getRemitoId, getFotosTurno } from "../../../lib/supabase";
 
 export function useManejoTurnos({ item, cupo, refreshCupos }: any) {
   const { theme, backendURL } = useContext(ContextoGeneral);
@@ -21,6 +24,7 @@ export function useManejoTurnos({ item, cupo, refreshCupos }: any) {
   const [cartaPorteData, setCartaPorteData] = useState<any>(null);
   const [cartaPorteLoading, setCartaPorteLoading] = useState(false);
   const [cartaPorteError, setCartaPorteError] = useState<string | null>(null);
+  const [remitoData, setRemitoData] = useState<{ idRemito: string | null; fotoUrl: string | null } | null>(null);
   const [copiedField, setCopiedField] = useState<string | null>(null);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [turnoLocal, setTurnoLocal] = useState(item);
@@ -141,6 +145,25 @@ export function useManejoTurnos({ item, cupo, refreshCupos }: any) {
           }          
           const turnoCompleto = turnoLocal.precios ? turnoLocal : null;
           setCartaPorteData({ turno, carga, contrato, cupo, turnoCompleto });
+          
+          // Cargar datos del remito si existe
+          try {
+            const remitoId = await getRemitoId(item.id);
+            let fotoRemitoUrl = null;
+            if (remitoId) {
+              const fotos = await getFotosTurno(item.id);
+              const fotoRemito = fotos.find((f: any) => f.tipo_foto === 'remito');
+              if (fotoRemito) {
+                fotoRemitoUrl = fotoRemito.url;
+              }
+              setRemitoData({ idRemito: remitoId, fotoUrl: fotoRemitoUrl });
+            } else {
+              setRemitoData(null);
+            }
+          } catch (err) {
+            console.error('Error al cargar datos del remito:', err);
+            setRemitoData(null);
+          }
         } catch (err: any) {
           setCartaPorteError('Error al cargar los datos de la carta de porte');
         } finally {
@@ -150,6 +173,7 @@ export function useManejoTurnos({ item, cupo, refreshCupos }: any) {
     } else {
       setCartaPorteData(null);
       setCartaPorteError(null);
+      setRemitoData(null);
     }
   }, [openDialog, item, cupo, turnoLocal]);
 
@@ -182,13 +206,15 @@ export function useManejoTurnos({ item, cupo, refreshCupos }: any) {
     openDialog, setOpenDialog, autorizarLoading, setAutorizarLoading, cartaPorteData, cartaPorteLoading, cartaPorteError, copiedField, setCopiedField, openDeleteDialog, setOpenDeleteDialog, turnoLocal, setTurnoLocal,
     getEstadoColor, handleFormSuccess, handleCopy, getNextEstadoName,
     anchorElNota, openNota, notaLocal, setNotaLocal, notaLoading, handleOpenNota, handleCloseNota, handleGuardarNota, handleBorrarNota,
+    remitoData,
   };
 }
 
 export function renderTurnosDialogs({
   openDialog, setOpenDialog, autorizarLoading, setAutorizarLoading, cartaPorteData, cartaPorteLoading, cartaPorteError, copiedField, turnoLocal, setTurnoLocal,
-  handleFormSuccess, handleCopy, getNextEstadoName, theme, backendURL
+  handleFormSuccess, handleCopy, getNextEstadoName, theme, backendURL, remitoData
 }: any) {
+  const { user } = useAuth();
   switch (openDialog) {
     case 'corregir':
       return (
@@ -232,9 +258,24 @@ export function renderTurnosDialogs({
               onClick={async () => {
                 setAutorizarLoading(true);
                 try {
+                  const estadoAnteriorId = turnoLocal.estado?.id || null;
                   const nextEstadoId = getNextEstadoId(turnoLocal.estado?.nombre);
                   if (!nextEstadoId) throw new Error('No se puede determinar el próximo estado');
                   await axiosPut(`turnos/${turnoLocal.id}`, { idEstado: nextEstadoId }, backendURL);
+                  
+                  // Registrar cambio de estado en historial (no bloqueante)
+                  if (estadoAnteriorId !== nextEstadoId) {
+                    registrarCambioEstado(
+                      turnoLocal.id,
+                      estadoAnteriorId,
+                      nextEstadoId,
+                      user?.id,
+                      'Autorización de turno'
+                    ).catch(() => {
+                      // Error silencioso - no debe afectar el flujo principal
+                    });
+                  }
+                  
                   setTurnoLocal({
                     ...turnoLocal,
                     estado: { ...turnoLocal.estado, nombre: getNextEstadoName(turnoLocal.estado?.nombre) }
@@ -300,6 +341,49 @@ export function renderTurnosDialogs({
               <Typography color="error">{cartaPorteError}</Typography>
             ) : cartaPorteData ? (
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
+                {/* Mostrar información de remito si existe */}
+                {remitoData && remitoData.idRemito && (
+                  <Box sx={{ 
+                    backgroundColor: '#f5f5f5', 
+                    p: 2, 
+                    borderRadius: '8px', 
+                    mb: 2,
+                    border: `2px solid ${theme.colores.azul}`
+                  }}>
+                    <Typography variant="h6" sx={{ fontWeight: 600, mb: 1, color: theme.colores.azul }}>
+                      El turno no lleva carta de porte
+                    </Typography>
+                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <Typography sx={{ fontWeight: 500 }}>ID del Remito:</Typography>
+                        <Typography sx={{ flex: 1 }}>{remitoData.idRemito}</Typography>
+                        <IconButton size="small" onClick={() => handleCopy(remitoData.idRemito || '', 'ID Remito')}>
+                          <ContentCopyIcon fontSize="small" />
+                        </IconButton>
+                        {copiedField === 'ID Remito' && (
+                          <Typography sx={{ color: theme.colores.azul, fontSize: 12 }}>Copiado!</Typography>
+                        )}
+                      </Box>
+                      {remitoData.fotoUrl && (
+                        <Box sx={{ mt: 1 }}>
+                          <Typography sx={{ fontWeight: 500, mb: 1 }}>Foto del Remito:</Typography>
+                          <img 
+                            src={remitoData.fotoUrl} 
+                            alt="Foto del remito"
+                            style={{ 
+                              maxWidth: '100%', 
+                              maxHeight: 300, 
+                              borderRadius: '8px',
+                              cursor: 'pointer'
+                            }}
+                            onClick={() => window.open(remitoData.fotoUrl || '', '_blank')}
+                          />
+                        </Box>
+                      )}
+                    </Box>
+                  </Box>
+                )}
+                
                 {/* FICHA DATOS */}
                 {[
                   { label: 'Titular Carta de Porte', value: formatearEmpresa(cartaPorteData.contrato?.titularCartaDePorte) },
@@ -371,9 +455,23 @@ export function renderTurnosDialogs({
               cuitTitular={cartaPorteData?.contrato?.titularCartaDePorte?.cuit}
               onSuccess={async () => {
                 try {
+                  const estadoAnteriorId = turnoLocal.estado?.id || null;
                   const nextEstadoId = getNextEstadoId(turnoLocal.estado?.nombre);
                   if (!nextEstadoId) throw new Error('No se puede determinar el próximo estado');
                   await axiosPut(`turnos/${turnoLocal.id}`, { idEstado: nextEstadoId }, backendURL);
+                  
+                  // Registrar cambio de estado en historial (no bloqueante)
+                  if (estadoAnteriorId !== nextEstadoId) {
+                    registrarCambioEstado(
+                      turnoLocal.id,
+                      estadoAnteriorId,
+                      nextEstadoId,
+                      user?.id,
+                      'Carga de carta de porte'
+                    ).catch(() => {
+                      // Error silencioso - no debe afectar el flujo principal
+                    });
+                  }
                 } catch (err) {
                   //console.error(err);
                 }
@@ -397,9 +495,23 @@ export function renderTurnosDialogs({
               }}
               onSuccess={async () => {
                 try {
+                  const estadoAnteriorId = turnoLocal.estado?.id || null;
                   const nextEstadoId = getNextEstadoId(turnoLocal.estado?.nombre);
                   if (!nextEstadoId) throw new Error('No se puede determinar el próximo estado');
                   await axiosPut(`turnos/${turnoLocal.id}`, { idEstado: nextEstadoId }, backendURL);
+                  
+                  // Registrar cambio de estado en historial (no bloqueante)
+                  if (estadoAnteriorId !== nextEstadoId) {
+                    registrarCambioEstado(
+                      turnoLocal.id,
+                      estadoAnteriorId,
+                      nextEstadoId,
+                      user?.id,
+                      'Registro de kg descargados'
+                    ).catch(() => {
+                      // Error silencioso - no debe afectar el flujo principal
+                    });
+                  }
                 } catch (err) {
                   //console.error(err);
                 }
@@ -484,7 +596,21 @@ export function renderTurnosDialogs({
               initialData={turnoLocal.numeroOrdenPago}
               onSuccess={async () => {
                 try {
+                  const estadoAnteriorId = turnoLocal.estado?.id || null;
                   await axiosPut(`turnos/${turnoLocal.id}`, { idEstado: 11 }, backendURL);
+                  
+                  // Registrar cambio de estado en historial (no bloqueante)
+                  if (estadoAnteriorId !== 11) {
+                    registrarCambioEstado(
+                      turnoLocal.id,
+                      estadoAnteriorId,
+                      11,
+                      user?.id,
+                      'Registro de orden de pago'
+                    ).catch(() => {
+                      // Error silencioso - no debe afectar el flujo principal
+                    });
+                  }
                 } catch (err) {
                   //console.error(err);
                 }
@@ -510,9 +636,23 @@ export function renderTurnosDialogs({
                 try {
                   // Solo cambiar de estado si se está asociando una factura (no si se borra/desasocia)
                   if (updatedFactura) {
+                    const estadoAnteriorId = turnoFactura.estado?.id || null;
                     const nextEstadoId = getNextEstadoId(turnoFactura.estado?.nombre);
                     if (!nextEstadoId) throw new Error('No se puede determinar el próximo estado');
                     await axiosPut(`turnos/${turnoFactura.id}`, { idEstado: nextEstadoId }, backendURL);
+                    
+                    // Registrar cambio de estado en historial (no bloqueante)
+                    if (estadoAnteriorId !== nextEstadoId) {
+                      registrarCambioEstado(
+                        turnoFactura.id,
+                        estadoAnteriorId,
+                        nextEstadoId,
+                        user?.id,
+                        'Asociación de factura'
+                      ).catch(() => {
+                        // Error silencioso - no debe afectar el flujo principal
+                      });
+                    }
                   }
                 } catch (err) {
                   //console.error(err);
