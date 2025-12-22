@@ -3,9 +3,11 @@ import { Autocomplete, TextField, useTheme, useMediaQuery, Box } from "@mui/mate
 import { ContextoGeneral } from "../../../Contexto";
 import MainButton from "../../../botones/MainButtom";
 import { axiosGet, axiosPut } from "../../../../lib/axiosConfig";
+import { registrarCambioEstado } from "../../../../services/turnosEstadoHistorialService";
+import { useAuth } from "../../../autenticacion/ContextoAuth";
 
 interface EstadoTurnoFormProps {
-  turnoId: number;
+  turnoId: number | string;
   /** El estado actual del turno, por ejemplo: { id: 2, nombre: "Asignado" } */
   initialEstado: { id: number; nombre: string } | null;
   onSuccess: (updatedData: any) => void;
@@ -19,6 +21,7 @@ const EstadoTurnoForm: React.FC<EstadoTurnoFormProps> = ({
   onCancel,
 }) => {
   const { backendURL } = useContext(ContextoGeneral);
+  const { user } = useAuth();
   const [estados, setEstados] = useState<{ id: number; nombre: string }[]>([]);
   const [selectedEstado, setSelectedEstado] = useState<{ id: number; nombre: string } | null>(initialEstado);
   const [error, setError] = useState<string | null>(null);
@@ -43,11 +46,28 @@ const EstadoTurnoForm: React.FC<EstadoTurnoFormProps> = ({
       return;
     }
 
+    // Guardar el estado anterior antes de hacer el cambio
+    const estadoAnteriorId = initialEstado?.id || null;
+
     try {
       const payload = {
         idEstado: selectedEstado.id,
       };
       const updatedData = await axiosPut(`turnos/${turnoId}`, payload, backendURL);
+      
+      // Registrar el cambio de estado en el historial (no bloqueante)
+      if (estadoAnteriorId !== selectedEstado.id) {
+        registrarCambioEstado(
+          turnoId,
+          estadoAnteriorId,
+          selectedEstado.id,
+          user?.id,
+          `Cambio manual de estado desde formulario`
+        ).catch(() => {
+          // Error silencioso - no debe afectar el flujo principal
+        });
+      }
+      
       onSuccess(updatedData);
     } catch (err: any) {
       console.error(`Error: ${err.message}`);

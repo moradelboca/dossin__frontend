@@ -201,6 +201,307 @@ export async function listKMZFilesForLote(
 }
 
 // =====================================================
+// FUNCIONES PARA FOTOS DE TURNOS
+// =====================================================
+
+// Función para subir foto de turno a Supabase Storage
+export async function uploadFotoTurnoToSupabase(
+    file: File, 
+    turnoId: string | number,
+    tipo: 'tara' | 'bruto' | 'remito'
+): Promise<{ path: string; url: string } | null> {
+    try {
+        // Validar que sea una imagen
+        if (!file.type.startsWith('image/')) {
+            throw new Error('El archivo debe ser una imagen');
+        }
+
+        const fileExt = file.name.split('.').pop()?.toLowerCase() || 'jpg';
+        const fileName = `${turnoId}_${tipo}_${Date.now()}.${fileExt}`;
+        const filePath = `turnos/${turnoId}/${tipo}/${fileName}`;
+        
+        // Verificar que el bucket existe antes de subir
+        const { data: buckets, error: bucketsError } = await supabase.storage.listBuckets();
+        if (bucketsError) {
+            console.error('Error listando buckets:', bucketsError);
+            throw bucketsError;
+        }
+        
+        const kmzBucket = buckets.find(bucket => bucket.name === KMZ_BUCKET_NAME);
+        if (!kmzBucket) {
+            throw new Error(`Bucket '${KMZ_BUCKET_NAME}' no encontrado`);
+        }
+
+        // Determinar tipo MIME para imágenes
+        let mimeType = file.type;
+        if (!mimeType || mimeType === 'application/octet-stream') {
+            if (fileExt === 'jpg' || fileExt === 'jpeg') {
+                mimeType = 'image/jpeg';
+            } else if (fileExt === 'png') {
+                mimeType = 'image/png';
+            } else if (fileExt === 'webp') {
+                mimeType = 'image/webp';
+            } else {
+                mimeType = 'image/jpeg'; // Default
+            }
+        }
+        
+        // Subir el archivo al bucket con el tipo MIME correcto
+        const { error } = await supabase.storage
+            .from(KMZ_BUCKET_NAME)
+            .upload(filePath, file, {
+                cacheControl: '3600',
+                upsert: false,
+                contentType: mimeType
+            });
+
+        if (error) {
+            console.error('Error uploading foto:', error);
+            throw error;
+        }
+
+        // Obtener la URL pública del archivo
+        const { data: urlData } = supabase.storage
+            .from(KMZ_BUCKET_NAME)
+            .getPublicUrl(filePath);
+
+        return {
+            path: filePath,
+            url: urlData.publicUrl
+        };
+    } catch (error) {
+        console.error('Error in uploadFotoTurnoToSupabase:', error);
+        return null;
+    }
+}
+
+// Función para guardar referencia de foto en la base de datos
+export async function saveFotoTurnoReference(
+    turnoId: string | number,
+    tipo: 'tara' | 'bruto' | 'remito',
+    path: string,
+    url: string
+): Promise<any | null> {
+    try {
+        // Validar que turnoId sea un string válido (UUID)
+        const turnoIdStr = String(turnoId);
+        if (!turnoIdStr || turnoIdStr.trim() === '') {
+            throw new Error(`turnoId inválido: ${turnoId}`);
+        }
+
+        // Usar upsert para actualizar si ya existe una foto de ese tipo
+        const { data, error } = await supabaseAgro
+            .from('turnos_fotos')
+            .upsert({
+                turno_id: turnoIdStr,
+                tipo_foto: tipo,
+                path: path,
+                url: url
+            }, {
+                onConflict: 'turno_id,tipo_foto'
+            })
+            .select()
+            .single();
+
+        if (error) {
+            console.error('Error saving foto reference:', error);
+            throw error;
+        }
+
+        return data;
+    } catch (error) {
+        console.error('Error in saveFotoTurnoReference:', error);
+        return null;
+    }
+}
+
+// Función para obtener fotos de un turno
+export async function getFotosTurno(turnoId: string | number): Promise<any[]> {
+    try {
+        // Validar que turnoId sea un string válido (UUID)
+        const turnoIdStr = String(turnoId);
+        if (!turnoIdStr || turnoIdStr.trim() === '') {
+            console.warn(`turnoId inválido: ${turnoId}, retornando array vacío`);
+            return [];
+        }
+
+        const { data, error } = await supabaseAgro
+            .from('turnos_fotos')
+            .select('*')
+            .eq('turno_id', turnoIdStr)
+            .order('created_at', { ascending: false });
+
+        if (error) {
+            console.error('Error fetching fotos:', error);
+            return [];
+        }
+
+        return data || [];
+    } catch (error) {
+        console.error('Error in getFotosTurno:', error);
+        return [];
+    }
+}
+
+// Función para eliminar foto de turno
+export async function deleteFotoTurno(
+    turnoId: string | number,
+    tipo: 'tara' | 'bruto' | 'remito'
+): Promise<boolean> {
+    try {
+        // Validar que turnoId sea un string válido (UUID)
+        const turnoIdStr = String(turnoId);
+        if (!turnoIdStr || turnoIdStr.trim() === '') {
+            throw new Error(`turnoId inválido: ${turnoId}`);
+        }
+
+        // Primero obtener la referencia para eliminar el archivo de storage
+        const { data: fotoRef } = await supabaseAgro
+            .from('turnos_fotos')
+            .select('path')
+            .eq('turno_id', turnoIdStr)
+            .eq('tipo_foto', tipo)
+            .single();
+
+        if (fotoRef?.path) {
+            // Eliminar de storage
+            const { error: storageError } = await supabase.storage
+                .from(KMZ_BUCKET_NAME)
+                .remove([fotoRef.path]);
+
+            if (storageError) {
+                console.error('Error deleting foto from storage:', storageError);
+            }
+        }
+
+        // Eliminar referencia de la base de datos
+        const { error } = await supabaseAgro
+            .from('turnos_fotos')
+            .delete()
+            .eq('turno_id', turnoIdStr)
+            .eq('tipo_foto', tipo);
+
+        if (error) {
+            console.error('Error deleting foto reference:', error);
+            throw error;
+        }
+
+        return true;
+    } catch (error) {
+        console.error('Error in deleteFotoTurno:', error);
+        return false;
+    }
+}
+
+// =====================================================
+// FUNCIONES PARA REMITOS DE TURNOS
+// =====================================================
+
+// Función para guardar ID de remito en la base de datos
+export async function saveRemitoId(
+    turnoId: string | number,
+    idRemito: string
+): Promise<any | null> {
+    try {
+        // Validar que turnoId sea un string válido
+        const turnoIdStr = String(turnoId);
+        if (!turnoIdStr || turnoIdStr.trim() === '') {
+            throw new Error(`turnoId inválido: ${turnoId}`);
+        }
+
+        if (!idRemito || idRemito.trim() === '') {
+            throw new Error('idRemito es obligatorio');
+        }
+
+        // Usar upsert para actualizar si ya existe un remito para este turno
+        const { data, error } = await supabaseAgro
+            .from('turnos_remitos')
+            .upsert({
+                turno_id: turnoIdStr,
+                id_remito: idRemito.trim()
+            }, {
+                onConflict: 'turno_id'
+            })
+            .select()
+            .single();
+
+        if (error) {
+            console.error('Error saving remito ID:', error);
+            throw error;
+        }
+
+        return data;
+    } catch (error) {
+        console.error('Error in saveRemitoId:', error);
+        return null;
+    }
+}
+
+// Función para obtener ID de remito de un turno
+export async function getRemitoId(turnoId: string | number): Promise<string | null> {
+    try {
+        // Validar que turnoId sea un string válido
+        const turnoIdStr = String(turnoId);
+        if (!turnoIdStr || turnoIdStr.trim() === '') {
+            console.warn(`turnoId inválido: ${turnoId}, retornando null`);
+            return null;
+        }
+
+        const { data, error } = await supabaseAgro
+            .from('turnos_remitos')
+            .select('id_remito')
+            .eq('turno_id', turnoIdStr)
+            .maybeSingle();
+
+        if (error) {
+            // Si no existe registro o la tabla no existe, retornar null (no es un error crítico)
+            if (error.code === 'PGRST116' || error.code === '42P01' || error.message?.includes('does not exist')) {
+                console.warn('Tabla turnos_remitos no existe o no hay registro:', error.message);
+                return null;
+            }
+            console.error('Error fetching remito ID:', error);
+            return null;
+        }
+
+        return data?.id_remito || null;
+    } catch (error: any) {
+        // Manejar errores de tabla no existente o otros errores
+        if (error?.message?.includes('does not exist') || error?.code === '42P01') {
+            console.warn('Tabla turnos_remitos no existe aún. Ejecuta la migración create_turnos_remitos.sql');
+            return null;
+        }
+        console.error('Error in getRemitoId:', error);
+        return null;
+    }
+}
+
+// Función para eliminar remito de un turno
+export async function deleteRemitoId(turnoId: string | number): Promise<boolean> {
+    try {
+        // Validar que turnoId sea un string válido
+        const turnoIdStr = String(turnoId);
+        if (!turnoIdStr || turnoIdStr.trim() === '') {
+            throw new Error(`turnoId inválido: ${turnoId}`);
+        }
+
+        const { error } = await supabaseAgro
+            .from('turnos_remitos')
+            .delete()
+            .eq('turno_id', turnoIdStr);
+
+        if (error) {
+            console.error('Error deleting remito ID:', error);
+            throw error;
+        }
+
+        return true;
+    } catch (error) {
+        console.error('Error in deleteRemitoId:', error);
+        return false;
+    }
+}
+
+// =====================================================
 // FUNCIONES PARA CONTRATOS COMERCIALES
 // =====================================================
 

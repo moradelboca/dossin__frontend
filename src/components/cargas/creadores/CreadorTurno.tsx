@@ -17,6 +17,8 @@ import { CustomButtom } from "../../botones/CustomButtom";
 import { ContextoGeneral } from "../../Contexto";
 import DeleteTurno from "./DeleteTurno";
 import { axiosGet, axiosPost, axiosPut } from "../../../lib/axiosConfig";
+import { registrarCambioEstado } from "../../../services/turnosEstadoHistorialService";
+import { useAuth } from "../../autenticacion/ContextoAuth";
 
 interface CreadorProps {
     fecha?: string;
@@ -43,6 +45,7 @@ export default function CreadorTurno(props: CreadorProps) {
         actualizarTurno,
     } = props;
     const { backendURL, theme } = useContext(ContextoGeneral);
+    const { user } = useAuth();
     const [choferes, setChoferes] = useState<any[]>([]);
     const [patentesCamiones, setPatentesCamiones] = useState<any[]>([]);
     const [patentesAcoplados, setPatentesAcoplados] = useState<any[]>([]);
@@ -130,7 +133,8 @@ export default function CreadorTurno(props: CreadorProps) {
 
     const handleClick = (accion: any) => {
         // Asigna el idEstado basado en la acción
-        nuevoTurno["idEstado"] = accion === "confirmar" ? 3 : 4;
+        const nuevoEstadoId = accion === "confirmar" ? 3 : 4;
+        nuevoTurno["idEstado"] = nuevoEstadoId;
 
         setError(false);
 
@@ -151,7 +155,26 @@ export default function CreadorTurno(props: CreadorProps) {
             : axiosPost(`cargas/${idCarga}/cupos/${fecha}`, nuevoTurno, backendURL);
 
         apiCall
-            .then(() => {
+            .then(async (response: any) => {
+                // Si es creación de turno nuevo, registrar el estado inicial en historial
+                if (!seleccionado && response?.id) {
+                    // Para creación, estado_anterior_id es null
+                    registrarCambioEstado(
+                        response.id,
+                        null,
+                        nuevoEstadoId,
+                        user?.id,
+                        accion === "confirmar" ? 'Creación de turno - Validado' : 'Creación de turno - Cancelado'
+                    ).catch(() => {
+                        // Error silencioso - no debe afectar el flujo principal
+                    });
+                } else if (seleccionado && idTurno) {
+                    // Si es actualización, obtener el estado anterior antes de registrar
+                    // Nota: En este caso, el estado anterior debería obtenerse del turno existente
+                    // Por ahora, registramos sin estado anterior ya que no lo tenemos disponible aquí
+                    // El registro se hará desde otros lugares cuando se cambie el estado explícitamente
+                }
+                
                 handleCloseDialog();
                 refreshCupos();
                 actualizarTurno();

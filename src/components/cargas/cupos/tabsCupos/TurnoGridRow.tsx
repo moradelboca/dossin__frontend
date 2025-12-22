@@ -1,6 +1,7 @@
 import React, { useContext } from "react";
 import { TableRow, TableCell, Box, Button, IconButton } from "@mui/material";
 import DeleteIcon from '@mui/icons-material/Delete';
+import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
 import { ContextoGeneral } from '../../../Contexto';
 import useTransformarCampo from '../../../hooks/useTransformarCampo';
 import Dialog from '@mui/material/Dialog';
@@ -21,6 +22,7 @@ import NoteAltOutlinedIcon from '@mui/icons-material/NoteAltOutlined';
 import Popover from '@mui/material/Popover';
 import Typography from '@mui/material/Typography';
 import { axiosPut } from '../../../../lib/axiosConfig';
+import { FotosTurnoDialog } from '../../../turnos/FotosTurnoDialog';
 
 interface TurnoGridRowProps {
   turno: any;
@@ -40,6 +42,7 @@ const TurnoGridRow: React.FC<TurnoGridRowProps> = ({ turno, cupo, refreshCupos, 
   const isAdmin = useAllowed([1]);
   const [openEstadoDialog, setOpenEstadoDialog] = React.useState(false);
   const [openCancelarDialog, setOpenCancelarDialog] = React.useState(false);
+  const [openFotosDialog, setOpenFotosDialog] = React.useState(false);
   if (rolId && estadoId && !puedeVerEstado(estadoId, rolId)) {
     return null;
   }
@@ -172,6 +175,24 @@ const TurnoGridRow: React.FC<TurnoGridRowProps> = ({ turno, cupo, refreshCupos, 
         </Tooltip>
       );
     }
+    // Ícono de fotos (solo para admin o contable, cuando estado >= Cargado)
+    const isAdminOrContable = rolId === 1 || rolId === 2;
+    const estadoPermiteFotos = estadoId && estadoId >= 7; // Cargado (7) o posterior
+    if (isAdminOrContable && estadoPermiteFotos) {
+      botones.push(
+        <Tooltip title="Ver fotos del turno" key="fotos">
+          <IconButton
+            sx={{ color: theme.colores.azul }}
+            onClick={() => setOpenFotosDialog(true)}
+            aria-label="ver fotos turno"
+            size="small"
+          >
+            <PhotoCameraIcon fontSize="small" />
+          </IconButton>
+        </Tooltip>
+      );
+    }
+    
     // Ícono de nota
     botones.push(
       <Tooltip title={manejoTurnos.turnoLocal.nota ? 'Ver/Editar nota' : 'Agregar nota'} key="nota">
@@ -374,6 +395,13 @@ const TurnoGridRow: React.FC<TurnoGridRowProps> = ({ turno, cupo, refreshCupos, 
           </Button>
         </DialogActions>
       </Dialog>
+      {/* Dialog para ver fotos del turno */}
+      <FotosTurnoDialog
+        open={openFotosDialog}
+        onClose={() => setOpenFotosDialog(false)}
+        turnoId={manejoTurnos.turnoLocal.id}
+        turno={manejoTurnos.turnoLocal}
+      />
       {renderTurnosDialogs({ ...manejoTurnos, theme, cupo, refreshCupos })}
     </>
   );
