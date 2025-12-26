@@ -10,3 +10,6 @@ ALTER TABLE public.turnos_fotos
 ADD CONSTRAINT turnos_fotos_tipo_foto_check 
 CHECK (tipo_foto IN ('tara', 'bruto', 'remito'));
 
+
+
+

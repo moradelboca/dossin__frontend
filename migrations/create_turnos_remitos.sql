@@ -53,3 +53,6 @@ CREATE TRIGGER set_turnos_remitos_updated_at
   FOR EACH ROW
   EXECUTE FUNCTION update_turnos_remitos_updated_at();
 
+
+
+
