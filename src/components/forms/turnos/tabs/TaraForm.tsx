@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import { TextField, Button, Box, IconButton, Dialog, DialogTitle, DialogContent, DialogActions, useTheme, useMediaQuery, Typography } from "@mui/material";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
-import PhotoCameraIcon from "@mui/icons-material/PhotoCamera";
+// import PhotoCameraIcon from "@mui/icons-material/PhotoCamera"; // Comentado temporalmente - botón de sacar foto deshabilitado
 import CloseIcon from "@mui/icons-material/Close";
 import useTaraHandler from "../../../hooks/turnos/useTaraHandler";
 import { ContextoGeneral } from "../../../Contexto";
@@ -285,38 +285,36 @@ export const TaraForm: React.FC<Omit<TaraFormProps, 'initialTara'> & { initialTa
         
         {/* Botones para adjuntar o sacar foto */}
         {!fotoTaraPreview && !fotoTaraUrl && (
-          <Box sx={{ display: 'flex', gap: 1, flexDirection: isMobile ? 'column' : 'row' }}>
+          <Box>
             {/* Botón para adjuntar archivo */}
-            <Box sx={{ flex: 1 }}>
-              <input
-                accept="image/*"
-                style={{ display: 'none' }}
-                id="foto-tara-input"
-                type="file"
-                onChange={handleFotoTaraChange}
-              />
-              <label htmlFor="foto-tara-input">
-                <Button
-                  variant="outlined"
-                  component="span"
-                  startIcon={<AttachFileIcon />}
-                  fullWidth
-                  sx={{
-                    borderColor: theme.colores.azul,
-                    color: theme.colores.azul,
-                    '&:hover': {
-                      borderColor: theme.colores.azulOscuro,
-                      backgroundColor: 'rgba(22, 54, 96, 0.05)'
-                    }
-                  }}
-                >
-                  Adjuntar
-                </Button>
-              </label>
-            </Box>
+            <input
+              accept="image/*"
+              style={{ display: 'none' }}
+              id="foto-tara-input"
+              type="file"
+              onChange={handleFotoTaraChange}
+            />
+            <label htmlFor="foto-tara-input">
+              <Button
+                variant="outlined"
+                component="span"
+                startIcon={<AttachFileIcon />}
+                fullWidth
+                sx={{
+                  borderColor: theme.colores.azul,
+                  color: theme.colores.azul,
+                  '&:hover': {
+                    borderColor: theme.colores.azulOscuro,
+                    backgroundColor: 'rgba(22, 54, 96, 0.05)'
+                  }
+                }}
+              >
+                Adjuntar
+              </Button>
+            </label>
             
-            {/* Botón para sacar foto */}
-            <Box sx={{ flex: 1 }}>
+            {/* Botón para sacar foto - COMENTADO TEMPORALMENTE */}
+            {/* <Box sx={{ flex: 1 }}>
               <Button
                 variant="outlined"
                 onClick={() => setOpenCameraDialog(true)}
@@ -333,7 +331,7 @@ export const TaraForm: React.FC<Omit<TaraFormProps, 'initialTara'> & { initialTa
               >
                 Sacar
               </Button>
-            </Box>
+            </Box> */}
           </Box>
         )}
         
@@ -749,38 +747,36 @@ export const PesoBrutoForm: React.FC<Omit<TaraFormProps, 'initialTara'> & { init
         
         {/* Botones para adjuntar o sacar foto */}
         {!fotoBrutoPreview && !fotoBrutoUrl && (
-          <Box sx={{ display: 'flex', gap: 1, flexDirection: isMobile ? 'column' : 'row' }}>
+          <Box>
             {/* Botón para adjuntar archivo */}
-            <Box sx={{ flex: 1 }}>
-              <input
-                accept="image/*"
-                style={{ display: 'none' }}
-                id="foto-bruto-input"
-                type="file"
-                onChange={handleFotoBrutoChange}
-              />
-              <label htmlFor="foto-bruto-input">
-                <Button
-                  variant="outlined"
-                  component="span"
-                  startIcon={<AttachFileIcon />}
-                  fullWidth
-                  sx={{
-                    borderColor: theme.colores.azul,
-                    color: theme.colores.azul,
-                    '&:hover': {
-                      borderColor: theme.colores.azulOscuro,
-                      backgroundColor: 'rgba(22, 54, 96, 0.05)'
-                    }
-                  }}
-                >
-                  Adjuntar
-                </Button>
-              </label>
-            </Box>
+            <input
+              accept="image/*"
+              style={{ display: 'none' }}
+              id="foto-bruto-input"
+              type="file"
+              onChange={handleFotoBrutoChange}
+            />
+            <label htmlFor="foto-bruto-input">
+              <Button
+                variant="outlined"
+                component="span"
+                startIcon={<AttachFileIcon />}
+                fullWidth
+                sx={{
+                  borderColor: theme.colores.azul,
+                  color: theme.colores.azul,
+                  '&:hover': {
+                    borderColor: theme.colores.azulOscuro,
+                    backgroundColor: 'rgba(22, 54, 96, 0.05)'
+                  }
+                }}
+              >
+                Adjuntar
+              </Button>
+            </label>
             
-            {/* Botón para sacar foto */}
-            <Box sx={{ flex: 1 }}>
+            {/* Botón para sacar foto - COMENTADO TEMPORALMENTE */}
+            {/* <Box sx={{ flex: 1 }}>
               <Button
                 variant="outlined"
                 onClick={() => setOpenCameraDialog(true)}
@@ -797,7 +793,7 @@ export const PesoBrutoForm: React.FC<Omit<TaraFormProps, 'initialTara'> & { init
               >
                 Sacar
               </Button>
-            </Box>
+            </Box> */}
           </Box>
         )}
         

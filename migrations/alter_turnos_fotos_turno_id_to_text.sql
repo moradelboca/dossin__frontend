@@ -8,3 +8,6 @@ ALTER COLUMN turno_id TYPE TEXT USING turno_id::TEXT;
 -- Nota: Si hay datos existentes con valores numéricos, estos se convertirán a texto
 -- Si no hay datos, simplemente cambiará el tipo de columna
 
+
+
+
