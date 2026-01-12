@@ -513,7 +513,7 @@ export function renderTurnosDialogs({
                     });
                   }
                 } catch (err) {
-                  //console.error(err);
+                  console.error(err);
                 }
                 handleFormSuccess();
               }}
