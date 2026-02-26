@@ -27,6 +27,7 @@ import PesajeForm from "./tabs/PesajeForm";
 import { TaraForm } from "./tabs/TaraForm";
 import { useContext } from "react";
 import { ContextoGeneral } from "../../Contexto";
+import { axiosGet } from "../../../lib/axiosConfig";
 
 const ROLES_PERMITIDOS_ADELANTOS = [1, 2];
 
@@ -77,7 +78,8 @@ const EditarTurnoForm: React.FC<EditarTurnoFormProps> = ({
   const { borrarTurno } = useBorrarTurno();
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [filteredTabs, setFilteredTabs] = useState<string[]>([]);
-  const { theme } = useContext(ContextoGeneral);
+  const { theme, backendURL } = useContext(ContextoGeneral);
+  const [cuitTitular, setCuitTitular] = useState<string | undefined>(undefined);
 
   console.log('EditarTurnoForm - seleccionado:', seleccionado);
   console.log('EditarTurnoForm - precioGrano:', seleccionado?.precioGrano);
@@ -110,6 +112,40 @@ const EditarTurnoForm: React.FC<EditarTurnoFormProps> = ({
       setActiveTab(0);
     }
   }, [isAllowed, seleccionado]);
+
+  // Obtener CUIT titular del contrato (titular carta de porte) para enviar al crear/actualizar CPE
+  useEffect(() => {
+    const idCarga = seleccionado?.carga?.id ?? seleccionado?.carga ?? seleccionado?.idCarga;
+    if (!idCarga || !backendURL) {
+      setCuitTitular(undefined);
+      return;
+    }
+    let cancelled = false;
+    (async () => {
+      try {
+        const carga = await axiosGet<any>(`cargas/${idCarga}`, backendURL);
+        if (cancelled || !carga?.id) {
+          setCuitTitular(undefined);
+          return;
+        }
+        const contratos = await axiosGet<any[]>("contratos", backendURL);
+        const contrato = Array.isArray(contratos)
+          ? contratos.find(
+              (c: any) =>
+                Array.isArray(c.cargas) && c.cargas.some((cargaItem: any) => cargaItem.id === carga.id)
+            )
+          : null;
+        if (!cancelled) {
+          setCuitTitular(contrato?.titularCartaDePorte?.cuit ?? undefined);
+        }
+      } catch {
+        if (!cancelled) setCuitTitular(undefined);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [seleccionado?.id, seleccionado?.carga?.id ?? seleccionado?.idCarga, backendURL]);
 
   const handleTabChange = (_event: any, newValue: string | null) => {
     if (newValue !== null) {
@@ -364,6 +400,7 @@ const EditarTurnoForm: React.FC<EditarTurnoFormProps> = ({
         <CartaPorteForm
           turnoId={seleccionado.id}
           initialData={seleccionado.cartaDePorte}
+          cuitTitular={cuitTitular}
           onSuccess={(updatedData) => {
             setDatos(
               datos.map((turno: any) =>
