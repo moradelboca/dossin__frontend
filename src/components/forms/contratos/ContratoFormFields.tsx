@@ -23,6 +23,8 @@ interface FormFieldsProps {
 }
 
 const ContratoFormFields: React.FC<FormFieldsProps> = ({
+  data: _data,
+  setData: _setData,
   roles,
   empresas,
   empresasPorRol,
@@ -33,6 +35,55 @@ const ContratoFormFields: React.FC<FormFieldsProps> = ({
   const { theme } = useContext(ContextoGeneral);
   return (
     <>
+      {/* TEMPORALMENTE COMENTADO - Backend no está listo todavía */}
+      {/* Campo turnoObservaciones */}
+      {/* <Box sx={{ mt: 2 }}>
+        <FormControlLabel
+          control={
+            <Switch
+              checked={data.turnoObservaciones || false}
+              onChange={(e) => setData({ ...data, turnoObservaciones: e.target.checked })}
+              sx={{
+                '& .MuiSwitch-switchBase.Mui-checked': {
+                  color: theme.colores.azul,
+                },
+                '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+                  backgroundColor: theme.colores.azul,
+                },
+              }}
+            />
+          }
+          label="Turno en Observaciones"
+        />
+        <Box sx={{ mt: 0.5, ml: 4 }}>
+          <Typography variant="caption" color="text.secondary">
+            Si está activado, el ID del turno se colocará en el campo "observaciones" de la CPE en lugar de "código de turno"
+          </Typography>
+        </Box>
+      </Box> */}
+
+      {/* TEMPORALMENTE COMENTADO - Backend no está listo todavía */}
+      {/* Campo numeroDeTurno */}
+      {/* <Box sx={{ mt: 2 }}>
+        <TextField
+          label="Número de Turno"
+          type="number"
+          value={data.numeroDeTurno || ''}
+          onChange={(e) => setData({ ...data, numeroDeTurno: e.target.value ? Number(e.target.value) : undefined })}
+          variant="outlined"
+          fullWidth
+          helperText="Número de turno asociado para la creación de la CPE"
+          sx={{
+            '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
+              borderColor: theme.colores.azul,
+            },
+            '& .MuiInputLabel-root.Mui-focused': {
+              color: theme.colores.azul,
+            },
+          }}
+        />
+      </Box> */}
+
       {roles.filter((rol) => rol.nombre !== "Empresa Transportista").map((rol) => {
         // Filtrar empresas que tengan este rol
         const empresasDelRol = empresas.filter(e => e.roles?.some(r => r.id === rol.id));
@@ -64,7 +115,8 @@ const ContratoFormFields: React.FC<FormFieldsProps> = ({
               if (typeof value === 'string') {
                 return `${option.razonSocial} - ${option.cuit}` === value;
               }
-              return option.cuit === value.cuit;
+              // Comparar CUIT como string para manejar números y strings
+              return String(option.cuit) === String(value.cuit);
             }}
             value={value}
             onChange={(_, newValue) => {

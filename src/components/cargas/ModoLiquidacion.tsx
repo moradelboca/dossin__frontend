@@ -1,4 +1,4 @@
-import React, { useState, useContext, useMemo } from 'react';
+import React, { useState, useContext, useMemo, useEffect } from 'react';
 import {
   Box,
   Typography,
@@ -24,6 +24,7 @@ import ImageIcon from '@mui/icons-material/Image';
 import { ContextoGeneral } from '../Contexto';
 import { exportarCSV, exportarPDF, exportarImagen } from '../../utils/exportUtils';
 import { AjustesMermas } from '../turnos/AjustesMermas';
+import { axiosGet } from '../../lib/axiosConfig';
 
 interface ModoLiquidacionProps {
   turnos: any[];
@@ -46,8 +47,58 @@ interface EmpresaTurnos {
 }
 
 export const ModoLiquidacion: React.FC<ModoLiquidacionProps> = ({ turnos, loading = false }) => {
-  const { theme } = useContext(ContextoGeneral);
+  const { theme, backendURL } = useContext(ContextoGeneral);
   const [anchorElExport, setAnchorElExport] = useState<null | HTMLElement>(null);
+  const [contratosMap, setContratosMap] = useState<Map<number, any>>(new Map());
+  const [_loadingContratos, setLoadingContratos] = useState(false);
+
+  // Obtener contratos cuando cambien los turnos
+  useEffect(() => {
+    const obtenerContratos = async () => {
+      // Obtener todos los idContrato únicos de los turnos
+      const idsContratos = new Set<number>();
+      turnos.forEach((turno) => {
+        if (turno.carga?.idContrato) {
+          idsContratos.add(turno.carga.idContrato);
+        }
+      });
+
+      if (idsContratos.size === 0) {
+        setContratosMap(new Map());
+        return;
+      }
+
+      setLoadingContratos(true);
+      try {
+        // Obtener todos los contratos en paralelo
+        const contratosPromises = Array.from(idsContratos).map(async (idContrato) => {
+          try {
+            const contrato = await axiosGet<any>(`contratos/${idContrato}`, backendURL);
+            return { id: idContrato, contrato };
+          } catch (error) {
+            console.error(`Error obteniendo contrato ${idContrato}:`, error);
+            return { id: idContrato, contrato: null };
+          }
+        });
+
+        const contratosData = await Promise.all(contratosPromises);
+        const map = new Map<number, any>();
+        contratosData.forEach(({ id, contrato }) => {
+          if (contrato) {
+            map.set(id, contrato);
+          }
+        });
+        setContratosMap(map);
+      } catch (error) {
+        console.error('Error obteniendo contratos:', error);
+        setContratosMap(new Map());
+      } finally {
+        setLoadingContratos(false);
+      }
+    };
+
+    obtenerContratos();
+  }, [turnos, backendURL]);
 
   // Función para calcular total de adelantos de un turno
   const calcularAdelantos = (turno: any): number => {
@@ -122,10 +173,10 @@ export const ModoLiquidacion: React.FC<ModoLiquidacionProps> = ({ turnos, loadin
       empresa.turnos.forEach((turno) => {
         const adelantos = calcularAdelantos(turno);
         
-        // Buscar el flete pagador en la carta de porte
-        const fletePagador = turno.cartaDePorte?.[0]?.titular?.roles?.find(
-          (rol: any) => rol.nombre === 'Flete pagador' || rol.id === 8
-        ) ? turno.cartaDePorte[0].titular : null;
+        // Obtener el flete pagador del contrato (no de la carta de porte)
+        // Primero intentar desde el turno directamente, luego desde el mapa de contratos
+        const contrato = turno.contrato || turno.contratoInfo || (turno.carga?.idContrato ? contratosMap.get(turno.carga.idContrato) : null);
+        const fletePagador = contrato?.fletePagador || null;
         
         datosExport.push({
           'Empresa': empresa.razonSocial,
@@ -294,10 +345,10 @@ export const ModoLiquidacion: React.FC<ModoLiquidacionProps> = ({ turnos, loadin
               {empresa.turnos.map((turno, turnoIdx) => {
                 const adelantos = calcularAdelantos(turno);
                 
-                // Buscar el flete pagador en la carta de porte
-                const fletePagador = turno.cartaDePorte?.[0]?.titular?.roles?.some(
-                  (rol: any) => rol.nombre === 'Flete pagador' || rol.id === 8
-                ) ? turno.cartaDePorte[0].titular : null;
+                // Obtener el flete pagador del contrato (no de la carta de porte)
+                // Primero intentar desde el turno directamente, luego desde el mapa de contratos
+                const contrato = turno.contrato || turno.contratoInfo || (turno.carga?.idContrato ? contratosMap.get(turno.carga.idContrato) : null);
+                const fletePagador = contrato?.fletePagador || null;
                 
                 return (
                   <Paper key={turnoIdx} sx={{ p: 2, border: `1px solid ${theme.colores.azul}30` }}>

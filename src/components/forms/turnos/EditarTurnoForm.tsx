@@ -25,8 +25,13 @@ import FacturaForm from "./tabs/FacturaForm";
 import OrdenPagoForm from "./tabs/OrdenPagoForm";
 import PesajeForm from "./tabs/PesajeForm";
 import { TaraForm } from "./tabs/TaraForm";
+import ModificacionesTurnoForm from "./tabs/ModificacionesTurnoForm";
 import { useContext } from "react";
 import { ContextoGeneral } from "../../Contexto";
+import { getNextEstadoId } from "../../../utils/turnosEstados";
+import { axiosPut } from "../../../lib/axiosConfig";
+import { registrarCambioEstado } from "../../../services/turnosEstadoHistorialService";
+import { useAuth } from "../../autenticacion/ContextoAuth";
 
 const ROLES_PERMITIDOS_ADELANTOS = [1, 2];
 
@@ -77,7 +82,8 @@ const EditarTurnoForm: React.FC<EditarTurnoFormProps> = ({
   const { borrarTurno } = useBorrarTurno();
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [filteredTabs, setFilteredTabs] = useState<string[]>([]);
-  const { theme } = useContext(ContextoGeneral);
+  const { theme, backendURL } = useContext(ContextoGeneral);
+  const { user } = useAuth();
 
   console.log('EditarTurnoForm - seleccionado:', seleccionado);
   console.log('EditarTurnoForm - precioGrano:', seleccionado?.precioGrano);
@@ -99,6 +105,14 @@ const EditarTurnoForm: React.FC<EditarTurnoFormProps> = ({
 
   useEffect(() => {
     const newTabs = [seleccionado.estado.nombre]; // solo un tab dinámico basado en estado
+
+    // Agregar tab de Modificaciones si el turno tiene modificaciones o si es admin
+    if (seleccionado.modificaciones && seleccionado.modificaciones.length > 0) {
+      newTabs.push("Modificaciones");
+    } else if (isAllowed) {
+      // Permitir agregar modificaciones si es admin aunque no haya ninguna
+      newTabs.push("Modificaciones");
+    }
 
     if (isAllowed) {
       newTabs.push("Adelantos");
@@ -364,14 +378,64 @@ const EditarTurnoForm: React.FC<EditarTurnoFormProps> = ({
         <CartaPorteForm
           turnoId={seleccionado.id}
           initialData={seleccionado.cartaDePorte}
-          onSuccess={(updatedData) => {
-            setDatos(
-              datos.map((turno: any) =>
-                turno.id === seleccionado.id
-                  ? { ...turno, cartaPorte: updatedData }
-                  : turno
-              )
-            );
+          onSuccess={async (updatedData) => {
+            try {
+              // Actualizar el estado del turno cuando se carga carta de porte o remito
+              const estadoAnteriorId = seleccionado.estado?.id || null;
+              const estadoAnteriorNombre = seleccionado.estado?.nombre || '';
+              const nextEstadoId = getNextEstadoId(estadoAnteriorNombre);
+              
+              if (nextEstadoId) {
+                await axiosPut(`turnos/${seleccionado.id}`, { idEstado: nextEstadoId }, backendURL);
+                
+                // Registrar cambio de estado en historial (no bloqueante)
+                if (estadoAnteriorId !== nextEstadoId) {
+                  const motivo = updatedData?.noLlevaCartaPorte 
+                    ? 'Carga de remito' 
+                    : 'Carga de carta de porte';
+                  registrarCambioEstado(
+                    seleccionado.id,
+                    estadoAnteriorId,
+                    nextEstadoId,
+                    user?.id,
+                    motivo
+                  ).catch(() => {
+                    // Error silencioso - no debe afectar el flujo principal
+                  });
+                }
+                
+                // Actualizar los datos locales con el nuevo estado
+                setDatos(
+                  datos.map((turno: any) =>
+                    turno.id === seleccionado.id
+                      ? { 
+                          ...turno, 
+                          cartaPorte: updatedData,
+                          estado: { ...turno.estado, id: nextEstadoId }
+                        }
+                      : turno
+                  )
+                );
+              } else {
+                // Si no hay cambio de estado, solo actualizar los datos de carta de porte/remito
+                setDatos(
+                  datos.map((turno: any) =>
+                    turno.id === seleccionado.id
+                      ? { ...turno, cartaPorte: updatedData }
+                      : turno
+                  )
+                );
+              }
+            } catch (err: any) {
+              // Aún así actualizar los datos locales
+              setDatos(
+                datos.map((turno: any) =>
+                  turno.id === seleccionado.id
+                    ? { ...turno, cartaPorte: updatedData }
+                    : turno
+                )
+              );
+            }
             handleClose();
           }}
           onCancel={handleClose}
@@ -417,6 +481,22 @@ const EditarTurnoForm: React.FC<EditarTurnoFormProps> = ({
           onCancel={handleClose}
         />
       </TabPanel>
+
+      {/* Pestaña Modificaciones */}
+      {filteredTabs.includes("Modificaciones") && (
+        <TabPanel value={numeroEstadoActual} index={10}>
+          <ModificacionesTurnoForm
+            turnoId={seleccionado.id}
+            modificacionesIniciales={seleccionado.modificaciones}
+            onSuccess={() => {
+              // Refrescar datos del turno después de agregar/eliminar modificación
+              // Esto debería ser manejado por el componente padre
+              handleClose();
+            }}
+            onCancel={handleClose}
+          />
+        </TabPanel>
+      )}
 
       {/* Pestaña Adelantos condicional */}
       {filteredTabs.includes("Adelantos") && (

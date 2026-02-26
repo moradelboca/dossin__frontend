@@ -1,5 +1,8 @@
 export const getNextEstadoId = (estadoNombre: string) => {
-  switch (estadoNombre?.toLowerCase()) {
+  // Normalizar el nombre del estado: trim y lowercase
+  const estadoNormalizado = estadoNombre?.trim().toLowerCase() || '';
+  
+  switch (estadoNormalizado) {
     case 'con errores':
       return 2; // Creado (o 3 si va a validado)
     case 'creado':
@@ -9,6 +12,8 @@ export const getNextEstadoId = (estadoNombre: string) => {
     case 'autorizado':
       return 6; // Tarado
     case 'tarado':
+      return 7; // Cargado
+    case 'cargado':
       return 8; // En viaje
     case 'en viaje':
       return 9; // Descargado
@@ -19,4 +24,4 @@ export const getNextEstadoId = (estadoNombre: string) => {
     default:
       return null;
   }
-}; 
+};

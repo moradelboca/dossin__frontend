@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from "react";
-import { Autocomplete, TextField, useTheme, useMediaQuery, Box } from "@mui/material";
+import { Autocomplete, TextField, useTheme, useMediaQuery, Box, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, FormControlLabel, Radio, RadioGroup, Typography } from "@mui/material";
 import { ContextoGeneral } from "../../../Contexto";
 import MainButton from "../../../botones/MainButtom";
 import { axiosGet, axiosPut } from "../../../../lib/axiosConfig";
@@ -25,6 +25,8 @@ const EstadoTurnoForm: React.FC<EstadoTurnoFormProps> = ({
   const [estados, setEstados] = useState<{ id: number; nombre: string }[]>([]);
   const [selectedEstado, setSelectedEstado] = useState<{ id: number; nombre: string } | null>(initialEstado);
   const [error, setError] = useState<string | null>(null);
+  const [openEmitirCPEDialog, setOpenEmitirCPEDialog] = useState(false);
+  const [emitirCPE, setEmitirCPE] = useState<boolean>(true);
   const {theme} = useContext(ContextoGeneral);
   
   const tema = useTheme();
@@ -46,6 +48,19 @@ const EstadoTurnoForm: React.FC<EstadoTurnoFormProps> = ({
       return;
     }
 
+    // Si el estado seleccionado es "En viaje" (id: 8), mostrar diálogo para emitir CPE
+    if (selectedEstado.id === 8 && initialEstado?.id !== 8) {
+      setOpenEmitirCPEDialog(true);
+      return;
+    }
+
+    // Si no es cambio a "En viaje", proceder directamente
+    await actualizarEstado();
+  };
+
+  const actualizarEstado = async () => {
+    if (!selectedEstado) return;
+
     // Guardar el estado anterior antes de hacer el cambio
     const estadoAnteriorId = initialEstado?.id || null;
 
@@ -53,7 +68,14 @@ const EstadoTurnoForm: React.FC<EstadoTurnoFormProps> = ({
       const payload = {
         idEstado: selectedEstado.id,
       };
-      const updatedData = await axiosPut(`turnos/${turnoId}`, payload, backendURL);
+      
+      // Si es cambio a "En viaje" (id: 8), agregar query parameter emitircpe
+      let url = `turnos/${turnoId}`;
+      if (selectedEstado.id === 8) {
+        url += `?emitircpe=${emitirCPE}`;
+      }
+      
+      const updatedData = await axiosPut(url, payload, backendURL);
       
       // Registrar el cambio de estado en el historial (no bloqueante)
       if (estadoAnteriorId !== selectedEstado.id) {
@@ -68,10 +90,22 @@ const EstadoTurnoForm: React.FC<EstadoTurnoFormProps> = ({
         });
       }
       
+      setOpenEmitirCPEDialog(false);
       onSuccess(updatedData);
     } catch (err: any) {
       console.error(`Error: ${err.message}`);
+      setError(err.message || "Error al actualizar el estado");
+      setOpenEmitirCPEDialog(false);
     }
+  };
+
+  const handleConfirmEmitirCPE = () => {
+    actualizarEstado();
+  };
+
+  const handleCancelEmitirCPE = () => {
+    setOpenEmitirCPEDialog(false);
+    setSelectedEstado(initialEstado);
   };
 
   return (
@@ -128,6 +162,72 @@ const EstadoTurnoForm: React.FC<EstadoTurnoFormProps> = ({
           divWidth={isMobile ? '100%' : 'auto'}
         />
       </Box>
+
+      {/* Diálogo para confirmar emisión de CPE */}
+      <Dialog
+        open={openEmitirCPEDialog}
+        onClose={handleCancelEmitirCPE}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle>Cambiar estado a "En Viaje"</DialogTitle>
+        <DialogContent>
+          <DialogContentText sx={{ mb: 2 }}>
+            Al cambiar el estado a "En Viaje", debe especificar si se emitirá una Carta de Porte (CPE) para este turno.
+          </DialogContentText>
+          <RadioGroup
+            value={emitirCPE ? 'true' : 'false'}
+            onChange={(e) => setEmitirCPE(e.target.value === 'true')}
+          >
+            <FormControlLabel
+              value="true"
+              control={<Radio sx={{ color: theme.colores.azul, '&.Mui-checked': { color: theme.colores.azul } }} />}
+              label={
+                <Box>
+                  <Typography variant="body1" fontWeight="medium">
+                    Sí, emitir CPE
+                  </Typography>
+                  <Typography variant="caption" color="text.secondary">
+                    Se generará una Carta de Porte para este turno
+                  </Typography>
+                </Box>
+              }
+            />
+            <FormControlLabel
+              value="false"
+              control={<Radio sx={{ color: theme.colores.azul, '&.Mui-checked': { color: theme.colores.azul } }} />}
+              label={
+                <Box>
+                  <Typography variant="body1" fontWeight="medium">
+                    No emitir CPE
+                  </Typography>
+                  <Typography variant="caption" color="text.secondary">
+                    No se generará una Carta de Porte para este turno
+                  </Typography>
+                </Box>
+              }
+            />
+          </RadioGroup>
+        </DialogContent>
+        <DialogActions>
+          <MainButton
+            onClick={handleCancelEmitirCPE}
+            text="Cancelar"
+            backgroundColor="transparent"
+            textColor={theme.colores.azul}
+            borderRadius="8px"
+            hoverBackgroundColor="rgba(22, 54, 96, 0.1)"
+          />
+          <MainButton
+            onClick={handleConfirmEmitirCPE}
+            text="Confirmar"
+            backgroundColor={theme.colores.azul}
+            textColor="#fff"
+            borderRadius="8px"
+            hoverBackgroundColor={theme.colores.azulOscuro}
+          />
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };

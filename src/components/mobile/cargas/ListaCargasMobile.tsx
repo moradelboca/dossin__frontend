@@ -11,6 +11,7 @@ interface ListaCargasMobileProps {
   cargaSeleccionada: any;
   onCardClick: (carga: any) => void;
   onCrearCarga: () => void;
+  historicalIds?: Set<number>;
 }
 
 const ListaCargasMobile: React.FC<ListaCargasMobileProps> = ({
@@ -18,6 +19,7 @@ const ListaCargasMobile: React.FC<ListaCargasMobileProps> = ({
   estadoCarga,
   cargaSeleccionada,
   onCardClick,
+  historicalIds,
 }) => {
   const { theme } = useContext(ContextoGeneral);
   const [busqueda, setBusqueda] = useState("");
@@ -104,6 +106,7 @@ const ListaCargasMobile: React.FC<ListaCargasMobileProps> = ({
               <CargasExpandCardMobile
                 datosCarga={carga}
                 onSelect={(carga) => onCardClick(carga)}
+                isHistorical={historicalIds?.has(carga.id) ?? false}
               />
             </Box>
           ))}
