@@ -17,10 +17,14 @@ const useCartaPorteHandler = () => {
       const carta = cartasPorte[i];
       const isUpdating = isUpdate && i === 0;
 
+      const cuitNum =
+        carta.cuitTitular != null && String(carta.cuitTitular).trim() !== ""
+          ? Number(String(carta.cuitTitular).replace(/\D/g, ""))
+          : undefined;
       const payload = {
         numeroCartaPorte: carta.numeroCartaPorte,
         CTG: carta.CTG,
-        cuitTitular: carta.cuitTitular,
+        ...(cuitNum != null && !isNaN(cuitNum) && { cuitTitular: cuitNum }),
         idTurno: turnoId,
       };
       
