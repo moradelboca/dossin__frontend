@@ -14,9 +14,8 @@ import { axiosGet, axiosPut } from "../../../lib/axiosConfig";
 import { registrarCambioEstado } from "../../../services/turnosEstadoHistorialService";
 import { useAuth } from "../../autenticacion/ContextoAuth";
 import { getRemitoId, getFotosTurno } from "../../../lib/supabase";
-// TEMPORALMENTE COMENTADO - Backend no está listo todavía
-// import { useModificacionesCartaPorte } from "../../hooks/turnos/useModificacionesCartaPorte";
-// import CampoEditableCartaPorte from "./CampoEditableCartaPorte";
+import { useModificacionesCartaPorte } from "../../hooks/turnos/useModificacionesCartaPorte";
+import CampoEditableCartaPorte from "./CampoEditableCartaPorte";
 import DialogActions from "@mui/material/DialogActions";
 import MainButton from "../../botones/MainButtom";
 
@@ -215,83 +214,18 @@ export function useManejoTurnos({ item, cupo, refreshCupos }: any) {
   };
 }
 
-// Componente separado para el contenido del diálogo de Carta de Porte
-function CartaPorteDialogContent({
-  turnoId: _turnoId,
+// Componente solo lectura para usuarios no-admin
+function CartaPorteDialogContentReadOnly({
   cartaPorteData,
   cartaPorteLoading,
   cartaPorteError,
   copiedField,
   remitoData,
   theme,
-  backendURL: _backendURL,
   handleCopy,
-  handleFormSuccess: _handleFormSuccess,
   setOpenDialog,
-  refreshCupos: _refreshCupos,
 }: any) {
-  // TEMPORALMENTE COMENTADO - Backend no está listo todavía
-  // const modificacionesHook = useModificacionesCartaPorte(turnoId);
-  // const [empresas, setEmpresas] = useState<any[]>([]);
-  // const [ubicaciones, setUbicaciones] = useState<any[]>([]);
-  // const [loadingData, setLoadingData] = useState(false);
-  const [_saving] = useState(false);
   const isMobile = window.innerWidth <= 600;
-
-  // TEMPORALMENTE COMENTADO - Backend no está listo todavía
-  // Cargar empresas y ubicaciones
-  // useEffect(() => {
-  //   const cargarDatos = async () => {
-  //     setLoadingData(true);
-  //     try {
-  //       const [empresasData, ubicacionesData] = await Promise.all([
-  //         axiosGet<any[]>('empresas', backendURL),
-  //         axiosGet<any[]>('ubicaciones', backendURL),
-  //       ]);
-  //       setEmpresas(empresasData || []);
-  //       setUbicaciones(ubicacionesData || []);
-  //     } catch (err) {
-  //       console.error('Error cargando datos:', err);
-  //     } finally {
-  //       setLoadingData(false);
-  //     }
-  //   };
-  //   if (cartaPorteData) {
-  //     cargarDatos();
-  //   }
-  // }, [cartaPorteData, backendURL]);
-
-  // TEMPORALMENTE COMENTADO - Backend no está listo todavía
-  // const handleEmitirCP = async () => {
-  //   setSaving(true);
-  //   try {
-  //     await modificacionesHook.guardarModificacionesYCambiarEstado(true);
-  //     if (refreshCupos) refreshCupos();
-  //     handleFormSuccess();
-  //   } catch (err: any) {
-  //     console.error('Error al emitir CP:', err);
-  //     // El error ya se maneja en el hook
-  //   } finally {
-  //     setSaving(false);
-  //   }
-  // };
-
-  // TEMPORALMENTE COMENTADO - Backend no está listo todavía
-  // const handleContinuarSinEmitir = async () => {
-  //   setSaving(true);
-  //   try {
-  //     await modificacionesHook.guardarModificacionesYCambiarEstado(false);
-  //     if (refreshCupos) refreshCupos();
-  //     handleFormSuccess();
-  //   } catch (err: any) {
-  //     console.error('Error al continuar sin emitir:', err);
-  //     // El error ya se maneja en el hook
-  //   } finally {
-  //     setSaving(false);
-  //   }
-  // };
-
-  // Solo crear campos si cartaPorteData existe
   const campos = cartaPorteData ? [
     { label: 'Titular Carta de Porte', value: formatearEmpresa(cartaPorteData.contrato?.titularCartaDePorte), valorOriginal: cartaPorteData.contrato?.titularCartaDePorte?.cuit },
     { label: 'Remitente Comercial Productor', value: formatearEmpresa(cartaPorteData.contrato?.remitenteProductor), valorOriginal: cartaPorteData.contrato?.remitenteProductor?.cuit },
@@ -322,18 +256,13 @@ function CartaPorteDialogContent({
   return (
     <>
       <DialogContent>
-        {/* TEMPORALMENTE COMENTADO - Backend no está listo todavía */}
-        {/* {cartaPorteLoading || loadingData || modificacionesHook.loading ? ( */}
         {cartaPorteLoading ? (
           <Box display="flex" alignItems="center" justifyContent="center" minHeight={200}>
             <CircularProgress />
           </Box>
         ) : cartaPorteError ? (
           <Typography color="error">{cartaPorteError}</Typography>
-        ) : /* TEMPORALMENTE COMENTADO - Backend no está listo todavía */
-        /* modificacionesHook.error ? (
-          <Typography color="error">{modificacionesHook.error}</Typography>
-        ) : */ cartaPorteData ? (
+        ) : cartaPorteData ? (
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
             {/* Mostrar información de remito si existe */}
             {remitoData && remitoData.idRemito && (
@@ -378,34 +307,214 @@ function CartaPorteDialogContent({
               </Box>
             )}
             
-            {/* FICHA DATOS */}
-            {/* TEMPORALMENTE COMENTADO - Backend no está listo todavía - Solo mostrar campos sin edición */}
+            {campos.map((campo: any) =>
+              isMobile ? (
+                <Box key={campo.label} sx={{ borderBottom: '1px solid #eee', pb: 1, mb: 1 }}>
+                  <Typography sx={{ fontWeight: 500, fontSize: 15 }}>{campo.label}</Typography>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 0.5 }}>
+                    <Typography sx={{ flex: 1 }}>{campo.value && String(campo.value).trim() !== '' ? String(campo.value) : 'Dato no necesario'}</Typography>
+                    <IconButton size="small" onClick={() => handleCopy(String(campo.value), campo.label)}>
+                      <ContentCopyIcon fontSize="small" />
+                    </IconButton>
+                    {copiedField === campo.label && (
+                      <Typography sx={{ color: theme.colores.azul, fontSize: 12, ml: 1 }}>Copiado!</Typography>
+                    )}
+                  </Box>
+                </Box>
+              ) : (
+                <Box key={campo.label} sx={{ display: 'flex', alignItems: 'center', gap: 2, borderBottom: '1px solid #eee', pb: 1 }}>
+                  <Typography sx={{ minWidth: 260, fontWeight: 500 }}>{campo.label}</Typography>
+                  <Typography sx={{ flex: 1 }}>{campo.value && String(campo.value).trim() !== '' ? String(campo.value) : 'Dato no necesario'}</Typography>
+                  <IconButton size="small" onClick={() => handleCopy(String(campo.value), campo.label)}>
+                    <ContentCopyIcon fontSize="small" />
+                  </IconButton>
+                  {copiedField === campo.label && (
+                    <Typography sx={{ color: theme.colores.azul, fontSize: 12, ml: 1 }}>Copiado!</Typography>
+                  )}
+                </Box>
+              )
+            )}
+          </Box>
+        ) : (
+          <Typography color="text.secondary">No hay datos para mostrar.</Typography>
+        )}
+      </DialogContent>
+      <DialogActions sx={{ p: 2, gap: 1 }}>
+        <MainButton
+          onClick={() => setOpenDialog(null)}
+          text="Cerrar"
+          backgroundColor={theme.colores.azul}
+          textColor="#fff"
+          borderRadius="8px"
+          hoverBackgroundColor={theme.colores.azulOscuro}
+        />
+      </DialogActions>
+    </>
+  );
+}
+
+// Componente Admin con edición y emisión de CPE
+function CartaPorteDialogContentAdmin({
+  turnoId,
+  cartaPorteData,
+  cartaPorteLoading,
+  cartaPorteError,
+  copiedField,
+  remitoData,
+  theme,
+  backendURL,
+  handleCopy,
+  handleFormSuccess,
+  setOpenDialog,
+  refreshCupos,
+}: any) {
+  const modificacionesHook = useModificacionesCartaPorte(turnoId);
+  const [empresas, setEmpresas] = useState<any[]>([]);
+  const [ubicaciones, setUbicaciones] = useState<any[]>([]);
+  const [loadingData, setLoadingData] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const isMobile = window.innerWidth <= 600;
+
+  useEffect(() => {
+    const cargarDatos = async () => {
+      setLoadingData(true);
+      try {
+        const [empresasData, ubicacionesData] = await Promise.all([
+          axiosGet<any[]>('empresas', backendURL),
+          axiosGet<any[]>('ubicaciones', backendURL),
+        ]);
+        setEmpresas(empresasData || []);
+        setUbicaciones(ubicacionesData || []);
+      } catch (err) {
+        console.error('Error cargando datos:', err);
+      } finally {
+        setLoadingData(false);
+      }
+    };
+    if (cartaPorteData) {
+      cargarDatos();
+    }
+  }, [cartaPorteData, backendURL]);
+
+  const handleEmitirCP = async () => {
+    setSaving(true);
+    try {
+      await modificacionesHook.guardarModificacionesYCambiarEstado(true);
+      if (refreshCupos) refreshCupos();
+      handleFormSuccess();
+    } catch (err: any) {
+      console.error('Error al emitir CP:', err);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleContinuarSinEmitir = async () => {
+    setSaving(true);
+    try {
+      await modificacionesHook.guardarModificacionesYCambiarEstado(false);
+      if (refreshCupos) refreshCupos();
+      handleFormSuccess();
+    } catch (err: any) {
+      console.error('Error al continuar sin emitir:', err);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const campos = cartaPorteData ? [
+    { label: 'Titular Carta de Porte', value: formatearEmpresa(cartaPorteData.contrato?.titularCartaDePorte), valorOriginal: cartaPorteData.contrato?.titularCartaDePorte?.cuit },
+    { label: 'Remitente Comercial Productor', value: formatearEmpresa(cartaPorteData.contrato?.remitenteProductor), valorOriginal: cartaPorteData.contrato?.remitenteProductor?.cuit },
+    { label: 'Rte. Comercial Venta Primaria', value: formatearEmpresa(cartaPorteData.contrato?.remitenteVentaPrimaria), valorOriginal: cartaPorteData.contrato?.remitenteVentaPrimaria?.cuit },
+    { label: 'Mercado a Término', value: formatearEmpresa(cartaPorteData.contrato?.mercadoATermino), valorOriginal: null },
+    { label: 'Corredor Venta Primaria', value: formatearEmpresa(cartaPorteData.contrato?.corredorVentaPrimaria), valorOriginal: cartaPorteData.contrato?.corredorVentaPrimaria?.cuit },
+    { label: 'Corredor Venta Secundaria', value: formatearEmpresa(cartaPorteData.contrato?.corredorVentaSecundaria), valorOriginal: cartaPorteData.contrato?.corredorVentaSecundaria?.cuit },
+    { label: 'Representante entregador', value: formatearEmpresa(cartaPorteData.contrato?.representanteEntregador), valorOriginal: cartaPorteData.contrato?.representanteEntregador?.cuit },
+    { label: 'Destinatario', value: formatearEmpresa(cartaPorteData.contrato?.destinatario), valorOriginal: cartaPorteData.contrato?.destinatario?.cuit },
+    { label: 'Destino', value: formatearEmpresa(cartaPorteData.contrato?.destino), valorOriginal: cartaPorteData.contrato?.destino?.cuit },
+    { label: 'Rte. Comercial Venta secundaria', value: formatearEmpresa(cartaPorteData.contrato?.remitenteVentaSecundaria), valorOriginal: cartaPorteData.contrato?.remitenteVentaSecundaria?.cuit },
+    { label: 'Rte. Comercial Venta secundaria 2', value: formatearEmpresa(cartaPorteData.contrato?.remitenteVentaSecundaria2), valorOriginal: cartaPorteData.contrato?.remitenteVentaSecundaria2?.cuit },
+    { label: 'Flete pagador', value: formatearEmpresa(cartaPorteData.contrato?.fletePagador), valorOriginal: cartaPorteData.contrato?.fletePagador?.cuit },
+    { label: 'Representante recibidor', value: formatearEmpresa(cartaPorteData.contrato?.representanteRecibidor), valorOriginal: cartaPorteData.contrato?.representanteRecibidor?.cuit },
+    { label: 'Kilómetros del viaje', value: cartaPorteData.carga?.cantidadKm, valorOriginal: cartaPorteData.carga?.cantidadKm },
+    { label: 'Empresa transportista', value: formatearEmpresa(cartaPorteData.turno?.empresa || cartaPorteData.carga?.empresa), valorOriginal: null },
+    { label: 'Chofer', value: (cartaPorteData.turno?.colaborador?.nombre || '') + ' ' + (cartaPorteData.turno?.colaborador?.apellido || '') + (cartaPorteData.turno?.colaborador?.cuil ? ' - ' + cartaPorteData.turno?.colaborador?.cuil : ''), valorOriginal: null },
+    { label: 'Patente camión', value: cartaPorteData.turno?.camion?.patente, valorOriginal: null },
+    { label: 'Patente acoplado', value: cartaPorteData.turno?.acoplado?.patente, valorOriginal: null },
+    { label: 'Patente acoplado extra', value: cartaPorteData.turno?.acopladoExtra?.patente, valorOriginal: null },
+    { label: 'Tarifa', value: cartaPorteData.carga?.tarifa, valorOriginal: cartaPorteData.carga?.tarifa },
+    { label: 'Kg tara', value: cartaPorteData.turno?.kgTara ?? cartaPorteData.turnoCompleto?.kgTara, valorOriginal: null },
+    { label: 'Kg bruto', value: cartaPorteData.turno?.kgBruto ?? cartaPorteData.turnoCompleto?.kgBruto, valorOriginal: null },
+    { label: 'Kg neto', value: cartaPorteData.turno?.kgNeto ?? cartaPorteData.turnoCompleto?.kgNeto, valorOriginal: null },
+    { label: 'Kg cargados', value: cartaPorteData.turno?.kgCargados ?? cartaPorteData.turnoCompleto?.kgCargados, valorOriginal: null },
+  ].filter((row: any) => row.value !== undefined && row.value !== null) : [];
+
+  return (
+    <>
+      <DialogContent>
+        {cartaPorteLoading || loadingData || modificacionesHook.loading ? (
+          <Box display="flex" alignItems="center" justifyContent="center" minHeight={200}>
+            <CircularProgress />
+          </Box>
+        ) : cartaPorteError ? (
+          <Typography color="error">{cartaPorteError}</Typography>
+        ) : modificacionesHook.error ? (
+          <Typography color="error">{modificacionesHook.error}</Typography>
+        ) : cartaPorteData ? (
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
+            {remitoData && remitoData.idRemito && (
+              <Box sx={{ backgroundColor: '#f5f5f5', p: 2, borderRadius: '8px', mb: 2, border: `2px solid ${theme.colores.azul}` }}>
+                <Typography variant="h6" sx={{ fontWeight: 600, mb: 1, color: theme.colores.azul }}>
+                  El turno no lleva carta de porte
+                </Typography>
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <Typography sx={{ fontWeight: 500 }}>ID del Remito:</Typography>
+                    <Typography sx={{ flex: 1 }}>{remitoData.idRemito}</Typography>
+                    <IconButton size="small" onClick={() => handleCopy(remitoData.idRemito || '', 'ID Remito')}>
+                      <ContentCopyIcon fontSize="small" />
+                    </IconButton>
+                    {copiedField === 'ID Remito' && (
+                      <Typography sx={{ color: theme.colores.azul, fontSize: 12 }}>Copiado!</Typography>
+                    )}
+                  </Box>
+                  {remitoData.fotoUrl && (
+                    <Box sx={{ mt: 1 }}>
+                      <Typography sx={{ fontWeight: 500, mb: 1 }}>Foto del Remito:</Typography>
+                      <img
+                        src={remitoData.fotoUrl}
+                        alt="Foto del remito"
+                        style={{ maxWidth: '100%', maxHeight: 300, borderRadius: '8px', cursor: 'pointer' }}
+                        onClick={() => window.open(remitoData.fotoUrl || '', '_blank')}
+                      />
+                    </Box>
+                  )}
+                </Box>
+              </Box>
+            )}
             {campos.map((campo: any) => {
-              // TEMPORALMENTE COMENTADO - Backend no está listo todavía
-              // const tipoModificacion = modificacionesHook.obtenerTipoModificacionCampo(campo.label);
-              // const esEditable = modificacionesHook.esCampoEditable(campo.label);
-              // const valorMostrar = modificacionesHook.obtenerValorCampo(campo.label, campo.valorOriginal || campo.value);
+              const tipoModificacion = modificacionesHook.obtenerTipoModificacionCampo(campo.label);
+              const esEditable = modificacionesHook.esCampoEditable(campo.label);
+              const valorMostrar = modificacionesHook.obtenerValorCampo(campo.label, campo.valorOriginal || campo.value);
 
-              // TEMPORALMENTE COMENTADO - Backend no está listo todavía
-              // if (esEditable && tipoModificacion) {
-              //   return (
-              //     <CampoEditableCartaPorte
-              //       key={campo.label}
-              //       label={campo.label}
-              //       valor={valorMostrar || campo.valorOriginal}
-              //       tipoModificacion={tipoModificacion}
-              //       isMobile={isMobile}
-              //       onCopy={handleCopy}
-              //       copiedField={copiedField}
-              //       onSave={(valor) => modificacionesHook.editarCampo(campo.label, valor)}
-              //       onCancel={() => {}}
-              //       empresas={empresas}
-              //       ubicaciones={ubicaciones}
-              //     />
-              //   );
-              // }
+              if (esEditable && tipoModificacion) {
+                return (
+                  <CampoEditableCartaPorte
+                    key={campo.label}
+                    label={campo.label}
+                    valor={valorMostrar || campo.valorOriginal}
+                    tipoModificacion={tipoModificacion}
+                    isMobile={isMobile}
+                    onCopy={handleCopy}
+                    copiedField={copiedField}
+                    onSave={(valor: any) => modificacionesHook.editarCampo(campo.label, valor)}
+                    onCancel={() => {}}
+                    empresas={empresas}
+                    ubicaciones={ubicaciones}
+                  />
+                );
+              }
 
-              // Campo no editable (mostrar como antes) - Solo modo lectura con copiar
               return isMobile ? (
                 <Box key={campo.label} sx={{ borderBottom: '1px solid #eee', pb: 1, mb: 1 }}>
                   <Typography sx={{ fontWeight: 500, fontSize: 15 }}>{campo.label}</Typography>
@@ -437,18 +546,8 @@ function CartaPorteDialogContent({
           <Typography color="text.secondary">No hay datos para mostrar.</Typography>
         )}
       </DialogContent>
-      {/* TEMPORALMENTE COMENTADO - Backend no está listo todavía - Solo permitir cerrar */}
       <DialogActions sx={{ p: 2, gap: 1 }}>
         <MainButton
-          onClick={() => setOpenDialog(null)}
-          text="Cerrar"
-          backgroundColor={theme.colores.azul}
-          textColor="#fff"
-          borderRadius="8px"
-          hoverBackgroundColor={theme.colores.azulOscuro}
-        />
-        {/* TEMPORALMENTE COMENTADO - Backend no está listo todavía */}
-        {/* <MainButton
           onClick={() => setOpenDialog(null)}
           text="Cancelar"
           backgroundColor="transparent"
@@ -474,9 +573,57 @@ function CartaPorteDialogContent({
           borderRadius="8px"
           hoverBackgroundColor="#45a049"
           disabled={saving || modificacionesHook.loading}
-        /> */}
+        />
       </DialogActions>
     </>
+  );
+}
+
+// Wrapper que elige ReadOnly o Admin según rol
+function CartaPorteDialogContent({
+  turnoId,
+  isAdmin,
+  cartaPorteData,
+  cartaPorteLoading,
+  cartaPorteError,
+  copiedField,
+  remitoData,
+  theme,
+  backendURL,
+  handleCopy,
+  handleFormSuccess,
+  setOpenDialog,
+  refreshCupos,
+}: any) {
+  if (isAdmin) {
+    return (
+      <CartaPorteDialogContentAdmin
+        turnoId={turnoId}
+        cartaPorteData={cartaPorteData}
+        cartaPorteLoading={cartaPorteLoading}
+        cartaPorteError={cartaPorteError}
+        copiedField={copiedField}
+        remitoData={remitoData}
+        theme={theme}
+        backendURL={backendURL}
+        handleCopy={handleCopy}
+        handleFormSuccess={handleFormSuccess}
+        setOpenDialog={setOpenDialog}
+        refreshCupos={refreshCupos}
+      />
+    );
+  }
+  return (
+    <CartaPorteDialogContentReadOnly
+      cartaPorteData={cartaPorteData}
+      cartaPorteLoading={cartaPorteLoading}
+      cartaPorteError={cartaPorteError}
+      copiedField={copiedField}
+      remitoData={remitoData}
+      theme={theme}
+      handleCopy={handleCopy}
+      setOpenDialog={setOpenDialog}
+    />
   );
 }
 
@@ -596,11 +743,13 @@ export function renderTurnosDialogs({
       }
       return null;
     case 'cartaPorte':
+      const isAdmin = user?.rol?.id === 1;
       return (
         <Dialog open onClose={() => setOpenDialog(null)} fullWidth maxWidth="md">
           <DialogTitle>Carta de Porte</DialogTitle>
           <CartaPorteDialogContent
             turnoId={turnoLocal?.id}
+            isAdmin={isAdmin}
             cartaPorteData={cartaPorteData}
             cartaPorteLoading={cartaPorteLoading}
             cartaPorteError={cartaPorteError}

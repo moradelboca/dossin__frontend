@@ -29,7 +29,7 @@ import ModificacionesTurnoForm from "./tabs/ModificacionesTurnoForm";
 import { useContext } from "react";
 import { ContextoGeneral } from "../../Contexto";
 import { getNextEstadoId } from "../../../utils/turnosEstados";
-import { axiosPut } from "../../../lib/axiosConfig";
+import { axiosGet, axiosPut } from "../../../lib/axiosConfig";
 import { registrarCambioEstado } from "../../../services/turnosEstadoHistorialService";
 import { useAuth } from "../../autenticacion/ContextoAuth";
 
@@ -413,6 +413,7 @@ const EditarTurnoForm: React.FC<EditarTurnoFormProps> = ({
         <CartaPorteForm
           turnoId={seleccionado.id}
           initialData={seleccionado.cartaDePorte}
+          cuitTitular={cuitTitular}
           onSuccess={async (updatedData) => {
             try {
               // Actualizar el estado del turno cuando se carga carta de porte o remito
@@ -445,7 +446,7 @@ const EditarTurnoForm: React.FC<EditarTurnoFormProps> = ({
                     turno.id === seleccionado.id
                       ? { 
                           ...turno, 
-                          cartaPorte: updatedData,
+                          cartaDePorte: updatedData,
                           estado: { ...turno.estado, id: nextEstadoId }
                         }
                       : turno
@@ -456,7 +457,7 @@ const EditarTurnoForm: React.FC<EditarTurnoFormProps> = ({
                 setDatos(
                   datos.map((turno: any) =>
                     turno.id === seleccionado.id
-                      ? { ...turno, cartaPorte: updatedData }
+                      ? { ...turno, cartaDePorte: updatedData }
                       : turno
                   )
                 );
@@ -466,7 +467,7 @@ const EditarTurnoForm: React.FC<EditarTurnoFormProps> = ({
               setDatos(
                 datos.map((turno: any) =>
                   turno.id === seleccionado.id
-                    ? { ...turno, cartaPorte: updatedData }
+                    ? { ...turno, cartaDePorte: updatedData }
                     : turno
                 )
               );
