@@ -5,6 +5,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { Archivo } from "../../interfaces/archivo";
 import { archivosService } from "../../services/archivosService";
 import { ShareWidgetDialog } from "./ShareWidgetDialog";
+import { useAuth } from "../autenticacion/ContextoAuth";
 
 interface ResizableWidgetProps {
   archivo: Archivo;
@@ -13,12 +14,16 @@ interface ResizableWidgetProps {
 }
 
 export function ResizableWidget({ archivo, onDelete, onUpdate }: ResizableWidgetProps) {
+  const { user } = useAuth();
   const [size, setSize] = useState({ width: 600, height: 600 });
   const [isResizing, setIsResizing] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const resizeTypeRef = useRef<string>('');
   const [shareDialogOpen, setShareDialogOpen] = useState(false);
   const [archivoActual, setArchivoActual] = useState<Archivo>(archivo);
+  
+  // Verificar si el usuario actual es el creador del archivo
+  const esCreador = user?.email === archivoActual.creadoPor;
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -75,7 +80,11 @@ export function ResizableWidget({ archivo, onDelete, onUpdate }: ResizableWidget
   };
 
   const handleShare = (emails: string[]) => {
-    const archivoActualizado = { ...archivoActual, compartidoCon: emails };
+    const compartidoConActualizado = emails.map(email => ({
+      idArchivo: archivoActual.id,
+      usuario: email
+    }));
+    const archivoActualizado = { ...archivoActual, compartidoCon: compartidoConActualizado };
     setArchivoActual(archivoActualizado);
     if (onUpdate) {
       onUpdate(archivoActualizado);
@@ -83,6 +92,11 @@ export function ResizableWidget({ archivo, onDelete, onUpdate }: ResizableWidget
   };
 
   const handleDelete = async () => {
+    if (!esCreador) {
+      alert('Solo el creador del archivo puede eliminarlo');
+      return;
+    }
+    
     if (window.confirm(`¿Estás seguro de que deseas eliminar el widget "${archivoActual.nombre}"?`)) {
       try {
         await archivosService.eliminarArchivo(archivoActual.id);
@@ -113,24 +127,28 @@ export function ResizableWidget({ archivo, onDelete, onUpdate }: ResizableWidget
       <Card sx={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
         <CardContent sx={{ pb: 1, position: 'relative' }}>
           <Box sx={{ position: 'absolute', top: 8, right: 8, display: 'flex', gap: 0.5 }}>
-            <Tooltip title="Compartir widget">
-              <IconButton
-                size="small"
-                onClick={() => setShareDialogOpen(true)}
-                sx={{ '&:hover': { backgroundColor: 'rgba(25, 118, 210, 0.1)' } }}
-              >
-                <ShareIcon fontSize="small" />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="Eliminar widget">
-              <IconButton
-                size="small"
-                onClick={handleDelete}
-                sx={{ '&:hover': { backgroundColor: 'rgba(211, 47, 47, 0.1)' } }}
-              >
-                <DeleteIcon fontSize="small" />
-              </IconButton>
-            </Tooltip>
+            {esCreador && (
+              <Tooltip title="Compartir widget">
+                <IconButton
+                  size="small"
+                  onClick={() => setShareDialogOpen(true)}
+                  sx={{ '&:hover': { backgroundColor: 'rgba(25, 118, 210, 0.1)' } }}
+                >
+                  <ShareIcon fontSize="small" />
+                </IconButton>
+              </Tooltip>
+            )}
+            {esCreador && (
+              <Tooltip title="Eliminar widget">
+                <IconButton
+                  size="small"
+                  onClick={handleDelete}
+                  sx={{ '&:hover': { backgroundColor: 'rgba(211, 47, 47, 0.1)' } }}
+                >
+                  <DeleteIcon fontSize="small" />
+                </IconButton>
+              </Tooltip>
+            )}
           </Box>
           <Typography variant="h6" gutterBottom sx={{ pr: 8 }}>
             {archivoActual.nombre}
@@ -217,7 +235,8 @@ export function ResizableWidget({ archivo, onDelete, onUpdate }: ResizableWidget
         open={shareDialogOpen}
         onClose={() => setShareDialogOpen(false)}
         archivoId={archivoActual.id}
-        compartidoConActual={archivoActual.compartidoCon}
+        creadoPor={archivoActual.creadoPor}
+        compartidoConActual={archivoActual.compartidoCon.map(c => c.usuario)}
         onShare={handleShare}
       />
     </Box>
