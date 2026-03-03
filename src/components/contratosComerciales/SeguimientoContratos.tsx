@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useContext } from 'react';
 import {
   Box,
+  Chip,
   Typography,
   Grid,
   CircularProgress,
@@ -9,10 +10,13 @@ import {
   Button
 } from '@mui/material';
 import { Add as AddIcon } from '@mui/icons-material';
+import HistoryIcon from '@mui/icons-material/History';
 import { ContratoWithStats, FiltrosSeguimiento } from '../../types/contratosComerciales';
 import TarjetaContrato from './TarjetaContrato';
 import FiltrosSeguimientoComponent from './FiltrosSeguimiento';
 import { ContextoGeneral } from '../Contexto';
+
+const ESTADOS_HISTORICOS = ['cumplido', 'cancelado', 'vencido'];
 
 interface SeguimientoContratosProps {
   contratos: ContratoWithStats[];
@@ -33,13 +37,19 @@ const SeguimientoContratos: React.FC<SeguimientoContratosProps> = ({
   const { theme: customTheme } = useContext(ContextoGeneral);
   // const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [filtros, setFiltros] = useState<FiltrosSeguimiento>({});
+  const [mostrarHistoricos, setMostrarHistoricos] = useState(false);
 
   // Filter contracts based on current filters
   const contratosFiltrados = useMemo(() => {
     return contratos.filter(contrato => {
-      // Estado filter
-      if (filtros.estado && contrato.estado !== filtros.estado) {
-        return false;
+      // Modo histórico: solo mostrar cumplido/cancelado/vencido
+      if (mostrarHistoricos) {
+        if (!ESTADOS_HISTORICOS.includes(contrato.estado)) return false;
+        // Dentro del modo histórico, se puede seguir filtrando por estado específico
+        if (filtros.estado && contrato.estado !== filtros.estado) return false;
+      } else {
+        // Modo normal: solo activos
+        if (contrato.estado !== 'activo') return false;
       }
 
       // Cliente filter (search in both productor and exportador names)
@@ -131,16 +141,34 @@ const SeguimientoContratos: React.FC<SeguimientoContratosProps> = ({
     <Box sx={{ p: 2 }}>
       {/* Header with statistics */}
       <Box sx={{ mb: 3 }}>
-        <Typography
-          variant="h4"
-          sx={{
-            color: customTheme?.colores?.azul || '#163660',
-            fontWeight: 'bold',
-            mb: 2
-          }}
-        >
-          Seguimiento de Contratos
-        </Typography>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2, flexWrap: 'wrap' }}>
+          <Typography
+            variant="h4"
+            sx={{
+              color: customTheme?.colores?.azul || '#163660',
+              fontWeight: 'bold',
+            }}
+          >
+            Seguimiento de Contratos
+          </Typography>
+          <Chip
+            icon={<HistoryIcon style={{ color: mostrarHistoricos ? '#fff' : (customTheme?.colores?.azul || '#163660') }} />}
+            label={mostrarHistoricos ? 'Ver activos' : 'Ver históricos'}
+            onClick={() => setMostrarHistoricos((prev) => !prev)}
+            sx={{
+              cursor: 'pointer',
+              bgcolor: mostrarHistoricos ? (customTheme?.colores?.azul || '#163660') : 'transparent',
+              color: mostrarHistoricos ? '#fff' : (customTheme?.colores?.azul || '#163660'),
+              borderColor: customTheme?.colores?.azul || '#163660',
+              border: '1px solid',
+              '&:hover': {
+                bgcolor: mostrarHistoricos
+                  ? (customTheme?.colores?.azul || '#163660')
+                  : `${customTheme?.colores?.azul || '#163660'}15`,
+              },
+            }}
+          />
+        </Box>
         
         {/* Summary cards */}
         <Grid container spacing={2} sx={{ mb: 3 }}>

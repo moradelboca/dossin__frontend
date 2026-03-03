@@ -24,6 +24,8 @@ import TableChartIcon from '@mui/icons-material/TableChart';
 import Popover from '@mui/material/Popover';
 import { DatosExtraTurnoDialog } from '../../turnos/DatosExtraTurnoDialog';
 import { axiosPut } from '../../../lib/axiosConfig';
+import Badge from '@mui/material/Badge';
+import EditIcon from '@mui/icons-material/Edit';
 
 interface CardMobileProps {
   item: any;
@@ -359,6 +361,14 @@ const CardMobile: React.FC<CardMobileProps> = ({
             >
               {manejoTurnos.turnoLocal.estado.nombre}
             </Box>
+          )}
+          {/* Indicador de modificaciones */}
+          {!noEsTurno && manejoTurnos.turnoLocal.modificaciones && manejoTurnos.turnoLocal.modificaciones.length > 0 && (
+            <Tooltip title={`${manejoTurnos.turnoLocal.modificaciones.length} modificación(es)`}>
+              <Badge badgeContent={manejoTurnos.turnoLocal.modificaciones.length} color="primary" sx={{ ml: 1 }}>
+                <EditIcon sx={{ color: theme.colores.azul, fontSize: '1.2rem' }} />
+              </Badge>
+            </Tooltip>
           )}
           {/* Tooltip de explicación de estado SIEMPRE visible junto al pill */}
           {(() => {

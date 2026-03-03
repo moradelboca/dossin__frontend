@@ -2,9 +2,11 @@
 import React, { useContext, useState } from "react";
 import {
   Box,
+  Chip,
   Typography,
   Button,
 } from "@mui/material";
+import HistoryIcon from "@mui/icons-material/History";
 import MenuIcon from "@mui/icons-material/Menu";
 import { ContextoCargas } from "../../cargas/containers/ContainerTajetasCargas";
 import { Mapa2 } from "../../cargas/tarjetas/Mapa2";
@@ -20,6 +22,9 @@ interface CargasMobileProps {
   cargaSeleccionada: any;
   setCargaSeleccionada: React.Dispatch<React.SetStateAction<any>>;
   cupos: any[];
+  showHistorical?: boolean;
+  onToggleHistorical?: () => void;
+  historicalIds?: Set<number>;
 }
 
 export function CargasMobile({
@@ -27,8 +32,12 @@ export function CargasMobile({
   estadoCarga,
   cargaSeleccionada,
   setCargaSeleccionada,
+  showHistorical,
+  onToggleHistorical,
+  historicalIds,
 }: CargasMobileProps) {
   const { theme } = useContext(ContextoGeneral);
+  const azul = theme?.colores?.azul || '#163660';
   const [openDrawer, setOpenDrawer] = useState(false); // Controla la lista de cargas
   const [openDrawerCarga, setOpenDrawerCarga] = useState(false); // Controla el Drawer con Cupos/Datos
 
@@ -95,20 +104,40 @@ export function CargasMobile({
         >
           Cargas
         </Typography>
-        <Button
-          onClick={toggleDrawer}
-          variant="contained"
-          sx={{
-            background: theme.colores.azul,
-            color: "#FFFFFF",
-            borderRadius: "5%",
-            textTransform: "none",
-            padding: "6px 12px",
-          }}
-          startIcon={!openDrawer ? <MenuIcon /> : null}
-        >
-          {openDrawer ? "Cancelar" : "Lista"}
-        </Button>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          {onToggleHistorical && (
+            <Chip
+              icon={<HistoryIcon style={{ color: showHistorical ? '#fff' : azul }} />}
+              label={showHistorical ? 'Históricas' : 'Activas'}
+              onClick={onToggleHistorical}
+              size="small"
+              sx={{
+                cursor: 'pointer',
+                bgcolor: showHistorical ? azul : 'transparent',
+                color: showHistorical ? '#fff' : azul,
+                borderColor: azul,
+                border: '1px solid',
+                '&:hover': {
+                  bgcolor: showHistorical ? azul : `${azul}15`,
+                },
+              }}
+            />
+          )}
+          <Button
+            onClick={toggleDrawer}
+            variant="contained"
+            sx={{
+              background: theme.colores.azul,
+              color: "#FFFFFF",
+              borderRadius: "5%",
+              textTransform: "none",
+              padding: "6px 12px",
+            }}
+            startIcon={!openDrawer ? <MenuIcon /> : null}
+          >
+            {openDrawer ? "Cancelar" : "Lista"}
+          </Button>
+        </Box>
         <SwipeableDrawer
           anchor="bottom"
           open={openDrawer}
@@ -140,6 +169,7 @@ export function CargasMobile({
             cargaSeleccionada={cargaSeleccionada}
             onCardClick={handleCardClick}
             onCrearCarga={handleCrearCarga}
+            historicalIds={historicalIds}
           />
         </SwipeableDrawer>
       </Box>

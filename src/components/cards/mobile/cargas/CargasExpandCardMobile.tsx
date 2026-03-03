@@ -10,11 +10,13 @@ interface CargasExpandCardMobileProps {
   datosCarga: any;
   /** Función a ejecutar cuando se selecciona la carga */
   onSelect?: (datosCarga: any) => void;
+  isHistorical?: boolean;
 }
 
 const CargasExpandCardMobile: React.FC<CargasExpandCardMobileProps> = ({
   datosCarga,
   onSelect,
+  isHistorical,
 }) => {
   const { theme } = useContext(ContextoGeneral);
   const [expanded, setExpanded] = useState(false);
@@ -35,6 +37,7 @@ const CargasExpandCardMobile: React.FC<CargasExpandCardMobileProps> = ({
         borderRadius: 2,
         boxShadow: "0 2px 5px rgba(0,0,0,0.1)",
         overflow: "hidden",
+        bgcolor: isHistorical ? '#dde0e5' : undefined,
       }}
     >
       {/* Header de la card */}

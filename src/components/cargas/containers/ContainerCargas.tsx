@@ -1,6 +1,6 @@
 import { useMediaQuery } from "@mui/material";
 import Box from "@mui/material/Box";
-import { useCallback, useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import { ContextoGeneral } from "../../Contexto";
 import { CargasMobile } from "../../mobile/cargas/CargasMobile";
@@ -12,6 +12,7 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import { useAuth } from "../../autenticacion/ContextoAuth";
 import { axiosGet, axiosPut } from "../../../lib/axiosConfig";
+import { useHistoricalCargasIds } from "../../hooks/cargas/useHistoricalCargasIds";
 
 export function ContainerCargas() {
   const { backendURL } = useContext(ContextoGeneral);
@@ -24,6 +25,8 @@ export function ContainerCargas() {
   // Estados para las cargas y su estado (cargando/cargado)
   const [cargas, setCargas] = useState<any[]>([]);
   const [estadoCarga, setEstadoCarga] = useState("Cargando");
+  const [showHistorical, setShowHistorical] = useState(false);
+  const { historicalIds } = useHistoricalCargasIds(backendURL);
 
   // Estado para la carga seleccionada y sus cupos
   const [cargaSeleccionada, setCargaSeleccionada] = useState<any>(null);
@@ -102,6 +105,15 @@ export function ContainerCargas() {
     }
   }, [backendURL, cargaSeleccionada]);
 
+  const cargasFiltradas = useMemo(() => {
+    if (showHistorical) return cargas;
+    return cargas.filter((c) => !historicalIds.has(c.id));
+  }, [cargas, historicalIds, showHistorical]);
+
+  const handleToggleHistorical = useCallback(() => {
+    setShowHistorical((prev) => !prev);
+  }, []);
+
   const handleCargaUpdated = useCallback(async (fullCarga: any) => {
     try {
       if (!fullCarga.id) return;
@@ -145,11 +157,14 @@ export function ContainerCargas() {
           }}
         >
           <CargasMobile
-            cargas={cargas}
+            cargas={cargasFiltradas}
             estadoCarga={estadoCarga}
             cargaSeleccionada={cargaSeleccionada}
             setCargaSeleccionada={setCargaSeleccionada}
             cupos={cupos}
+            showHistorical={showHistorical}
+            onToggleHistorical={handleToggleHistorical}
+            historicalIds={historicalIds}
           />
           <Dialog open={openDialogMobile} onClose={handleCloseDialogMobile} maxWidth="lg" fullWidth
             PaperProps={{
@@ -184,13 +199,16 @@ export function ContainerCargas() {
         </ContextoCargas.Provider>
       ) : (
         <ContainerTarjetasCargas
-          cargas={cargas}
+          cargas={cargasFiltradas}
           estadoCarga={estadoCarga}
           cargaSeleccionada={cargaSeleccionada}
           setCargaSeleccionada={setCargaSeleccionada}
           cupos={cupos}
           onCargaUpdated={handleCargaUpdated}
           onRefresh={refreshCargas}
+          showHistorical={showHistorical}
+          onToggleHistorical={handleToggleHistorical}
+          historicalIds={historicalIds}
         />
       )}
       {idCarga ? <CargaDialog /> : null}

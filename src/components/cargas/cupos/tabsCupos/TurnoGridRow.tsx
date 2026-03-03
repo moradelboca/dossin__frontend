@@ -23,6 +23,8 @@ import Popover from '@mui/material/Popover';
 import Typography from '@mui/material/Typography';
 import { axiosPut } from '../../../../lib/axiosConfig';
 import { FotosTurnoDialog } from '../../../turnos/FotosTurnoDialog';
+import Badge from '@mui/material/Badge';
+import EditIcon from '@mui/icons-material/Edit';
 
 interface TurnoGridRowProps {
   turno: any;
@@ -280,6 +282,14 @@ const TurnoGridRow: React.FC<TurnoGridRowProps> = ({ turno, cupo, refreshCupos, 
         ))}
         <TableCell>
           <Box display="flex" alignItems="center" gap={1}>
+            {/* Indicador de modificaciones */}
+            {manejoTurnos.turnoLocal.modificaciones && manejoTurnos.turnoLocal.modificaciones.length > 0 && (
+              <Tooltip title={`${manejoTurnos.turnoLocal.modificaciones.length} modificación(es)`}>
+                <Badge badgeContent={manejoTurnos.turnoLocal.modificaciones.length} color="primary">
+                  <EditIcon sx={{ color: theme.colores.azul, fontSize: '1.2rem' }} />
+                </Badge>
+              </Tooltip>
+            )}
             {manejoTurnos.turnoLocal.estado?.nombre && (
               isAdmin ? (
                 <Box

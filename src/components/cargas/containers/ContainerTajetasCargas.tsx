@@ -31,7 +31,10 @@ interface ContainerTarjetasCargasProps {
   setCargaSeleccionada: React.Dispatch<React.SetStateAction<any>>;
   cupos: any[];
   onCargaUpdated?: (carga: any) => void;
-  onRefresh: () => void; // Añadir esta prop
+  onRefresh: () => void;
+  showHistorical?: boolean;
+  onToggleHistorical?: () => void;
+  historicalIds?: Set<number>;
 }
 
 export function ContainerTarjetasCargas({
@@ -41,7 +44,10 @@ export function ContainerTarjetasCargas({
   setCargaSeleccionada,
   cupos,
   onCargaUpdated,
-  onRefresh
+  onRefresh,
+  showHistorical,
+  onToggleHistorical,
+  historicalIds,
 }: ContainerTarjetasCargasProps) {
 
   // Estados locales para diálogos, creación, filtros y menú
@@ -125,6 +131,9 @@ export function ContainerTarjetasCargas({
           onMenuClose={handleMenuClose}
           onCardClick={handleCardClick}
           cargaSeleccionada={cargaSeleccionada}
+          showHistorical={showHistorical}
+          onToggleHistorical={onToggleHistorical}
+          historicalIds={historicalIds}
         />
 
         {/* Contenido principal */}

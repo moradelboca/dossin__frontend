@@ -6,7 +6,7 @@ import { useContext } from "react";
 import { ContextoGeneral } from "../../Contexto";
 
 export function TarjetaCarga(props: any) {
-  const { onClick, datosCarga, isSelected } = props;
+  const { onClick, datosCarga, isSelected, isHistorical } = props;
   const { theme } = useContext(ContextoGeneral);
 
   return (
@@ -17,6 +17,7 @@ export function TarjetaCarga(props: any) {
           width: "100%",
           borderRadius: 2,
           transition: "transform 0.2s, box-shadow 0.2s",
+          bgcolor: isHistorical ? '#dde0e5' : undefined,
           "&:hover": {
             transform: "scale(1.02)",
             boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)"

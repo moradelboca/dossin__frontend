@@ -1,10 +1,12 @@
 // Sidebar.tsx
-import React, { useEffect, useState } from 'react';
-import { Box, CircularProgress, Menu, MenuItem, TextField, Typography } from '@mui/material';
+import React, { useContext, useEffect, useState } from 'react';
+import { Box, Chip, CircularProgress, Menu, MenuItem, TextField, Typography } from '@mui/material';
 import { Autocomplete } from '@mui/material';
+import HistoryIcon from '@mui/icons-material/History';
 import { TarjetaCarga } from '../tarjetas/TarjetaCarga';
 import SidebarBuscador from './SidebarBuscador';
 import { useProvincias } from '../../hooks/cargas/useProvincias';
+import { ContextoGeneral } from '../../Contexto';
 
 interface SidebarProps {
   cargas: any[];
@@ -16,6 +18,9 @@ interface SidebarProps {
   onMenuClose: () => void;
   onCardClick: (carga: any) => void;
   cargaSeleccionada: any;
+  showHistorical?: boolean;
+  onToggleHistorical?: () => void;
+  historicalIds?: Set<number>;
 }
 
 const Sidebar: React.FC<SidebarProps> = ({
@@ -28,10 +33,15 @@ const Sidebar: React.FC<SidebarProps> = ({
   onMenuClose,
   onCardClick,
   cargaSeleccionada,
+  showHistorical,
+  onToggleHistorical,
+  historicalIds,
 }) => {
   const [filteredCargas, setFilteredCargas] = useState<any[]>([]);
   const [currentFilter, setCurrentFilter] = useState<{ type: string; value: any }>({ type: '', value: '' });
   const { provinciasCarga, provinciasDescarga } = useProvincias(cargas);
+  const { theme } = useContext(ContextoGeneral);
+  const azul = theme?.colores?.azul || '#163660';
 
   useEffect(() => {
     // Sort cargas by ID in descending order (highest to lowest)
@@ -92,6 +102,28 @@ const Sidebar: React.FC<SidebarProps> = ({
         provinciasCarga={provinciasCarga}
         provinciasDescarga={provinciasDescarga}
       />
+
+      {onToggleHistorical && (
+        <Box sx={{ px: 1 }}>
+          <Chip
+            icon={<HistoryIcon style={{ color: showHistorical ? '#fff' : azul }} />}
+            label={showHistorical ? 'Ocultar históricas' : 'Ver históricas'}
+            onClick={onToggleHistorical}
+            size="small"
+            sx={{
+              cursor: 'pointer',
+              width: '100%',
+              bgcolor: showHistorical ? azul : 'transparent',
+              color: showHistorical ? '#fff' : azul,
+              borderColor: azul,
+              border: '1px solid',
+              '&:hover': {
+                bgcolor: showHistorical ? azul : `${azul}15`,
+              },
+            }}
+          />
+        </Box>
+      )}
       
       <Menu
         id="menu"
@@ -142,7 +174,8 @@ const Sidebar: React.FC<SidebarProps> = ({
               key={carga.id} 
               datosCarga={carga} 
               isSelected={carga.id === cargaSeleccionada?.id} 
-              onClick={() => onCardClick(carga)} 
+              onClick={() => onCardClick(carga)}
+              isHistorical={historicalIds?.has(carga.id) ?? false}
             />
           ))}
         </Box>
