@@ -28,7 +28,6 @@ import { TaraForm } from "./tabs/TaraForm";
 import ModificacionesTurnoForm from "./tabs/ModificacionesTurnoForm";
 import { useContext } from "react";
 import { ContextoGeneral } from "../../Contexto";
-<<<<<<< HEAD
 import { getNextEstadoId } from "../../../utils/turnosEstados";
 import { axiosGet, axiosPut } from "../../../lib/axiosConfig";
 import { registrarCambioEstado } from "../../../services/turnosEstadoHistorialService";
