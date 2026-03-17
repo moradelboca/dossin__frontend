@@ -9,7 +9,8 @@ const useCartaPorteHandler = () => {
   const handleMultipleCartaPorteSubmission = async (
     turnoId: string,
     cartasPorte: Array<{ numeroCartaPorte: number; CTG: number; cuitTitular?: string }>,
-    isUpdate: boolean
+    isUpdate: boolean,
+    emitirCPE: boolean = true
   ) => {
     const results = [];
     
@@ -36,11 +37,15 @@ const useCartaPorteHandler = () => {
     }
 
     // Actualizar el turno con la primera carta de porte y estado 8 (En Viaje)
-    if (results.length > 0) {
-      await axiosPut(`turnos/${turnoId}`, {
-        idCartaDePorte: results[0].id,
-        idEstado: 8,
-      }, backendURL);
+    if (results.length > 0 && emitirCPE) {
+      await axiosPut(
+        `turnos/${turnoId}`,
+        {
+          idCartaDePorte: results[0].id,
+          idEstado: 8,
+        },
+        backendURL
+      );
     }
     
     return results;
@@ -62,9 +67,15 @@ const useCartaPorteHandler = () => {
   const handleCartaPorteSubmission = async (
     turnoId: string,
     payload: { numeroCartaPorte: number; CTG: number; cuitTitular?: string },
-    isUpdate: boolean
+    isUpdate: boolean,
+    emitirCPE: boolean = true
   ) => {
-    return handleMultipleCartaPorteSubmission(turnoId, [payload], isUpdate).then(results => results[0]);
+    return handleMultipleCartaPorteSubmission(
+      turnoId,
+      [payload],
+      isUpdate,
+      emitirCPE
+    ).then((results) => results[0]);
   };
 
   return { 
