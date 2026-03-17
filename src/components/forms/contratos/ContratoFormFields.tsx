@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { Autocomplete, TextField } from "@mui/material";
+import { Autocomplete, TextField, Box, FormControlLabel, Switch, Typography } from "@mui/material";
 import AddIcon from '@mui/icons-material/Add';
 import { ContextoGeneral } from '../../Contexto';
 
@@ -23,8 +23,8 @@ interface FormFieldsProps {
 }
 
 const ContratoFormFields: React.FC<FormFieldsProps> = ({
-  data: _data,
-  setData: _setData,
+  data,
+  setData,
   roles,
   empresas,
   empresasPorRol,
@@ -35,14 +35,18 @@ const ContratoFormFields: React.FC<FormFieldsProps> = ({
   const { theme } = useContext(ContextoGeneral);
   return (
     <>
-      {/* TEMPORALMENTE COMENTADO - Backend no está listo todavía */}
       {/* Campo turnoObservaciones */}
-      {/* <Box sx={{ mt: 2 }}>
+      <Box sx={{ mt: 2 }}>
         <FormControlLabel
           control={
             <Switch
               checked={data.turnoObservaciones || false}
-              onChange={(e) => setData({ ...data, turnoObservaciones: e.target.checked })}
+              onChange={(e) =>
+                setData({
+                  ...data,
+                  turnoObservaciones: e.target.checked,
+                })
+              }
               sx={{
                 '& .MuiSwitch-switchBase.Mui-checked': {
                   color: theme.colores.azul,
@@ -60,7 +64,7 @@ const ContratoFormFields: React.FC<FormFieldsProps> = ({
             Si está activado, el ID del turno se colocará en el campo "observaciones" de la CPE en lugar de "código de turno"
           </Typography>
         </Box>
-      </Box> */}
+      </Box>
 
       {/* TEMPORALMENTE COMENTADO - Backend no está listo todavía */}
       {/* Campo numeroDeTurno */}

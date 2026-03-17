@@ -338,6 +338,7 @@ const EditarTurnoForm: React.FC<EditarTurnoFormProps> = ({
         <EstadoTurnoForm
           turnoId={seleccionado.id}
           initialEstado={seleccionado.estado}
+          cuitTitular={cuitTitular}
           onSuccess={(updatedEstado) => {
             setDatos(
               datos.map((turno: any) =>

@@ -97,6 +97,9 @@ const CartaPorteForm: React.FC<CartaPorteFormProps> = ({
   
   // Estado para controlar el diálogo de eliminación
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const [emitirCPEEnCarga, setEmitirCPEEnCarga] = useState<boolean>(
+    !!cuitTitular && String(cuitTitular) === '30717635473'
+  );
 
   const { handleMultipleCartaPorteSubmission, handleCartaPorteDeletion } = useCartaPorteHandler();
   const {theme} = useContext(ContextoGeneral);
@@ -321,10 +324,16 @@ const CartaPorteForm: React.FC<CartaPorteFormProps> = ({
         }
 
         // Crear/actualizar todas las cartas de porte
+        const puedeEmitirCPE =
+          !!cuitTitular &&
+          String(cuitTitular) === '30717635473' &&
+          emitirCPEEnCarga;
+
         const results = await handleMultipleCartaPorteSubmission(
           turnoId,
           cartasPorte,
-          isUpdate
+          isUpdate,
+          puedeEmitirCPE
         );
 
         // Eliminar remito si existía (ya que ahora lleva carta de porte)
@@ -641,6 +650,36 @@ const CartaPorteForm: React.FC<CartaPorteFormProps> = ({
               </Box>
             </Box>
           )}
+
+          {/* Tick para emitir carta de porte (CPE) */}
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={emitirCPEEnCarga}
+                onChange={(e) => setEmitirCPEEnCarga(e.target.checked)}
+                disabled={!cuitTitular || String(cuitTitular) !== '30717635473'}
+                sx={{
+                  color: theme.colores.azul,
+                  '&.Mui-checked': {
+                    color: theme.colores.azul,
+                  },
+                }}
+              />
+            }
+            label={
+              <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                <Typography variant="body2" fontWeight="medium">
+                  Emitir carta de porte (CPE)
+                </Typography>
+                <Typography variant="caption" color="text.secondary">
+                  {!cuitTitular || String(cuitTitular) !== '30717635473'
+                    ? 'Solo se puede emitir CPE cuando el titular de la carga es la empresa con CUIT 30717635473.'
+                    : 'Si está marcado, se actualizará el turno a estado \"En Viaje\" al crear la CPE.'}
+                </Typography>
+              </Box>
+            }
+            sx={{ mt: 2 }}
+          />
         </>
       )}
 

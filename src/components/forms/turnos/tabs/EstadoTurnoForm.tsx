@@ -10,13 +10,18 @@ interface EstadoTurnoFormProps {
   turnoId: number | string;
   /** El estado actual del turno, por ejemplo: { id: 2, nombre: "Asignado" } */
   initialEstado: { id: number; nombre: string } | null;
+  /** CUIT del titular de la carta de porte asociada al turno (si existe) */
+  cuitTitular?: string;
   onSuccess: (updatedData: any) => void;
   onCancel: () => void;
 }
 
+const CUIT_CPE_PERMITIDO = '30717635473';
+
 const EstadoTurnoForm: React.FC<EstadoTurnoFormProps> = ({
   turnoId,
   initialEstado,
+  cuitTitular,
   onSuccess,
   onCancel,
 }) => {
@@ -50,6 +55,12 @@ const EstadoTurnoForm: React.FC<EstadoTurnoFormProps> = ({
 
     // Si el estado seleccionado es "En viaje" (id: 8), mostrar diálogo para emitir CPE
     if (selectedEstado.id === 8 && initialEstado?.id !== 8) {
+      // Si el CUIT titular no es el permitido, forzar NO emitir CPE
+      if (!cuitTitular || String(cuitTitular) !== CUIT_CPE_PERMITIDO) {
+        setEmitirCPE(false);
+      } else {
+        setEmitirCPE(true);
+      }
       setOpenEmitirCPEDialog(true);
       return;
     }
@@ -72,7 +83,9 @@ const EstadoTurnoForm: React.FC<EstadoTurnoFormProps> = ({
       // Si es cambio a "En viaje" (id: 8), agregar query parameter emitircpe
       let url = `turnos/${turnoId}`;
       if (selectedEstado.id === 8) {
-        url += `?emitircpe=${emitirCPE}`;
+        const puedeEmitir =
+          !!cuitTitular && String(cuitTitular) === CUIT_CPE_PERMITIDO && emitirCPE;
+        url += `?emitircpe=${puedeEmitir}`;
       }
       
       const updatedData = await axiosPut(url, payload, backendURL);
@@ -181,14 +194,24 @@ const EstadoTurnoForm: React.FC<EstadoTurnoFormProps> = ({
           >
             <FormControlLabel
               value="true"
-              control={<Radio sx={{ color: theme.colores.azul, '&.Mui-checked': { color: theme.colores.azul } }} />}
+              disabled={!cuitTitular || String(cuitTitular) !== CUIT_CPE_PERMITIDO}
+              control={
+                <Radio
+                  sx={{
+                    color: theme.colores.azul,
+                    '&.Mui-checked': { color: theme.colores.azul },
+                  }}
+                />
+              }
               label={
                 <Box>
                   <Typography variant="body1" fontWeight="medium">
                     Sí, emitir CPE
                   </Typography>
                   <Typography variant="caption" color="text.secondary">
-                    Se generará una Carta de Porte para este turno
+                    {(!cuitTitular || String(cuitTitular) !== CUIT_CPE_PERMITIDO)
+                      ? 'Solo disponible cuando el titular de la carga tiene CUIT 30717635473'
+                      : 'Se generará una Carta de Porte para este turno'}
                   </Typography>
                 </Box>
               }
