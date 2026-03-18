@@ -3,7 +3,11 @@ import { useContext } from 'react';
 import { ContextoGeneral } from '../../Contexto';
 import { getTiposModificacion, createModificacionTurno } from '../../../lib/turnos-modificaciones-api';
 import type { TipoModificacionCampo, ModificacionTurnoCreate } from '../../../types/turnos';
-import { obtenerTipoModificacion, obtenerNombreCampo } from '../../../utils/cartaPorteFieldMapping';
+import {
+  obtenerTipoModificacion,
+  obtenerNombreCampo,
+  inferirTipoModificacionCampo,
+} from '../../../utils/cartaPorteFieldMapping';
 import { axiosPut, axiosGet } from '../../../lib/axiosConfig';
 import { registrarCambioEstado } from '../../../services/turnosEstadoHistorialService';
 import { useAuth } from '../../autenticacion/ContextoAuth';
@@ -75,6 +79,10 @@ export function useModificacionesCartaPorte(
   }, [camposEditados, tiposModificacion]);
 
   const esCampoEditable = useCallback((label: string): boolean => {
+    // Titular: se bloquea en UI en el componente que renderiza el diálogo, pero
+    // también lo excluimos por seguridad desde el hook.
+    if (label === 'Titular Carta de Porte') return false;
+
     const nombreCampo = obtenerNombreCampo(label, tiposModificacion);
     return nombreCampo !== null;
   }, [tiposModificacion]);
@@ -82,7 +90,12 @@ export function useModificacionesCartaPorte(
   const obtenerTipoModificacionCampo = useCallback((label: string): TipoModificacionCampo | null => {
     const nombreCampo = obtenerNombreCampo(label, tiposModificacion);
     if (!nombreCampo) return null;
-    return obtenerTipoModificacion(nombreCampo, tiposModificacion);
+
+    // Preferimos el tipo real del backend. Si no está, inferimos con fallback.
+    return (
+      obtenerTipoModificacion(nombreCampo, tiposModificacion) ??
+      inferirTipoModificacionCampo(nombreCampo)
+    );
   }, [tiposModificacion]);
 
   const validarCampos = useCallback((): { valido: boolean; errores: string[] } => {
@@ -90,7 +103,10 @@ export function useModificacionesCartaPorte(
     
     // Validar campos obligatorios (nullable: false) que fueron editados
     Object.entries(camposEditados).forEach(([nombreCampo, valor]) => {
-      const tipoMod = obtenerTipoModificacion(nombreCampo, tiposModificacion);
+      const tipoMod =
+        obtenerTipoModificacion(nombreCampo, tiposModificacion) ??
+        inferirTipoModificacionCampo(nombreCampo);
+
       if (tipoMod && !tipoMod.nullable) {
         if (valor === null || valor === undefined || valor === '') {
           errores.push(`El campo ${nombreCampo} es obligatorio`);
@@ -122,8 +138,8 @@ export function useModificacionesCartaPorte(
       // Guardar todas las modificaciones solo si hay campos editados
       if (Object.keys(camposEditados).length > 0) {
         const modificacionesPromises = Object.entries(camposEditados).map(async ([nombreCampo, valor]) => {
-          const tipoMod = obtenerTipoModificacion(nombreCampo, tiposModificacion);
-          if (!tipoMod) return null;
+          // Importante: permitimos guardar aunque el backend no devuelva `tipos-modificacion`,
+          // porque igual contamos con `nombreCampo` desde el mapeo de labels.
 
           // El payload debe incluir el nombreCampo y el valor en la descripción
           // El backend espera idTipoModificacion, pero como tenemos nombreCampo,
