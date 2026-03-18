@@ -51,12 +51,9 @@ export const CAMPOS_TURNO_DIRECTO = [
  * Obtiene el nombreCampo para un label dado
  */
 export function obtenerNombreCampo(label: string, tiposModificacion: TipoModificacionCampo[]): string | null {
-  const nombreCampo = MAPEO_CAMPOS_CARTA_PORTE[label];
-  if (!nombreCampo) return null;
-  
-  // Verificar que existe en los tipos de modificación
-  const existe = tiposModificacion.some(tipo => tipo.nombreCampo === nombreCampo);
-  return existe ? nombreCampo : null;
+  // Fallback: el mapeo del label es suficiente para saber qué campo intentar editar,
+  // aunque el backend no devuelva el tipo en `tipos-modificacion`.
+  return MAPEO_CAMPOS_CARTA_PORTE[label] ?? null;
 }
 
 /**
@@ -67,6 +64,55 @@ export function obtenerTipoModificacion(
   tiposModificacion: TipoModificacionCampo[]
 ): TipoModificacionCampo | null {
   return tiposModificacion.find(tipo => tipo.nombreCampo === nombreCampo) || null;
+}
+
+/**
+ * Fallback para inferir `{ entidad, nullable }` cuando el backend no devuelve
+ * el campo en `tipos-modificacion`.
+ *
+ * Reglas (según tu definición de campos modificables):
+ * - No aceptan null: `tarifa`, `idUbicacionDescarga`
+ * - Aceptan null: `cantidadKm`, `idUbicacionBalanza` y todos los `*Cuit` excepto titular
+ * - Entidades:
+ *   - `idUbicacion*` => `Ubicacion`
+ *   - `*Cuit` => `Empresa`
+ *   - `tarifa`/`cantidadKm` => `Valor`
+ */
+export function inferirTipoModificacionCampo(
+  nombreCampo: string
+): TipoModificacionCampo | null {
+  if (!nombreCampo) return null;
+
+  if (nombreCampo === 'tarifa') {
+    return { nombreCampo, entidad: 'Valor', nullable: false };
+  }
+
+  if (nombreCampo === 'idUbicacionDescarga') {
+    return { nombreCampo, entidad: 'Ubicacion', nullable: false };
+  }
+
+  if (nombreCampo === 'cantidadKm') {
+    return { nombreCampo, entidad: 'Valor', nullable: true };
+  }
+
+  if (nombreCampo === 'idUbicacionBalanza') {
+    return { nombreCampo, entidad: 'Ubicacion', nullable: true };
+  }
+
+  if (nombreCampo === 'titularCartaPorteCuit') {
+    // En UI este campo se bloquea igualmente; dejamos nullable=false por seguridad.
+    return { nombreCampo, entidad: 'Empresa', nullable: false };
+  }
+
+  if (nombreCampo.startsWith('idUbicacion')) {
+    return { nombreCampo, entidad: 'Ubicacion', nullable: true };
+  }
+
+  if (nombreCampo.endsWith('Cuit')) {
+    return { nombreCampo, entidad: 'Empresa', nullable: true };
+  }
+
+  return null;
 }
 
 /**
