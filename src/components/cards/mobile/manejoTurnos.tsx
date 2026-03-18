@@ -1,5 +1,5 @@
 import  { useState, useEffect, useContext } from "react";
-import { Box, Button, Dialog, DialogTitle, DialogContent, Typography, IconButton, CircularProgress } from "@mui/material";
+import { Box, Button, Dialog, DialogTitle, DialogContent, Typography, IconButton, CircularProgress, TextField } from "@mui/material";
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import { ContextoGeneral } from "../../Contexto";
 import TurnoConErroresForm from "../../forms/turnos/tabs/turnosConErrores/TurnoConErroresForm";
@@ -16,8 +16,35 @@ import { useAuth } from "../../autenticacion/ContextoAuth";
 import { getRemitoId, getFotosTurno } from "../../../lib/supabase";
 import { useModificacionesCartaPorte } from "../../hooks/turnos/useModificacionesCartaPorte";
 import CampoEditableCartaPorte from "./CampoEditableCartaPorte";
+import CampoEditableTurnoDirecto from "./CampoEditableTurnoDirecto";
+import { CAMPOS_TURNO_DIRECTO } from "../../../utils/cartaPorteFieldMapping";
 import DialogActions from "@mui/material/DialogActions";
 import MainButton from "../../botones/MainButtom";
+import PdfViewerDialog from "../../common/PdfViewerDialog";
+import { pdfBase64ToBlob } from "../../../utils/pdfUtils";
+
+function extractPdfBase64(candidate: any): string | null {
+  if (!candidate) return null;
+  if (typeof candidate === "string") return candidate;
+
+  if (typeof candidate.pdf === "string") return candidate.pdf;
+  if (typeof candidate.PDF === "string") return candidate.PDF;
+
+  if (candidate.comprobante && typeof candidate.comprobante.pdf === "string") return candidate.comprobante.pdf;
+  if (candidate.data && typeof candidate.data.pdf === "string") return candidate.data.pdf;
+  if (candidate.response && typeof candidate.response.pdf === "string") return candidate.response.pdf;
+
+  if (typeof candidate === "object") {
+    for (const key of Object.keys(candidate)) {
+      const value = candidate[key];
+      if (value && typeof value === "object" && typeof value.pdf === "string") {
+        return value.pdf;
+      }
+    }
+  }
+
+  return null;
+}
 
 export function useManejoTurnos({ item, cupo, refreshCupos }: any) {
   const { theme, backendURL } = useContext(ContextoGeneral);
@@ -32,6 +59,10 @@ export function useManejoTurnos({ item, cupo, refreshCupos }: any) {
   const [copiedField, setCopiedField] = useState<string | null>(null);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [turnoLocal, setTurnoLocal] = useState(item);
+
+  // PDF emitido por CPE (si la API lo devuelve)
+  const [pdfViewerOpen, setPdfViewerOpen] = useState(false);
+  const [pdfViewerBlob, setPdfViewerBlob] = useState<Blob | null>(null);
 
   // Estado y handlers para nota
   const [anchorElNota, setAnchorElNota] = useState<null | HTMLElement>(null);
@@ -211,6 +242,10 @@ export function useManejoTurnos({ item, cupo, refreshCupos }: any) {
     getEstadoColor, handleFormSuccess, handleCopy, getNextEstadoName,
     anchorElNota, openNota, notaLocal, setNotaLocal, notaLoading, handleOpenNota, handleCloseNota, handleGuardarNota, handleBorrarNota,
     remitoData,
+    pdfViewerOpen,
+    setPdfViewerOpen,
+    pdfViewerBlob,
+    setPdfViewerBlob,
   };
 }
 
@@ -367,13 +402,31 @@ function CartaPorteDialogContentAdmin({
   handleFormSuccess,
   setOpenDialog,
   refreshCupos,
+  pdfViewerBlob,
+  setPdfViewerOpen,
+  setPdfViewerBlob,
 }: any) {
   const modificacionesHook = useModificacionesCartaPorte(turnoId);
   const [empresas, setEmpresas] = useState<any[]>([]);
   const [ubicaciones, setUbicaciones] = useState<any[]>([]);
   const [loadingData, setLoadingData] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [turnoCamposEditados, setTurnoCamposEditados] = useState<Record<string, any>>({});
+  const [base64AdminInput, setBase64AdminInput] = useState<string>("");
   const isMobile = window.innerWidth <= 600;
+
+  const titularCuit = cartaPorteData?.contrato?.titularCartaDePorte?.cuit;
+  const puedeEmitirCPE = !!titularCuit && String(titularCuit) === '30717635473';
+
+  const cuitEmpresaActual =
+    (turnoCamposEditados.cuitEmpresa ??
+      cartaPorteData?.turno?.empresa?.cuit ??
+      cartaPorteData?.carga?.empresa?.cuit ??
+      null) as any;
+
+  const stageTurnoCampo = (patch: Record<string, any>) => {
+    setTurnoCamposEditados((prev) => ({ ...prev, ...patch }));
+  };
 
   useEffect(() => {
     const cargarDatos = async () => {
@@ -396,12 +449,116 @@ function CartaPorteDialogContentAdmin({
     }
   }, [cartaPorteData, backendURL]);
 
+  const openPdfViewerIfPresent = (resp: any): boolean => {
+    const pdfBase64 = extractPdfBase64(resp);
+    if (!pdfBase64) return false;
+    const blob = pdfBase64ToBlob(pdfBase64);
+    setPdfViewerBlob(blob);
+    setPdfViewerOpen(true);
+    return true;
+  };
+
+  const obtenerValorTurnoDirectoActual = (label: string) => {
+    switch (label) {
+      case 'Empresa transportista':
+        return (
+          turnoCamposEditados.cuitEmpresa ??
+          cartaPorteData?.turno?.empresa?.cuit ??
+          cartaPorteData?.carga?.empresa?.cuit ??
+          null
+        );
+      case 'Chofer':
+        return (
+          turnoCamposEditados.cuilColaborador ??
+          cartaPorteData?.turno?.colaborador?.cuil ??
+          null
+        );
+      case 'Patente camión':
+        return (
+          turnoCamposEditados.patenteCamion ??
+          cartaPorteData?.turno?.camion?.patente ??
+          null
+        );
+      case 'Patente acoplado':
+        return (
+          turnoCamposEditados.patenteAcoplado ??
+          cartaPorteData?.turno?.acoplado?.patente ??
+          null
+        );
+      case 'Patente acoplado extra':
+        return (
+          turnoCamposEditados.patenteAcopladoExtra ??
+          cartaPorteData?.turno?.acopladoExtra?.patente ??
+          null
+        );
+      case 'Kg tara':
+        return (
+          turnoCamposEditados.kgTara ??
+          cartaPorteData?.turno?.kgTara ??
+          cartaPorteData?.turnoCompleto?.kgTara ??
+          null
+        );
+      case 'Kg bruto':
+        return (
+          turnoCamposEditados.kgBruto ??
+          cartaPorteData?.turno?.kgBruto ??
+          cartaPorteData?.turnoCompleto?.kgBruto ??
+          null
+        );
+      case 'Kg neto':
+        return (
+          turnoCamposEditados.kgNeto ??
+          cartaPorteData?.turno?.kgNeto ??
+          cartaPorteData?.turnoCompleto?.kgNeto ??
+          null
+        );
+      case 'Kg cargados':
+        return (
+          turnoCamposEditados.kgCargados ??
+          cartaPorteData?.turno?.kgCargados ??
+          cartaPorteData?.turnoCompleto?.kgCargados ??
+          null
+        );
+      default:
+        return null;
+    }
+  };
+
+  const obtenerValorTurnoDirectoDisplay = (label: string, valorActual: any) => {
+    if (valorActual === null || valorActual === undefined || String(valorActual).trim() === '') {
+      return 'Dato no necesario';
+    }
+
+    if (label === 'Empresa transportista') {
+      const cuit = String(valorActual);
+      const empresa = empresas.find((e) => String(e.cuit) === cuit);
+      return empresa ? formatearEmpresa(empresa) : cuit;
+    }
+
+    return valorActual;
+  };
+
   const handleEmitirCP = async () => {
     setSaving(true);
     try {
-      await modificacionesHook.guardarModificacionesYCambiarEstado(true);
+      // Primero persistir los cambios directos sobre el turno
+      if (Object.keys(turnoCamposEditados).length > 0) {
+        await axiosPut(`turnos/${turnoId}`, turnoCamposEditados, backendURL);
+        setTurnoCamposEditados({});
+      }
+
+      const resp = await modificacionesHook.guardarModificacionesYCambiarEstado(true);
+      const opened = (() => {
+        try {
+          return openPdfViewerIfPresent(resp);
+        } catch (e) {
+          console.error("Error abriendo PDF de CPE:", e);
+          return false;
+        }
+      })();
+
       if (refreshCupos) refreshCupos();
-      handleFormSuccess();
+      if (!opened) handleFormSuccess();
     } catch (err: any) {
       console.error('Error al emitir CP:', err);
     } finally {
@@ -412,9 +569,24 @@ function CartaPorteDialogContentAdmin({
   const handleContinuarSinEmitir = async () => {
     setSaving(true);
     try {
-      await modificacionesHook.guardarModificacionesYCambiarEstado(false);
+      // Primero persistir los cambios directos sobre el turno
+      if (Object.keys(turnoCamposEditados).length > 0) {
+        await axiosPut(`turnos/${turnoId}`, turnoCamposEditados, backendURL);
+        setTurnoCamposEditados({});
+      }
+
+      const resp = await modificacionesHook.guardarModificacionesYCambiarEstado(false);
+      const opened = (() => {
+        try {
+          return openPdfViewerIfPresent(resp);
+        } catch (e) {
+          console.error("Error abriendo PDF de CPE:", e);
+          return false;
+        }
+      })();
+
       if (refreshCupos) refreshCupos();
-      handleFormSuccess();
+      if (!opened) handleFormSuccess();
     } catch (err: any) {
       console.error('Error al continuar sin emitir:', err);
     } finally {
@@ -493,6 +665,60 @@ function CartaPorteDialogContentAdmin({
               </Box>
             )}
             {campos.map((campo: any) => {
+              // Titular: nunca editable en este flujo
+              if (campo.label === 'Titular Carta de Porte') {
+                return isMobile ? (
+                  <Box key={campo.label} sx={{ borderBottom: '1px solid #eee', pb: 1, mb: 1 }}>
+                    <Typography sx={{ fontWeight: 500, fontSize: 15 }}>{campo.label}</Typography>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 0.5 }}>
+                      <Typography sx={{ flex: 1 }}>
+                        {campo.value && String(campo.value).trim() !== '' ? String(campo.value) : 'Dato no necesario'}
+                      </Typography>
+                      <IconButton size="small" onClick={() => handleCopy(String(campo.valorOriginal || campo.value), campo.label)}>
+                        <ContentCopyIcon fontSize="small" />
+                      </IconButton>
+                      {copiedField === campo.label && (
+                        <Typography sx={{ color: theme.colores.azul, fontSize: 12, ml: 1 }}>Copiado!</Typography>
+                      )}
+                    </Box>
+                  </Box>
+                ) : (
+                  <Box key={campo.label} sx={{ display: 'flex', alignItems: 'center', gap: 2, borderBottom: '1px solid #eee', pb: 1 }}>
+                    <Typography sx={{ minWidth: 260, fontWeight: 500 }}>{campo.label}</Typography>
+                    <Typography sx={{ flex: 1 }}>
+                      {campo.value && String(campo.value).trim() !== '' ? String(campo.value) : 'Dato no necesario'}
+                    </Typography>
+                    <IconButton size="small" onClick={() => handleCopy(String(campo.valorOriginal || campo.value), campo.label)}>
+                      <ContentCopyIcon fontSize="small" />
+                    </IconButton>
+                    {copiedField === campo.label && (
+                      <Typography sx={{ color: theme.colores.azul, fontSize: 12, ml: 1 }}>Copiado!</Typography>
+                    )}
+                  </Box>
+                );
+              }
+
+              // Campos directos del turno: editar sin tocar modificaciones del contrato/carga
+              if (CAMPOS_TURNO_DIRECTO.includes(campo.label)) {
+                const valorActual = obtenerValorTurnoDirectoActual(campo.label);
+                const valorDisplay = obtenerValorTurnoDirectoDisplay(campo.label, valorActual);
+
+                return (
+                  <CampoEditableTurnoDirecto
+                    key={campo.label}
+                    label={campo.label}
+                    isMobile={isMobile}
+                    valorDisplay={valorDisplay}
+                    valorActual={valorActual}
+                    valorCopiable={valorActual}
+                    empresaSeleccionadaCuit={cuitEmpresaActual ? String(cuitEmpresaActual) : null}
+                    copiedField={copiedField}
+                    onCopy={handleCopy}
+                    onStage={stageTurnoCampo}
+                  />
+                );
+              }
+
               const tipoModificacion = modificacionesHook.obtenerTipoModificacionCampo(campo.label);
               const esEditable = modificacionesHook.esCampoEditable(campo.label);
               const valorMostrar = modificacionesHook.obtenerValorCampo(campo.label, campo.valorOriginal || campo.value);
@@ -519,7 +745,9 @@ function CartaPorteDialogContentAdmin({
                 <Box key={campo.label} sx={{ borderBottom: '1px solid #eee', pb: 1, mb: 1 }}>
                   <Typography sx={{ fontWeight: 500, fontSize: 15 }}>{campo.label}</Typography>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 0.5 }}>
-                    <Typography sx={{ flex: 1 }}>{campo.value && String(campo.value).trim() !== '' ? String(campo.value) : 'Dato no necesario'}</Typography>
+                    <Typography sx={{ flex: 1 }}>
+                      {campo.value && String(campo.value).trim() !== '' ? String(campo.value) : 'Dato no necesario'}
+                    </Typography>
                     <IconButton size="small" onClick={() => handleCopy(String(campo.value), campo.label)}>
                       <ContentCopyIcon fontSize="small" />
                     </IconButton>
@@ -531,7 +759,9 @@ function CartaPorteDialogContentAdmin({
               ) : (
                 <Box key={campo.label} sx={{ display: 'flex', alignItems: 'center', gap: 2, borderBottom: '1px solid #eee', pb: 1 }}>
                   <Typography sx={{ minWidth: 260, fontWeight: 500 }}>{campo.label}</Typography>
-                  <Typography sx={{ flex: 1 }}>{campo.value && String(campo.value).trim() !== '' ? String(campo.value) : 'Dato no necesario'}</Typography>
+                  <Typography sx={{ flex: 1 }}>
+                    {campo.value && String(campo.value).trim() !== '' ? String(campo.value) : 'Dato no necesario'}
+                  </Typography>
                   <IconButton size="small" onClick={() => handleCopy(String(campo.value), campo.label)}>
                     <ContentCopyIcon fontSize="small" />
                   </IconButton>
@@ -541,6 +771,54 @@ function CartaPorteDialogContentAdmin({
                 </Box>
               );
             })}
+            {/* Herramienta de simulación admin: pegá base64 y abrilo como PDF */}
+            <Box
+              sx={{
+                mt: 2,
+                p: 2,
+                border: "1px dashed",
+                borderColor: theme.colores.gris,
+                borderRadius: 2,
+                display: "flex",
+                flexDirection: "column",
+                gap: 1.5,
+              }}
+            >
+              <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
+                Prueba de CPE desde base64
+              </Typography>
+              <Typography variant="caption" color="text.secondary">
+                Pegá el base64 del PDF que devuelve la API y presioná “Ver PDF”.
+              </Typography>
+              <TextField
+                multiline
+                minRows={4}
+                fullWidth
+                placeholder="Pegá acá el base64 del PDF"
+                value={base64AdminInput}
+                onChange={(e) => setBase64AdminInput(e.target.value)}
+              />
+              <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+                <MainButton
+                  onClick={() => {
+                    try {
+                      if (!base64AdminInput.trim()) return;
+                      const blob = pdfBase64ToBlob(base64AdminInput.trim());
+                      setPdfViewerBlob(blob);
+                      setPdfViewerOpen(true);
+                    } catch (e) {
+                      console.error("Base64 inválido para PDF:", e);
+                    }
+                  }}
+                  text="Ver PDF"
+                  backgroundColor="transparent"
+                  textColor={theme.colores.azul}
+                  borderRadius="8px"
+                  hoverBackgroundColor="rgba(22, 54, 96, 0.1)"
+                  disabled={!base64AdminInput.trim()}
+                />
+              </Box>
+            </Box>
           </Box>
         ) : (
           <Typography color="text.secondary">No hay datos para mostrar.</Typography>
@@ -556,6 +834,11 @@ function CartaPorteDialogContentAdmin({
           hoverBackgroundColor="rgba(22, 54, 96, 0.1)"
           disabled={saving}
         />
+        {!puedeEmitirCPE && (
+          <Typography variant="caption" color="error" sx={{ alignSelf: 'center', mx: 1 }}>
+            Emisión de CPE bloqueada: titular CUIT debe ser 30717635473.
+          </Typography>
+        )}
         <MainButton
           onClick={handleContinuarSinEmitir}
           text={saving ? "Guardando..." : "Continuar sin emitir"}
@@ -565,6 +848,17 @@ function CartaPorteDialogContentAdmin({
           hoverBackgroundColor={theme.colores.azulOscuro}
           disabled={saving || modificacionesHook.loading}
         />
+        {pdfViewerBlob && (
+          <MainButton
+            onClick={() => setPdfViewerOpen(true)}
+            text="Ver CPE"
+            backgroundColor="transparent"
+            textColor={theme.colores.azul}
+            borderRadius="8px"
+            hoverBackgroundColor="rgba(22, 54, 96, 0.1)"
+            disabled={saving || modificacionesHook.loading}
+          />
+        )}
         <MainButton
           onClick={handleEmitirCP}
           text={saving ? "Guardando..." : "Emitir CP"}
@@ -572,7 +866,7 @@ function CartaPorteDialogContentAdmin({
           textColor="#fff"
           borderRadius="8px"
           hoverBackgroundColor="#45a049"
-          disabled={saving || modificacionesHook.loading}
+          disabled={saving || modificacionesHook.loading || !puedeEmitirCPE}
         />
       </DialogActions>
     </>
@@ -594,6 +888,9 @@ function CartaPorteDialogContent({
   handleFormSuccess,
   setOpenDialog,
   refreshCupos,
+  pdfViewerBlob,
+  setPdfViewerOpen,
+  setPdfViewerBlob,
 }: any) {
   if (isAdmin) {
     return (
@@ -610,6 +907,9 @@ function CartaPorteDialogContent({
         handleFormSuccess={handleFormSuccess}
         setOpenDialog={setOpenDialog}
         refreshCupos={refreshCupos}
+        pdfViewerBlob={pdfViewerBlob}
+        setPdfViewerOpen={setPdfViewerOpen}
+        setPdfViewerBlob={setPdfViewerBlob}
       />
     );
   }
@@ -629,7 +929,8 @@ function CartaPorteDialogContent({
 
 export function renderTurnosDialogs({
   openDialog, setOpenDialog, autorizarLoading, setAutorizarLoading, cartaPorteData, cartaPorteLoading, cartaPorteError, copiedField, turnoLocal, setTurnoLocal,
-  handleFormSuccess, handleCopy, getNextEstadoName, theme, backendURL, remitoData, refreshCupos
+  handleFormSuccess, handleCopy, getNextEstadoName, theme, backendURL, remitoData, refreshCupos,
+  pdfViewerOpen, setPdfViewerOpen, pdfViewerBlob, setPdfViewerBlob
 }: any) {
   const { user } = useAuth();
   switch (openDialog) {
@@ -745,24 +1046,35 @@ export function renderTurnosDialogs({
     case 'cartaPorte':
       const isAdmin = user?.rol?.id === 1;
       return (
-        <Dialog open onClose={() => setOpenDialog(null)} fullWidth maxWidth="md">
-          <DialogTitle>Carta de Porte</DialogTitle>
-          <CartaPorteDialogContent
-            turnoId={turnoLocal?.id}
-            isAdmin={isAdmin}
-            cartaPorteData={cartaPorteData}
-            cartaPorteLoading={cartaPorteLoading}
-            cartaPorteError={cartaPorteError}
-            copiedField={copiedField}
-            remitoData={remitoData}
-            theme={theme}
-            backendURL={backendURL}
-            handleCopy={handleCopy}
-            handleFormSuccess={handleFormSuccess}
-            setOpenDialog={setOpenDialog}
-            refreshCupos={refreshCupos}
+        <>
+          <Dialog open onClose={() => setOpenDialog(null)} fullWidth maxWidth="md">
+            <DialogTitle>Carta de Porte</DialogTitle>
+            <CartaPorteDialogContent
+              turnoId={turnoLocal?.id}
+              isAdmin={isAdmin}
+              cartaPorteData={cartaPorteData}
+              cartaPorteLoading={cartaPorteLoading}
+              cartaPorteError={cartaPorteError}
+              copiedField={copiedField}
+              remitoData={remitoData}
+              theme={theme}
+              backendURL={backendURL}
+              handleCopy={handleCopy}
+              handleFormSuccess={handleFormSuccess}
+              setOpenDialog={setOpenDialog}
+              refreshCupos={refreshCupos}
+              pdfViewerBlob={pdfViewerBlob}
+              setPdfViewerOpen={setPdfViewerOpen}
+              setPdfViewerBlob={setPdfViewerBlob}
+            />
+          </Dialog>
+          <PdfViewerDialog
+            open={pdfViewerOpen}
+            title="Comprobante (CPE)"
+            blob={pdfViewerBlob}
+            onClose={() => setPdfViewerOpen(false)}
           />
-        </Dialog>
+        </>
       );
     case 'cargarCarta':
       return (
@@ -1016,6 +1328,16 @@ export function renderTurnosDialogs({
         </Dialog>
       );
     default:
+      if (pdfViewerOpen) {
+        return (
+          <PdfViewerDialog
+            open={pdfViewerOpen}
+            title="Comprobante (CPE)"
+            blob={pdfViewerBlob}
+            onClose={() => setPdfViewerOpen(false)}
+          />
+        );
+      }
       return null;
   }
 }

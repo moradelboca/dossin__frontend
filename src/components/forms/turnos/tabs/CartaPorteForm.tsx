@@ -23,8 +23,6 @@ import useCartaPorteHandler from "../../../hooks/turnos/useCartaPorteHandler";
 import { ContextoGeneral } from "../../../Contexto";
 import MainButton from "../../../botones/MainButtom";
 import { useNotificacion } from '../../../Notificaciones/NotificacionSnackbar';
-import PdfViewerDialog from "../../../common/PdfViewerDialog";
-import { pdfBase64ToBlob } from "../../../../utils/pdfUtils";
 import { 
   uploadFotoTurnoToSupabase, 
   saveFotoTurnoReference, 
@@ -34,32 +32,6 @@ import {
   deleteFotoTurno,
   deleteRemitoId
 } from "../../../../lib/supabase";
-
-function extractPdfBase64(candidate: any): string | null {
-  if (!candidate) return null;
-  if (typeof candidate === "string") return candidate;
-
-  // Most common field
-  if (typeof candidate.pdf === "string") return candidate.pdf;
-  if (typeof candidate.PDF === "string") return candidate.PDF;
-
-  // Common wrappers
-  if (candidate.comprobante && typeof candidate.comprobante.pdf === "string") return candidate.comprobante.pdf;
-  if (candidate.data && typeof candidate.data.pdf === "string") return candidate.data.pdf;
-  if (candidate.response && typeof candidate.response.pdf === "string") return candidate.response.pdf;
-
-  // Try one-level scan for a { pdf: string } object
-  if (typeof candidate === "object") {
-    for (const key of Object.keys(candidate)) {
-      const value = (candidate as any)[key];
-      if (value && typeof value === "object" && typeof value.pdf === "string") {
-        return value.pdf;
-      }
-    }
-  }
-
-  return null;
-}
 
 interface CartaPorteFormProps {
   turnoId: string;
@@ -123,27 +95,16 @@ const CartaPorteForm: React.FC<CartaPorteFormProps> = ({
   const [fotoRemitoUrl, setFotoRemitoUrl] = useState<string | null>(null);
   const [fotoRemitoLoading, setFotoRemitoLoading] = useState(false);
 
-  // PDF emitido por CPE (si la API lo devuelve)
-  const [pdfDialogOpen, setPdfDialogOpen] = useState(false);
-  const [pdfBlob, setPdfBlob] = useState<Blob | null>(null);
-  const [base64AdminInput, setBase64AdminInput] = useState<string>("");
-  
   // Estado para controlar el diálogo de eliminación
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
-  const [emitirCPEEnCarga, setEmitirCPEEnCarga] = useState<boolean>(
-    !!cuitTitular && String(cuitTitular) === '30717635473'
-  );
 
   const { handleMultipleCartaPorteSubmission, handleCartaPorteDeletion } = useCartaPorteHandler();
   const contexto = useContext(ContextoGeneral) as any;
   const theme = contexto.theme;
-  const usuario = contexto.usuario;
   const { showNotificacion } = useNotificacion();
   
   const tema = useTheme();
   const isMobile = useMediaQuery(tema.breakpoints.down("sm"));
-
-  const esAdmin = usuario && (usuario.rol === "ADMIN" || usuario.rol === "admin");
 
   // Estilos para el borde azul al enfocar
   const azulStyles = {
@@ -360,35 +321,12 @@ const CartaPorteForm: React.FC<CartaPorteFormProps> = ({
           });
         }
 
-        // Crear/actualizar todas las cartas de porte
-        const puedeEmitirCPE =
-          !!cuitTitular &&
-          String(cuitTitular) === '30717635473' &&
-          emitirCPEEnCarga;
-
+        // Crear/actualizar todas las cartas de porte (la emisión de CPE se maneja desde "Ver CPE")
         const results = await handleMultipleCartaPorteSubmission(
           turnoId,
           cartasPorte,
-          isUpdate,
-          puedeEmitirCPE
+          isUpdate
         );
-
-        // Si el backend devuelve el PDF base64 al emitir CPE, mostrarlo embebido
-        if (puedeEmitirCPE) {
-          const pdfBase64 = extractPdfBase64(results?.[0]) || extractPdfBase64(results);
-          if (pdfBase64) {
-            try {
-              const blob = pdfBase64ToBlob(pdfBase64);
-              setPdfBlob(blob);
-              setPdfDialogOpen(true);
-            } catch (e) {
-              showNotificacion("Se emitió la CPE, pero no se pudo abrir el PDF.", "warning");
-              console.error("Error convirtiendo PDF base64:", e);
-            }
-          } else {
-            showNotificacion("Se emitió la CPE, pero la API no devolvió el PDF.", "warning");
-          }
-        }
 
         // Eliminar remito si existía (ya que ahora lleva carta de porte)
         const remitoIdExistente = await getRemitoId(turnoId);
@@ -456,12 +394,6 @@ const CartaPorteForm: React.FC<CartaPorteFormProps> = ({
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
-      <PdfViewerDialog
-        open={pdfDialogOpen}
-        title="Comprobante (CPE)"
-        blob={pdfBlob}
-        onClose={() => setPdfDialogOpen(false)}
-      />
       {/* Checkbox para indicar que no lleva carta de porte */}
       <FormControlLabel
         control={
@@ -711,35 +643,6 @@ const CartaPorteForm: React.FC<CartaPorteFormProps> = ({
             </Box>
           )}
 
-          {/* Tick para emitir carta de porte (CPE) */}
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={emitirCPEEnCarga}
-                onChange={(e) => setEmitirCPEEnCarga(e.target.checked)}
-                disabled={!cuitTitular || String(cuitTitular) !== '30717635473'}
-                sx={{
-                  color: theme.colores.azul,
-                  '&.Mui-checked': {
-                    color: theme.colores.azul,
-                  },
-                }}
-              />
-            }
-            label={
-              <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                <Typography variant="body2" fontWeight="medium">
-                  Emitir carta de porte (CPE)
-                </Typography>
-                <Typography variant="caption" color="text.secondary">
-                  {!cuitTitular || String(cuitTitular) !== '30717635473'
-                    ? 'Solo se puede emitir CPE cuando el titular de la carga es la empresa con CUIT 30717635473.'
-                    : 'Si está marcado, se actualizará el turno a estado \"En Viaje\" al crear la CPE.'}
-                </Typography>
-              </Box>
-            }
-            sx={{ mt: 2 }}
-          />
         </>
       )}
 
@@ -797,71 +700,6 @@ const CartaPorteForm: React.FC<CartaPorteFormProps> = ({
         </DialogActions>
       </Dialog>
 
-      {/* Herramienta de prueba CPE solo para admin: pegar base64 y ver PDF */}
-      {esAdmin && (
-        <Box
-          sx={{
-            mt: 4,
-            p: 2,
-            border: "1px dashed",
-            borderColor: theme.colores.gris,
-            borderRadius: 2,
-            display: "flex",
-            flexDirection: "column",
-            gap: 1.5,
-          }}
-        >
-          <Typography variant="subtitle2">
-            Prueba de CPE desde base64 (solo admin)
-          </Typography>
-          <Typography variant="caption" color="text.secondary">
-            Pegá el base64 del PDF que devuelve la API (con o sin
-            {" "} <code>data:application/pdf;base64,</code>) y presioná
-            {" "} “Ver PDF”.
-          </Typography>
-          <TextField
-            multiline
-            minRows={4}
-            fullWidth
-            placeholder="Pegá acá el base64 del PDF"
-            value={base64AdminInput}
-            onChange={(e) => setBase64AdminInput(e.target.value)}
-            sx={azulStyles}
-          />
-          <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-            <Button
-              variant="outlined"
-              size="small"
-              onClick={() => {
-                try {
-                  if (!base64AdminInput.trim()) return;
-                  const blob = pdfBase64ToBlob(base64AdminInput.trim());
-                  setPdfBlob(blob);
-                  setPdfDialogOpen(true);
-                } catch (e) {
-                  console.error("Error al abrir PDF de prueba:", e);
-                  showNotificacion(
-                    "Base64 inválido o PDF no legible.",
-                    "error"
-                  );
-                }
-              }}
-              disabled={!base64AdminInput.trim()}
-              sx={{
-                borderColor: theme.colores.azul,
-                color: theme.colores.azul,
-                textTransform: "none",
-                "&:hover": {
-                  borderColor: theme.colores.azulOscuro,
-                  backgroundColor: "rgba(22, 54, 96, 0.1)",
-                },
-              }}
-            >
-              Ver PDF
-            </Button>
-          </Box>
-        </Box>
-      )}
     </Box>
   );
 };

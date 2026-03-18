@@ -19,7 +19,7 @@ interface UseModificacionesCartaPorteReturn {
   esCampoEditable: (label: string) => boolean;
   obtenerTipoModificacionCampo: (label: string) => TipoModificacionCampo | null;
   validarCampos: () => { valido: boolean; errores: string[] };
-  guardarModificacionesYCambiarEstado: (emitirCPE: boolean) => Promise<void>;
+  guardarModificacionesYCambiarEstado: (emitirCPE: boolean) => Promise<any>;
   limpiarCamposEditados: () => void;
 }
 
@@ -179,6 +179,8 @@ export function useModificacionesCartaPorte(
 
       // Limpiar campos editados después de guardar
       setCamposEditados({});
+
+      return updatedTurno;
     } catch (err: any) {
       const errorMsg = err.message || 'Error al guardar modificaciones y cambiar estado';
       setError(errorMsg);

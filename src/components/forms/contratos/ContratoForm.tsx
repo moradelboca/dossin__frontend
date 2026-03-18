@@ -24,8 +24,6 @@ import CargasSection from "./CargasSection";
 import DeleteCarga from "../../dialogs/contratos/DeleteCarga";
 import EmpresaForm from "../empresas/EmpresaForm";
 import { axiosGet, axiosPost, axiosPut, axiosDelete } from "../../../lib/axiosConfig";
-import { createModificacionTurno } from "../../../lib/turnos-modificaciones-api";
-import type { ModificacionTurnoCreate } from "../../../types/turnos";
 
 const ContratoForm: React.FC<FormularioProps & { refreshContratos?: () => void }> = ({
   seleccionado,
@@ -366,126 +364,8 @@ const ContratoForm: React.FC<FormularioProps & { refreshContratos?: () => void }
         ? axiosPut(`contratos/${safeSeleccionado.id}`, payloadContrato, backendURL)
         : axiosPost('contratos', payloadContrato, backendURL);
 
-      // 6. Guardar contrato y, si corresponde, registrar modificaciones de CPE asociadas al turno
+      // 6. Actualizar estado global
       const contratoActualizado = await apiCall;
-
-      // Registrar modificaciones solo al editar un contrato existente que tenga un turno asociado
-      const idTurnoAsociado = safeSeleccionado.numeroDeTurno;
-      if (safeSeleccionado.id && idTurnoAsociado) {
-        const modificaciones: ModificacionTurnoCreate[] = [];
-
-        const processedData: any = { ...data, ...empresasPayload };
-
-        const getCuitFromValor = (valor: any): string | null => {
-          if (!valor) return null;
-          if (typeof valor === "object" && valor.cuit != null) {
-            return String(valor.cuit);
-          }
-          return String(valor);
-        };
-
-        // Campos escalares del contrato
-        if ("tarifa" in safeSeleccionado || "tarifa" in processedData) {
-          const original = safeSeleccionado.tarifa;
-          const nuevo = processedData.tarifa;
-          if (nuevo !== undefined && nuevo !== original) {
-            modificaciones.push({
-              nombreCampo: "tarifa",
-              valor: nuevo,
-            });
-          }
-        }
-
-        if ("idUbicacionDescarga" in safeSeleccionado || "idUbicacionDescarga" in processedData) {
-          const original = safeSeleccionado.idUbicacionDescarga;
-          const nuevo = processedData.idUbicacionDescarga;
-          if (nuevo !== original) {
-            modificaciones.push({
-              nombreCampo: "idUbicacionDescarga",
-              valor: nuevo ?? null,
-            });
-          }
-        }
-
-        if ("idUbicacionBalanza" in safeSeleccionado || "idUbicacionBalanza" in processedData) {
-          const original = safeSeleccionado.idUbicacionBalanza;
-          const nuevo = processedData.idUbicacionBalanza;
-          if (nuevo !== original) {
-            modificaciones.push({
-              nombreCampo: "idUbicacionBalanza",
-              valor: nuevo ?? null,
-            });
-          }
-        }
-
-        if ("cantidadKm" in safeSeleccionado || "cantidadKm" in processedData) {
-          const original = safeSeleccionado.cantidadKm;
-          const nuevo = processedData.cantidadKm;
-          if (nuevo !== undefined && nuevo !== original) {
-            modificaciones.push({
-              nombreCampo: "cantidadKm",
-              valor: nuevo ?? null,
-            });
-          }
-        }
-
-        // Campos de CUIT asociados a empresas (según enums de backend)
-        type CampoCuitConfig = {
-          rolNombre: string;
-          fieldContrato: string;
-          nombreCampoModificacion: string;
-        };
-
-        const camposCuitConfig: CampoCuitConfig[] = [
-          { rolNombre: "Remitente Comercial Productor", fieldContrato: "remitenteProductor", nombreCampoModificacion: "remitenteProductorCuit" },
-          { rolNombre: "Rte. Comercial Venta Primaria", fieldContrato: "remitenteVentaPrimaria", nombreCampoModificacion: "remitenteVentaPrimariaCuit" },
-          { rolNombre: "Rte Comercial Venta Primaria", fieldContrato: "remitenteVentaPrimaria", nombreCampoModificacion: "remitenteVentaPrimariaCuit" },
-          { rolNombre: "Rte Comercial Venta Secundaria", fieldContrato: "remitenteVentaSecundaria", nombreCampoModificacion: "remitenteVentaSecundariaCuit" },
-          { rolNombre: "Rte. Comercial Venta Secundaria", fieldContrato: "remitenteVentaSecundaria", nombreCampoModificacion: "remitenteVentaSecundariaCuit" },
-          { rolNombre: "Rte Comercial Venta Secundaria 2", fieldContrato: "rteComercialVentaSecundaria2", nombreCampoModificacion: "remitenteVentaSecundaria2Cuit" },
-          { rolNombre: "Corredor Venta Primaria", fieldContrato: "corredorVentaPrimaria", nombreCampoModificacion: "corredorVentaPrimariaCuit" },
-          { rolNombre: "Corredor Venta Secundaria", fieldContrato: "corredorVentaSecundaria", nombreCampoModificacion: "corredorVentaSecundariaCuit" },
-          { rolNombre: "Representante entregador", fieldContrato: "representanteEntregador", nombreCampoModificacion: "representanteEntregadorCuit" },
-          { rolNombre: "Representante recibidor", fieldContrato: "representanteRecibidor", nombreCampoModificacion: "representanteRecibidorCuit" },
-          { rolNombre: "Destinatario", fieldContrato: "destinatario", nombreCampoModificacion: "destinatarioCuit" },
-          { rolNombre: "Destino", fieldContrato: "destino", nombreCampoModificacion: "destinoCuit" },
-          { rolNombre: "Flete Pagador", fieldContrato: "fletePagador", nombreCampoModificacion: "fletePagadorCuit" },
-        ];
-
-        const normalizarNombreRol = (nombre: string): string =>
-          nombre.trim().toLowerCase().replace(/\./g, "").replace(/\s+/g, " ");
-
-        camposCuitConfig.forEach((cfg) => {
-          const rol = roles.find(
-            (r: any) => normalizarNombreRol(r.nombre) === normalizarNombreRol(cfg.rolNombre)
-          );
-          if (!rol) return;
-
-          const empresaSeleccionada = empresasPorRol[rol.id];
-          const cuitNuevo = getCuitFromValor(empresaSeleccionada);
-
-          const valorOriginalCampo = safeSeleccionado[cfg.fieldContrato];
-          const cuitOriginal =
-            valorOriginalCampo && typeof valorOriginalCampo === "object"
-              ? getCuitFromValor(valorOriginalCampo)
-              : getCuitFromValor(valorOriginalCampo);
-
-          if ((cuitNuevo || cuitOriginal) && cuitNuevo !== cuitOriginal) {
-            modificaciones.push({
-              nombreCampo: cfg.nombreCampoModificacion,
-              valor: cuitNuevo ? Number(cuitNuevo.replace(/\D/g, "")) : null,
-            });
-          }
-        });
-
-        if (modificaciones.length > 0) {
-          await Promise.all(
-            modificaciones.map((mod) =>
-              createModificacionTurno(idTurnoAsociado, mod, backendURL)
-            )
-          );
-        }
-      }
       setDatos((prev: any[]) =>
         metodo === "POST"
           ? [...prev, contratoActualizado]
