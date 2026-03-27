@@ -27,6 +27,12 @@ function extractPdfBase64(candidate: any): string | null {
   if (!candidate) return null;
   if (typeof candidate === "string") return candidate;
 
+  // Respuesta esperada cuando emitís CPE:
+  // { cpe: { mensaje: "...", pdf: "<base64>" } }
+  if (candidate?.cpe?.pdf && typeof candidate.cpe.pdf === "string") {
+    return candidate.cpe.pdf;
+  }
+
   if (typeof candidate.pdf === "string") return candidate.pdf;
   if (typeof candidate.PDF === "string") return candidate.PDF;
 
